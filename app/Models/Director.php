@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Director extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['user_id', 'commission_percentage', 'balance'];
+    protected $fillable = ['user_id','school_id', 'commission_percentage', 'balance'];
     protected $casts = ['commission_percentage' => 'decimal:2', 'balance' => 'decimal:2'];
 
     public function user()
@@ -18,9 +19,9 @@ class Director extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function schools()
+    public function school(): BelongsTo
     {
-        return $this->belongsToMany(School::class, 'director_school')->withTimestamps();
+        return $this->belongsTo(School::class, 'school_id');
     }
 
     public function students()

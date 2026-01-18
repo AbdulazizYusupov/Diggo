@@ -94,11 +94,13 @@ class DatabaseSeeder extends Seeder
          * ======================
          */
 
-        $director = Director::create([
-            'user_id' => $directorUser->id,
-            'school_id' => $school->id,
-            'commission_percentage' => 5,
-        ]);
+        for ($i = 1; $i < 20; $i++) {
+            $director = Director::create([
+                'user_id' => User::inRandomOrder()->first()->id,
+                'school_id' => $school->id,
+                'commission_percentage' => 5,
+            ]);
+        }
 
 
         /**
@@ -156,7 +158,7 @@ class DatabaseSeeder extends Seeder
             'start_date' => now(),
         ]);
 
-     
+
 
         $group->teachers()->attach($teacherUser->id, [
             'is_primary' => true,
@@ -176,7 +178,7 @@ class DatabaseSeeder extends Seeder
             'enrollment_date' => now(),
         ]);
 
-      
+
 
         $group->students()->attach($student->id, [
             'joined_at' => now(),

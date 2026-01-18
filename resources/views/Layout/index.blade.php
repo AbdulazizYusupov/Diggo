@@ -171,27 +171,31 @@
                             <button
                                 onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.arrow-icon').classList.toggle('rotate-180')"
                                 class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all 
-                                    {{ request()->is('staffs*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+            {{ request()->is('staffs*', 'directors*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 {{ request()->is('staffs*') ? 'text-indigo-600' : 'text-gray-400' }}">
+                                    class="h-5 w-5 {{ request()->is('staffs*', 'directors*') ? 'text-indigo-600' : 'text-gray-400' }}">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                                 </svg>
+
                                 <span class="ml-3 nav-text">Foydalanuvchilar</span>
 
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="2" stroke="currentColor"
-                                    class="arrow-icon ml-auto h-4 w-4 text-gray-400 transition-transform duration-300 {{ request()->is('staffs*') ? 'rotate-180' : '' }}">
+                                    class="arrow-icon ml-auto h-4 w-4 text-gray-400 transition-transform duration-300 {{ request()->is('staffs*', 'directors*') ? 'rotate-180' : '' }}">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                                 </svg>
                             </button>
 
-                            <div class="{{ request()->is('staffs*') ? '' : 'hidden' }} ml-8 space-y-1 transition-all">
+                            <div
+                                class="{{ request()->is('staffs*', 'directors*') ? '' : 'hidden' }} ml-8 space-y-1 transition-all">
+
                                 <a href="{{ route('staffs.index') }}"
-                                    class="flex items-center px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 transition {{ request()->is('staffs*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100' }}">
+                                    class="flex items-center px-3 py-2 text-sm rounded-lg transition-all 
+            {{ request()->is('staffs*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -200,8 +204,9 @@
                                     Staff
                                 </a>
 
-                                <a href="#"
-                                    class="flex items-center px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:text-purple-600 transition">
+                                <a href="{{ route('directors.index') }}"
+                                    class="flex items-center px-3 py-2 text-sm rounded-lg transition-all 
+            {{ request()->is('directors*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -211,7 +216,7 @@
                                 </a>
 
                                 <a href="#"
-                                    class="flex items-center px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 transition">
+                                    class="flex items-center px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 transition-all">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -219,8 +224,9 @@
                                     </svg>
                                     Teachers
                                 </a>
+
                                 <a href="#"
-                                    class="flex items-center px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-600 transition">
+                                    class="flex items-center px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 transition-all">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
                                         <path stroke-linecap="round" stroke-linejoin="round"

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Models\Role;
 
 class StaffController extends Controller
 {
@@ -108,7 +109,12 @@ class StaffController extends Controller
                 'is_active' => $request->has('is_active'),
             ]);
 
-            $user->assignRole('staff');
+            $roleName = 'staff';
+            $role = Role::where('name', $roleName)->first();
+
+            if ($role) {
+                $user->assignRole($role);
+            }
 
             Staff::create([
                 'user_id' => $user->id,
