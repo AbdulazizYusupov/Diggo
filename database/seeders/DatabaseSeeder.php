@@ -112,6 +112,20 @@ class DatabaseSeeder extends Seeder
             'salary_type' => 'fixed',
             'salary_amount' => 3000000,
         ]);
+        for ($i = 1; $i <= 30; $i++) {
+            $user = User::create([
+                'name' => "Staff $i",
+                'surname' => "Surname $i",
+                'phone' => '9989000000' . str_pad(10 + $i, 3, '0', STR_PAD_LEFT), // unique phone
+                'password' => Hash::make('password'),
+            ]);
+
+            Staff::create([
+                'user_id' => $user->id,
+                'salary_type' => 'fixed',
+                'salary_amount' => rand(2000000, 5000000),
+            ]);
+        }
 
         /**
          * ======================

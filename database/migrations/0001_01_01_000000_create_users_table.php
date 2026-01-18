@@ -18,6 +18,11 @@ return new class extends Migration
             $table->string('middle_name')->nullable();
             $table->string('phone')->unique();
             $table->string('photo')->nullable();
+            $table->date('birth_date')->nullable();
+            $table->enum('gender', ['male', 'female'])->nullable();
+            $table->text('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('region')->nullable();
             $table->boolean('is_active')->default(true);
             $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();

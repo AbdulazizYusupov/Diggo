@@ -141,47 +141,57 @@
                         <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 nav-text">
                             Asosiy</p>
 
-                        <a href="#"
-                            class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl text-white bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg shadow-indigo-500/50 group transition-all hover:shadow-xl">
-                            <svg class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        <a href="{{ route('dashboard') }}"
+                            class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all 
+                            {{ request()->routeIs('dashboard')
+                                ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+
+                            <svg class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('dashboard') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-500' }}"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                             </svg>
+
                             <span class="ml-3 nav-text">Boshqaruv paneli</span>
-                            <span
-                                class="ml-auto bg-white/20 backdrop-blur-sm py-0.5 px-2.5 text-xs font-bold rounded-full badge-count">4</span>
+
+                            @if (request()->routeIs('dashboard'))
+                                <span
+                                    class="ml-auto bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 py-0.5 px-2 text-xs font-bold rounded-full">
+                                    4
+                                </span>
+                            @endif
+
                             <span class="tooltip">Boshqaruv paneli</span>
                         </a>
+
 
                         <!-- Users Dropdown -->
                         <div class="space-y-1">
                             <button
                                 onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.arrow-icon').classList.toggle('rotate-180')"
-                                class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl
-               text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-50
-               dark:hover:from-gray-700 dark:hover:to-gray-700/50 hover:text-gray-900 dark:hover:text-white
-               group transition-all">
+                                class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all 
+                                    {{ request()->is('staffs*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 text-gray-400 group-hover:text-indigo-500 flex-shrink-0 transition-colors">
+                                    class="h-5 w-5 {{ request()->is('staffs*') ? 'text-indigo-600' : 'text-gray-400' }}">
                                     <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                        d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                                 </svg>
-
                                 <span class="ml-3 nav-text">Foydalanuvchilar</span>
 
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="2" stroke="currentColor"
-                                    class="arrow-icon ml-auto h-4 w-4 text-gray-400 transition-transform duration-300">
+                                    class="arrow-icon ml-auto h-4 w-4 text-gray-400 transition-transform duration-300 {{ request()->is('staffs*') ? 'rotate-180' : '' }}">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                                 </svg>
                             </button>
 
-                            <div class="hidden ml-8 space-y-1 transition-all">
-                                <a href="#"
-                                    class="flex items-center px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 transition">
+                            <div class="{{ request()->is('staffs*') ? '' : 'hidden' }} ml-8 space-y-1 transition-all">
+                                <a href="{{ route('staffs.index') }}"
+                                    class="flex items-center px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 transition {{ request()->is('staffs*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100' }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -390,7 +400,8 @@
                                 class="hidden absolute right-0 mt-2 w-64 rounded-2xl shadow-2xl bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
                                 <div
                                     class="px-4 py-4 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-700 dark:to-gray-700">
-                                    <p class="text-sm font-bold text-gray-900 dark:text-white">{{ Auth::user()->name }}
+                                    <p class="text-sm font-bold text-gray-900 dark:text-white">
+                                        {{ Auth::user()->name }}
                                     </p>
                                     <p class="text-xs text-gray-600 dark:text-gray-400 truncate mt-0.5">
                                         {{ Auth::user()->email }}</p>
@@ -438,7 +449,7 @@
             <main
                 class="flex-1 relative overflow-y-auto focus:outline-none bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
                 <div class="py-8">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
 
                         @if (session('success'))
                             <div
@@ -588,7 +599,6 @@
         updateThemeIcons();
         initSidebar();
     </script>
-    <script src="//unpkg.com/alpinejs" defer></script>
 
     @stack('scripts')
 </body>
