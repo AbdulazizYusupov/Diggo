@@ -385,13 +385,13 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                    <button type="reset"
-                        class="px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl shadow-sm hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white transform hover:scale-[1.02] active:scale-95 transition-all">
-                        Tozalash
-                    </button>
+                    
                     <button type="submit"
                         class="px-10 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-200 dark:shadow-none transform hover:scale-[1.02] active:scale-95 transition-all">
-                        Saqlash va qo'shish
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                        </svg>
                     </button>
                 </div>
 

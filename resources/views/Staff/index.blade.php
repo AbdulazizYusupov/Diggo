@@ -294,15 +294,65 @@
                                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
                                         </a>
-                                        <a href="{{ route('staffs.destroy', $staff->id) }}" title="O‘chirish"
+                                        <!-- Tabledagi Delete Button -->
+                                        <button type="button"
+                                            onclick="document.getElementById('delete-modal-{{ $staff->id }}').classList.remove('hidden')"
                                             class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
-
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
-                                        </a>
+                                        </button>
+                                        <div id="delete-modal-{{ $staff->id }}"
+                                            class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+
+                                            <div
+                                                class="relative w-full max-w-md p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border-2 border-gray-300 dark:border-gray-600 overflow-hidden">
+
+                                                <div class="text-center">
+                                                    <div
+                                                        class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
+                                                        <svg class="h-8 w-8 text-red-600 dark:text-red-400" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                        </svg>
+                                                    </div>
+
+                                                    <h3
+                                                        class="text-xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
+                                                        Tasdiqlang</h3>
+
+                                                    <p
+                                                        class="text-sm text-gray-500 dark:text-gray-400 mb-6 px-2 break-words leading-relaxed">
+                                                        Rostdan ham <span
+                                                            class="font-bold text-gray-900 dark:text-white break-words">{{ $staff->user->full_name }}</span>ni
+                                                        o'chirmoqchimisiz?
+                                                    </p>
+
+                                                    <div class="flex flex-wrap sm:flex-nowrap gap-3">
+                                                        <button type="button"
+                                                            onclick="document.getElementById('delete-modal-{{ $staff->id }}').classList.add('hidden')"
+                                                            class="w-full sm:flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold rounded-2xl transition-all">
+                                                            Bekor qilish
+                                                        </button>
+
+                                                        <form action="{{ route('staffs.destroy', $staff->id) }}"
+                                                            method="POST" class="w-full sm:flex-1 m-0">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit"
+                                                                class="w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl shadow-lg transition-all transform active:scale-95">
+                                                                O'chirilsin
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </td>
                             </tr>
@@ -333,7 +383,4 @@
             @endif
         </div>
     </div>
-
-
-
 @endsection

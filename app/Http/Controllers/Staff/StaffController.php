@@ -138,7 +138,7 @@ class StaffController extends Controller
     public function show(string $id)
     {
         $staff = Staff::findOrFail($id);
-        return view('Staff.show',compact('staff'));
+        return view('Staff.show', compact('staff'));
     }
 
     /**
@@ -228,6 +228,15 @@ class StaffController extends Controller
 
     public function destroy(string $id)
     {
-        //
+        $staff = Staff::findOrFail($id);
+        $user = $staff->user;
+
+        if ($user && $user->photo && Storage::disk('public')->exists($user->photo)) {
+            Storage::disk('public')->delete($user->photo);
+        }
+
+        $staff->delete();
+
+        return redirect()->route('staffs.index')->with('success', 'Xodim muvaffaqiyatli o\'chirildi');
     }
 }
