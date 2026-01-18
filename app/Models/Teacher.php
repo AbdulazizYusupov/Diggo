@@ -42,11 +42,21 @@ class Teacher extends Model
      */
     public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class, 'group_teacher')
+        return $this->belongsToMany(Group::class, 'group_teachers')
             ->using(GroupTeacher::class)
             ->withPivot(['is_primary', 'assigned_at'])
             ->withTimestamps();
     }
+//     public function groups()
+// {
+//     return $this->belongsToMany(
+//         Group::class,
+//         'group_teachers', // pivot table nomi real jadvalga mos
+//         'teacher_id',     // foreign key Teacher modelida
+//         'group_id'        // foreign key Group modelida
+//     );
+// }
+
 
     /**
      * O'qituvchining davomat jurnali (qancha dars o'tganini hisoblash uchun).

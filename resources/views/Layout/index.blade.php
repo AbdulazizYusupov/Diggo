@@ -171,7 +171,7 @@
                             <button
                                 onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.arrow-icon').classList.toggle('rotate-180')"
                                 class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all 
-            {{ request()->is('staffs*', 'directors*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                {{ request()->is('staffs*', 'directors*', 'teachers*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor"
@@ -191,11 +191,11 @@
                             </button>
 
                             <div
-                                class="{{ request()->is('staffs*', 'directors*') ? '' : 'hidden' }} ml-8 space-y-1 transition-all">
+                                class="{{ request()->is('staffs*', 'directors*', 'teachers*') ? '' : 'hidden' }} ml-8 space-y-1 transition-all">
 
                                 <a href="{{ route('staffs.index') }}"
                                     class="flex items-center px-3 py-2 text-sm rounded-lg transition-all 
-            {{ request()->is('staffs*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
+                                        {{ request()->is('staffs*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -206,7 +206,7 @@
 
                                 <a href="{{ route('directors.index') }}"
                                     class="flex items-center px-3 py-2 text-sm rounded-lg transition-all 
-            {{ request()->is('directors*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
+                                    {{ request()->is('directors*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -214,9 +214,9 @@
                                     </svg>
                                     Directors
                                 </a>
-
-                                <a href="#"
-                                    class="flex items-center px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 transition-all">
+                                <a href="{{ route('teachers.index') }}"
+                                    class="flex items-center px-3 py-2 text-sm rounded-lg transition-all 
+                                    {{ request()->is('teachers*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -236,8 +236,6 @@
                                 </a>
                             </div>
                         </div>
-
-
                         <a href="#"
                             class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-50 dark:hover:from-gray-700 dark:hover:to-gray-700/50 hover:text-gray-900 dark:hover:text-white group transition-all">
                             <svg class="h-5 w-5 text-gray-400 group-hover:text-purple-500 flex-shrink-0 transition-colors"
