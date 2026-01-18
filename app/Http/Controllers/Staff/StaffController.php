@@ -137,7 +137,8 @@ class StaffController extends Controller
      */
     public function show(string $id)
     {
-        dd($id);
+        $staff = Staff::findOrFail($id);
+        return view('Staff.show',compact('staff'));
     }
 
     /**
@@ -152,14 +153,79 @@ class StaffController extends Controller
     /**
      * Update the specified resource in storage.
      */
+
     public function update(Request $request, string $id)
     {
-        //
+        $staff = Staff::findOrFail($id);
+        // 1. Validatsiya
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'phone' => 'required|string|max:20|min:8|unique:users,phone,' . $staff->user_id,
+            'birth_date' => 'nullable|date',
+            'gender' => 'required|in:male,female',
+            'city' => 'nullable|string|max:255',
+            'region' => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:500',
+            'password' => 'nullable|string|min:6',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'salary_type' => 'required|in:fixed,percent,per_student',
+            'salary_amount' => 'required_if:salary_type,fixed,per_student|nullable|numeric|min:0',
+            'percent_per_student' => 'required_if:salary_type,percent|nullable|numeric|min:0|max:100',
+            'percent_per_payment' => 'required_if:salary_type,percent|nullable|numeric|min:0|max:100',
+            'is_active' => 'nullable|boolean',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $user = $staff->user;
+
+            if ($request->hasFile('photo')) {
+                if ($user->photo && Storage::disk('public')->exists($user->photo)) {
+                    Storage::disk('public')->delete($user->photo);
+                }
+                $validated['photo'] = $request->file('photo')->store('staff-photos', 'public');
+            } else {
+                $validated['photo'] = $user->photo;
+            }
+
+            $userData = [
+                'name' => $validated['name'],
+                'surname' => $validated['surname'],
+                'middle_name' => $validated['middle_name'],
+                'phone' => $validated['phone'],
+                'birth_date' => $validated['birth_date'],
+                'gender' => $validated['gender'],
+                'city' => $validated['city'],
+                'region' => $validated['region'],
+                'address' => $validated['address'],
+                'photo' => $validated['photo'],
+                'is_active' => $request->has('is_active'),
+            ];
+
+            if ($request->filled('password')) {
+                $userData['password'] = Hash::make($validated['password']);
+            }
+
+            $user->update($userData);
+            $staff->update([
+                'salary_type' => $validated['salary_type'],
+                'salary_amount' => $validated['salary_type'] !== 'percent' ? ($validated['salary_amount'] ?? 0) : 0,
+                'percent_per_student' => $validated['salary_type'] === 'percent' ? ($validated['percent_per_student'] ?? 0) : 0,
+                'percent_per_payment' => $validated['salary_type'] === 'percent' ? ($validated['percent_per_payment'] ?? 0) : 0,
+                'is_active' => $request->has('is_active'),
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('staffs.index')->with('success', 'Xodim ma’lumotlari muvaffaqiyatli yangilandi!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Xatolik: ' . $e->getMessage())->withInput();
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         //

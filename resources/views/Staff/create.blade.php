@@ -5,31 +5,36 @@
 @section('content')
     <div class="w-full">
         <div class="flex items-center justify-between mb-6">
-           <div class="flex items-center gap-4">
-    <div class="hidden sm:flex p-3.5 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl shadow-sm border border-emerald-200 dark:border-emerald-800/50">
-        <svg class="w-7 h-7 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-        </svg>
-    </div>
+            <div class="flex items-center gap-4">
+                <div
+                    class="hidden sm:flex p-3.5 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl shadow-sm border border-emerald-200 dark:border-emerald-800/50">
+                    <svg class="w-7 h-7 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                </div>
 
-    <div class="space-y-1">
-        <div class="flex items-center gap-2.5">
-            <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-                Yangi xodim
-            </h1>
-            <span class="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" title="Yangi kiritish rejimi"></span>
-        </div>
-        
-        <div class="flex items-center gap-2">
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Tizimga yangi mutaxassisni qo'shish va maosh turini belgilash
-            </p>
-            <span class="hidden md:inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 rounded-md border border-emerald-100 dark:border-emerald-800">
-                Step 1/1
-            </span>
-        </div>
-    </div>
-</div>
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2.5">
+                        <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+                            Yangi xodim
+                        </h1>
+                        <span class="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"
+                            title="Yangi kiritish rejimi"></span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                            Tizimga yangi mutaxassisni qo'shish va maosh turini belgilash
+                        </p>
+                        <span
+                            class="hidden md:inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 rounded-md border border-emerald-100 dark:border-emerald-800">
+                            Step 1/1
+                        </span>
+                    </div>
+                </div>
+            </div>
             <a href="{{ route('staffs.index') }}"
                 class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl shadow-sm hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 transition-all">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -322,11 +327,20 @@
                 <div class="flex items-center justify-end gap-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                     <button type="reset"
                         class="px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl shadow-sm hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white transform hover:scale-[1.02] active:scale-95 transition-all">
-                        Tozalash
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+
                     </button>
                     <button type="submit"
-                        class="px-10 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-200 dark:shadow-none transform hover:scale-[1.02] active:scale-95 transition-all">
-                        Saqlash va qo'shish
+                        class="px-10 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-200 dark:shadow-none transform hover:scale-[1.02] active:scale-95 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                        </svg>
+
                     </button>
                 </div>
 
