@@ -42,35 +42,35 @@ class DatabaseSeeder extends Seeder
         $adminUser = User::create([
             'name' => 'System',
             'surname' => 'Admin',
-            'phone' => '+998900000001',
+            'phone' => '998900000001',
             'password' => Hash::make('password'),
         ]);
 
         $directorUser = User::create([
             'name' => 'Ali',
             'surname' => 'Director',
-            'phone' => '+998900000002',
+            'phone' => '998900000002',
             'password' => Hash::make('password'),
         ]);
 
         $teacherUser = User::create([
             'name' => 'Vali',
             'surname' => 'Teacher',
-            'phone' => '+998900000003',
+            'phone' => '998900000003',
             'password' => Hash::make('password'),
         ]);
 
         $staffUser = User::create([
             'name' => 'Hasan',
             'surname' => 'Staff',
-            'phone' => '+998900000004',
+            'phone' => '998900000004',
             'password' => Hash::make('password'),
         ]);
 
         $studentUser = User::create([
             'name' => 'Student',
             'surname' => 'One',
-            'phone' => '+998900000005',
+            'phone' => '998900000005',
             'password' => Hash::make('password'),
         ]);
 
@@ -85,7 +85,7 @@ class DatabaseSeeder extends Seeder
             'code' => 'DEMO-001',
             'city' => 'Tashkent',
             'region' => 'Yunusobod',
-            'phone' => '+998711111111',
+            'phone' => '998711111111',
         ]);
 
         /**

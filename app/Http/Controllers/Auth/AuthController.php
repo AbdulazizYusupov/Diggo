@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class AuthController extends Controller
+{
+    public function index()
+    {
+        return view('Auth.login');
+    }
+    public function login(Request $request)
+    {
+        $request->validate([
+            'phone' => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ]);
+
+        $credentials = $request->only('phone', 'password');
+
+        if (Auth::attempt($credentials, $request->filled('remember_me'))) {
+
+            $request->session()->regenerate();
+
+            return redirect()->intended('/dashboard');
+        }
+
+        return back()->withErrors([
+            'phone' => 'Telefon raqam yoki parol noto‘g‘ri',
+        ])->onlyInput('phone');
+    }
+}
