@@ -34,4 +34,9 @@ class AuthController extends Controller
             'phone' => 'Telefon raqam yoki parol noto‘g‘ri',
         ])->onlyInput('phone');
     }
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        return redirect('/login');
+    }
 }
