@@ -19,7 +19,9 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
+
         $credentials = $request->only('phone', 'password');
+        $credentials['is_active'] = 1;
 
         if (Auth::attempt($credentials, $request->filled('remember_me'))) {
 

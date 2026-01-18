@@ -71,7 +71,7 @@ class StaffController extends Controller
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
-            'phone' => 'required|string|max:20|unique:users,phone',
+            'phone' => 'required|string|max:20|min:8|unique:users,phone',
             'birth_date' => 'nullable|date',
             'gender' => 'required|in:male,female',
             'city' => 'nullable|string|max:255',
@@ -88,13 +88,11 @@ class StaffController extends Controller
 
         DB::beginTransaction();
         try {
-            // Handle photo upload
             $photoPath = null;
             if ($request->hasFile('photo')) {
                 $photoPath = $request->file('photo')->store('staff-photos', 'public');
             }
 
-            // Create user
             $user = User::create([
                 'name' => $validated['name'],
                 'surname' => $validated['surname'],
@@ -110,10 +108,8 @@ class StaffController extends Controller
                 'is_active' => $request->has('is_active'),
             ]);
 
-            // Assign staff role
             $user->assignRole('staff');
 
-            // Create staff record
             Staff::create([
                 'user_id' => $user->id,
                 'salary_type' => $validated['salary_type'],
@@ -125,22 +121,13 @@ class StaffController extends Controller
 
             DB::commit();
 
-            if ($request->expectsJson()) {
-                return response()->json(['success' => true, 'message' => 'Xodim muvaffaqiyatli qo\'shildi']);
-            }
-
-            return redirect()->route('staffs.index')->with('success', 'Xodim muvaffaqiyatli qo\'shildi');
+            return redirect()->route('staffs.index')->with('success', 'Yangi xodim muvaffaqiyatli qo\'shildi!');
         } catch (\Exception $e) {
             DB::rollBack();
 
             if ($photoPath && Storage::disk('public')->exists($photoPath)) {
                 Storage::disk('public')->delete($photoPath);
             }
-
-            if ($request->expectsJson()) {
-                return response()->json(['success' => false, 'message' => 'Xatolik yuz berdi: ' . $e->getMessage()], 500);
-            }
-
             return back()->with('error', 'Xatolik yuz berdi: ' . $e->getMessage())->withInput();
         }
     }
@@ -158,7 +145,8 @@ class StaffController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $staff = Staff::findOrFail($id);
+        return view('Staff.edit', compact('staff'));
     }
 
     /**
