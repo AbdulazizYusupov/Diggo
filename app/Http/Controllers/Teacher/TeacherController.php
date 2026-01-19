@@ -22,30 +22,34 @@ class TeacherController extends Controller
         $query = Teacher::with(['user', 'groups'])
             ->withCount('groups');
 
-        // Search filter
+        // 1. Search filter (Qidiruv)
         if ($request->filled('search')) {
             $search = $request->search;
             $query->whereHas('user', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('surname', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%")
-                    ->orWhere('city', 'like', "%{$search}%")
-                    ->orWhere('address', 'like', "%{$search}%");
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('name', 'like', "%{$search}%")
+                        ->orWhere('surname', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('city', 'like', "%{$search}%")
+                        ->orWhere('address', 'like', "%{$search}%");
+                });
             });
         }
 
-        // Salary type filter
+        // 2. Salary type filter
         if ($request->filled('salary_type')) {
             $query->where('salary_type', $request->salary_type);
         }
 
-        // Status filter
+        // 3. Status filter - User modelidagi is_active bo'yicha
         if ($request->filled('status')) {
             $isActive = $request->status === 'active';
-            $query->where('is_active', $isActive);
+            $query->whereHas('user', function ($q) use ($isActive) {
+                $q->where('is_active', $isActive);
+            });
         }
 
-        // Salary range filter
+        // 4. Salary range filter
         if ($request->filled('salary_range')) {
             switch ($request->salary_range) {
                 case 'low':
@@ -62,10 +66,16 @@ class TeacherController extends Controller
 
         $teachers = $query->latest()->paginate(10);
 
-        // Statistics
+        // 5. Statistics (Statistikani ham User holatiga moslaymiz)
         $totalTeachers = Teacher::count();
-        $activeTeachers = Teacher::where('is_active', true)->count();
+
+        $activeTeachers = Teacher::whereHas('user', function ($q) {
+            $q->where('is_active', true);
+        })->count();
+
         $avgSalary = Teacher::avg('salary_amount') ?? 0;
+
+        // Guruhlar sonini hisoblash (Teacher modelidagi munosabatga qarab)
         $totalGroups = DB::table('group_teachers')->distinct('group_id')->count();
 
         return view('Teacher.index', compact(
@@ -141,7 +151,6 @@ class TeacherController extends Controller
                 'salary_type' => $validated['salary_type'],
                 'salary_amount' => $validated['salary_type'] !== 'percent' ? ($validated['salary_amount'] ?? 0) : 0,
                 'percent_per_student' => $validated['salary_type'] === 'percent' ? ($validated['percent_per_student'] ?? 0) : 0,
-                'is_active' => $request->has('is_active'),
             ]);
 
             DB::commit();
@@ -163,9 +172,9 @@ class TeacherController extends Controller
      */
     public function show(string $id)
     {
-        $teacher =Teacher::findOrFail($id);
+        $teacher = Teacher::findOrFail($id);
 
-        return view('Teacher.show',compact('teacher'));
+        return view('Teacher.show', compact('teacher'));
     }
 
     /**
@@ -242,7 +251,6 @@ class TeacherController extends Controller
                 'salary_type' => $validated['salary_type'],
                 'salary_amount' => $validated['salary_type'] !== 'percent' ? ($validated['salary_amount'] ?? 0) : 0,
                 'percent_per_student' => $validated['salary_type'] === 'percent' ? ($validated['percent_per_student'] ?? 0) : 0,
-                'is_active' => $request->has('is_active'),
             ]);
 
             DB::commit();

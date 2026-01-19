@@ -18,37 +18,49 @@ class StaffController extends Controller
      */
     public function index(Request $request)
     {
+        // Eager loading orqali 'user'ni yuklaymiz
         $query = Staff::with('user');
 
-        // Search functionality
+        // 1. Qidiruv (Search)
         if ($request->filled('search')) {
             $search = $request->search;
             $query->whereHas('user', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('surname', 'like', "%{$search}%")
-                    ->orWhere('middle_name', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%")
-                    ->orWhere('address', 'like', "%{$search}%")
-                    ->orWhere('city', 'like', "%{$search}%");
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('name', 'like', "%{$search}%")
+                        ->orWhere('surname', 'like', "%{$search}%")
+                        ->orWhere('middle_name', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('address', 'like', "%{$search}%")
+                        ->orWhere('city', 'like', "%{$search}%");
+                });
             });
         }
 
-        // Filter by salary type
+        // 2. Ish haqi turi bo'yicha filtr (Salary type)
         if ($request->filled('salary_type')) {
             $query->where('salary_type', $request->salary_type);
         }
 
-        // Filter by status
+        // 3. Status (is_active) bo'yicha filtr - User jadvalidan qidiradi
         if ($request->filled('status')) {
             $isActive = $request->status === 'active';
-            $query->where('is_active', $isActive);
+            $query->whereHas('user', function ($q) use ($isActive) {
+                $q->where('is_active', $isActive);
+            });
         }
 
+        // Ma'lumotlarni olish
         $staffs = $query->latest()->paginate(10);
 
-        // Statistics
-        $activeCount = Staff::where('is_active', true)->count();
-        $inactiveCount = Staff::where('is_active', false)->count();
+        // 4. Statistika (Bu yerda ham whereHas ishlatiladi)
+        $activeCount = Staff::whereHas('user', function ($q) {
+            $q->where('is_active', true);
+        })->count();
+
+        $inactiveCount = Staff::whereHas('user', function ($q) {
+            $q->where('is_active', false);
+        })->count();
+
         $avgSalary = Staff::where('salary_type', 'fixed')->avg('salary_amount') ?? 0;
 
         return view('Staff.index', compact('staffs', 'activeCount', 'inactiveCount', 'avgSalary'));
@@ -122,7 +134,6 @@ class StaffController extends Controller
                 'salary_amount' => $validated['salary_type'] !== 'percent' ? ($validated['salary_amount'] ?? 0) : 0,
                 'percent_per_student' => $validated['salary_type'] === 'percent' ? ($validated['percent_per_student'] ?? 0) : 0,
                 'percent_per_payment' => $validated['salary_type'] === 'percent' ? ($validated['percent_per_payment'] ?? 0) : 0,
-                'is_active' => $request->has('is_active'),
             ]);
 
             DB::commit();
@@ -220,7 +231,6 @@ class StaffController extends Controller
                 'salary_amount' => $validated['salary_type'] !== 'percent' ? ($validated['salary_amount'] ?? 0) : 0,
                 'percent_per_student' => $validated['salary_type'] === 'percent' ? ($validated['percent_per_student'] ?? 0) : 0,
                 'percent_per_payment' => $validated['salary_type'] === 'percent' ? ($validated['percent_per_payment'] ?? 0) : 0,
-                'is_active' => $request->has('is_active'),
             ]);
 
             DB::commit();

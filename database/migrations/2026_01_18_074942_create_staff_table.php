@@ -25,8 +25,6 @@ return new class extends Migration
                 ->nullable();
             $table->decimal('percent_per_payment', 5, 2)
                 ->nullable();
-            $table->boolean('is_active')
-                ->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

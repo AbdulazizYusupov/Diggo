@@ -408,7 +408,7 @@
                             <div
                                 class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-2xl border border-gray-100 dark:border-gray-600">
                                 <input type="checkbox" name="is_active" id="is_active" value="1"
-                                    {{ old('is_active', $teacher->is_active) ? 'checked' : '' }}
+                                    {{ old('is_active', $teacher->user->is_active) ? 'checked' : '' }}
                                     class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
                                 <label for="is_active"
                                     class="text-sm font-medium text-gray-700 dark:text-gray-300">O'qituvchi

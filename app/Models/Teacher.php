@@ -17,7 +17,6 @@ class Teacher extends Model
         'salary_type',
         'salary_amount',
         'percent_per_student',
-        'is_active',
     ];
 
     /**
@@ -26,7 +25,6 @@ class Teacher extends Model
     protected $casts = [
         'salary_amount' => 'decimal:2',
         'percent_per_student' => 'decimal:2',
-        'is_active' => 'boolean',
     ];
 
     /**

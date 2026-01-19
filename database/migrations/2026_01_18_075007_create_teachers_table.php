@@ -24,8 +24,6 @@ return new class extends Migration
                 ->default(0);
             $table->decimal('percent_per_student', 5, 2)
                 ->nullable();
-            $table->boolean('is_active')
-                ->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -21,7 +21,7 @@
                             Tahrirlash: <span class="text-indigo-600 dark:text-indigo-400">{{ $staff->name }}
                                 {{ $staff->surname }}</span>
                         </h1>
-                        @if ($staff->is_active)
+                        @if ($staff->user->is_active)
                             <span
                                 class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 text-[11px] font-bold uppercase tracking-wider border border-emerald-200 dark:border-emerald-800">
                                 <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -391,7 +391,7 @@
                             <div
                                 class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-2xl border border-gray-100 dark:border-gray-600">
                                 <input type="checkbox" name="is_active" id="is_active" value="1"
-                                    {{ old('is_active', $staff->is_active) == '1' ? 'checked' : '' }}
+                                    {{ old('is_active', $staff->user->is_active) == '1' ? 'checked' : '' }}
                                     class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
                                 <label for="is_active" class="text-sm font-medium text-gray-700 dark:text-gray-300">Xodim
                                     faol (Tizimga kira oladi)</label>

@@ -268,8 +268,8 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span
-                                        class="px-3 py-1 text-xs font-semibold rounded-full {{ $staff->is_active ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400' }}">
-                                        {{ $staff->is_active ? 'Faol' : 'Nofaol' }}
+                                        class="px-3 py-1 text-xs font-semibold rounded-full {{ $staff->user->is_active ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400' }}">
+                                        {{ $staff->user->is_active ? 'Faol' : 'Nofaol' }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

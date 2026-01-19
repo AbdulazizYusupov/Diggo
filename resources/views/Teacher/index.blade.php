@@ -232,7 +232,7 @@
                                                 {{ $teacher->user->full_name }}
                                             </div>
                                             <div class="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                                @if($teacher->is_active)
+                                                @if($teacher->user->is_active)
                                                     <span class="inline-flex items-center gap-1 text-green-600 dark:text-green-400">
                                                         <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                                                         Faol

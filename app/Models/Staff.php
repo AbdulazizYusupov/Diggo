@@ -16,14 +16,12 @@ class Staff extends Model
         'salary_amount',
         'percent_per_student',
         'percent_per_payment',
-        'is_active',
     ];
 
     protected $casts = [
         'salary_amount' => 'decimal:2',
         'percent_per_student' => 'decimal:2',
         'percent_per_payment' => 'decimal:2',
-        'is_active' => 'boolean',
     ];
 
     /**

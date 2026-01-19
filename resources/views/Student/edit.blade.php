@@ -50,8 +50,9 @@
         </div>
         <div
             class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <form action="{{ route('students.store') }}" method="POST" enctype="multipart/form-data" class="p-8 space-y-8">
+            <form action="{{ route('students.update', $student->id) }}" method="POST" enctype="multipart/form-data" class="p-8 space-y-8">
                 @csrf
+                @method('PUT')
                 {{-- Shaxsiy ma'lumotlar (User) --}}
                 <div class="space-y-6">
                     <div class="flex items-center gap-3 border-b border-gray-100 dark:border-gray-700 pb-3">
@@ -71,7 +72,7 @@
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Familiya <span
                                     class="text-red-500">*</span></label>
-                            <input type="text" name="surname" value="{{ old('surname') }}" required placeholder="Aliyev"
+                            <input type="text" name="surname" value="{{ old('surname',$student->user->surname) }}" required placeholder="Aliyev"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none dark:text-white transition-all 
                             @error('surname') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             @error('surname')
@@ -83,7 +84,7 @@
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Ism <span
                                     class="text-red-500">*</span></label>
-                            <input type="text" name="name" value="{{ old('name') }}" required placeholder="Aziz"
+                            <input type="text" name="name" value="{{ old('name',$student->user->name) }}" required placeholder="Aziz"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none dark:text-white transition-all
                             @error('name') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             @error('name')
@@ -94,7 +95,7 @@
                         {{-- Otasining ismi --}}
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Otasining ismi</label>
-                            <input type="text" name="middle_name" value="{{ old('middle_name') }}"
+                            <input type="text" name="middle_name" value="{{ old('middle_name',$student->user->middle_name) }}"
                                 placeholder="Rustamovich"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none dark:text-white transition-all
                             @error('middle_name') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
@@ -111,7 +112,7 @@
                                     class="text-red-500">*</span></label>
                             <div class="relative">
                                 <span class="absolute inset-y-0 left-4 flex items-center text-gray-400">+998</span>
-                                <input type="text" name="phone" value="{{ old('phone') }}" required
+                                <input type="text" name="phone" value="{{ old('phone',$student->user->phone) }}" required
                                     placeholder=" (90) 123-45-67"
                                     class="w-full pl-14 pr-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none dark:text-white transition-all
                             @error('phone') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
@@ -125,7 +126,7 @@
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Tug'ilgan sana <span
                                     class="text-red-500">*</span></label>
-                            <input type="date" name="birth_date" value="{{ old('birth_date') }}" required
+                            <input type="date" name="birth_date" value="{{ old('birth_date',$student->user->birth_date?->format('Y-m-d')) }}" required
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-pink-500 dark:text-white outline-none transition-all
                             @error('birth_date') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             @error('birth_date')
@@ -140,9 +141,9 @@
                             <select name="gender" required
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-pink-500 dark:text-white outline-none transition-all
                             @error('gender') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
-                                <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>O'g'il bola
+                                <option value="male" {{ old('gender',$student->user->gender) == 'male' ? 'selected' : '' }}>O'g'il bola
                                 </option>
-                                <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Qiz bola</option>
+                                <option value="female" {{ old('gender',$student->user->gender) == 'female' ? 'selected' : '' }}>Qiz bola</option>
                             </select>
                         </div>
                     </div>
@@ -166,21 +167,21 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Viloyat</label>
-                            <input type="text" name="region" value="{{ old('region') }}"
+                            <input type="text" name="region" value="{{ old('region',$student->user->region) }}"
                                 placeholder="Toshkent viloyati"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-teal-500 outline-none dark:text-white transition-all
                     @error('region') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                         </div>
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Shahar / Tuman</label>
-                            <input type="text" name="city" value="{{ old('city') }}"
+                            <input type="text" name="city" value="{{ old('city',$student->user->city) }}"
                                 placeholder="Chilonzor tumani"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-teal-500 outline-none dark:text-white transition-all
                     @error('city') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                         </div>
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Ko'cha va uy</label>
-                            <input type="text" name="address" value="{{ old('address') }}"
+                            <input type="text" name="address" value="{{ old('address',$student->user->address) }}"
                                 placeholder="Bunyodkor ko'chasi, 12-uy"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-teal-500 outline-none dark:text-white transition-all
                     @error('address') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
@@ -207,7 +208,7 @@
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Ota-onaning to'liq
                                 ismi</label>
-                            <input type="text" name="parent_name" value="{{ old('parent_name') }}"
+                            <input type="text" name="parent_name" value="{{ old('parent_name',$student->parent_name) }}"
                                 placeholder="Aliyev Rustam Karimovich"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-violet-500 outline-none dark:text-white transition-all
                             @error('parent_name') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
@@ -222,7 +223,7 @@
                                 raqami</label>
                             <div class="relative">
                                 <span class="absolute inset-y-0 left-4 flex items-center text-gray-400">+998</span>
-                                <input type="text" name="parent_phone" value="{{ old('parent_phone') }}"
+                                <input type="text" name="parent_phone" value="{{ old('parent_phone',$student->parent_phone) }}"
                                     placeholder=" (90) 123-45-67"
                                     class="w-full pl-14 pr-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-violet-500 outline-none dark:text-white transition-all
                             @error('parent_phone') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
@@ -237,7 +238,7 @@
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Favqulodda holat uchun
                                 aloqa (ismi)</label>
                             <input type="text" name="emergency_contact_name"
-                                value="{{ old('emergency_contact_name') }}" placeholder="Karimova Nodira"
+                                value="{{ old('emergency_contact_name',$student->emergency_contact_name) }}" placeholder="Karimova Nodira"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-violet-500 outline-none dark:text-white transition-all
                             @error('emergency_contact_name') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             @error('emergency_contact_name')
@@ -252,7 +253,7 @@
                             <div class="relative">
                                 <span class="absolute inset-y-0 left-4 flex items-center text-gray-400">+998</span>
                                 <input type="text" name="emergency_contact_phone"
-                                    value="{{ old('emergency_contact_phone') }}" placeholder=" (91) 234-56-78"
+                                    value="{{ old('emergency_contact_phone',$student->emergency_contact_phone) }}" placeholder=" (91) 234-56-78"
                                     class="w-full pl-14 pr-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-violet-500 outline-none dark:text-white transition-all
                             @error('emergency_contact_phone') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             </div>
@@ -284,7 +285,7 @@
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Ro'yxatdan o'tgan sana
                                 <span class="text-red-500">*</span></label>
                             <input type="date" name="enrollment_date"
-                                value="{{ old('enrollment_date', date('Y-m-d')) }}" required
+                                value="{{ old('enrollment_date', $student->enrollment_date->format('Y-m-d')) }}" required
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-orange-500 dark:text-white outline-none transition-all
                             @error('enrollment_date') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             @error('enrollment_date')
@@ -296,7 +297,7 @@
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Dastlabki balans
                                 (so'm)</label>
-                            <input type="number" name="balance" value="{{ old('balance', 0) }}" min="0"
+                            <input type="number" name="balance" value="{{ old('balance', $student->balance) }}" min="0"
                                 step="0.01" placeholder="0"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none dark:text-white transition-all
                             @error('balance') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
@@ -309,7 +310,7 @@
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Dastlabki
                                 tangalar</label>
-                            <input type="number" name="coins" value="{{ old('coins', 0) }}" min="0"
+                            <input type="number" name="coins" value="{{ old('coins',$student->coins ) }}" min="0"
                                 placeholder="0"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none dark:text-white transition-all
                             @error('coins') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
@@ -323,7 +324,7 @@
                         <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Qo'shimcha izoh</label>
                         <textarea name="notes" rows="3" placeholder="O'quvchi haqida qo'shimcha ma'lumotlar..."
                             class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none dark:text-white transition-all resize-none
-                        @error('notes') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">{{ old('notes') }}</textarea>
+                        @error('notes') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">{{ old('notes',$student->notes) }}</textarea>
                         @error('notes')
                             <p class="text-red-500 text-xs mt-1 ml-1">{{ $message }}</p>
                         @enderror
@@ -341,11 +342,11 @@
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border rounded-xl focus:ring-2 focus:ring-indigo-500 dark:text-white outline-none transition-all appearance-none cursor-pointer
                                 @error('school_id') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             <option value="" disabled
-                                {{ !old('school_id', $teacher->school_id ?? '') ? 'selected' : '' }}>Schoolni tanlang...
+                                {{ !old('school_id', $student->school_id ?? '') ? 'selected' : '' }}>Schoolni tanlang...
                             </option>
                             @foreach ($schools ?? [] as $school)
                                 <option value="{{ $school->id }}"
-                                    {{ old('school_id', $teacher->school_id ?? '') == $school->id ? 'selected' : '' }}>
+                                    {{ old('school_id', $student->school_id ?? '') == $school->id ? 'selected' : '' }}>
                                     {{ $school->name }}
                                 </option>
                             @endforeach
@@ -375,9 +376,12 @@
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">O'quvchi surati</label>
                             <div class="flex items-center justify-center w-full">
                                 <div class="relative w-full">
+                                    
                                     <div id="preview-box"
-                                        class="hidden relative w-full h-32 rounded-2xl overflow-hidden border-2 border-cyan-500">
-                                        <img id="image-display" src="" class="w-full h-full object-cover">
+                                        class="{{ $student->user->photo ? '' : 'hidden' }} relative w-full h-32 rounded-2xl overflow-hidden border-2 border-indigo-500">
+                                        <img id="image-display"
+                                            src="{{ $student->user->photo ? asset('storage/' . $student->user->photo) : '' }}"
+                                            class="w-full h-full object-cover">
                                         <button type="button" onclick="resetImage()"
                                             class="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
@@ -389,7 +393,7 @@
                                     </div>
 
                                     <label id="upload-label"
-                                        class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-2xl cursor-pointer bg-gray-50 dark:hover:bg-gray-700/50 dark:bg-gray-700 hover:bg-gray-100 transition-all
+                                        class="{{ $student->user->photo ? 'hidden' : '' }} flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-2xl cursor-pointer bg-gray-50 dark:hover:bg-gray-700/50 dark:bg-gray-700 hover:bg-gray-100 transition-all
                                         @error('photo') border-red-500 @else border-gray-300 dark:border-gray-600 @enderror">
                                         <div class="flex flex-col items-center justify-center pt-5 pb-6">
                                             <svg class="w-8 h-8 mb-3 text-gray-400" fill="none" stroke="currentColor"
@@ -413,7 +417,7 @@
                             <div class="space-y-2">
                                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Tizimga kirish
                                     paroli <span class="text-red-500">*</span></label>
-                                <input type="password" name="password" required placeholder="••••••••"
+                                <input type="password" name="password" placeholder="••••••••"
                                     class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-cyan-500 outline-none dark:text-white transition-all
                                 @error('password') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                                 @error('password')
@@ -441,7 +445,7 @@
                             <div
                                 class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-2xl border border-gray-100 dark:border-gray-600">
                                 <input type="checkbox" name="is_active" id="is_active" value="1"
-                                    {{ old('is_active', '1') == '1' ? 'checked' : '' }}
+                                    {{ old('is_active', $student->user->is_active) == '1' ? 'checked' : '' }}
                                     class="w-5 h-5 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500">
                                 <label for="is_active"
                                     class="text-sm font-medium text-gray-700 dark:text-gray-300">O'quvchi
@@ -464,21 +468,15 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
 
                 <div class="flex items-center justify-end gap-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                    <button type="reset"
-                        class="group inline-flex items-center justify-center px-8 py-3.5 text-sm font-bold text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 rounded-2xl shadow-sm hover:bg-gray-200 dark:hover:bg-gray-600 hover:shadow-md transform hover:scale-[1.02] active:scale-95 transition-all duration-200">
-                        <svg class="w-5 h-5 mr-2 group-hover:rotate-180 transition-transform duration-500" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        Tozalash
-                    </button>
+                    <a href="{{ route('students.index') }}"
+                            class="flex-1 sm:flex-initial px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold rounded-2xl transition-all text-center">
+                            Bekor qilish
+                        </a>
                     <button type="submit"
                         class="group inline-flex items-center justify-center px-10 py-3.5 text-sm font-bold text-white bg-gradient-to-r from-cyan-600 via-blue-600 to-cyan-600 bg-size-200 bg-pos-0 hover:bg-pos-100 rounded-2xl shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 dark:shadow-cyan-900/30 dark:hover:shadow-cyan-900/50 transform hover:scale-[1.02] active:scale-95 transition-all duration-300">
                         <svg class="w-5 h-5 mr-2 group-hover:translate-x-1 transition-transform" fill="none"
