@@ -209,8 +209,7 @@
                         </a>
 
                         <div class="space-y-1">
-                            <button id="users-dropdown-btn"
-                                {{-- onclick="const dropdown = this.nextElementSibling; dropdown.classList.toggle('open'); this.querySelector('.arrow-icon').classList.toggle('rotate-180');" --}}
+                            <button id="users-dropdown-btn" {{-- onclick="const dropdown = this.nextElementSibling; dropdown.classList.toggle('open'); this.querySelector('.arrow-icon').classList.toggle('rotate-180');" --}}
                                 class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all 
                                 {{ request()->is('staffs*', 'directors*', 'teachers*', 'students*')
                                     ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600'
@@ -552,190 +551,162 @@
     </div>
 
     <script>
-        // Theme Management
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeMenu = document.getElementById('theme-menu');
-        const themeOptions = document.querySelectorAll('[data-theme]');
-        const themeIcons = {
-            light: document.getElementById('theme-icon-light'),
-            dark: document.getElementById('theme-icon-dark'),
-            system: document.getElementById('theme-icon-system')
+        /**
+         * Elementlarni tanlab olish
+         */
+        const elements = {
+            themeToggle: document.getElementById('theme-toggle'),
+            themeMenu: document.getElementById('theme-menu'),
+            themeOptions: document.querySelectorAll('[data-theme]'),
+            themeIcons: {
+                light: document.getElementById('theme-icon-light'),
+                dark: document.getElementById('theme-icon-dark'),
+                system: document.getElementById('theme-icon-system')
+            },
+            sidebar: document.getElementById('sidebar'),
+            sidebarToggle: document.getElementById('sidebar-toggle'),
+            closeSidebarBtn: document.getElementById('close-sidebar'),
+            sidebarOverlay: document.getElementById('sidebar-overlay'),
+            mobileMenuBtn: document.getElementById('mobile-menu-button'),
+            usersDropdownBtn: document.getElementById('users-dropdown-btn'),
+            usersDropdown: document.getElementById('users-dropdown'),
+            userMenuButton: document.getElementById('user-menu-button'),
+            userMenu: document.getElementById('user-menu'),
+            successAlert: document.getElementById('alert-success')
         };
 
-        // Get current theme from localStorage or default to 'system'
+        /**
+         * 1. THEME MANAGEMENT (Mavzu boshqaruvi)
+         */
         let currentTheme = localStorage.getItem('theme') || 'system';
 
-        // Apply theme function
         function applyTheme(theme) {
             currentTheme = theme;
             localStorage.setItem('theme', theme);
 
-            // Hide all icons
-            Object.values(themeIcons).forEach(icon => icon.classList.add('hidden'));
-
-            // Update active states
-            themeOptions.forEach(option => {
-                if (option.dataset.theme === theme) {
-                    option.classList.add('active');
-                    themeIcons[theme].classList.remove('hidden');
-                } else {
-                    option.classList.remove('active');
-                }
+            // Ikonkalarni yangilash
+            Object.keys(elements.themeIcons).forEach(key => {
+                elements.themeIcons[key]?.classList.toggle('hidden', key !== theme);
             });
 
-            // Apply actual theme
-            if (theme === 'system') {
-                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-            } else if (theme === 'dark') {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
+            // Active klassini yangilash
+            elements.themeOptions.forEach(opt => {
+                opt.classList.toggle('active', opt.dataset.theme === theme);
+            });
+
+            // HTML klassini o'zgartirish
+            const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)')
+                .matches);
+            document.documentElement.classList.toggle('dark', isDark);
         }
 
-        // Initialize theme
-        applyTheme(currentTheme);
-
-        // Toggle theme menu
-        themeToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            themeMenu.classList.toggle('hidden');
-        });
-
-        // Theme option click handlers
-        themeOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                applyTheme(option.dataset.theme);
-                themeMenu.classList.add('hidden');
-            });
-        });
-
-        // Close theme menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!themeToggle.contains(e.target) && !themeMenu.contains(e.target)) {
-                themeMenu.classList.add('hidden');
-            }
-        });
-
-        // Listen to system theme changes
+        // Tizim mavzusi o'zgarganda kuzatish
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-            if (currentTheme === 'system') {
-                applyTheme('system');
-            }
+            if (currentTheme === 'system') applyTheme('system');
         });
 
-        // Sidebar Management
-        const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-        const closeSidebarBtn = document.getElementById('close-sidebar');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
-        const mobileMenuBtn = document.getElementById('mobile-menu-button');
-
-        // Get sidebar state from localStorage
+        /**
+         * 2. SIDEBAR MANAGEMENT (Yon panel boshqaruvi)
+         */
         let sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
 
-        // Initialize sidebar state on desktop
-        function initSidebar() {
-            if (window.innerWidth >= 1024) {
-                if (sidebarCollapsed) {
-                    sidebar.classList.remove('expanded');
-                    sidebar.classList.add('collapsed');
-                } else {
-                    sidebar.classList.remove('collapsed');
-                    sidebar.classList.add('expanded');
-                }
+        function updateSidebarView() {
+            const isDesktop = window.innerWidth >= 1024;
+            if (isDesktop) {
+                elements.sidebar.classList.toggle('collapsed', sidebarCollapsed);
+                elements.sidebar.classList.toggle('expanded', !sidebarCollapsed);
+                elements.sidebar.classList.remove('-translate-x-full');
+                elements.sidebarOverlay.classList.add('hidden');
+            } else {
+                elements.sidebar.classList.add('expanded');
+                elements.sidebar.classList.remove('collapsed');
             }
         }
 
-        // Desktop sidebar toggle
-        sidebarToggle?.addEventListener('click', () => {
+        /**
+         * 3. DROPDOWNS & UTILS (Menyular va yordamchi funksiyalar)
+         */
+        function closeAllDropdowns() {
+            elements.themeMenu?.classList.add('hidden');
+            elements.userMenu?.classList.add('hidden');
+        }
+
+        function toggleDropdown(menu) {
+            const isHidden = menu.classList.contains('hidden');
+            closeAllDropdowns();
+            if (isHidden) menu.classList.remove('hidden');
+        }
+
+        /**
+         * 4. EVENT LISTENERS (Hodisalar)
+         */
+
+        // Theme events
+        elements.themeToggle?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleDropdown(elements.themeMenu);
+        });
+
+        elements.themeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                applyTheme(option.dataset.theme);
+                elements.themeMenu.classList.add('hidden');
+            });
+        });
+
+        // Sidebar events
+        elements.sidebarToggle?.addEventListener('click', () => {
             sidebarCollapsed = !sidebarCollapsed;
             localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
-
-            if (sidebarCollapsed) {
-                sidebar.classList.remove('expanded');
-                sidebar.classList.add('collapsed');
-            } else {
-                sidebar.classList.remove('collapsed');
-                sidebar.classList.add('expanded');
-            }
+            updateSidebarView();
         });
 
-        // Mobile sidebar open
-        mobileMenuBtn?.addEventListener('click', () => {
-            sidebar.classList.remove('-translate-x-full');
-            sidebarOverlay.classList.remove('hidden');
+        elements.mobileMenuBtn?.addEventListener('click', () => {
+            elements.sidebar.classList.remove('-translate-x-full');
+            elements.sidebarOverlay.classList.remove('hidden');
         });
 
-        // Mobile sidebar close
-        closeSidebarBtn?.addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-            sidebarOverlay.classList.add('hidden');
+        [elements.closeSidebarBtn, elements.sidebarOverlay].forEach(btn => {
+            btn?.addEventListener('click', () => {
+                elements.sidebar.classList.add('-translate-x-full');
+                elements.sidebarOverlay.classList.add('hidden');
+            });
         });
 
-        // Overlay click
-        sidebarOverlay?.addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-            sidebarOverlay.classList.add('hidden');
-        });
-
-        // Users Dropdown Management
-        const usersDropdownBtn = document.getElementById('users-dropdown-btn');
-        const usersDropdown = document.getElementById('users-dropdown');
-        const arrowIcon = usersDropdownBtn.querySelector('.arrow-icon');
-
-        usersDropdownBtn.addEventListener('click', (e) => {
+        // Users dropdown (sidebar ichidagi)
+        elements.usersDropdownBtn?.addEventListener('click', (e) => {
             e.preventDefault();
-
-            // Toggle dropdown
-            usersDropdown.classList.toggle('open');
-            arrowIcon.classList.toggle('rotated');
+            elements.usersDropdown.classList.toggle('open');
+            elements.usersDropdownBtn.querySelector('.arrow-icon')?.classList.toggle('rotated');
         });
 
-        // User Menu Dropdown
-        const userMenuButton = document.getElementById('user-menu-button');
-        const userMenu = document.getElementById('user-menu');
-
-        userMenuButton.addEventListener('click', (e) => {
+        // User profile menu
+        elements.userMenuButton?.addEventListener('click', (e) => {
             e.stopPropagation();
-            userMenu.classList.toggle('hidden');
+            toggleDropdown(elements.userMenu);
         });
 
-        // Close user menu when clicking outside
+        // Global click (dropdownlarni yopish uchun)
         document.addEventListener('click', (e) => {
-            if (!userMenuButton.contains(e.target) && !userMenu.contains(e.target)) {
-                userMenu.classList.add('hidden');
-            }
+            closeAllDropdowns();
         });
 
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 1024) {
-                sidebar.classList.remove('-translate-x-full');
-                sidebarOverlay.classList.add('hidden');
-                initSidebar();
-            } else {
-                sidebar.classList.remove('collapsed');
-                sidebar.classList.add('expanded');
-            }
-        });
+        // Resize va Alert
+        window.addEventListener('resize', updateSidebarView);
 
-        // Auto-hide alerts
-        const successAlert = document.getElementById('alert-success');
-        if (successAlert) {
+        if (elements.successAlert) {
             setTimeout(() => {
-                successAlert.style.transition = "opacity 0.5s ease";
-                successAlert.style.opacity = "0";
-                setTimeout(() => successAlert.remove(), 500);
+                elements.successAlert.style.transition = "opacity 0.5s ease";
+                elements.successAlert.style.opacity = "0";
+                setTimeout(() => elements.successAlert.remove(), 500);
             }, 5000);
         }
 
-        // Initialize
-        initSidebar();
+        /**
+         * INITIALIZE (Ishga tushirish)
+         */
+        applyTheme(currentTheme);
+        updateSidebarView();
     </script>
 </body>
 
