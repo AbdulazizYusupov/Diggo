@@ -189,9 +189,36 @@ class StudentController extends Controller
     /**
      * Display the specified resource.
      */
+    
     public function show(string $id)
     {
-        //
+        $student = Student::findOrFail($id);
+        $student->load(['user', 'school', 'director', 'groups', 'groups.teachers']);
+        
+        // Get recent transactions
+        $recentTransactions = $student->transactions()
+            ->latest()
+            ->take(5)
+            ->get();
+        
+        // Get recent payments
+        $recentPayments = $student->payments()
+            ->latest()
+            ->take(5)
+            ->get();
+        
+        // Get coin transactions
+        $recentCoinTransactions = $student->coinTransactions()
+            ->latest()
+            ->take(5)
+            ->get();
+        
+        return view('Student.show', compact(
+            'student',
+            'recentTransactions',
+            'recentPayments',
+            'recentCoinTransactions'
+        ));
     }
 
     /**
