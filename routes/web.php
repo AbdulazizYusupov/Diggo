@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Director\DirectorController;
+use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\Student\StudentController;
 use App\Http\Controllers\Teacher\TeacherController;
@@ -16,6 +17,8 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::resource('staffs', StaffController::class);
     Route::resource('directors', DirectorController::class);
     Route::resource('teachers', TeacherController::class);

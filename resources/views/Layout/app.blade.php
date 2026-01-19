@@ -24,8 +24,10 @@
         }
 
         /* Sidebar transitions */
+        /* Sidebar transitions */
         .sidebar {
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
         }
 
         .sidebar.collapsed {
@@ -38,14 +40,12 @@
 
         /* Text transitions */
         .sidebar-text {
-            transition: opacity 0.2s, transform 0.2s;
             white-space: nowrap;
+            transition: none;
         }
 
         .sidebar.collapsed .sidebar-text {
-            opacity: 0;
-            transform: translateX(-10px);
-            pointer-events: none;
+            display: none;
         }
 
         /* Tooltip for collapsed state */
@@ -84,6 +84,10 @@
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        .sidebar.collapsed .arrow-icon {
+            display: none;
+        }
+
         .arrow-icon.rotated {
             transform: rotate(180deg);
         }
@@ -120,15 +124,34 @@
             opacity: 1;
         }
 
-        @media (max-width: 1024px) {
+        /* @media (max-width: 1024px) {
             .sidebar.collapsed .nav-tooltip {
                 display: none;
             }
-        }
+        } */
 
         /* Dark mode styles */
         .dark .theme-option.active {
             background: rgba(99, 102, 241, 0.2);
+        }
+
+        /* Show dropdown items centered when sidebar is collapsed */
+        .sidebar.collapsed .dropdown-content.open {
+            max-height: 500px;
+        }
+
+        .sidebar.collapsed .dropdown-content .ml-8 {
+            margin-left: 0 !important;
+        }
+
+        .sidebar.collapsed .dropdown-content a {
+            justify-content: center;
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .sidebar.collapsed .dropdown-content svg {
+            margin-right: 0;
         }
     </style>
 </head>
@@ -142,7 +165,7 @@
     <div class="flex h-full overflow-hidden">
         <!-- Sidebar -->
         <aside id="sidebar"
-            class="sidebar expanded fixed inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-all duration-300 ease-in-out lg:static lg:flex lg:flex-shrink-0">
+            class="sidebar fixed inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-all duration-300 ease-in-out lg:static lg:flex lg:flex-shrink-0">
             <div class="flex flex-col h-full w-full">
                 <div
                     class="flex flex-col flex-grow bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700/50 pt-5 pb-4 overflow-y-auto transition-colors duration-200 shadow-xl lg:shadow-none">
@@ -438,7 +461,7 @@
                             <button type="button" id="user-menu-button"
                                 class="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-all">
                                 <img class="h-9 w-9 rounded-xl object-cover ring-2 ring-gray-200 dark:ring-gray-700 shadow-sm"
-                                    src="https://ui-avatars.com/api/?name=John+Doe&background=6366f1&color=fff"
+                                    src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->full_name) }}&background=6366f1&color=fff"
                                     alt="User">
                                 <svg class="hidden sm:block h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
@@ -447,27 +470,25 @@
                                 </svg>
                             </button>
 
-                            <!-- User Dropdown Menu -->
                             <div id="user-menu"
                                 class="hidden absolute right-0 mt-2 w-64 rounded-xl shadow-xl bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 border border-gray-100 dark:border-gray-700 z-50 overflow-hidden">
-                                <!-- User Info Header -->
+
                                 <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
                                     <div class="flex items-center space-x-3">
                                         <img class="h-10 w-10 rounded-lg object-cover ring-2 ring-indigo-100 dark:ring-indigo-900"
-                                            src="https://ui-avatars.com/api/?name=John+Doe&background=6366f1&color=fff"
+                                            src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->full_name) }}&background=6366f1&color=fff"
                                             alt="User">
                                         <div class="flex-1 min-w-0">
                                             <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                                                John Doe</p>
+                                                {{ optional(Auth::user())->full_name }}</p>
                                             <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                                john@example.com</p>
+                                                {{ optional(Auth::user())->phone }}</p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Menu Items -->
                                 <div class="py-1">
-                                    <a href="#"
+                                    <a href="{{ route('profile.show') }}"
                                         class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
                                         <svg class="mr-3 h-4 w-4 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -498,12 +519,11 @@
                                     </a>
                                 </div>
 
-                                <!-- Logout -->
-                                <div class="border-t border-gray-100 dark:border-gray-700">
+                                <div class="py-1 border-t border-gray-100 dark:border-gray-700">
                                     <button
-                                        class="flex items-center w-full px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors group">
-                                        <svg class="mr-3 h-4 w-4" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
+                                        class="flex items-center w-full px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group">
+                                        <svg class="mr-3 h-4 w-4 text-red-500 group-hover:text-red-600" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                         </svg>
@@ -521,8 +541,8 @@
                 class="flex-1 relative overflow-y-auto focus:outline-none bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
                 <div class="py-8">
                     <div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
-                        {{-- <!-- Success Alert Example -->
-                        <div id="alert-success" class="mb-6 flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-l-4 border-green-500 rounded-xl shadow-lg text-green-800 dark:text-green-200 backdrop-blur-sm transition-all duration-300">
+                        <!-- Success Alert Example -->
+                        {{-- <div id="alert-success" class="mb-6 flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-l-4 border-green-500 rounded-xl shadow-lg text-green-800 dark:text-green-200 backdrop-blur-sm transition-all duration-300">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
                                     <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
@@ -536,13 +556,61 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
                             </button>
-                        </div>
-
-                        <!-- Your content goes here -->
-                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
-                            <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Welcome to Dashboard</h1>
-                            <p class="text-gray-600 dark:text-gray-300">This is your main content area. Add your content here.</p>
                         </div> --}}
+                        @if (session('success'))
+                            <div id="alert-success"
+                                class="mb-6 flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-l-4 border-green-500 rounded-xl shadow-lg text-green-800 dark:text-green-200 backdrop-blur-sm transition-all duration-300">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="ml-3 text-sm font-medium">{{ session('success') }}</span>
+                                </div>
+                                <button onclick="document.getElementById('alert-success').remove()"
+                                    class="ml-auto p-1.5 hover:bg-green-100 dark:hover:bg-green-800/50 rounded-lg transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        @endif
+                        @if (session('error') || $errors->any())
+                            <div id="alert-error"
+                                class="mb-6 flex items-start justify-between p-4 bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/30 dark:to-rose-900/30 border-l-4 border-red-500 rounded-xl shadow-lg text-red-800 dark:text-red-200 backdrop-blur-sm transition-all duration-300">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <span class="text-sm font-bold">Xatolik yuz berdi:</span>
+                                        <ul class="mt-2 list-disc list-inside text-xs space-y-1">
+                                            @if (session('error'))
+                                                <li>{{ session('error') }}</li>
+                                            @endif
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                </div>
+                                <button onclick="document.getElementById('alert-error').remove()"
+                                    class="ml-auto p-1.5 hover:bg-red-100 dark:hover:bg-red-800/50 rounded-lg transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        @endif
                         @yield('content')
                     </div>
                 </div>
@@ -595,9 +663,21 @@
             });
 
             // HTML klassini o'zgartirish
-            const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)')
-                .matches);
-            document.documentElement.classList.toggle('dark', isDark);
+            let isDark = false;
+
+            if (theme === 'dark') {
+                isDark = true;
+            } else if (theme === 'light') {
+                isDark = false;
+            } else if (theme === 'system') {
+                isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
         }
 
         // Tizim mavzusi o'zgarganda kuzatish
@@ -686,12 +766,17 @@
             toggleDropdown(elements.userMenu);
         });
 
-        // Global click (dropdownlarni yopish uchun)
         document.addEventListener('click', (e) => {
-            closeAllDropdowns();
+            // Check if click is outside theme menu and user menu
+            if (!elements.themeToggle?.contains(e.target) && !elements.themeMenu?.contains(e.target)) {
+                elements.themeMenu?.classList.add('hidden');
+            }
+
+            if (!elements.userMenuButton?.contains(e.target) && !elements.userMenu?.contains(e.target)) {
+                elements.userMenu?.classList.add('hidden');
+            }
         });
 
-        // Resize va Alert
         window.addEventListener('resize', updateSidebarView);
 
         if (elements.successAlert) {
