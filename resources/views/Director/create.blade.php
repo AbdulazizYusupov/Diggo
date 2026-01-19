@@ -527,16 +527,6 @@
                                     </p>
                                 @enderror
                             </div>
-
-                            <div class="flex items-center gap-3 p-5 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-700/30 dark:to-blue-900/20 rounded-2xl border-2 border-blue-100 dark:border-blue-800/30">
-                                <input type="checkbox" name="is_active" id="is_active" value="1"
-                                    {{ old('is_active', '1') == '1' ? 'checked' : '' }}
-                                    class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer">
-                                <label for="is_active" class="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                                    Direktor faol (Tizimga kira oladi)
-                                </label>
-                            </div>
-
                             <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800/30">
                                 <div class="flex items-start gap-3">
                                     <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -551,6 +541,34 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="flex items-center gap-3 p-5 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-700/30 dark:to-blue-900/20 rounded-2xl border-2 border-blue-100 dark:border-blue-800/30">
+                                <input type="checkbox" name="is_active" id="is_active" value="1"
+                                    {{ old('is_active', '1') == '1' ? 'checked' : '' }}
+                                    class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer">
+                                <label for="is_active" class="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                                    Direktor faol (Tizimga kira oladi)
+                                </label>
+                            </div>
+                            <div
+                                class="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-200 dark:border-amber-800/30">
+                                <div class="flex items-start gap-3">
+                                    <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm font-semibold text-amber-800 dark:text-amber-400">Eslatma</p>
+                                        <p class="text-xs text-amber-700 dark:text-amber-300 mt-1">
+                                            Bu yerda Director faol tizimga kira oladi ni belgilamasangiz Director hech
+                                            qachon login qila olmaydi!!
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
                         </div>
                     </div>
                 </div>

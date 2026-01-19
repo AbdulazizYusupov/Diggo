@@ -40,22 +40,18 @@ class Teacher extends Model
     /**
      * O'qituvchi biriktirilgan guruhlar.
      */
-    public function groups(): BelongsToMany
+    // App\Models\Teacher.php
+
+    public function groups()
     {
-        return $this->belongsToMany(Group::class, 'group_teachers')
-            ->using(GroupTeacher::class)
-            ->withPivot(['is_primary', 'assigned_at'])
-            ->withTimestamps();
+        return $this->belongsToMany(
+            Group::class,
+            'group_teachers',   // pivot table
+            'teacher_id',
+            'group_id'
+        );
     }
-//     public function groups()
-// {
-//     return $this->belongsToMany(
-//         Group::class,
-//         'group_teachers', // pivot table nomi real jadvalga mos
-//         'teacher_id',     // foreign key Teacher modelida
-//         'group_id'        // foreign key Group modelida
-//     );
-// }
+
 
 
     /**

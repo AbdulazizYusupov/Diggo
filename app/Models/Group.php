@@ -40,11 +40,17 @@ class Group extends Model
         return $this->belongsTo(Cours::class);
     }
 
+
     public function teachers()
     {
-        return $this->belongsToMany(User::class, 'group_teachers', 'group_id', 'teacher_id')
-            ->withPivot('is_primary', 'assigned_at')->withTimestamps();
+        return $this->belongsToMany(
+            Teacher::class,
+            'group_teachers',
+            'group_id',
+            'teacher_id'
+        );
     }
+
 
     public function students()
     {
