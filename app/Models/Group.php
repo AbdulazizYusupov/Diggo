@@ -54,10 +54,14 @@ class Group extends Model
 
     public function students()
     {
-        return $this->belongsToMany(Student::class, 'group_students')
-            ->withPivot('joined_at', 'left_at', 'status', 'transfer_reason', 'transferred_to_group_id')
-            ->withTimestamps();
+        return $this->belongsToMany(
+            Student::class,
+            'group_students',
+            'group_id',
+            'student_id'
+        );
     }
+
 
     public function activeStudents()
     {

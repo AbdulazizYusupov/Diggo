@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class School extends Model
@@ -13,9 +14,9 @@ class School extends Model
     protected $fillable = ['name', 'code', 'address', 'city', 'region', 'phone', 'description', 'is_active'];
     protected $casts = ['is_active' => 'boolean'];
 
-    public function directors()
+    public function director(): HasOne
     {
-        return $this->belongsToMany(Director::class, 'director_school')->withTimestamps();
+        return $this->hasOne(Director::class)->withTimestamps();
     }
 
     public function courses()

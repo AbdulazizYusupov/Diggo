@@ -29,7 +29,7 @@ class Student extends Model
         'coins' => 'integer',
         'balance' => 'decimal:2',
     ];
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -45,10 +45,14 @@ class Student extends Model
 
     public function groups()
     {
-        return $this->belongsToMany(Group::class, 'group_student')
-            ->withPivot('joined_at', 'left_at', 'status', 'transfer_reason')
-            ->withTimestamps();
+        return $this->belongsToMany(
+            Group::class,
+            'group_students',
+            'student_id',
+            'group_id'
+        );
     }
+
 
     public function transactions()
     {
