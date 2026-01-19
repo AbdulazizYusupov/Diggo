@@ -1,4 +1,4 @@
-@extends('Layout.index')
+@extends('Layout.app')
 
 @section('title', $staff->user->name . " - Xodim ma'lumotlari")
 

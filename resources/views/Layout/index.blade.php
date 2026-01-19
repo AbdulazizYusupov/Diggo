@@ -280,58 +280,9 @@
                             <span class="tooltip">Statistika</span>
                         </a>
                     </nav>
-
-                    <!-- Active Courses -->
-                    <div class="mt-8 px-4 sidebar-courses">
-                        <p
-                            class="px-2 text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider nav-text">
-                            Faol Kurslar
-                        </p>
-                        <div class="mt-3 space-y-2">
-                            <a href="#"
-                                class="group flex items-center px-2 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100/50 dark:hover:from-blue-900/20 dark:hover:to-blue-800/20 transition-all">
-                                <div
-                                    class="w-9 h-9 bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-lg flex items-center justify-center font-bold flex-shrink-0 shadow-md">
-                                    E</div>
-                                <span class="ml-3 truncate nav-text">English IELTS 7.0</span>
-                            </a>
-                            <a href="#"
-                                class="group flex items-center px-2 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gradient-to-r hover:from-purple-50 hover:to-purple-100/50 dark:hover:from-purple-900/20 dark:hover:to-purple-800/20 transition-all">
-                                <div
-                                    class="w-9 h-9 bg-gradient-to-br from-purple-400 to-purple-600 text-white rounded-lg flex items-center justify-center font-bold flex-shrink-0 shadow-md">
-                                    M</div>
-                                <span class="ml-3 truncate nav-text">Matematika (DTM)</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- User Profile -->
-                    <div class="mt-auto px-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                        <div
-                            class="flex items-center p-2.5 rounded-xl hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-50 dark:hover:from-gray-700 dark:hover:to-gray-700/50 transition-all cursor-pointer group">
-                            <div class="relative flex-shrink-0">
-                                <img class="h-10 w-10 rounded-xl object-cover ring-2 ring-indigo-100 dark:ring-gray-600 shadow-md"
-                                    src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=6366f1&color=fff"
-                                    alt="{{ Auth::user()->name }}">
-                                <span
-                                    class="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-400 ring-2 ring-white dark:ring-gray-800"></span>
-                            </div>
-                            <div class="ml-3 overflow-hidden nav-text">
-                                <p class="text-sm font-bold text-gray-900 dark:text-white truncate">
-                                    {{ Auth::user()->name }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">Administrator</p>
-                            </div>
-                            <svg class="ml-auto h-4 w-4 text-gray-400 group-hover:text-indigo-500 nav-text flex-shrink-0 transition-colors"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            </svg>
-                        </div>
-                    </div>
                 </div>
             </div>
         </aside>
-
         <!-- Main Content -->
         <div class="flex flex-col flex-1 overflow-hidden w-full">
             <header
