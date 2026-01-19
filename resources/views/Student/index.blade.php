@@ -1,6 +1,6 @@
 @extends('Layout.index')
 
-@section('title', 'Talabalar')
+@section('title', 'O\'quvchilar')
 
 @section('content')
     <div class="space-y-6">
@@ -18,11 +18,11 @@
                 <div class="space-y-1">
                     <div class="flex items-center gap-3">
                         <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-                            Talabalar
+                            O'quvchilar
                         </h1>
                         <span
                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                            {{ $totalStudents }} ta talaba
+                            {{ $totalStudents }} ta o'quvchi
                         </span>
                     </div>
                     <p class="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
@@ -30,7 +30,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        Talabalarni boshqarish va nazorat qilish
+                        O'quvchini boshqarish va nazorat qilish
                     </p>
                 </div>
             </div>
@@ -41,7 +41,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
                 </svg>
-                <span class="hidden sm:inline">Talaba qo'shish</span>
+                <span class="hidden sm:inline">O'quvchi qo'shish</span>
             </a>
         </div>
 
@@ -50,7 +50,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <div class="flex items-center justify-between">
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400 truncate">Jami talabalar</p>
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400 truncate">Jami o'quvchi</p>
                         <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-2">
                             {{ $totalStudents }}
                         </p>
@@ -68,7 +68,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <div class="flex items-center justify-between">
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400 truncate">Aktiv talabalar</p>
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400 truncate">Aktiv o'quvchilar</p>
                         <p class="text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400 mt-2">
                             {{ $activeStudents }}
                         </p>
@@ -197,7 +197,7 @@
                     <thead class="bg-gray-50 dark:bg-gray-900">
                         <tr>
                             <th class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                Talaba</th>
+                                O'quvchi</th>
                             <th class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                 Telefon</th>
                             <th class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
@@ -332,10 +332,10 @@
                                         d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                 </svg>
                                 <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                                    Talabalar topilmadi
+                                    O'quvchilar topilmadi
                                 </h3>
                                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                    Yangi talaba qo'shish uchun yuqoridagi tugmani bosing.
+                                    Yangi o'quvchi qo'shish uchun yuqoridagi tugmani bosing.
                                 </p>
                             </td>
                         </tr>

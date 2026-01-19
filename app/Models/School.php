@@ -16,7 +16,7 @@ class School extends Model
 
     public function director(): HasOne
     {
-        return $this->hasOne(Director::class)->withTimestamps();
+        return $this->hasOne(Director::class);
     }
 
     public function courses()

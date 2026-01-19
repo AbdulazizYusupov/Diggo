@@ -7,11 +7,11 @@
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-4">
                 <div
-                    class="hidden sm:flex p-3.5 bg-gradient-to-br from-cyan-100 to-blue-100 dark:from-cyan-900/30 dark:to-blue-900/30 rounded-2xl shadow-sm border border-cyan-200 dark:border-cyan-800/50">
-                    <svg class="w-7 h-7 text-cyan-600 dark:text-cyan-400" fill="none" stroke="currentColor"
+                    class="hidden sm:flex p-3.5 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl shadow-sm border border-emerald-200 dark:border-emerald-800/50">
+                    <svg class="w-7 h-7 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                     </svg>
                 </div>
 
@@ -43,12 +43,10 @@
                 Orqaga qaytish
             </a>
         </div>
-
         <div
             class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
             <form action="{{ route('students.store') }}" method="POST" enctype="multipart/form-data" class="p-8 space-y-8">
                 @csrf
-
                 {{-- Shaxsiy ma'lumotlar (User) --}}
                 <div class="space-y-6">
                     <div class="flex items-center gap-3 border-b border-gray-100 dark:border-gray-700 pb-3">
@@ -328,7 +326,7 @@
 
                 {{-- Guruh tanlash --}}
                 <div class="space-y-4">
-                   
+
 
                     <div class="space-y-1.5">
                         <label for="school_id" class="text-xs font-semibold text-gray-700 dark:text-gray-300 ml-1">
@@ -417,17 +415,17 @@
                                 @enderror
                             </div>
                             <div
-                                class="p-4 bg-cyan-50 dark:bg-cyan-900/20 rounded-xl border border-cyan-200 dark:border-cyan-800/30">
+                                class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800/30">
                                 <div class="flex items-start gap-3">
-                                    <svg class="w-5 h-5 text-cyan-600 dark:text-cyan-400 mt-0.5 flex-shrink-0"
+                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"
                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                     <div>
-                                        <p class="text-sm font-semibold text-cyan-800 dark:text-cyan-300">Ma'lumot</p>
-                                        <p class="text-xs text-cyan-700 dark:text-cyan-400 mt-1">
-                                            Parol kamida 8 ta belgidan iborat bo'lishi kerak. O'quvchi telefon raqami orqali
+                                        <p class="text-sm font-semibold text-blue-800 dark:text-blue-300">Ma'lumot</p>
+                                        <p class="text-xs text-blue-700 dark:text-blue-400 mt-1">
+                                            Parol kamida 8 ta belgidan iborat bo'lishi kerak. Staff telefon raqami orqali
                                             tizimga kiradi.
                                         </p>
                                     </div>

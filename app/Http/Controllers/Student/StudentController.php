@@ -36,14 +36,12 @@ class StudentController extends Controller
             });
         }
 
-        // Gender filter
         if ($request->filled('gender')) {
             $query->whereHas('user', function ($q) use ($request) {
                 $q->where('gender', $request->gender);
             });
         }
 
-        // Balance range filter
         if ($request->filled('balance_range')) {
             switch ($request->balance_range) {
                 case 'positive':
@@ -58,7 +56,6 @@ class StudentController extends Controller
             }
         }
 
-        // Groups count filter
         if ($request->filled('groups_count')) {
             switch ($request->groups_count) {
                 case 'none':
@@ -75,7 +72,6 @@ class StudentController extends Controller
 
         $students = $query->latest()->paginate(10);
 
-        // Statistics
         $totalStudents = Student::count();
         $activeStudents = Student::whereHas('groups')->count();
         $totalBalance = Student::sum('balance') ?? 0;
@@ -102,6 +98,7 @@ class StudentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -130,7 +127,6 @@ class StudentController extends Controller
             'school_id' => 'nullable|exists:schools,id',
         ]);
 
-        dd($request->all());
         DB::beginTransaction();
         try {
             $photoPath = null;
@@ -153,14 +149,18 @@ class StudentController extends Controller
                 'is_active' => $request->has('is_active'),
             ]);
 
-            $role = Role::where('name', 'teacher')->first();
+            $role = Role::where('name', 'student')->first();
             if ($role) {
                 $user->assignRole($role);
             }
-
+            $directorId = null;
+            if ($request->filled('school_id')) {
+                $director = Director::where('school_id', $validated['school_id'])->first();
+                $directorId = $director ? $director->id : null;
+            }
             Student::create([
                 'user_id' => $user->id,
-                'school_id' => $schoolId,
+                'school_id' => $validated['school_id'],
                 'director_id' => $directorId,
                 'enrollment_date' => $validated['enrollment_date'],
                 'coins' => $validated['coins'] ?? 0,
@@ -170,15 +170,11 @@ class StudentController extends Controller
                 'emergency_contact_name' => $validated['emergency_contact_name'],
                 'emergency_contact_phone' => $validated['emergency_contact_phone'],
                 'notes' => $validated['notes'],
-                'birth_date' => $validated['birth_date'],
-                'region' => $validated['region'],
-                'city' => $validated['city'],
-                'address' => $validated['address'],
             ]);
 
             DB::commit();
 
-            return redirect()->route('teachers.index')->with('success', 'O\'qituvchi muvaffaqiyatli qo\'shildi!');
+            return redirect()->route('students.index')->with('success', 'O\'qituvchi muvaffaqiyatli qo\'shildi!');
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -203,7 +199,8 @@ class StudentController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $student = Student::findOrFail($id);
+        return view('Student.edit',compact('student'));
     }
 
     /**
