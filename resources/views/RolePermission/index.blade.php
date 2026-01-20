@@ -30,12 +30,12 @@
             </div>
 
             <button onclick="openCopyModal()"
-                class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 border-b-2 border-blue-800/20">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 sm:px-8 sm:py-3.5 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 dark:shadow-none transform hover:scale-[1.02] active:scale-95 transition-all duration-300">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
-                <span class="tracking-wide">Ruxsatlarni ko'chirish</span>
+                <span class="text-sm sm:text-base tracking-wide whitespace-nowrap">Ruxsatlarni ko'chirish</span>
             </button>
         </div>
 
@@ -318,7 +318,7 @@
             @endforelse
         </div>
 
-        
+
         @if ($roles->hasPages())
             <div
                 class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm

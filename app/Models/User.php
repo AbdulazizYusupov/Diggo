@@ -80,6 +80,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(Director::class);
     }
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class);
+    }
+    public function staff()
+    {
+        return $this->hasOne(Staff::class);
+    }
 
     public function teachingGroups()
     {

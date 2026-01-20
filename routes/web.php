@@ -7,6 +7,7 @@ use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\RolePermission\RolePermissionController;
+use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\Student\StudentController;
 use App\Http\Controllers\Teacher\TeacherController;
@@ -37,6 +38,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/role-permissions/bulk-assign', [RolePermissionController::class, 'bulkAssign'])->name('role-permissions.bulk-assign');
     Route::delete('/role-permissions/{role}/revoke-all', [RolePermissionController::class, 'revokeAll'])->name('role-permissions.revoke-all');
     Route::put('/role-permissions/{role}/update', [RolePermissionController::class, 'update'])->name('role-permissions.update');
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', [SettingsController::class, 'index'])->name('index');
+        Route::post('/assign-role', [SettingsController::class, 'assignRole'])->name('assign-role');
+        Route::delete('/remove-role/{user}', [SettingsController::class, 'removeRole'])->name('remove-role');
+        Route::post('/sync-roles/{user}', [SettingsController::class, 'syncRoles'])->name('sync-roles');
+    });
     // Route::resource('schools', SchoolController::class);
     // Route::resource('courses', CourseController::class);
     // Route::resource('groups', GroupController::class);

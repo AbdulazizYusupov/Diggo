@@ -154,6 +154,16 @@
             margin-right: 0;
         }
     </style>
+    <script>
+        (function() {
+            try {
+                const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (collapsed) {
+                    document.documentElement.classList.add('sidebar-collapsed');
+                }
+            } catch (e) {}
+        })();
+    </script>
 </head>
 
 <body

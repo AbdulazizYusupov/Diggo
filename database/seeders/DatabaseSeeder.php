@@ -56,7 +56,7 @@ class DatabaseSeeder extends Seeder
         $teacherUser = User::create([
             'name' => 'Vali',
             'surname' => 'Teacher',
-            'phone' => '998900000003',
+            'phone' => '9989000 00003',
             'password' => Hash::make('password'),
         ]);
 
