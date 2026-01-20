@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Director\DirectorController;
 use App\Http\Controllers\Profile\ProfileController;
+use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\Student\StudentController;
 use App\Http\Controllers\Teacher\TeacherController;
@@ -23,6 +24,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('directors', DirectorController::class);
     Route::resource('teachers', TeacherController::class);
     Route::resource('students', StudentController::class);
+    Route::resource('roles', RoleController::class);
     // Route::resource('schools', SchoolController::class);
     // Route::resource('courses', CourseController::class);
     // Route::resource('groups', GroupController::class);
