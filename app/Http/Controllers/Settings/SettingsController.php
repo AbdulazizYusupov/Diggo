@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 
 class SettingsController extends Controller
@@ -87,6 +88,9 @@ class SettingsController extends Controller
      */
     public function removeRole(Request $request, User $user)
     {
+        if ($request->role_name == 'admin') {
+            return redirect()->back()->with('error', 'Admin rolini olib tashlash butun tizimni ishdan chiqaradi');
+        }
         $request->validate([
             'role_name' => 'required|exists:roles,name',
         ]);
@@ -102,6 +106,10 @@ class SettingsController extends Controller
      */
     public function syncRoles(Request $request, User $user)
     {
+        $auth = Auth::user();
+        if ($auth->id == $user->id && $auth->hasRole('admin')) {
+            return redirect()->back()->with('error', 'Bu amalni bajarish butun bir tizimni ishdan chiqarishi mumkin!!!');
+        }
         $request->validate([
             'roles' => 'nullable|array',
             'roles.*' => 'exists:roles,name',

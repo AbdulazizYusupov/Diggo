@@ -5,6 +5,7 @@ use App\Http\Controllers\Course\CourseController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Director\DirectorController;
 use App\Http\Controllers\Group\GroupController;
+use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Role\RoleController;
@@ -53,7 +54,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('schools', SchoolController::class);
         Route::resource('courses', CourseController::class);
         Route::resource('groups', GroupController::class);
-        // Route::resource('payments', PaymentController::class);
+        Route::resource('payments', PaymentController::class);
         // Route::resource('lesson-charges', LessonChargeController::class);
         // Route::resource('attendances', AttendanceController::class);
         // Route::resource('activities', ActivityController::class);
