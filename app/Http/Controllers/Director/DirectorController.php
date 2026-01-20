@@ -170,15 +170,13 @@ class DirectorController extends Controller
                 'is_active' => $request->has('is_active'),
             ]);
 
-            // 4. Rol biriktirish (agar 'director' roli mavjud bo'lsa)
             $roleName = 'director';
-            $role = Role::where('name', $roleName)->first();
 
+            $role = Role::where('name', $roleName)->first();
             if ($role) {
                 $user->assignRole($role);
             }
 
-            // 5. Director modelini yaratish
             Director::create([
                 'user_id' => $user->id,
                 'school_id' => $validated['school_id'],

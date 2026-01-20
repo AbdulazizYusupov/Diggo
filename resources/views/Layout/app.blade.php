@@ -598,7 +598,7 @@
                                         </svg>
                                         Your Profile
                                     </a>
-                                    <a href="#"
+                                    <a href="{{ route('settings.index') }}"
                                         class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
                                         <svg class="mr-3 h-4 w-4 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -34,72 +34,88 @@
 
         {{-- Statistics Cards --}}
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-    
-    {{-- Jami foydalanuvchilar --}}
-    <div class="bg-gradient-to-br from-blue-100 to-blue-200/60 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl p-4 border border-blue-200 dark:border-blue-700/50 shadow-md">
-        <div class="flex flex-col">
-            <p class="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider mb-1">Jami</p>
-            <p class="text-2xl font-extrabold text-blue-900 dark:text-blue-50">{{ $stats['total_users'] }}</p>
-        </div>
-    </div>
 
-    {{-- O'qituvchilar --}}
-    <div class="bg-gradient-to-br from-purple-100 to-purple-200/60 dark:from-purple-900/30 dark:to-purple-800/30 rounded-2xl p-4 border border-purple-200 dark:border-purple-700/50 shadow-md">
-        <div class="flex flex-col">
-            <p class="text-xs font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider mb-1">O'qituvchilar</p>
-            <p class="text-2xl font-extrabold text-purple-900 dark:text-purple-50">{{ $stats['total_teachers'] }}</p>
-        </div>
-    </div>
+            {{-- Jami foydalanuvchilar --}}
+            <div
+                class="bg-gradient-to-br from-blue-100 to-blue-200/60 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl p-4 border border-blue-200 dark:border-blue-700/50 shadow-md">
+                <div class="flex flex-col">
+                    <p class="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider mb-1">Jami</p>
+                    <p class="text-2xl font-extrabold text-blue-900 dark:text-blue-50">{{ $stats['total_users'] }}</p>
+                </div>
+            </div>
 
-    {{-- O'quvchilar --}}
-    <div class="bg-gradient-to-br from-green-100 to-green-200/60 dark:from-green-900/30 dark:to-green-800/30 rounded-2xl p-4 border border-green-200 dark:border-green-700/50 shadow-md">
-        <div class="flex flex-col">
-            <p class="text-xs font-bold text-green-700 dark:text-green-400 uppercase tracking-wider mb-1">O'quvchilar</p>
-            <p class="text-2xl font-extrabold text-green-900 dark:text-green-50">{{ $stats['total_students'] }}</p>
-        </div>
-    </div>
+            {{-- O'qituvchilar --}}
+            <div
+                class="bg-gradient-to-br from-purple-100 to-purple-200/60 dark:from-purple-900/30 dark:to-purple-800/30 rounded-2xl p-4 border border-purple-200 dark:border-purple-700/50 shadow-md">
+                <div class="flex flex-col">
+                    <p class="text-xs font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider mb-1">
+                        O'qituvchilar</p>
+                    <p class="text-2xl font-extrabold text-purple-900 dark:text-purple-50">{{ $stats['total_teachers'] }}
+                    </p>
+                </div>
+            </div>
 
-    {{-- Xodimlar --}}
-    <div class="bg-gradient-to-br from-orange-100 to-orange-200/60 dark:from-orange-900/30 dark:to-orange-800/30 rounded-2xl p-4 border border-orange-200 dark:border-orange-700/50 shadow-md">
-        <div class="flex flex-col">
-            <p class="text-xs font-bold text-orange-700 dark:text-orange-400 uppercase tracking-wider mb-1">Xodimlar</p>
-            <p class="text-2xl font-extrabold text-orange-900 dark:text-orange-50">{{ $stats['total_staff'] }}</p>
-        </div>
-    </div>
+            {{-- O'quvchilar --}}
+            <div
+                class="bg-gradient-to-br from-green-100 to-green-200/60 dark:from-green-900/30 dark:to-green-800/30 rounded-2xl p-4 border border-green-200 dark:border-green-700/50 shadow-md">
+                <div class="flex flex-col">
+                    <p class="text-xs font-bold text-green-700 dark:text-green-400 uppercase tracking-wider mb-1">
+                        O'quvchilar</p>
+                    <p class="text-2xl font-extrabold text-green-900 dark:text-green-50">{{ $stats['total_students'] }}</p>
+                </div>
+            </div>
 
-    {{-- Direktorlar --}}
-    <div class="bg-gradient-to-br from-pink-100 to-pink-200/60 dark:from-pink-900/30 dark:to-pink-800/30 rounded-2xl p-4 border border-pink-200 dark:border-pink-700/50 shadow-md">
-        <div class="flex flex-col">
-            <p class="text-xs font-bold text-pink-700 dark:text-pink-400 uppercase tracking-wider mb-1">Direktorlar</p>
-            <p class="text-2xl font-extrabold text-pink-900 dark:text-pink-50">{{ $stats['total_directors'] }}</p>
-        </div>
-    </div>
+            {{-- Xodimlar --}}
+            <div
+                class="bg-gradient-to-br from-orange-100 to-orange-200/60 dark:from-orange-900/30 dark:to-orange-800/30 rounded-2xl p-4 border border-orange-200 dark:border-orange-700/50 shadow-md">
+                <div class="flex flex-col">
+                    <p class="text-xs font-bold text-orange-700 dark:text-orange-400 uppercase tracking-wider mb-1">Xodimlar
+                    </p>
+                    <p class="text-2xl font-extrabold text-orange-900 dark:text-orange-50">{{ $stats['total_staff'] }}</p>
+                </div>
+            </div>
 
-    {{-- Rolli foydalanuvchilar --}}
-    <div class="bg-gradient-to-br from-emerald-100 to-emerald-200/60 dark:from-emerald-900/30 dark:to-emerald-800/30 rounded-2xl p-4 border border-emerald-200 dark:border-emerald-700/50 shadow-md">
-        <div class="flex flex-col">
-            <p class="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider mb-1">Rolli</p>
-            <p class="text-2xl font-extrabold text-emerald-900 dark:text-emerald-50">{{ $stats['users_with_roles'] }}</p>
-        </div>
-    </div>
+            {{-- Direktorlar --}}
+            <div
+                class="bg-gradient-to-br from-pink-100 to-pink-200/60 dark:from-pink-900/30 dark:to-pink-800/30 rounded-2xl p-4 border border-pink-200 dark:border-pink-700/50 shadow-md">
+                <div class="flex flex-col">
+                    <p class="text-xs font-bold text-pink-700 dark:text-pink-400 uppercase tracking-wider mb-1">Direktorlar
+                    </p>
+                    <p class="text-2xl font-extrabold text-pink-900 dark:text-pink-50">{{ $stats['total_directors'] }}</p>
+                </div>
+            </div>
 
-    {{-- Rolsiz foydalanuvchilar --}}
-    <div class="bg-gradient-to-br from-red-100 to-red-200/60 dark:from-red-900/30 dark:to-red-800/30 rounded-2xl p-4 border border-red-200 dark:border-red-700/50 shadow-md">
-        <div class="flex flex-col">
-            <p class="text-xs font-bold text-red-700 dark:text-red-400 uppercase tracking-wider mb-1">Rolsiz</p>
-            <p class="text-2xl font-extrabold text-red-900 dark:text-red-50">{{ $stats['users_without_roles'] }}</p>
-        </div>
-    </div>
+            {{-- Rolli foydalanuvchilar --}}
+            <div
+                class="bg-gradient-to-br from-emerald-100 to-emerald-200/60 dark:from-emerald-900/30 dark:to-emerald-800/30 rounded-2xl p-4 border border-emerald-200 dark:border-emerald-700/50 shadow-md">
+                <div class="flex flex-col">
+                    <p class="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider mb-1">Rolli
+                    </p>
+                    <p class="text-2xl font-extrabold text-emerald-900 dark:text-emerald-50">
+                        {{ $stats['users_with_roles'] }}</p>
+                </div>
+            </div>
 
-    {{-- Jami Rollar (Indigo Soft uslubida) --}}
-    <div class="bg-gradient-to-br from-indigo-100 to-indigo-200/60 dark:from-indigo-900/30 dark:to-indigo-800/30 rounded-2xl p-4 border border-indigo-200 dark:border-indigo-700/50 shadow-md">
-        <div class="flex flex-col">
-            <p class="text-xs font-bold text-indigo-700 dark:text-indigo-400 uppercase tracking-wider mb-1">Jami Rollar</p>
-            <p class="text-2xl font-extrabold text-indigo-900 dark:text-indigo-50">{{ $stats['total_roles'] }}</p>
-        </div>
-    </div>
+            {{-- Rolsiz foydalanuvchilar --}}
+            <div
+                class="bg-gradient-to-br from-red-100 to-red-200/60 dark:from-red-900/30 dark:to-red-800/30 rounded-2xl p-4 border border-red-200 dark:border-red-700/50 shadow-md">
+                <div class="flex flex-col">
+                    <p class="text-xs font-bold text-red-700 dark:text-red-400 uppercase tracking-wider mb-1">Rolsiz</p>
+                    <p class="text-2xl font-extrabold text-red-900 dark:text-red-50">{{ $stats['users_without_roles'] }}</p>
+                </div>
+            </div>
 
-</div>
+            {{-- Jami Rollar (Indigo Soft uslubida) --}}
+            <div
+                class="bg-gradient-to-br from-indigo-100 to-indigo-200/60 dark:from-indigo-900/30 dark:to-indigo-800/30 rounded-2xl p-4 border border-indigo-200 dark:border-indigo-700/50 shadow-md">
+                <div class="flex flex-col">
+                    <p class="text-xs font-bold text-indigo-700 dark:text-indigo-400 uppercase tracking-wider mb-1">Jami
+                        Rollar</p>
+                    <p class="text-2xl font-extrabold text-indigo-900 dark:text-indigo-50">{{ $stats['total_roles'] }}</p>
+                </div>
+            </div>
+
+        </div>
 
         {{-- Filters --}}
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
@@ -161,8 +177,8 @@
                             <a href="{{ route('settings.index') }}"
                                 class="group px-4 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold rounded-xl transition-all flex items-center justify-center"
                                 title="Tozalash">
-                                <svg class="w-5 h-5 transition-transform duration-500 group-hover:rotate-180" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 transition-transform duration-500 group-hover:rotate-180"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                         d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                                 </svg>
