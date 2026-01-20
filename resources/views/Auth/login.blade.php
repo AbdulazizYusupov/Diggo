@@ -65,11 +65,22 @@
 
                 <!-- Password -->
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 ml-1">Maxfiy
-                        parol</label>
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 ml-1">
+                        Maxfiy parol
+                    </label>
                     <div class="relative group">
+                        <div
+                            class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 group-focus-within:text-purple-500 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                            </svg>
+                        </div>
+
                         <input type="password" id="password" name="password" required placeholder="••••••••"
                             class="block w-full pl-11 pr-10 py-3.5 bg-gray-50/50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all shadow-sm placeholder:text-gray-400">
+
                         <button type="button" onclick="togglePassword()"
                             class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-purple-600 transition-colors">
                             <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -80,7 +91,6 @@
                         </button>
                     </div>
                 </div>
-
                 <!-- Remember -->
                 <div class="flex items-center justify-between px-1">
                     <label class="flex items-center cursor-pointer">
