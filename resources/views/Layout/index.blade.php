@@ -142,10 +142,7 @@
                             Asosiy</p>
 
                         <a href="{{ route('dashboard') }}"
-                            class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all 
-                            {{ request()->routeIs('dashboard')
-                                ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                            class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('dashboard') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 
                             <svg class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('dashboard') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-500' }}"
                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

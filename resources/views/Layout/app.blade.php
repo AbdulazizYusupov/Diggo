@@ -338,10 +338,10 @@
                             class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('courses.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor"
-                                class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('courses.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
+                                stroke-width="2" stroke="currentColor"
+                                class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('courses.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-blue-500' }}">
                                 <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                             </svg>
 
                             <span class="ml-3 sidebar-text">Kurslar</span>
@@ -437,20 +437,6 @@
                             </div>
                         </div>
 
-
-
-
-                        <a href="#"
-                            class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group transition-all">
-                            <svg class="h-5 w-5 text-gray-400 group-hover:text-blue-500 flex-shrink-0 transition-colors"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
-                            <span class="ml-3 sidebar-text">Kurslar</span>
-                            <span class="nav-tooltip">Kurslar</span>
-                        </a>
-
                         <a href="#"
                             class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group transition-all">
                             <svg class="h-5 w-5 text-gray-400 group-hover:text-green-500 flex-shrink-0 transition-colors"
@@ -461,7 +447,6 @@
                             <span class="ml-3 sidebar-text">Moliya/To'lovlar</span>
                             <span class="nav-tooltip">Moliya/To'lovlar</span>
                         </a>
-
                         <a href="#"
                             class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group transition-all">
                             <svg class="h-5 w-5 text-gray-400 group-hover:text-orange-500 flex-shrink-0 transition-colors"
