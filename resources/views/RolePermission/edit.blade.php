@@ -121,9 +121,10 @@
             </div>
 
             {{-- Quick Search --}}
+            {{-- Quick Search --}}
             <div
                 class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-indigo-500/20 p-4">
-                <div class="relative">
+                <div class="relative group">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <svg class="w-5 h-5 text-gray-400 dark:text-indigo-400/50" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
@@ -131,15 +132,25 @@
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
+
                     <input type="text" id="searchInput" placeholder="Ruxsatlarni qidiring..."
-                        class="block w-full pl-11 pr-4 py-2.5 
-                   bg-gray-50 dark:bg-slate-800/50 
-                   border border-gray-300 dark:border-indigo-500/30 
-                   rounded-xl text-gray-900 dark:text-white 
-                   placeholder-gray-400 dark:placeholder-gray-500 
-                   outline-none transition-all duration-200
-                   focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 
-                   dark:focus:ring-indigo-500/20 dark:focus:border-indigo-400">
+                        class="block w-full pl-11 pr-12 py-2.5 
+            bg-gray-50 dark:bg-slate-800/50 
+            border border-gray-300 dark:border-indigo-500/30 
+            rounded-xl text-gray-900 dark:text-white 
+            placeholder-gray-400 dark:placeholder-gray-500 
+            outline-none transition-all duration-200
+            focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 
+            dark:focus:ring-indigo-500/20 dark:focus:border-indigo-400">
+
+                    <button type="button" id="clearSearch"
+                        class="hidden absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-red-500 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                    </button>
                 </div>
             </div>
 
@@ -381,5 +392,50 @@
 
         // Initial count
         updateCounts();
+
+
+        const searchInput = document.getElementById('searchInput');
+        const clearBtn = document.getElementById('clearSearch');
+
+        // Qidiruv funksiyasini alohida nom bilan yozib olamiz qayta ishlatish uchun
+        function performSearch(term) {
+            const modules = document.querySelectorAll('.permission-module');
+            let visibleCount = 0;
+
+            modules.forEach(module => {
+                const items = module.querySelectorAll('.permission-item');
+                let moduleHasVisible = false;
+
+                items.forEach(item => {
+                    const permissionName = item.dataset.permission;
+                    if (permissionName.includes(term.toLowerCase())) {
+                        item.style.display = '';
+                        moduleHasVisible = true;
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                module.style.display = moduleHasVisible ? '' : 'none';
+            });
+
+            document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
+
+            // Tugmani ko'rsatish yoki yashirish
+            clearBtn.classList.toggle('hidden', term.length === 0);
+        }
+
+        // Inputga yozilganda
+        searchInput.addEventListener('input', function(e) {
+            performSearch(e.target.value);
+        });
+
+        // Tozalash tugmasi bosilganda
+        clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            performSearch('');
+            searchInput.focus();
+        });
     </script>
 @endsection
