@@ -233,14 +233,11 @@
                         <div class="space-y-1">
                             <button id="roles-dropdown-btn"
                                 onclick="const dropdown = this.nextElementSibling; dropdown.classList.toggle('open'); this.querySelector('.arrow-icon').classList.toggle('rotate-180');"
-                                class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all 
-        {{ request()->is('roles*', 'permissions*')
-            ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600'
-            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->is('roles*', 'permissions*','role-permissions*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 {{ request()->is('roles*', 'permissions*') ? 'text-indigo-600' : 'text-gray-400' }}">
+                                    class="h-5 w-5 flex-shrink-0 {{ request()->is('roles*', 'permissions*', 'role-permissions*') ? 'text-indigo-600' : 'text-gray-400' }}">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.744c0 5.621 3.401 10.449 8.243 12.446a11.95 11.95 0 008.157-12.446c0-1.302-.207-2.557-.598-3.744A11.959 11.959 0 0112 2.714z" />
                                 </svg>
@@ -249,7 +246,7 @@
 
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="2" stroke="currentColor"
-                                    class="arrow-icon ml-auto h-4 w-4 text-gray-400 sidebar-text transition-transform duration-300 {{ request()->is('roles*', 'permissions*') ? 'rotate-180' : '' }}">
+                                    class="arrow-icon ml-auto h-4 w-4 text-gray-400 sidebar-text transition-transform duration-300 {{ request()->is('roles*', 'permissions*','role-permissions*') ? 'rotate-180' : '' }}">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                                 </svg>
@@ -257,7 +254,7 @@
                             </button>
 
                             <div id="roles-dropdown"
-                                class="dropdown-content {{ request()->is('roles*', 'permissions*') ? 'open' : '' }}">
+                                class="dropdown-content {{ request()->is('roles*', 'permissions*', 'role-permissions*') ? 'open' : '' }}">
 
                                 <div class="ml-8 space-y-1 py-2">
                                     <a href="{{ route('roles.index') }}"
@@ -270,7 +267,7 @@
                                         <span class="sidebar-text">Rollar (Roles)</span>
                                     </a>
 
-                                    <a href="#"
+                                    <a href="{{ route('permissions.index') }}"
                                         class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->is('permissions*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                             stroke-width="1.5" stroke="currentColor"
@@ -281,7 +278,7 @@
                                         <span class="sidebar-text">Huquqlar (Permissions)</span>
                                     </a>
 
-                                    <a href="#"
+                                    <a href="{{ route('role-permissions.index') }}"
                                         class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->is('role-permissions*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                             stroke-width="1.5" stroke="currentColor"
