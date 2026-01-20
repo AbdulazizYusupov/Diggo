@@ -139,7 +139,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
                     {{-- Search Input --}}
                     <div class="relative sm:col-span-2">
-                        
+
                         <input type="text" name="search" value="{{ request('search') }}"
                             placeholder="Ism, telefon yoki manzil..."
                             class="w-full pl-10 pr-10 px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all">
@@ -478,12 +478,12 @@
             </div>
 
             {{-- Pagination --}}
-            @if ($students->hasPages())
-                <div
-                    class="px-4 lg:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
-                    {{ $students->links() }}
-                </div>
-            @endif
         </div>
+        @if ($students->hasPages())
+            <div
+                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-indigo-500/20 p-4 mt-6">
+                {{ $students->links() }}
+            </div>
+        @endif
     </div>
 @endsection

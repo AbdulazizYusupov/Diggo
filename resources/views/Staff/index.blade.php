@@ -376,11 +376,14 @@
                 </table>
             </div>
 
-            @if ($staffs->hasPages())
-                <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-                    {{ $staffs->links() }}
-                </div>
-            @endif
         </div>
+        @if ($staffs->hasPages())
+            <div
+                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm
+            border border-gray-200 dark:border-indigo-500/20
+            p-4 mt-6">
+                {{ $staffs->links() }}
+            </div>
+        @endif
     </div>
 @endsection

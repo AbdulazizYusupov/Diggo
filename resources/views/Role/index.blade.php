@@ -264,7 +264,14 @@
                 </div>
             </div>
         @endif --}}
-        {{ $roles->links() }}
+        @if ($roles->hasPages())
+            <div
+                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm
+                border border-gray-200 dark:border-indigo-500/20
+                p-4 mt-6">
+                {{ $roles->links() }}
+            </div>
+        @endif
     </div>
 
     {{-- Create Modal --}}

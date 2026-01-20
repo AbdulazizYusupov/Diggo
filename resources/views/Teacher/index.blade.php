@@ -55,7 +55,8 @@
                             {{ $totalTeachers }}
                         </p>
                     </div>
-                    <div class="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+                    <div
+                        class="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
                         <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -73,7 +74,8 @@
                             {{ $activeTeachers }}
                         </p>
                     </div>
-                    <div class="flex-shrink-0 w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+                    <div
+                        class="flex-shrink-0 w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
                         <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -91,7 +93,8 @@
                             {{ number_format($avgSalary, 0, '.', ' ') }}
                         </p>
                     </div>
-                    <div class="flex-shrink-0 w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+                    <div
+                        class="flex-shrink-0 w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
                         <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -109,7 +112,8 @@
                             {{ $totalGroups }}
                         </p>
                     </div>
-                    <div class="flex-shrink-0 w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
+                    <div
+                        class="flex-shrink-0 w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
                         <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -133,8 +137,8 @@
                             <a href="{{ route('teachers.index', request()->except('search')) }}"
                                 class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 transition"
                                 title="Qidiruvni tozalash">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                    stroke="currentColor" class="w-5 h-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                 </svg>
@@ -145,10 +149,14 @@
                     <select name="salary_type"
                         class="px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white text-sm">
                         <option value="">Barcha maosh turlari</option>
-                        <option value="fixed" {{ request('salary_type') === 'fixed' ? 'selected' : '' }}>Qat'iy maosh</option>
-                        <option value="hourly" {{ request('salary_type') === 'hourly' ? 'selected' : '' }}>Soatlik</option>
-                        <option value="per_group" {{ request('salary_type') === 'per_group' ? 'selected' : '' }}>Guruh uchun</option>
-                        <option value="percent" {{ request('salary_type') === 'percent' ? 'selected' : '' }}>Foiz asosida</option>
+                        <option value="fixed" {{ request('salary_type') === 'fixed' ? 'selected' : '' }}>Qat'iy maosh
+                        </option>
+                        <option value="hourly" {{ request('salary_type') === 'hourly' ? 'selected' : '' }}>Soatlik
+                        </option>
+                        <option value="per_group" {{ request('salary_type') === 'per_group' ? 'selected' : '' }}>Guruh
+                            uchun</option>
+                        <option value="percent" {{ request('salary_type') === 'percent' ? 'selected' : '' }}>Foiz asosida
+                        </option>
                     </select>
 
                     <select name="status"
@@ -161,16 +169,19 @@
                     <select name="salary_range"
                         class="px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white text-sm">
                         <option value="">Maosh bo'yicha</option>
-                        <option value="low" {{ request('salary_range') === 'low' ? 'selected' : '' }}>Past (&lt;2M)</option>
-                        <option value="medium" {{ request('salary_range') === 'medium' ? 'selected' : '' }}>O'rtacha (2M-5M)</option>
-                        <option value="high" {{ request('salary_range') === 'high' ? 'selected' : '' }}>Yuqori (&gt;5M)</option>
+                        <option value="low" {{ request('salary_range') === 'low' ? 'selected' : '' }}>Past (&lt;2M)
+                        </option>
+                        <option value="medium" {{ request('salary_range') === 'medium' ? 'selected' : '' }}>O'rtacha
+                            (2M-5M)</option>
+                        <option value="high" {{ request('salary_range') === 'high' ? 'selected' : '' }}>Yuqori (&gt;5M)
+                        </option>
                     </select>
 
                     <div class="flex gap-2">
                         <button type="submit"
                             class="flex-1 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="w-5 h-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                             </svg>
@@ -180,8 +191,8 @@
                         <a href="{{ route('teachers.index') }}"
                             class="px-4 py-2.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium rounded-xl transition-all flex items-center justify-center"
                             title="Tozalash">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="w-5 h-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
                             </svg>
@@ -192,22 +203,29 @@
         </div>
 
         <!-- Modern Table -->
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div
+            class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-900">
                         <tr>
-                            <th class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                 O'qituvchi</th>
-                            <th class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                 Telefon</th>
-                            <th class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                 Maosh turi</th>
-                            <th class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                 Maosh miqdori</th>
-                            <th class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                 Guruhlar</th>
-                            <th class="px-4 lg:px-6 py-4 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-4 lg:px-6 py-4 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                 Amallar</th>
                         </tr>
                     </thead>
@@ -222,7 +240,8 @@
                                                     alt="{{ $teacher->user->full_name }}"
                                                     class="h-10 w-10 lg:h-12 lg:w-12 rounded-xl object-cover ring-2 ring-gray-200 dark:ring-gray-700">
                                             @else
-                                                <div class="h-10 w-10 lg:h-12 lg:w-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white font-bold text-sm lg:text-base">
+                                                <div
+                                                    class="h-10 w-10 lg:h-12 lg:w-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white font-bold text-sm lg:text-base">
                                                     {{ substr($teacher->user->name, 0, 1) }}{{ substr($teacher->user->surname, 0, 1) }}
                                                 </div>
                                             @endif
@@ -232,8 +251,9 @@
                                                 {{ $teacher->user->full_name }}
                                             </div>
                                             <div class="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                                @if($teacher->user->is_active)
-                                                    <span class="inline-flex items-center gap-1 text-green-600 dark:text-green-400">
+                                                @if ($teacher->user->is_active)
+                                                    <span
+                                                        class="inline-flex items-center gap-1 text-green-600 dark:text-green-400">
                                                         <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                                                         Faol
                                                     </span>
@@ -256,12 +276,13 @@
                                     @endif
                                 </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-lg
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-lg
                                         {{ $teacher->salary_type === 'fixed' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' : '' }}
                                         {{ $teacher->salary_type === 'hourly' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : '' }}
                                         {{ $teacher->salary_type === 'per_group' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : '' }}
                                         {{ $teacher->salary_type === 'percent' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' : '' }}">
-                                        @if($teacher->salary_type === 'fixed')
+                                        @if ($teacher->salary_type === 'fixed')
                                             Qat'iy maosh
                                         @elseif($teacher->salary_type === 'hourly')
                                             Soatlik
@@ -276,14 +297,15 @@
                                     <div class="text-sm font-bold text-gray-900 dark:text-white">
                                         {{ number_format($teacher->salary_amount, 0, '.', ' ') }} so'm
                                     </div>
-                                    @if($teacher->percent_per_student > 0)
+                                    @if ($teacher->percent_per_student > 0)
                                         <div class="text-xs text-gray-500 dark:text-gray-400">
                                             +{{ $teacher->percent_per_student }}% har bir talaba uchun
                                         </div>
                                     @endif
                                 </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-lg bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400">
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-lg bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400">
                                         {{ $teacher->groups_count ?? 0 }} ta guruh
                                     </span>
                                 </td>
@@ -320,14 +342,19 @@
                                         <!-- Delete Modal -->
                                         <div id="delete-modal-{{ $teacher->id }}"
                                             class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
-                                            <div class="relative w-full max-w-md p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border-2 border-gray-300 dark:border-gray-600 overflow-hidden">
+                                            <div
+                                                class="relative w-full max-w-md p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border-2 border-gray-300 dark:border-gray-600 overflow-hidden">
                                                 <div class="text-center">
-                                                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
+                                                    <div
+                                                        class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
                                                         <svg class="h-8 w-8 text-red-600 dark:text-red-400" fill="none"
                                                             stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2"
-                                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-                                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.27 16c-.77 1.333.192 3 1.732 3z" />
+                                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-                                                                d="
+                                                                M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667
+                                                                1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.27 16c-.77
+                                                                1.333.192 3 1.732 3z" />
                                                         </svg>
                                                     </div>
                                                     <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">
@@ -381,12 +408,12 @@
                     </tbody>
                 </table>
             </div>
-
-            @if ($teachers->hasPages())
-                <div class="px-4 lg:px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-                    {{ $teachers->links() }}
-                </div>
-            @endif
         </div>
+        @if ($teachers->hasPages())
+            <div
+                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-indigo-500/20 p-4 mt-6">
+                {{ $teachers->links() }}
+            </div>
+        @endif
     </div>
 @endsection

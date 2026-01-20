@@ -293,72 +293,11 @@
 
         {{-- Pagination --}}
         @if ($permissions->hasPages())
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
-                    <div class="text-sm text-gray-500 dark:text-gray-400 order-2 sm:order-1">
-                        Jami <span class="font-medium text-gray-900 dark:text-white">{{ $permissions->total() }}</span>
-                        tadan
-                        <span
-                            class="font-medium text-gray-900 dark:text-white">{{ $permissions->firstItem() }}-{{ $permissions->lastItem() }}</span>
-                        oralig'i
-                    </div>
-
-                    <nav class="flex items-center gap-1 order-1 sm:order-2">
-                        @if ($permissions->onFirstPage())
-                            <span class="p-2 text-gray-300 dark:text-gray-600 cursor-not-allowed">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </span>
-                        @else
-                            <a href="{{ $permissions->previousPageUrl() }}"
-                                class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </a>
-                        @endif
-
-                        <div class="flex items-center gap-1">
-                            @foreach ($permissions->getUrlRange(1, $permissions->lastPage()) as $page => $url)
-                                @if ($page == 1 || $page == $permissions->lastPage() || abs($page - $permissions->currentPage()) <= 1)
-                                    @if ($page == $permissions->currentPage())
-                                        <span
-                                            class="min-w-[40px] h-10 flex items-center justify-center bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-bold rounded-xl border border-blue-100 dark:border-blue-800/50">
-                                            {{ $page }}
-                                        </span>
-                                    @else
-                                        <a href="{{ $url }}"
-                                            class="min-w-[40px] h-10 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all font-medium">
-                                            {{ $page }}
-                                        </a>
-                                    @endif
-                                @elseif ($page == $permissions->currentPage() - 2 || $page == $permissions->currentPage() + 2)
-                                    <span class="text-gray-400">...</span>
-                                @endif
-                            @endforeach
-                        </div>
-
-                        @if ($permissions->hasMorePages())
-                            <a href="{{ $permissions->nextPageUrl() }}"
-                                class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                        @else
-                            <span class="p-2 text-gray-300 dark:text-gray-600 cursor-not-allowed">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7" />
-                                </svg>
-                            </span>
-                        @endif
-                    </nav>
-                </div>
+            <div
+                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm
+                border border-gray-200 dark:border-indigo-500/20
+                p-4 mt-6">
+                {{ $permissions->links() }}
             </div>
         @endif
     </div>

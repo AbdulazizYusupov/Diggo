@@ -318,82 +318,16 @@
             @endforelse
         </div>
 
-        {{-- Pagination --}}
+        
         @if ($roles->hasPages())
             <div
-                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-indigo-500/20 p-4 mt-6">
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
-                    <div class="text-sm text-gray-500 dark:text-gray-400 order-2 sm:order-1 font-medium">
-                        Jami <span class="text-indigo-600 dark:text-indigo-400 font-bold">{{ $roles->total() }}</span>
-                        tadan
-                        <span
-                            class="px-2 py-1 bg-gray-50 dark:bg-slate-800 rounded-lg text-gray-900 dark:text-gray-200 border border-gray-100 dark:border-slate-700">
-                            {{ $roles->firstItem() }}-{{ $roles->lastItem() }}
-                        </span> oralig'i
-                    </div>
-
-                    <nav class="flex items-center gap-2 order-1 sm:order-2">
-                        {{-- Oldingi sahifa --}}
-                        @if ($roles->onFirstPage())
-                            <span class="p-2.5 text-gray-300 dark:text-gray-700 cursor-not-allowed">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </span>
-                        @else
-                            <a href="{{ $roles->previousPageUrl() }}"
-                                class="p-2.5 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all active:scale-90">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </a>
-                        @endif
-
-                        {{-- Sahifalar raqami --}}
-                        <div class="flex items-center gap-1.5">
-                            @foreach ($roles->getUrlRange(1, $roles->lastPage()) as $page => $url)
-                                @if ($page == 1 || $page == $roles->lastPage() || abs($page - $roles->currentPage()) <= 1)
-                                    @if ($page == $roles->currentPage())
-                                        {{-- Aktiv sahifa - tugmalar stili bilan bir xil --}}
-                                        <span
-                                            class="min-w-[40px] h-10 flex items-center justify-center bg-indigo-50 dark:bg-indigo-500/20 border border-indigo-200 dark:border-indigo-500/50 text-indigo-700 dark:text-indigo-300 font-bold rounded-xl shadow-sm">
-                                            {{ $page }}
-                                        </span>
-                                    @else
-                                        <a href="{{ $url }}"
-                                            class="min-w-[40px] h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-500/20 rounded-xl transition-all font-medium active:scale-95">
-                                            {{ $page }}
-                                        </a>
-                                    @endif
-                                @elseif ($page == $roles->currentPage() - 2 || $page == $roles->currentPage() + 2)
-                                    <span class="px-1 text-gray-400 dark:text-gray-600">...</span>
-                                @endif
-                            @endforeach
-                        </div>
-
-                        {{-- Keyingi sahifa --}}
-                        @if ($roles->hasMorePages())
-                            <a href="{{ $roles->nextPageUrl() }}"
-                                class="p-2.5 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all active:scale-90">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                        @else
-                            <span class="p-2.5 text-gray-300 dark:text-gray-700 cursor-not-allowed">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7" />
-                                </svg>
-                            </span>
-                        @endif
-                    </nav>
-                </div>
+                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm
+                border border-gray-200 dark:border-indigo-500/20
+                p-4 mt-6">
+                {{ $roles->links() }}
             </div>
         @endif
+
     </div>
 
     {{-- Copy Permissions Modal --}}
