@@ -15,11 +15,25 @@ class RolePermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        $adminUser = User::create([
-            'name' => 'System',
-            'surname' => 'Admin',
+        $adminUser1 = User::create([
+            'name' => 'Muhammadnabi',
+            'surname' => 'Xoliqulov',
             'phone' => '998881156101',
             'email' => 'admin@gmail.com',
+            'password' => Hash::make('password'),
+        ]);
+        $adminUser2 = User::create([
+            'name' => 'Abdulaziz',
+            'surname' => 'Yusupov',
+            'phone' => '998937450307',
+            'email' => 'admin1@gmail.com',
+            'password' => Hash::make('password'),
+        ]);
+        $adminUser3 = User::create([
+            'name' => 'System',
+            'surname' => 'Admin',
+            'phone' => '998990000000',
+            'email' => 'admin2@gmail.com',
             'password' => Hash::make('password'),
         ]);
         $roles = [
@@ -33,6 +47,8 @@ class RolePermissionSeeder extends Seeder
         foreach ($roles as $roleName) {
             Role::findOrCreate($roleName);
         }
-        $adminUser->assignRole('admin');
+        $adminUser1->assignRole('admin');
+        $adminUser2->assignRole('admin');
+        $adminUser3->assignRole('admin');
     }
 }

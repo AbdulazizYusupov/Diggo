@@ -32,12 +32,12 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'surname' => fake()->name(),
-            'phone' => fake()->phoneNumber(),
-        ]);
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        //     'surname' => fake()->name(),
+        //     'phone' => fake()->phoneNumber(),
+        // ]);
 
         $this->call([
             RolePermissionSeeder::class

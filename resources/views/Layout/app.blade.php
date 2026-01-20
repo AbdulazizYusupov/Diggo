@@ -561,9 +561,15 @@
                         <div class="relative ml-1">
                             <button type="button" id="user-menu-button"
                                 class="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-all">
-                                <img class="h-9 w-9 rounded-xl object-cover ring-2 ring-gray-200 dark:ring-gray-700 shadow-sm"
-                                    src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->full_name) }}&background=6366f1&color=fff"
-                                    alt="User">
+                                @if (Auth::user()->photo)
+                                    <img class="h-10 w-10 rounded-lg object-cover ring-2 ring-indigo-100 dark:ring-indigo-900"
+                                        src="{{ asset('storage/' . Auth::user()->photo) }}"
+                                        alt="{{ Auth::user()->full_name }}">
+                                @else
+                                    <img class="h-10 w-10 rounded-lg object-cover ring-2 ring-indigo-100 dark:ring-indigo-900"
+                                        src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->full_name) }}&background=6366f1&color=fff"
+                                        alt="User">
+                                @endif
                                 <svg class="hidden sm:block h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -576,14 +582,23 @@
 
                                 <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
                                     <div class="flex items-center space-x-3">
-                                        <img class="h-10 w-10 rounded-lg object-cover ring-2 ring-indigo-100 dark:ring-indigo-900"
-                                            src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->full_name) }}&background=6366f1&color=fff"
-                                            alt="User">
+                                        @if (Auth::user()->photo)
+                                            <img class="h-10 w-10 rounded-lg object-cover ring-2 ring-indigo-100 dark:ring-indigo-900"
+                                                src="{{ asset('storage/' . Auth::user()->photo) }}"
+                                                alt="{{ Auth::user()->full_name }}">
+                                        @else
+                                            <img class="h-10 w-10 rounded-lg object-cover ring-2 ring-indigo-100 dark:ring-indigo-900"
+                                                src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->full_name) }}&background=6366f1&color=fff"
+                                                alt="User">
+                                        @endif
+
                                         <div class="flex-1 min-w-0">
                                             <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                                                {{ optional(Auth::user())->full_name }}</p>
+                                                {{ Auth::user()->full_name }}
+                                            </p>
                                             <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                                {{ optional(Auth::user())->phone }}</p>
+                                                {{ Auth::user()->phone }}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
