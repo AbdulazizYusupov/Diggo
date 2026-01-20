@@ -5,9 +5,10 @@
 @section('content')
     <div class="space-y-6">
         {{-- Header Section --}}
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
             <div class="flex items-center gap-4">
-                <div class="hidden sm:flex p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg">
+                {{-- Ikonka konteyneri --}}
+                <div class="hidden sm:flex p-3.5 bg-indigo-500 rounded-2xl shadow-lg shadow-indigo-100 dark:shadow-none">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
@@ -16,11 +17,12 @@
 
                 <div class="space-y-1">
                     <div class="flex items-center gap-3 flex-wrap">
-                        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+                        <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">
                             O'quvchilar
                         </h1>
+                        {{-- Statistik badge --}}
                         <span
-                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 dark:from-indigo-900/60 dark:to-purple-900/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shadow-sm">
+                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-500/30 shadow-sm">
                             {{ number_format($totalStudents) }} ta
                         </span>
                     </div>
@@ -34,8 +36,9 @@
                 </div>
             </div>
 
+            {{-- Qo'shish tugmasi --}}
             <a href="{{ route('students.create') }}"
-                class="group inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 gap-2">
+                class="group inline-flex items-center justify-center px-8 py-3.5 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 dark:shadow-none transform hover:scale-[1.02] active:scale-95 transition-all duration-300 gap-2 w-full sm:w-auto">
                 <svg class="w-5 h-5 transition-transform group-hover:rotate-90 duration-300" fill="none"
                     stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -256,10 +259,10 @@
                                             @if ($student->user->photo)
                                                 <img src="{{ asset('storage/' . $student->user->photo) }}"
                                                     alt="{{ $student->user->full_name }}"
-                                                    class="h-12 w-12 rounded-xl object-cover ring-2 ring-gray-200 dark:ring-gray-700 shadow-sm">
+                                                    class="h-12 w-12 rounded-xl object-cover ring-2 ring-gray-100 dark:ring-gray-700 shadow-sm">
                                             @else
                                                 <div
-                                                    class="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-base shadow-md">
+                                                    class="h-12 w-12 rounded-xl bg-indigo-500 flex items-center justify-center text-white font-bold text-sm tracking-wider shadow-lg shadow-indigo-100 dark:shadow-none border border-indigo-400">
                                                     {{ strtoupper(substr($student->user->name, 0, 1) . substr($student->user->surname, 0, 1)) }}
                                                 </div>
                                             @endif

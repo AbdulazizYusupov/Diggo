@@ -304,12 +304,14 @@
 
     {{-- Sync Modal --}}
     <div id="syncModal"
-        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full transform transition-all">
-            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+        class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div
+            class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full transform transition-all overflow-hidden">
+            <div class="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700">
                 <div class="flex items-center gap-3">
-                    <div class="p-2 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="p-2 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl">
+                        <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
@@ -327,54 +329,56 @@
             <div class="p-6">
                 <div class="mb-6">
                     <div
-                        class="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800/30">
-                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none"
+                        class="flex items-start gap-3 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800/30">
+                        <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400 mt-0.5 flex-shrink-0" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <div>
-                            <p class="text-sm font-semibold text-blue-800 dark:text-blue-400">Bu jarayon nima qiladi?</p>
-                            <p class="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                            <p class="text-sm font-semibold text-indigo-900 dark:text-indigo-300">Bu jarayon nima qiladi?
+                            </p>
+                            <p class="text-xs text-indigo-700 dark:text-indigo-400/80 mt-1 leading-relaxed">
                                 Tizimingizda mavjud barcha route-lar tekshiriladi va bazada mavjud bo'lmagan yangi ruxsatlar
-                                avtomatik qo'shiladi. Mavjud ruxsatlar o'zgartirilmaydi.
+                                avtomatik qo'shiladi.
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-4 mb-6">
-                    <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                        <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">Jami route-lar</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <div class="p-4 bg-gray-50 dark:bg-gray-700/40 rounded-xl border border-gray-100 dark:border-gray-700">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider font-medium">Jami
+                        </p>
                         <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total_routes'] }}</p>
                     </div>
-                    <div class="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
-                        <p class="text-xs text-emerald-600 dark:text-emerald-400 mb-1">Sinxronlangan</p>
-                        <p class="text-2xl font-bold text-emerald-900 dark:text-emerald-100">{{ $stats['synced'] }}</p>
+                    <div
+                        class="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800/30">
+                        <p
+                            class="text-xs text-emerald-600 dark:text-emerald-400 mb-1 uppercase tracking-wider font-medium">
+                            Sinxronlangan</p>
+                        <p class="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{{ $stats['synced'] }}</p>
                     </div>
-                    <div class="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
-                        <p class="text-xs text-amber-600 dark:text-amber-400 mb-1">Qo'shiladi</p>
-                        <p class="text-2xl font-bold text-amber-900 dark:text-amber-100">{{ $stats['unsynced'] }}</p>
+                    <div
+                        class="p-4 bg-violet-50 dark:bg-violet-900/20 rounded-xl border border-violet-100 dark:border-violet-800/30">
+                        <p class="text-xs text-violet-600 dark:text-violet-400 mb-1 uppercase tracking-wider font-medium">
+                            Qo'shiladi</p>
+                        <p class="text-2xl font-bold text-violet-700 dark:text-violet-300">{{ $stats['unsynced'] }}</p>
                     </div>
                 </div>
 
-                <form action="{{ route('permissions.sync-routes') }}" method="POST" class="space-y-4">
+                <form action="{{ route('permissions.sync-routes') }}" method="POST">
                     @csrf
-                    <div class="flex items-center justify-end gap-3">
+                    <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
                         <button type="button" onclick="closeSyncModal()"
-                            class="group flex items-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700/50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-xl transition-all duration-300 active:scale-95">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor"
-                                class="w-5 h-5 transition-transform duration-500 group-hover:rotate-180">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                            </svg>
-                            <span>Yopish</span>
+                            class="w-full sm:w-auto px-6 py-2.5 text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all">
+                            Bekor qilish
                         </button>
                         <button type="submit"
-                            class="group flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-200 dark:shadow-none hover:shadow-blue-300 transform hover:-translate-y-0.5 active:scale-95 transition-all duration-300">
+                            class="w-full sm:w-auto group flex items-center justify-center gap-2 px-8 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-200 dark:shadow-none transition-all active:scale-95">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                 stroke="currentColor"
-                                class="w-5 h-5 transition-transform duration-500 group-hover:rotate-180">
+                                class="w-5 h-5 group-hover:rotate-180 transition-transform duration-500">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                             </svg>
