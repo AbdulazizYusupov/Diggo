@@ -196,44 +196,55 @@
 
         {{-- Pagination --}}
         @if ($roles->hasPages())
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div class="text-sm text-gray-600 dark:text-gray-400">
-                        <span class="font-semibold text-gray-900 dark:text-white">{{ $roles->firstItem() }}</span>
-                        dan
-                        <span class="font-semibold text-gray-900 dark:text-white">{{ $roles->lastItem() }}</span>
-                        gacha ko'rsatilmoqda, jami
-                        <span class="font-semibold text-gray-900 dark:text-white">{{ $roles->total() }}</span>
-                        ta
+            <div
+                class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mt-6">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+                    {{-- Statistik ma'lumot --}}
+                    <div class="text-sm text-gray-500 dark:text-gray-400 order-2 sm:order-1">
+                        Jami <span class="font-medium text-gray-900 dark:text-white">{{ $roles->total() }}</span> tadan
+                        <span
+                            class="font-medium text-gray-900 dark:text-white">{{ $roles->firstItem() }}-{{ $roles->lastItem() }}</span>
+                        oralig'i
                     </div>
 
-                    <div class="flex items-center gap-2">
+                    {{-- Navigatsiya tugmalari --}}
+                    <nav class="flex items-center gap-1 order-1 sm:order-2">
                         {{-- Previous --}}
                         @if ($roles->onFirstPage())
-                            <span
-                                class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-xl cursor-not-allowed">
-                                Oldingi
+                            <span class="p-2 text-gray-300 dark:text-gray-600 cursor-not-allowed">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg>
                             </span>
                         @else
                             <a href="{{ $roles->previousPageUrl() }}"
-                                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium rounded-xl transition-all">
-                                Oldingi
+                                class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg>
                             </a>
                         @endif
 
-                        {{-- Page Numbers --}}
-                        <div class="hidden sm:flex items-center gap-2">
-                            @foreach ($roles->getUrlRange(max(1, $roles->currentPage() - 2), min($roles->lastPage(), $roles->currentPage() + 2)) as $page => $url)
-                                @if ($page == $roles->currentPage())
-                                    <span
-                                        class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg">
-                                        {{ $page }}
-                                    </span>
-                                @else
-                                    <a href="{{ $url }}"
-                                        class="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium rounded-xl transition-all">
-                                        {{ $page }}
-                                    </a>
+                        {{-- Sahifa raqamlari --}}
+                        <div class="flex items-center gap-1">
+                            @foreach ($roles->getUrlRange(1, $roles->lastPage()) as $page => $url)
+                                {{-- Faqat joriy sahifa atrofidagilarni ko'rsatish mantiqi --}}
+                                @if ($page == 1 || $page == $roles->lastPage() || abs($page - $roles->currentPage()) <= 1)
+                                    @if ($page == $roles->currentPage())
+                                        <span
+                                            class="min-w-[40px] h-10 flex items-center justify-center bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-bold rounded-xl border border-indigo-100 dark:border-indigo-800/50">
+                                            {{ $page }}
+                                        </span>
+                                    @else
+                                        <a href="{{ $url }}"
+                                            class="min-w-[40px] h-10 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all font-medium">
+                                            {{ $page }}
+                                        </a>
+                                    @endif
+                                @elseif ($page == $roles->currentPage() - 2 || $page == $roles->currentPage() + 2)
+                                    <span class="text-gray-400">...</span>
                                 @endif
                             @endforeach
                         </div>
@@ -241,16 +252,21 @@
                         {{-- Next --}}
                         @if ($roles->hasMorePages())
                             <a href="{{ $roles->nextPageUrl() }}"
-                                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium rounded-xl transition-all">
-                                Keyingi
+                                class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7" />
+                                </svg>
                             </a>
                         @else
-                            <span
-                                class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-xl cursor-not-allowed">
-                                Keyingi
+                            <span class="p-2 text-gray-300 dark:text-gray-600 cursor-not-allowed">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7" />
+                                </svg>
                             </span>
                         @endif
-                    </div>
+                    </nav>
                 </div>
             </div>
         @endif
