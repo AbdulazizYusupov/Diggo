@@ -328,12 +328,22 @@
                                 </div>
                             </div>
                         </div>
+                        <a href="{{ route('schools.index') }}"
+                            class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('schools.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor"
+                                class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('schools.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+                            </svg>
+
+                            <span class="ml-3 sidebar-text">Schools</span>
+                            <span class="nav-tooltip">Schools</span>
+                        </a>
                         <div class="space-y-1">
                             <button id="users-dropdown-btn" {{-- onclick="const dropdown = this.nextElementSibling; dropdown.classList.toggle('open'); this.querySelector('.arrow-icon').classList.toggle('rotate-180');" --}}
-                                class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all 
-                                {{ request()->is('staffs*', 'directors*', 'teachers*', 'students*')
-                                    ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600'
-                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->is('staffs*', 'directors*', 'teachers*', 'students*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor"
@@ -359,12 +369,14 @@
                                 <div class="ml-8 space-y-1 py-2">
                                     <a href="{{ route('staffs.index') }}"
                                         class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('staffs.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
+
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                             stroke-width="1.5" stroke="currentColor"
                                             class="w-4 h-4 mr-2 flex-shrink-0">
                                             <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M20.25 14.15v4.25c0 .414-.336.75-.75.75H4.5a.75.75 0 0 1-.75-.75v-4.25m16.5 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 14.15m16.5 0V9a2.25 2.25 0 0 0-2.25-2.25H16.5V4.5A2.25 2.25 0 0 0 14.25 2.25h-4.5A2.25 2.25 0 0 0 7.5 4.5V6.75H6.75A2.25 2.25 0 0 0 4.5 9v5.15" />
+                                                d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
                                         </svg>
+
                                         <span class="sidebar-text">Staff</span>
                                     </a>
 
@@ -381,12 +393,14 @@
 
                                     <a href="{{ route('teachers.index') }}"
                                         class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('teachers.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
+
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                             stroke-width="1.5" stroke="currentColor"
                                             class="w-4 h-4 mr-2 flex-shrink-0">
                                             <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.425 4.732 4.125 4.125 0 0 0 4.83 5.437m15.482-10.17a50.591 50.591 0 0 1 2.425 4.732 4.125 4.125 0 0 1-4.83 5.437m-13.077-10.17a50.66 50.66 0 0 1 13.077 0ZM12 4.577a74.123 74.123 0 0 0-8.149 5.57m16.299 0A74.13 74.13 0 0 1 12 4.577Zm0 0V9" />
+                                                d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
                                         </svg>
+
                                         <span class="sidebar-text">Teachers</span>
                                     </a>
 
@@ -403,6 +417,7 @@
                                 </div>
                             </div>
                         </div>
+
 
                         <a href="#"
                             class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group transition-all">

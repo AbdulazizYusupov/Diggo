@@ -18,15 +18,6 @@ class School extends Model
     {
         return $this->hasOne(Director::class);
     }
-
-    public function courses()
-    {
-        return $this->hasMany(Cours::class);
-    }
-    public function groups()
-    {
-        return $this->hasMany(Group::class);
-    }
     public function students()
     {
         return $this->hasMany(Student::class);

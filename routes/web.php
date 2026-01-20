@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Course\CourseController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Director\DirectorController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\RolePermission\RolePermissionController;
+use App\Http\Controllers\School\SchoolController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\Student\StudentController;
@@ -47,8 +49,8 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/remove-role/{user}', [SettingsController::class, 'removeRole'])->name('remove-role');
             Route::post('/sync-roles/{user}', [SettingsController::class, 'syncRoles'])->name('sync-roles');
         });
-        // Route::resource('schools', SchoolController::class);
-        // Route::resource('courses', CourseController::class);
+        Route::resource('schools', SchoolController::class);
+        Route::resource('courses', CourseController::class);
         // Route::resource('groups', GroupController::class);
         // Route::resource('payments', PaymentController::class);
         // Route::resource('lesson-charges', LessonChargeController::class);

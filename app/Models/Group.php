@@ -13,7 +13,6 @@ class Group extends Model
     protected $fillable = [
         'name',
         'course_id',
-        'school_id',
         'start_time',
         'end_time',
         'days_of_week',
