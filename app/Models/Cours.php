@@ -25,11 +25,6 @@ class Cours extends Model
         'duration_months' => 'integer',
         'is_active' => 'boolean'
     ];
-
-    public function school()
-    {
-        return $this->belongsTo(School::class);
-    }
     public function groups()
     {
         return $this->hasMany(Group::class);

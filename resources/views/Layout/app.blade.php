@@ -185,17 +185,11 @@
                         <div class="flex items-center overflow-hidden min-w-0 group select-none">
                             <!-- Logo box -->
                             <div
-                                class="relative w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0
-               bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600
-               shadow-lg shadow-indigo-500/30 dark:shadow-indigo-900/40
-               border border-white/20 dark:border-white/10
-               transform group-hover:scale-105 group-hover:rotate-[1deg]
-               transition-all duration-300">
+                                class="relative w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 shadow-lg shadow-indigo-500/30 dark:shadow-indigo-900/40 border border-white/20 dark:border-white/10 transform group-hover:scale-105 group-hover:rotate-[1deg] transition-all duration-300">
 
                                 <!-- subtle glow -->
                                 <div
-                                    class="absolute inset-0 rounded-2xl bg-indigo-500/20 blur-xl opacity-0
-                   group-hover:opacity-100 transition-opacity duration-300">
+                                    class="absolute inset-0 rounded-2xl bg-indigo-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 </div>
 
                                 <svg class="relative w-6 h-6 text-white" fill="none" stroke="currentColor"
@@ -214,8 +208,7 @@
                                 </span>
 
                                 <span
-                                    class="text-[10px] uppercase tracking-[0.25em] font-semibold
-                   text-gray-400 dark:text-gray-500 mt-1">
+                                    class="text-[10px] uppercase tracking-[0.25em] font-semibold text-gray-400 dark:text-gray-500 mt-1">
                                     Admin Panel
                                 </span>
                             </div>
@@ -340,6 +333,19 @@
 
                             <span class="ml-3 sidebar-text">Schools</span>
                             <span class="nav-tooltip">Schools</span>
+                        </a>
+                        <a href="{{ route('courses.index') }}"
+                            class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('courses.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor"
+                                class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('courses.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+                            </svg>
+
+                            <span class="ml-3 sidebar-text">Kurslar</span>
+                            <span class="nav-tooltip">Kurslar</span>
                         </a>
                         <div class="space-y-1">
                             <button id="users-dropdown-btn" {{-- onclick="const dropdown = this.nextElementSibling; dropdown.classList.toggle('open'); this.querySelector('.arrow-icon').classList.toggle('rotate-180');" --}}

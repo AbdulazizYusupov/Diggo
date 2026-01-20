@@ -238,7 +238,7 @@
                                 Kurs</th>
                             <th
                                 class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                Maktab</th>
+                                Guruhlar</th>
                             <th
                                 class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                 Daraja</th>
@@ -286,14 +286,18 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                                    @if ($course->school)
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ $course->school->name }}
-                                        </div>
-                                    @else
-                                        <span class="text-xs text-gray-400 dark:text-gray-500 italic">Maktab yo'q</span>
-                                    @endif
+                                <td class="px-4 lg:px-6 py-4">
+                                    <div class="flex flex-wrap gap-1.5 max-w-[220px]">
+                                        @forelse ($course->groups as $group)
+                                            <span
+                                                class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800/50 whitespace-nowrap">
+                                                {{ $group->name }}
+                                            </span>
+                                        @empty
+                                            <span class="text-xs text-gray-400 dark:text-gray-500 italic">Guruhlar
+                                                yo'q</span>
+                                        @endforelse
+                                    </div>
                                 </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                                     @php

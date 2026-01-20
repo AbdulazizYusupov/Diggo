@@ -15,7 +15,7 @@ class CourseController extends Controller
     public function index(Request $request)
     {
         // Base query
-        $query = Cours::query()->with(['school']);
+        $query = Cours::query()->with('groups');
 
         // Search filter
         if ($request->filled('search')) {
@@ -27,12 +27,6 @@ class CourseController extends Controller
             });
         }
 
-        // School filter
-        if ($request->filled('school_id')) {
-            $query->where('school_id', $request->school_id);
-        }
-
-        // Level filter
         if ($request->filled('level')) {
             $query->where('level', $request->level);
         }
@@ -95,7 +89,7 @@ class CourseController extends Controller
      */
     public function create()
     {
-        //
+        return view('Course.create');
     }
 
     /**
@@ -103,7 +97,23 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'code' => 'required|string|max:50|unique:cours,code',
+            'description' => 'nullable|string|max:1000',
+            'price' => 'required|numeric|min:0',
+            'duration_months' => 'required|integer|min:1|max:36',
+            'level' => 'required|in:beginner,intermediate,advanced',
+            'is_active' => 'nullable|boolean',
+        ]);
+
+        $validated['is_active'] = $request->has('is_active') ? true : false;
+
+        Cours::create($validated);
+
+        return redirect()
+            ->route('courses.index')
+            ->with('success', 'Kurs muvaffaqiyatli qo\'shildi!');
     }
 
     /**
@@ -111,7 +121,26 @@ class CourseController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $course = Cours::with(['groups'])
+            ->withCount('groups')
+            ->findOrFail($id);
+
+        // Statistika ma'lumotlari
+        $stats = [
+            'total_groups' => $course->groups()->count(),
+            'active_groups' => $course->groups()->where('is_active', true)->count(),
+            'total_students' => $course->groups()->withCount('students')->get()->sum('students_count'),
+            'potential_revenue' => $course->groups()->withCount('students')->get()->sum('students_count') * $course->price,
+        ];
+
+        // So'nggi 5 ta guruh
+        $recentGroups = $course->groups()
+            ->withCount('students')
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        return view('Course.show', compact('course', 'stats', 'recentGroups'));
     }
 
     /**
@@ -119,7 +148,8 @@ class CourseController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $course = Cours::findOrFail($id);
+        return view('Course.edit', compact('course'));
     }
 
     /**
@@ -127,7 +157,25 @@ class CourseController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $course = Cours::findOrFail($id);
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'code' => 'required|string|max:50|unique:cours,code,' . $course->id,
+            'description' => 'nullable|string|max:1000',
+            'price' => 'required|numeric|min:0',
+            'duration_months' => 'required|integer|min:1|max:36',
+            'level' => 'required|in:beginner,intermediate,advanced',
+            'is_active' => 'nullable|boolean',
+        ]);
+
+        $validated['is_active'] = $request->has('is_active') ? true : false;
+
+        $course->update($validated);
+
+        return redirect()
+            ->route('courses.index')
+            ->with('success', 'Kurs ma\'lumotlari muvaffaqiyatli yangilandi!');
     }
 
     /**
@@ -135,6 +183,16 @@ class CourseController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $course = Cours::findOrFail($id);
+        if ($course->groups()->count() > 0) {
+            return redirect()
+                ->route('courses.index')
+                ->with('error', 'Bu kursda ' . $course->groups()->count() . ' ta guruh mavjud. Avval guruhlarni o\'chiring!');
+        }
+        $course->delete();
+
+        return redirect()
+            ->route('courses.index')
+            ->with('success', 'Kurs muvaffaqiyatli o\'chirildi!');
     }
 }
