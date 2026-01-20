@@ -89,13 +89,13 @@
             </div>
 
             <div
-                class="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 rounded-2xl p-6 border border-red-200 dark:border-red-800">
+                class="bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/30 dark:to-red-800/30 rounded-2xl p-6 border border-red-300 dark:border-red-700">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-red-600 dark:text-red-400">Yetim ruxsatlar</p>
+                        <p class="text-sm font-medium text-red-700 dark:text-red-400">Yetim ruxsatlar</p>
                         <p class="text-3xl font-bold text-red-900 dark:text-red-100 mt-1">{{ $stats['orphaned'] }}</p>
                     </div>
-                    <div class="p-3 bg-red-500 rounded-xl">
+                    <div class="p-3 bg-red-600 rounded-xl shadow-md">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
@@ -103,6 +103,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
 
         {{-- Search Bar --}}
@@ -110,8 +111,8 @@
             <form action="{{ route('permissions.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3">
                 <div class="flex-1 relative group">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg class="w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
@@ -136,8 +137,8 @@
                         <a href="{{ route('permissions.index') }}"
                             class="group px-4 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold rounded-xl transition-all flex items-center justify-center"
                             title="Tozalash">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor"
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor"
                                 class="w-5 h-5 transition-transform duration-500 group-hover:rotate-180">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
@@ -149,21 +150,26 @@
         </div>
 
         {{-- Permissions Table --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div
+            class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead class="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                 Ruxsat nomi
                             </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                 Holat
                             </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                 Rollar soni
                             </th>
-                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            <th
+                                class="px-6 py-4 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                 Amallar
                             </th>
                         </tr>
@@ -194,10 +200,11 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    @if($routeExists)
+                                    @if ($routeExists)
                                         <span
                                             class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold rounded-full">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M5 13l4 4L19 7" />
                                             </svg>
@@ -206,7 +213,8 @@
                                     @else
                                         <span
                                             class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-semibold rounded-full">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M6 18L18 6M6 6l12 12" />
                                             </svg>
@@ -218,7 +226,8 @@
                                     <div class="flex items-center gap-2">
                                         <span
                                             class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-xs font-semibold rounded-lg">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                             </svg>
@@ -231,7 +240,8 @@
                                         <button onclick='openEditModal(@json($permission))'
                                             class="p-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-lg transition-all"
                                             title="Tahrirlash">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
@@ -240,7 +250,8 @@
                                         <button onclick='openDeleteModal(@json($permission))'
                                             class="p-2 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 rounded-lg transition-all"
                                             title="O'chirish">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
@@ -285,8 +296,10 @@
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
                     <div class="text-sm text-gray-500 dark:text-gray-400 order-2 sm:order-1">
-                        Jami <span class="font-medium text-gray-900 dark:text-white">{{ $permissions->total() }}</span> tadan
-                        <span class="font-medium text-gray-900 dark:text-white">{{ $permissions->firstItem() }}-{{ $permissions->lastItem() }}</span>
+                        Jami <span class="font-medium text-gray-900 dark:text-white">{{ $permissions->total() }}</span>
+                        tadan
+                        <span
+                            class="font-medium text-gray-900 dark:text-white">{{ $permissions->firstItem() }}-{{ $permissions->lastItem() }}</span>
                         oralig'i
                     </div>
 
@@ -294,14 +307,16 @@
                         @if ($permissions->onFirstPage())
                             <span class="p-2 text-gray-300 dark:text-gray-600 cursor-not-allowed">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
                                 </svg>
                             </span>
                         @else
                             <a href="{{ $permissions->previousPageUrl() }}"
                                 class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
                                 </svg>
                             </a>
                         @endif
@@ -310,11 +325,13 @@
                             @foreach ($permissions->getUrlRange(1, $permissions->lastPage()) as $page => $url)
                                 @if ($page == 1 || $page == $permissions->lastPage() || abs($page - $permissions->currentPage()) <= 1)
                                     @if ($page == $permissions->currentPage())
-                                        <span class="min-w-[40px] h-10 flex items-center justify-center bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-bold rounded-xl border border-blue-100 dark:border-blue-800/50">
+                                        <span
+                                            class="min-w-[40px] h-10 flex items-center justify-center bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-bold rounded-xl border border-blue-100 dark:border-blue-800/50">
                                             {{ $page }}
                                         </span>
                                     @else
-                                        <a href="{{ $url }}" class="min-w-[40px] h-10 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all font-medium">
+                                        <a href="{{ $url }}"
+                                            class="min-w-[40px] h-10 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all font-medium">
                                             {{ $page }}
                                         </a>
                                     @endif
@@ -328,13 +345,15 @@
                             <a href="{{ $permissions->nextPageUrl() }}"
                                 class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7" />
                                 </svg>
                             </a>
                         @else
                             <span class="p-2 text-gray-300 dark:text-gray-600 cursor-not-allowed">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7" />
                                 </svg>
                             </span>
                         @endif
@@ -345,7 +364,8 @@
     </div>
 
     {{-- Sync Modal --}}
-    <div id="syncModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div id="syncModal"
+        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full transform transition-all">
             <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex items-center gap-3">
@@ -357,7 +377,8 @@
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white">Route-larni sinxronlash</h3>
                 </div>
-                <button onclick="closeSyncModal()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <button onclick="closeSyncModal()"
+                    class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                     <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -366,15 +387,18 @@
 
             <div class="p-6">
                 <div class="mb-6">
-                    <div class="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800/30">
-                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div
+                        class="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800/30">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <div>
                             <p class="text-sm font-semibold text-blue-800 dark:text-blue-400">Bu jarayon nima qiladi?</p>
                             <p class="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                                Tizimingizda mavjud barcha route-lar tekshiriladi va bazada mavjud bo'lmagan yangi ruxsatlar avtomatik qo'shiladi. Mavjud ruxsatlar o'zgartirilmaydi.
+                                Tizimingizda mavjud barcha route-lar tekshiriladi va bazada mavjud bo'lmagan yangi ruxsatlar
+                                avtomatik qo'shiladi. Mavjud ruxsatlar o'zgartirilmaydi.
                             </p>
                         </div>
                     </div>
@@ -401,7 +425,8 @@
                         <button type="button" onclick="closeSyncModal()"
                             class="group flex items-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700/50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-xl transition-all duration-300 active:scale-95">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" class="w-5 h-5 transition-transform duration-500 group-hover:rotate-180">
+                                stroke="currentColor"
+                                class="w-5 h-5 transition-transform duration-500 group-hover:rotate-180">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                             </svg>
                             <span>Yopish</span>
@@ -409,7 +434,8 @@
                         <button type="submit"
                             class="group flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-200 dark:shadow-none hover:shadow-blue-300 transform hover:-translate-y-0.5 active:scale-95 transition-all duration-300">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" class="w-5 h-5 transition-transform duration-500 group-hover:rotate-180">
+                                stroke="currentColor"
+                                class="w-5 h-5 transition-transform duration-500 group-hover:rotate-180">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                             </svg>
@@ -422,7 +448,8 @@
     </div>
 
     {{-- Edit Modal --}}
-    <div id="editModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div id="editModal"
+        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg transform transition-all">
             <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex items-center gap-3">
@@ -434,7 +461,8 @@
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white">Ruxsatni tahrirlash</h3>
                 </div>
-                <button onclick="closeEditModal()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <button onclick="closeEditModal()"
+                    class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                     <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -452,7 +480,8 @@
                         class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all">
                 </div>
 
-                <div class="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-200 dark:border-amber-800/30">
+                <div
+                    class="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-200 dark:border-amber-800/30">
                     <div class="flex items-start gap-3">
                         <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
@@ -472,7 +501,8 @@
                     <button type="button" onclick="closeEditModal()"
                         class="group flex items-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700/50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-xl transition-all duration-300 active:scale-95">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                            stroke="currentColor" class="w-5 h-5 transition-transform duration-500 group-hover:rotate-180">
+                            stroke="currentColor"
+                            class="w-5 h-5 transition-transform duration-500 group-hover:rotate-180">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                         <span>Yopish</span>
@@ -480,7 +510,8 @@
                     <button type="submit"
                         class="group flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-200 dark:shadow-none hover:shadow-blue-400/30 transform hover:-translate-y-0.5 active:scale-95 transition-all duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
-                            stroke="currentColor" class="w-5 h-5 transition-transform duration-300 group-hover:scale-125 group-hover:rotate-6">
+                            stroke="currentColor"
+                            class="w-5 h-5 transition-transform duration-300 group-hover:scale-125 group-hover:rotate-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                         </svg>
                         <span>Saqlash</span>
@@ -491,11 +522,14 @@
     </div>
 
     {{-- Delete Modal --}}
-    <div id="deleteModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div id="deleteModal"
+        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full transform transition-all">
             <div class="p-6">
-                <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-red-100 dark:bg-red-900/30 rounded-full">
-                    <svg class="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div
+                    class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-red-100 dark:bg-red-900/30 rounded-full">
+                    <svg class="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
@@ -503,7 +537,8 @@
 
                 <h3 class="text-xl font-bold text-gray-900 dark:text-white text-center mb-2">Ruxsatni o'chirish</h3>
                 <p class="text-gray-600 dark:text-gray-400 text-center mb-6">
-                    Haqiqatan ham <span id="deletePermissionName" class="font-semibold text-gray-900 dark:text-white"></span>
+                    Haqiqatan ham <span id="deletePermissionName"
+                        class="font-semibold text-gray-900 dark:text-white"></span>
                     ruxsatini o'chirmoqchimisiz? Bu amalni qaytarib bo'lmaydi.
                 </p>
 

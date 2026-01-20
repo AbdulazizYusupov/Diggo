@@ -171,10 +171,41 @@ class PermissionController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, string $id)
     {
-        //
+        // 1. Validatsiya
+        $request->validate([
+            'name' => 'required|string|max:255|unique:permissions,name,' . $id,
+        ], [
+            'name.unique' => 'Ushbu nomdagi ruxsatnoma allaqachon mavjud.',
+            'name.required' => 'Ruxsatnoma nomi bo\'sh bo\'lishi mumkin emas.'
+        ]);
+
+        try {
+            // 2. Permissionni topish
+            $permission = Permission::findOrFail($id);
+
+            // 3. Ma'lumotni yangilash
+            $permission->update([
+                'name' => $request->input('name'),
+                // guard_name odatda o'zgarmaydi, lekin xohlasangiz qo'shish mumkin
+            ]);
+
+            // 4. Spatie keshini tozalash (muhim!)
+            // Bu yangilangan ruxsatlar darhol kuchga kirishini ta'minlaydi
+            app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+            return redirect()->route('permissions.index')
+                ->with('success', 'Ruxsatnoma muvaffaqiyatli yangilandi!');
+        } catch (\Exception $e) {
+            return redirect()->route('permissions.index')
+                ->with('error', 'Xatolik yuz berdi: ' . $e->getMessage());
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
