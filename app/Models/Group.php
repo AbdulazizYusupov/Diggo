@@ -12,7 +12,7 @@ class Group extends Model
 
     protected $fillable = [
         'name',
-        'course_id',
+        'cours_id',
         'start_time',
         'end_time',
         'days_of_week',
@@ -30,15 +30,10 @@ class Group extends Model
         'end_date' => 'date',
     ];
 
-    public function school()
-    {
-        return $this->belongsTo(School::class);
-    }
     public function course()
     {
-        return $this->belongsTo(Cours::class);
+        return $this->belongsTo(Cours::class,'cours_id');
     }
-
 
     public function teachers()
     {
@@ -49,8 +44,6 @@ class Group extends Model
             'teacher_id'
         );
     }
-
-
     public function students()
     {
         return $this->belongsToMany(
