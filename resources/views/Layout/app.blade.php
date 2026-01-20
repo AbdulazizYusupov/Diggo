@@ -172,18 +172,45 @@
 
                     <!-- Header with Logo and Toggle -->
                     <div class="flex items-center justify-between px-6 mb-8">
-                        <div class="flex items-center overflow-hidden min-w-0">
+                        <div class="flex items-center overflow-hidden min-w-0 group select-none">
+                            <!-- Logo box -->
                             <div
-                                class="w-10 h-10 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0 transform hover:scale-105 transition-transform">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                class="relative w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0
+               bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600
+               shadow-lg shadow-indigo-500/30 dark:shadow-indigo-900/40
+               border border-white/20 dark:border-white/10
+               transform group-hover:scale-105 group-hover:rotate-[1deg]
+               transition-all duration-300">
+
+                                <!-- subtle glow -->
+                                <div
+                                    class="absolute inset-0 rounded-2xl bg-indigo-500/20 blur-xl opacity-0
+                   group-hover:opacity-100 transition-opacity duration-300">
+                                </div>
+
+                                <svg class="relative w-6 h-6 text-white" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                 </svg>
                             </div>
-                            <span
-                                class="ml-3 text-gray-900 dark:text-white text-xl font-bold tracking-tight sidebar-text">Diggo</span>
+
+                            <!-- Text -->
+                            <div class="ml-3 flex flex-col sidebar-text">
+                                <span
+                                    class="text-gray-900 dark:text-white text-xl font-extrabold tracking-tight leading-none">
+                                    Diggo<span
+                                        class="bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">.</span>
+                                </span>
+
+                                <span
+                                    class="text-[10px] uppercase tracking-[0.25em] font-semibold
+                   text-gray-400 dark:text-gray-500 mt-1">
+                                    Admin Panel
+                                </span>
+                            </div>
                         </div>
+
 
                         <!-- Toggle Button for Desktop -->
                         <button id="sidebar-toggle"
@@ -233,7 +260,7 @@
                         <div class="space-y-1">
                             <button id="roles-dropdown-btn"
                                 onclick="const dropdown = this.nextElementSibling; dropdown.classList.toggle('open'); this.querySelector('.arrow-icon').classList.toggle('rotate-180');"
-                                class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->is('roles*', 'permissions*','role-permissions*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->is('roles*', 'permissions*', 'role-permissions*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor"
@@ -246,7 +273,7 @@
 
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="2" stroke="currentColor"
-                                    class="arrow-icon ml-auto h-4 w-4 text-gray-400 sidebar-text transition-transform duration-300 {{ request()->is('roles*', 'permissions*','role-permissions*') ? 'rotate-180' : '' }}">
+                                    class="arrow-icon ml-auto h-4 w-4 text-gray-400 sidebar-text transition-transform duration-300 {{ request()->is('roles*', 'permissions*', 'role-permissions*') ? 'rotate-180' : '' }}">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                                 </svg>
@@ -431,14 +458,17 @@
 
                         <div class="flex items-center lg:hidden">
                             <div
-                                class="w-8 h-8 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center shadow-md">
+                                class="w-9 h-9 bg-indigo-500 dark:bg-indigo-600 rounded-xl flex items-center justify-center shadow-sm border border-indigo-400/30">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                 </svg>
                             </div>
-                            <span class="ml-2 text-gray-900 dark:text-white text-lg font-bold">Diggo</span>
+
+                            <span class="ml-3 text-gray-900 dark:text-white text-xl font-black tracking-tight">
+                                Diggo<span class="text-indigo-500">.</span>
+                            </span>
                         </div>
                     </div>
 

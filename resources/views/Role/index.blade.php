@@ -195,11 +195,10 @@
         </div>
 
         {{-- Pagination --}}
-        @if ($roles->hasPages())
+        {{-- @if ($roles->hasPages())
             <div
                 class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mt-6">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
-                    {{-- Statistik ma'lumot --}}
                     <div class="text-sm text-gray-500 dark:text-gray-400 order-2 sm:order-1">
                         Jami <span class="font-medium text-gray-900 dark:text-white">{{ $roles->total() }}</span> tadan
                         <span
@@ -207,9 +206,7 @@
                         oralig'i
                     </div>
 
-                    {{-- Navigatsiya tugmalari --}}
                     <nav class="flex items-center gap-1 order-1 sm:order-2">
-                        {{-- Previous --}}
                         @if ($roles->onFirstPage())
                             <span class="p-2 text-gray-300 dark:text-gray-600 cursor-not-allowed">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -227,10 +224,8 @@
                             </a>
                         @endif
 
-                        {{-- Sahifa raqamlari --}}
                         <div class="flex items-center gap-1">
                             @foreach ($roles->getUrlRange(1, $roles->lastPage()) as $page => $url)
-                                {{-- Faqat joriy sahifa atrofidagilarni ko'rsatish mantiqi --}}
                                 @if ($page == 1 || $page == $roles->lastPage() || abs($page - $roles->currentPage()) <= 1)
                                     @if ($page == $roles->currentPage())
                                         <span
@@ -249,7 +244,6 @@
                             @endforeach
                         </div>
 
-                        {{-- Next --}}
                         @if ($roles->hasMorePages())
                             <a href="{{ $roles->nextPageUrl() }}"
                                 class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
@@ -269,7 +263,8 @@
                     </nav>
                 </div>
             </div>
-        @endif
+        @endif --}}
+        {{ $roles->links() }}
     </div>
 
     {{-- Create Modal --}}
