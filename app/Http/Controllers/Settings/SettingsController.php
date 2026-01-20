@@ -59,6 +59,7 @@ class SettingsController extends Controller
             'total_directors' => User::whereHas('director')->count(),
             'users_with_roles' => User::has('roles')->count(),
             'users_without_roles' => User::doesntHave('roles')->count(),
+            'total_roles' => $roles->count(),
         ];
 
         return view('Settings.index', compact('users', 'roles', 'stats', 'search', 'roleFilter', 'typeFilter'));
@@ -109,7 +110,7 @@ class SettingsController extends Controller
         $roles = $request->input('roles', []);
         $user->syncRoles($roles);
 
-        $message = empty($roles) 
+        $message = empty($roles)
             ? "{$user->full_name} dan barcha rollar olib tashlandi!"
             : "{$user->full_name} rollari yangilandi!";
 
