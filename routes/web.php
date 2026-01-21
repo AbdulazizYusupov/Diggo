@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Activity\ActivityController;
+use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Course\CourseController;
 use App\Http\Controllers\Dashboard\DashboardController;
@@ -89,8 +90,16 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('group-teachers', GroupTeacherController::class);
         Route::resource('payments', PaymentController::class);
         Route::resource('activities', ActivityController::class);
-        // Route::resource('lesson-charges', LessonChargeController::class);
+        
+        Route::prefix('attendance')->name('attendance.')->group(function () {
+            Route::get('/', [AttendanceController::class, 'index'])->name('index');
+            Route::get('/group/{group}', [AttendanceController::class, 'show'])->name('show');
+            Route::post('/store', [AttendanceController::class, 'store'])->name('store');
+            Route::post('/bulk-store', [AttendanceController::class, 'bulkStore'])->name('bulk-store');
+            Route::get('/group/{group}/statistics', [AttendanceController::class, 'statistics'])->name('statistics');
+        });
         // Route::resource('attendances', AttendanceController::class);
+        // Route::resource('lesson-charges', LessonChargeController::class);
         // Route::resource('coin-transactions', CoinTransactionController::class);
     });
 });
