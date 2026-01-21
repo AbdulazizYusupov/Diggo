@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Activity\ActivityController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Course\CourseController;
 use App\Http\Controllers\Dashboard\DashboardController;
@@ -87,9 +88,9 @@ Route::middleware(['auth'])->group(function () {
         });
         Route::resource('group-teachers', GroupTeacherController::class);
         Route::resource('payments', PaymentController::class);
+        Route::resource('activities', ActivityController::class);
         // Route::resource('lesson-charges', LessonChargeController::class);
         // Route::resource('attendances', AttendanceController::class);
-        // Route::resource('activities', ActivityController::class);
         // Route::resource('coin-transactions', CoinTransactionController::class);
     });
 });
