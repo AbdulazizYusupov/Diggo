@@ -9,6 +9,7 @@ use App\Models\Group;
 use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends Controller
@@ -66,10 +67,10 @@ class AttendanceController extends Controller
                     'homework_score' => $validated['homework_score'] ?? 0,
                     'participation_score' => $validated['participation_score'] ?? 0,
                     'notes' => $validated['notes'],
-                    'user_id' => auth()->id(),
-                    'school_id' => auth()->user()->student?->school_id
-                        ?? auth()->user()->teacher?->school_id
-                        ?? auth()->user()->director?->school_id,
+                    'user_id' => Auth::id(),
+                    'school_id' => Auth::user()->student?->school_id
+                        ?? Auth::user()->teacher?->school_id
+                        ?? Auth::user()->director?->school_id,
                 ]
             );
 
@@ -102,7 +103,7 @@ class AttendanceController extends Controller
                         'balance_after' => $student->coins + $coins,
                         'description' => "Davomat: {$group->name} - " . Carbon::parse($validated['attendance_date'])->format('d.m.Y'),
                         'school_id' => $attendance->school_id,
-                        'user_id' => auth()->id(),
+                        'user_id' => Auth::id(),
                     ]
                 );
 
@@ -134,30 +135,28 @@ class AttendanceController extends Controller
     // {
     //     //
     // }
-    public function show(Group $group, Request $request)
+     public function show(Group $group, Request $request)
     {
         // Tanlangan oy va yil (default: joriy oy)
         $year = $request->input('year', now()->year);
         $month = $request->input('month', now()->month);
-
+        
         $startDate = Carbon::create($year, $month, 1)->startOfMonth();
         $endDate = $startDate->copy()->endOfMonth();
-
+        
         // Guruh o'quvchilari
         $students = $group->activeStudents()
-            ->join('users', 'users.id', '=', 'students.user_id')
-            ->with(['user', 'coinTransactions' => function ($q) use ($startDate, $endDate) {
+            ->with(['user', 'coinTransactions' => function($q) use ($startDate, $endDate) {
                 $q->whereBetween('transaction_date', [$startDate, $endDate]);
             }])
-            ->orderBy('users.surname')
-            ->select('students.*')
+            ->orderBy('created_at')
             ->get();
 
         // Davomat ma'lumotlari
         $attendances = Attendance::where('group_id', $group->id)
             ->whereBetween('date', [$startDate, $endDate])
             ->get()
-            ->groupBy(function ($item) {
+            ->groupBy(function($item) {
                 return $item->student_id . '_' . $item->attendance_date->format('Y-m-d');
             });
 
@@ -172,9 +171,8 @@ class AttendanceController extends Controller
             'saturday' => 6,
             'sunday' => 0,
         ];
-
+        
         $lessonDays = [];
-
         $current = $startDate->copy();
         while ($current <= $endDate) {
             $dayName = strtolower($current->format('l'));
@@ -183,9 +181,8 @@ class AttendanceController extends Controller
             }
             $current->addDay();
         }
-        $lessonDays = collect($lessonDays);
 
-        return view('Attendance.show', compact(
+        return view('attendance.show', compact(
             'group',
             'students',
             'attendances',
@@ -250,10 +247,10 @@ class AttendanceController extends Controller
                         'status' => $attendanceData['status'],
                         'homework_score' => $attendanceData['homework_score'] ?? 0,
                         'participation_score' => $attendanceData['participation_score'] ?? 0,
-                        'user_id' => auth()->id(),
-                        'school_id' => auth()->user()->student?->school_id
-                            ?? auth()->user()->teacher?->school_id
-                            ?? auth()->user()->director?->school_id,
+                        'user_id' => Auth::id(),
+                        'school_id' => Auth::user()->student?->school_id
+                            ?? Auth::user()->teacher?->school_id
+                            ?? Auth::user()->director?->school_id,
                     ]
                 );
 
@@ -281,7 +278,7 @@ class AttendanceController extends Controller
                             'balance_after' => $student->coins + $coins,
                             'description' => "Davomat: {$group->name} - " . Carbon::parse($validated['attendance_date'])->format('d.m.Y'),
                             'school_id' => $attendance->school_id,
-                            'user_id' => auth()->id(),
+                            'user_id' => Auth::id(),
                         ]
                     );
 

@@ -67,299 +67,298 @@
         </div>
 
         <!-- Coin Info Card -->
-        <div class="bg-gradient-to-r from-amber-500 to-yellow-500 rounded-2xl shadow-lg p-6 text-white">
-            <div class="flex items-center gap-4">
-                <div class="w-16 h-16 bg-white/20 backdrop-blur rounded-2xl flex items-center justify-center">
-                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z" />
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-blue-500/20 p-6">
+            <div class="flex items-start gap-4">
+                <div class="flex-shrink-0 w-12 h-12 bg-amber-50 dark:bg-amber-500/10 rounded-xl flex items-center justify-center border border-amber-100 dark:border-amber-500/20">
+                    <svg class="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
-                <div>
-                    <h3 class="text-lg font-bold mb-1">Coin tizimi</h3>
-                    <p class="text-sm text-white/90">✅ Keldi: <strong>2 coin</strong> • ⏰ Kechikdi: <strong>1 coin</strong>
-                        • 📝 Uy vazifa: <strong>0-2 coin</strong> • 🎯 Faollik: <strong>0-2 coin</strong></p>
+                <div class="flex-1">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3">Coin tizimi qoidalari</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div class="flex items-center gap-3 p-3 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg border border-emerald-100 dark:border-emerald-500/20">
+                            <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <p class="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Keldi</p>
+                                <p class="text-sm font-bold text-emerald-700 dark:text-emerald-300">+2 coin</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-500/10 rounded-lg border border-amber-100 dark:border-amber-500/20">
+                            <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <p class="text-xs text-amber-600 dark:text-amber-400 font-medium">Kechikdi</p>
+                                <p class="text-sm font-bold text-amber-700 dark:text-amber-300">+1 coin</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-500/10 rounded-lg border border-blue-100 dark:border-blue-500/20">
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <div>
+                                <p class="text-xs text-blue-600 dark:text-blue-400 font-medium">Uy vazifa</p>
+                                <p class="text-sm font-bold text-blue-700 dark:text-blue-300">0-2 coin</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-500/10 rounded-lg border border-purple-100 dark:border-purple-500/20">
+                            <svg class="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                            </svg>
+                            <div>
+                                <p class="text-xs text-purple-600 dark:text-purple-400 font-medium">Faollik</p>
+                                <p class="text-sm font-bold text-purple-700 dark:text-purple-300">0-2 coin</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Attendance Table (Excel style) -->
-        <div
-            class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-blue-500/20 overflow-hidden">
+        <!-- Attendance Table -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-blue-500/20 overflow-hidden">
             <div class="overflow-x-auto">
-                <form id="attendanceForm" method="POST" action="{{ route('attendance.bulk-store') }}">
-                    @csrf
-                    <input type="hidden" name="group_id" value="{{ $group->id }}">
-
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gradient-to-r from-blue-600 to-blue-700 sticky top-0 z-10">
-                            <tr>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider sticky left-0 bg-blue-600 z-20 min-w-[200px]">
-                                    O'quvchi
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gradient-to-r from-blue-600 to-blue-700 sticky top-0 z-10">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider sticky left-0 bg-blue-600 z-20 min-w-[200px]">
+                                O'quvchi
+                            </th>
+                            @foreach ($lessonDays as $day)
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase min-w-[150px]">
+                                    <div class="flex flex-col items-center gap-1">
+                                        <span>{{ $day->format('d') }}</span>
+                                        <span class="text-blue-200 text-[10px]">{{ $day->locale('uz')->dayName }}</span>
+                                    </div>
                                 </th>
-                                @foreach ($lessonDays as $day)
-                                    <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase min-w-[140px]">
-                                        <div class="flex flex-col items-center gap-1">
-                                            <span>{{ $day->format('d') }}</span>
-                                            <span class="text-blue-200">{{ $day->locale('uz')->dayName }}</span>
-                                        </div>
-                                    </th>
-                                @endforeach
-                                <th
-                                    class="px-4 py-3 text-center text-xs font-bold text-white uppercase tracking-wider min-w-[100px] bg-purple-600">
-                                    Jami Coin
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            @foreach ($students as $student)
-                                @php
-                                    $totalCoins = 0;
-                                @endphp
-                                <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
-                                    <td
-                                        class="px-4 py-3 whitespace-nowrap sticky left-0 bg-white dark:bg-slate-800 z-10 border-r border-gray-200 dark:border-gray-700">
-                                        <div class="flex items-center gap-3">
-                                            <div
-                                                class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-lg">
-                                                {{ substr($student->user->name ?? 'N', 0, 1) }}{{ substr($student->user->surname ?? 'A', 0, 1) }}
-                                            </div>
-                                            <div>
-                                                <div class="text-sm font-bold text-gray-900 dark:text-white">
-                                                    {{ $student->user->surname ?? '' }} {{ $student->user->name ?? '' }}
-                                                </div>
-                                                <div
-                                                    class="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                                                    <svg class="w-3 h-3 text-amber-500" fill="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path
-                                                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
-                                                    </svg>
-                                                    {{ $student->coins ?? 0 }} coin
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                    @foreach ($lessonDays as $day)
-                                        @php
-                                            $key = $student->id . '_' . $day->format('Y-m-d');
-                                            $attendanceCollection = $attendances[$key] ?? collect();
-                                            $attendance = $attendanceCollection->first();
-
-                                            $status = $attendance->status ?? '';
-                                            $hwScore = $attendance->homework_score ?? 0;
-                                            $partScore = $attendance->participation_score ?? 0;
-
-                                            $dailyCoins = 0;
-                                            if ($status === 'present') {
-                                                $dailyCoins += 2;
-                                            } elseif ($status === 'late') {
-                                                $dailyCoins += 1;
-                                            }
-
-                                            $dailyCoins += $hwScore + $partScore;
-                                            $totalCoins += $dailyCoins;
-                                        @endphp
-
-                                        <td class="px-2 py-2 text-center attendance-cell"
-                                            data-student="{{ $student->id }}" data-date="{{ $day->format('Y-m-d') }}">
-                                            <div class="space-y-1">
-                                                <!-- Status Buttons -->
-                                                <div class="flex justify-center gap-1">
-                                                    <button type="button"
-                                                        onclick="setAttendance({{ $student->id }}, '{{ $day->format('Y-m-d') }}', 'present', this)"
-                                                        class="status-btn w-8 h-8 rounded-lg transition-all {{ $status === 'present' ? 'bg-emerald-500 text-white shadow-lg scale-110' : 'bg-gray-100 dark:bg-slate-700 text-gray-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30' }}"
-                                                        title="Keldi (2 coin)">
-                                                        ✓
-                                                    </button>
-                                                    <button type="button"
-                                                        onclick="setAttendance({{ $student->id }}, '{{ $day->format('Y-m-d') }}', 'late', this)"
-                                                        class="status-btn w-8 h-8 rounded-lg transition-all {{ $status === 'late' ? 'bg-amber-500 text-white shadow-lg scale-110' : 'bg-gray-100 dark:bg-slate-700 text-gray-400 hover:bg-amber-100 dark:hover:bg-amber-900/30' }}"
-                                                        title="Kechikdi (1 coin)">
-                                                        ⏰
-                                                    </button>
-                                                    <button type="button"
-                                                        onclick="setAttendance({{ $student->id }}, '{{ $day->format('Y-m-d') }}', 'absent', this)"
-                                                        class="status-btn w-8 h-8 rounded-lg transition-all {{ $status === 'absent' ? 'bg-rose-500 text-white shadow-lg scale-110' : 'bg-gray-100 dark:bg-slate-700 text-gray-400 hover:bg-rose-100 dark:hover:bg-rose-900/30' }}"
-                                                        title="Kelmadi">
-                                                        ✗
-                                                    </button>
-                                                </div>
-
-                                                <!-- Scores -->
-                                                <div class="flex justify-center gap-1">
-                                                    <select
-                                                        class="hw-score w-12 h-7 text-xs rounded bg-blue-50 dark:bg-slate-700 border-0 text-center font-bold text-blue-600 dark:text-blue-400 outline-none cursor-pointer"
-                                                        data-student="{{ $student->id }}"
-                                                        data-date="{{ $day->format('Y-m-d') }}" title="Uy vazifa">
-                                                        <option value="0" {{ $hwScore == 0 ? 'selected' : '' }}>📝0
-                                                        </option>
-                                                        <option value="1" {{ $hwScore == 1 ? 'selected' : '' }}>📝1
-                                                        </option>
-                                                        <option value="2" {{ $hwScore == 2 ? 'selected' : '' }}>📝2
-                                                        </option>
-                                                    </select>
-                                                    <select
-                                                        class="part-score w-12 h-7 text-xs rounded bg-purple-50 dark:bg-slate-700 border-0 text-center font-bold text-purple-600 dark:text-purple-400 outline-none cursor-pointer"
-                                                        data-student="{{ $student->id }}"
-                                                        data-date="{{ $day->format('Y-m-d') }}" title="Faollik">
-                                                        <option value="0" {{ $partScore == 0 ? 'selected' : '' }}>🎯0
-                                                        </option>
-                                                        <option value="1" {{ $partScore == 1 ? 'selected' : '' }}>🎯1
-                                                        </option>
-                                                        <option value="2" {{ $partScore == 2 ? 'selected' : '' }}>🎯2
-                                                        </option>
-                                                    </select>
-                                                </div>
-
-                                                @if ($dailyCoins > 0)
-                                                    <div class="text-xs font-bold text-amber-600 dark:text-amber-400">
-                                                        +{{ $dailyCoins }} 🪙
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    @endforeach
-
-                                    <td class="px-4 py-3 text-center bg-purple-50 dark:bg-purple-900/10">
-                                        <div class="text-lg font-black text-purple-600 dark:text-purple-400">
-                                            {{ $totalCoins }}
-                                        </div>
-                                        <div class="text-xs text-purple-500 dark:text-purple-500">
-                                            🪙 coins
-                                        </div>
-                                    </td>
-                                </tr>
                             @endforeach
-                        </tbody>
-                    </table>
-                </form>
+                            <th class="px-4 py-3 text-center text-xs font-bold text-white uppercase tracking-wider min-w-[100px] bg-purple-600">
+                                Jami Coin
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        @foreach ($students as $student)
+                            @php
+                                $totalCoins = 0;
+                            @endphp
+                            <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+                                <td class="px-4 py-3 whitespace-nowrap sticky left-0 bg-white dark:bg-slate-800 z-10 border-r border-gray-200 dark:border-gray-700">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                                            {{ substr($student->user->surname ?? 'N', 0, 1) }}{{ substr($student->user->name ?? 'A', 0, 1) }}
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-bold text-gray-900 dark:text-white">
+                                                {{ $student->user->surname ?? '' }} {{ $student->user->name ?? '' }}
+                                            </div>
+                                            <div class="text-xs text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                {{ $student->coins ?? 0 }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                @foreach ($lessonDays as $day)
+                                    @php
+                                        $key = $student->id . '_' . $day->format('Y-m-d');
+                                        $attendanceCollection = $attendances[$key] ?? collect();
+                                        $attendance = $attendanceCollection->first();
+                                        
+                                        $status = $attendance->status ?? '';
+                                        $hwScore = $attendance->homework_score ?? 0;
+                                        $partScore = $attendance->participation_score ?? 0;
+                                        
+                                        $dailyCoins = 0;
+                                        if ($status === 'present') $dailyCoins += 2;
+                                        elseif ($status === 'late') $dailyCoins += 1;
+                                        $dailyCoins += $hwScore + $partScore;
+                                        $totalCoins += $dailyCoins;
+                                    @endphp
+                                    
+                                    <td class="px-2 py-2 text-center attendance-cell" 
+                                        data-student="{{ $student->id }}" 
+                                        data-date="{{ $day->format('Y-m-d') }}">
+                                        <div class="space-y-1.5">
+                                            <!-- Status Buttons -->
+                                            <div class="flex justify-center gap-1">
+                                                <button type="button"
+                                                    onclick="setStatus(this, {{ $student->id }}, '{{ $day->format('Y-m-d') }}', 'present')"
+                                                    class="status-btn w-9 h-9 rounded-lg transition-all flex items-center justify-center
+                                                        {{ $status === 'present' ? 'bg-emerald-500 text-white ring-2 ring-emerald-300' : 'bg-gray-100 dark:bg-slate-700 text-gray-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30' }}"
+                                                    title="Keldi">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                </button>
+                                                <button type="button"
+                                                    onclick="setStatus(this, {{ $student->id }}, '{{ $day->format('Y-m-d') }}', 'late')"
+                                                    class="status-btn w-9 h-9 rounded-lg transition-all flex items-center justify-center
+                                                        {{ $status === 'late' ? 'bg-amber-500 text-white ring-2 ring-amber-300' : 'bg-gray-100 dark:bg-slate-700 text-gray-400 hover:bg-amber-50 dark:hover:bg-amber-900/30' }}"
+                                                    title="Kechikdi">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                </button>
+                                                <button type="button"
+                                                    onclick="setStatus(this, {{ $student->id }}, '{{ $day->format('Y-m-d') }}', 'absent')"
+                                                    class="status-btn w-9 h-9 rounded-lg transition-all flex items-center justify-center
+                                                        {{ $status === 'absent' ? 'bg-rose-500 text-white ring-2 ring-rose-300' : 'bg-gray-100 dark:bg-slate-700 text-gray-400 hover:bg-rose-50 dark:hover:bg-rose-900/30' }}"
+                                                    title="Kelmadi">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+
+                                            <!-- Scores -->
+                                            <div class="flex justify-center gap-1">
+                                                <div class="relative">
+                                                    <select onchange="updateScore(this, {{ $student->id }}, '{{ $day->format('Y-m-d') }}')"
+                                                        class="hw-score w-14 h-8 text-xs rounded-lg bg-blue-50 dark:bg-slate-700 border border-blue-200 dark:border-blue-500/30 text-center font-bold text-blue-600 dark:text-blue-400 outline-none cursor-pointer appearance-none"
+                                                        title="Uy vazifa">
+                                                        <option value="0" {{ $hwScore == 0 ? 'selected' : '' }}>HW: 0</option>
+                                                        <option value="1" {{ $hwScore == 1 ? 'selected' : '' }}>HW: 1</option>
+                                                        <option value="2" {{ $hwScore == 2 ? 'selected' : '' }}>HW: 2</option>
+                                                    </select>
+                                                </div>
+                                                <div class="relative">
+                                                    <select onchange="updateScore(this, {{ $student->id }}, '{{ $day->format('Y-m-d') }}')"
+                                                        class="part-score w-14 h-8 text-xs rounded-lg bg-purple-50 dark:bg-slate-700 border border-purple-200 dark:border-purple-500/30 text-center font-bold text-purple-600 dark:text-purple-400 outline-none cursor-pointer appearance-none"
+                                                        title="Faollik">
+                                                        <option value="0" {{ $partScore == 0 ? 'selected' : '' }}>FA: 0</option>
+                                                        <option value="1" {{ $partScore == 1 ? 'selected' : '' }}>FA: 1</option>
+                                                        <option value="2" {{ $partScore == 2 ? 'selected' : '' }}>FA: 2</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            @if ($dailyCoins > 0)
+                                                <div class="text-xs font-bold text-amber-600 dark:text-amber-400">
+                                                    +{{ $dailyCoins }} coin
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </td>
+                                @endforeach
+
+                                <td class="px-4 py-3 text-center bg-purple-50 dark:bg-purple-900/10 sticky right-0">
+                                    <div class="text-xl font-black text-purple-600 dark:text-purple-400">
+                                        {{ $totalCoins }}
+                                    </div>
+                                    <div class="text-[10px] text-purple-500 dark:text-purple-500 font-semibold">
+                                        coins
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
 
         <!-- Save Button -->
         <div class="sticky bottom-6 z-50 flex justify-center">
-            <button type="button" onclick="saveAllAttendance()"
-                class="px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-2xl shadow-2xl shadow-emerald-500/50 transition-all transform hover:scale-105 active:scale-95 flex items-center gap-3">
+            <button type="button" onclick="saveAttendance()"
+                class="px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-2xl shadow-xl shadow-emerald-500/30 transition-all transform hover:scale-105 active:scale-95 flex items-center gap-3">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="text-lg">Barcha davomatlarni saqlash</span>
+                <span class="text-lg">Saqlash</span>
             </button>
         </div>
     </div>
 
-    {{-- @push('scripts') --}}
-        <script>
-            let attendanceData = {};
+    <script>
+        const attendanceData = new Map();
 
-            function setAttendance(studentId, date, status, button) {
-                const cell = button.closest('.attendance-cell');
-                const buttons = cell.querySelectorAll('.status-btn');
-
-                // Reset all buttons in this cell
-                buttons.forEach(btn => {
-                    btn.classList.remove('bg-emerald-500', 'bg-amber-500', 'bg-rose-500', 'text-white', 'shadow-lg',
-                        'scale-110');
-                    btn.classList.add('bg-gray-100', 'dark:bg-slate-700', 'text-gray-400');
-                });
-
-                // Highlight selected button
-                button.classList.remove('bg-gray-100', 'dark:bg-slate-700', 'text-gray-400');
-                button.classList.add('text-white', 'shadow-lg', 'scale-110');
-
-                if (status === 'present') button.classList.add('bg-emerald-500');
-                else if (status === 'late') button.classList.add('bg-amber-500');
-                else button.classList.add('bg-rose-500');
-
-                // Store data
-                const key = `${studentId}_${date}`;
-                if (!attendanceData[key]) attendanceData[key] = {};
-                attendanceData[key].status = status;
-                attendanceData[key].student_id = studentId;
-                attendanceData[key].date = date;
-            }
-
-            // Auto-save scores
-            document.querySelectorAll('.hw-score, .part-score').forEach(select => {
-                select.addEventListener('change', function() {
-                    const studentId = this.dataset.student;
-                    const date = this.dataset.date;
-                    const key = `${studentId}_${date}`;
-
-                    if (!attendanceData[key]) attendanceData[key] = {};
-                    attendanceData[key].student_id = studentId;
-                    attendanceData[key].date = date;
-
-                    const cell = this.closest('.attendance-cell');
-                    const hwScore = parseInt(cell.querySelector('.hw-score').value);
-                    const partScore = parseInt(cell.querySelector('.part-score').value);
-
-                    attendanceData[key].homework_score = hwScore;
-                    attendanceData[key].participation_score = partScore;
-                });
+        function setStatus(btn, studentId, date, status) {
+            const cell = btn.closest('.attendance-cell');
+            const buttons = cell.querySelectorAll('.status-btn');
+            
+            buttons.forEach(b => {
+                b.classList.remove('bg-emerald-500', 'bg-amber-500', 'bg-rose-500', 'text-white', 'ring-2', 'ring-emerald-300', 'ring-amber-300', 'ring-rose-300');
+                b.classList.add('bg-gray-100', 'dark:bg-slate-700', 'text-gray-400');
             });
 
-            async function saveAllAttendance() {
-                const data = Object.values(attendanceData);
+            btn.classList.remove('bg-gray-100', 'dark:bg-slate-700', 'text-gray-400');
+            btn.classList.add('text-white', 'ring-2');
+            
+            if (status === 'present') {
+                btn.classList.add('bg-emerald-500', 'ring-emerald-300');
+            } else if (status === 'late') {
+                btn.classList.add('bg-amber-500', 'ring-amber-300');
+            } else {
+                btn.classList.add('bg-rose-500', 'ring-rose-300');
+            }
 
-                if (data.length === 0) {
-                    alert('Davomat ma\'lumotlari kiritilmagan!');
-                    return;
-                }
+            const key = `${studentId}_${date}`;
+            const data = attendanceData.get(key) || {};
+            data.student_id = studentId;
+            data.attendance_date = date;
+            data.status = status;
+            attendanceData.set(key, data);
+        }
 
-                // Prepare payload
-                const lessonDays = @json($lessonDays->map(fn($d) => $d->format('Y-m-d')));
-                const payload = {
-                    group_id: {{ $group->id }},
-                    attendances: []
-                };
+        function updateScore(select, studentId, date) {
+            const cell = select.closest('.attendance-cell');
+            const hwScore = parseInt(cell.querySelector('.hw-score').value);
+            const partScore = parseInt(cell.querySelector('.part-score').value);
+            
+            const key = `${studentId}_${date}`;
+            const data = attendanceData.get(key) || {};
+            data.student_id = studentId;
+            data.attendance_date = date;
+            data.homework_score = hwScore;
+            data.participation_score = partScore;
+            attendanceData.set(key, data);
+        }
 
-                // Process each day
-                lessonDays.forEach(date => {
-                    const dayData = data.filter(d => d.date === date);
-                    if (dayData.length > 0) {
-                        payload.attendances.push({
-                            attendance_date: date,
-                            students: dayData
-                        });
-                    }
+        async function saveAttendance() {
+            if (attendanceData.size === 0) {
+                alert('Iltimos, avval davomatni belgilang!');
+                return;
+            }
+
+            const payload = Array.from(attendanceData.values()).map(item => ({
+                student_id: item.student_id,
+                attendance_date: item.attendance_date,
+                status: item.status || 'absent',
+                homework_score: item.homework_score || 0,
+                participation_score: item.participation_score || 0
+            }));
+
+            try {
+                const response = await fetch('{{ route('attendance.bulk-store') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        group_id: {{ $group->id }},
+                        attendances: payload
+                    })
                 });
 
-                try {
-                    const response = await fetch('{{ route('attendance.bulk-store') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        },
-                        body: JSON.stringify({
-                            group_id: {{ $group->id }},
-                            attendances: data.map(item => ({
-                                student_id: item.student_id,
-                                status: item.status || 'absent',
-                                homework_score: item.homework_score || 0,
-                                participation_score: item.participation_score || 0,
-                                attendance_date: item.date
-                            }))
-                        })
-                    });
+                const result = await response.json();
 
-                    const result = await response.json();
-
-                    if (result.success) {
-                        alert(`✅ Saqlandi! Jami ${result.total_coins} coin berildi.`);
-                        location.reload();
-                    } else {
-                        alert('❌ Xatolik: ' + result.message);
-                    }
-                } catch (error) {
-                    console.error(error);
-                    alert('❌ Xatolik yuz berdi!');
+                if (result.success) {
+                    alert(`Muvaffaqiyatli saqlandi! ${result.total_coins} coin berildi.`);
+                    window.location.reload();
+                } else {
+                    alert('Xatolik: ' + result.message);
                 }
+            } catch (error) {
+                console.error(error);
+                alert('Xatolik yuz berdi!');
             }
-        </script>
-    {{-- @endpush --}}
+        }
+    </script>
 @endsection
