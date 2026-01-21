@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('student_id')->constrained()->cascadeOnDelete();
             $table->foreignId('group_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained(); //createdBy
             $table->date('date')->index();
             $table->enum('status', ['present', 'absent', 'late', 'excused'])->default('present')->index();
             $table->text('notes')->nullable();

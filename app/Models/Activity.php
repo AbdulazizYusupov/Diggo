@@ -14,7 +14,6 @@ class Activity extends Model
         'name',
         'type',
         'group_id',
-        'school_id',
         'description',
         'date',
         'max_coins'

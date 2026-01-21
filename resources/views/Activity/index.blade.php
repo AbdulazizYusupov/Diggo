@@ -153,8 +153,8 @@
             <form method="GET" action="{{ route('activities.index') }}" class="space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4">
 
-                    {{-- Search --}}
-                    <div class="relative lg:col-span-3 sm:col-span-2">
+                    {{-- 1. Search (Yuqori qator, 1-ustun) --}}
+                    <div class="relative lg:col-span-4 sm:col-span-2">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -177,8 +177,8 @@
                         @endif
                     </div>
 
-                    {{-- Type Filter --}}
-                    <div class="lg:col-span-2">
+                    {{-- 2. Type Filter (Yuqori qator, 2-ustun) --}}
+                    <div class="lg:col-span-4">
                         <select name="type"
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 text-gray-900 dark:text-white text-sm outline-none transition-all cursor-pointer">
                             <option value="">Turi (Barchasi)</option>
@@ -190,8 +190,8 @@
                         </select>
                     </div>
 
-                    {{-- Group Filter --}}
-                    <div class="lg:col-span-3">
+                    {{-- 3. Group Filter (Yuqori qator, 3-ustun) --}}
+                    <div class="lg:col-span-4">
                         <select name="group_id"
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 text-gray-900 dark:text-white text-sm outline-none transition-all cursor-pointer">
                             <option value="">Guruh (Barchasi)</option>
@@ -204,20 +204,20 @@
                         </select>
                     </div>
 
-                    {{-- Date From --}}
-                    <div class="lg:col-span-2">
+                    {{-- 4. Date From (Pastki qator, 1-ustun) --}}
+                    <div class="lg:col-span-4">
                         <input type="date" name="date_from" value="{{ request('date_from') }}"
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 text-gray-900 dark:text-white text-sm outline-none transition-all">
                     </div>
 
-                    {{-- Date To --}}
-                    <div class="lg:col-span-2">
+                    {{-- 5. Date To (Pastki qator, 2-ustun) --}}
+                    <div class="lg:col-span-4">
                         <input type="date" name="date_to" value="{{ request('date_to') }}"
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 text-gray-900 dark:text-white text-sm outline-none transition-all">
                     </div>
 
-                    {{-- Action Buttons --}}
-                    <div class="flex gap-2 lg:col-span-12 sm:col-span-2">
+                    {{-- 6. Action Buttons (Pastki qator, 3-ustun) --}}
+                    <div class="flex gap-2 lg:col-span-4 sm:col-span-2">
                         <button type="submit"
                             class="flex-1 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -363,7 +363,7 @@
                                                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
                                                 clip-rule="evenodd" />
                                         </svg>
-                                        {{ $activity->max_coin }}
+                                        {{ $activity->max_coins }}
                                     </span>
                                 </td>
 
@@ -384,7 +384,7 @@
                                         </a>
 
                                         {{-- Edit --}}
-                                        <button type="button" onclick="openEditModal({{ json_encode($activity) }})"
+                                        {{-- <button type="button" onclick="openEditModal({{ json_encode($activity) }})"
                                             class="p-2 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-xl transition-all duration-200 group/btn"
                                             title="Tahrirlash">
                                             <svg class="w-5 h-5 transition-transform group-hover/btn:scale-110"
@@ -392,7 +392,16 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
-                                        </button>
+                                        </button> --}}
+                                        <a href="{{ route('activities.edit', $activity->id) }}"
+                                            class="p-2 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-xl transition-all duration-200 group/btn"
+                                            title="Tahrirlash">
+                                            <svg class="w-5 h-5 transition-transform group-hover/btn:scale-110"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        </a>
 
                                         {{-- Delete --}}
                                         <button type="button"
@@ -483,7 +492,7 @@
     @endif
     </div>
     <!-- Create Modal -->
-    <div id="createModal"
+    <div id="createModal" onclick="if(event.target === this) this.classList.add('hidden')"
         class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
         <div
             class="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-white/5">

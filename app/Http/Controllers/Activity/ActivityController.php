@@ -80,7 +80,14 @@ class ActivityController extends Controller
      */
     public function create()
     {
-        //
+        $groups = Group::where('is_active', true)
+            ->with('course')
+            ->orderBy('name')
+            ->get();
+
+        $types = ['homework', 'exam', 'competition', 'project', 'other'];
+
+        return view('Activity.create', compact('groups', 'types'));
     }
 
     /**
@@ -118,15 +125,26 @@ class ActivityController extends Controller
      */
     public function show(string $id)
     {
-        //
-    }
+        $activity = Activity::findOrFail($id);
+        $activity->load(['group.course', 'coinTransactions.student']);
 
+        return view('Activity.show', compact('activity'));
+    }
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
     {
-        //
+        $activity = Activity::findOrFail($id);
+
+        $groups = Group::where('is_active', true)
+            ->with('course')
+            ->orderBy('name')
+            ->get();
+
+        $types = ['homework', 'exam', 'competition', 'project', 'other'];
+
+        return view('Activity.edit', compact('activity', 'groups', 'types'));
     }
 
     /**
