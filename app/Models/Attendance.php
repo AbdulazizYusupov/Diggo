@@ -12,7 +12,6 @@ class Attendance extends Model
     protected $fillable = [
         'student_id',
         'group_id',
-        'school_id',
         'user_id',
         'date',
         'status',

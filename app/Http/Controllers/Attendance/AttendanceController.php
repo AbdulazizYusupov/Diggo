@@ -40,6 +40,7 @@ class AttendanceController extends Controller
      */
     public function store(Request $request)
     {
+        
         $validated = $request->validate([
             'group_id' => 'required|exists:groups,id',
             'student_id' => 'required|exists:students,id',
@@ -67,10 +68,10 @@ class AttendanceController extends Controller
                     'homework_score' => $validated['homework_score'] ?? 0,
                     'participation_score' => $validated['participation_score'] ?? 0,
                     'notes' => $validated['notes'],
-                    'user_id' => Auth::id(),
-                    'school_id' => Auth::user()->student?->school_id
-                        ?? Auth::user()->teacher?->school_id
-                        ?? Auth::user()->director?->school_id,
+                    'user_id' => auth()->id(),
+                    'school_id' => auth()->user()->student?->school_id
+                        ?? auth()->user()->teacher?->school_id
+                        ?? auth()->user()->director?->school_id,
                 ]
             );
 
@@ -103,7 +104,7 @@ class AttendanceController extends Controller
                         'balance_after' => $student->coins + $coins,
                         'description' => "Davomat: {$group->name} - " . Carbon::parse($validated['attendance_date'])->format('d.m.Y'),
                         'school_id' => $attendance->school_id,
-                        'user_id' => Auth::id(),
+                        'user_id' => auth()->id(),
                     ]
                 );
 
@@ -135,18 +136,18 @@ class AttendanceController extends Controller
     // {
     //     //
     // }
-     public function show(Group $group, Request $request)
+    public function show(Group $group, Request $request)
     {
         // Tanlangan oy va yil (default: joriy oy)
         $year = $request->input('year', now()->year);
         $month = $request->input('month', now()->month);
-        
+
         $startDate = Carbon::create($year, $month, 1)->startOfMonth();
         $endDate = $startDate->copy()->endOfMonth();
-        
+
         // Guruh o'quvchilari
         $students = $group->activeStudents()
-            ->with(['user', 'coinTransactions' => function($q) use ($startDate, $endDate) {
+            ->with(['user', 'coinTransactions' => function ($q) use ($startDate, $endDate) {
                 $q->whereBetween('transaction_date', [$startDate, $endDate]);
             }])
             ->orderBy('created_at')
@@ -156,7 +157,7 @@ class AttendanceController extends Controller
         $attendances = Attendance::where('group_id', $group->id)
             ->whereBetween('date', [$startDate, $endDate])
             ->get()
-            ->groupBy(function($item) {
+            ->groupBy(function ($item) {
                 return $item->student_id . '_' . $item->attendance_date->format('Y-m-d');
             });
 
@@ -171,7 +172,7 @@ class AttendanceController extends Controller
             'saturday' => 6,
             'sunday' => 0,
         ];
-        
+
         $lessonDays = [];
         $current = $startDate->copy();
         while ($current <= $endDate) {
@@ -182,7 +183,7 @@ class AttendanceController extends Controller
             $current->addDay();
         }
 
-        return view('attendance.show', compact(
+        return view('Attendance.show', compact(
             'group',
             'students',
             'attendances',
@@ -221,64 +222,80 @@ class AttendanceController extends Controller
     {
         $validated = $request->validate([
             'group_id' => 'required|exists:groups,id',
-            'attendance_date' => 'required|date',
             'attendances' => 'required|array',
             'attendances.*.student_id' => 'required|exists:students,id',
+            'attendances.*.date' => 'required|date',
             'attendances.*.status' => 'required|in:present,late,absent,excused',
             'attendances.*.homework_score' => 'nullable|integer|min:0|max:2',
             'attendances.*.participation_score' => 'nullable|integer|min:0|max:2',
         ]);
-
+        // dd($request->all());
         DB::beginTransaction();
         try {
             $group = Group::findOrFail($validated['group_id']);
             $totalCoins = 0;
+            $schoolId = auth()->user()->student?->school_id
+                ?? auth()->user()->teacher?->school_id
+                ?? auth()->user()->director?->school_id;
 
             foreach ($validated['attendances'] as $attendanceData) {
                 $student = Student::findOrFail($attendanceData['student_id']);
+
+                // Eski coinni olib tashlash (agar mavjud bo'lsa)
+                $oldAttendance = Attendance::where([
+                    'student_id' => $attendanceData['student_id'],
+                    'group_id' => $validated['group_id'],
+                    'attendance_date' => $attendanceData['attendance_date'],
+                ])->first();
+
+                if ($oldAttendance) {
+                    $oldCoins = 0;
+                    if ($oldAttendance->status === 'present') $oldCoins += 2;
+                    elseif ($oldAttendance->status === 'late') $oldCoins += 1;
+                    $oldCoins += $oldAttendance->homework_score + $oldAttendance->participation_score;
+
+                    if ($oldCoins > 0) {
+                        $student->decrement('coins', $oldCoins);
+                    }
+                }
 
                 $attendance = Attendance::updateOrCreate(
                     [
                         'student_id' => $attendanceData['student_id'],
                         'group_id' => $validated['group_id'],
-                        'attendance_date' => $validated['attendance_date'],
+                        'attendance_date' => $attendanceData['attendance_date'],
                     ],
                     [
                         'status' => $attendanceData['status'],
                         'homework_score' => $attendanceData['homework_score'] ?? 0,
                         'participation_score' => $attendanceData['participation_score'] ?? 0,
-                        'user_id' => Auth::id(),
-                        'school_id' => Auth::user()->student?->school_id
-                            ?? Auth::user()->teacher?->school_id
-                            ?? Auth::user()->director?->school_id,
+                        'user_id' => auth()->id(),
+                        'school_id' => $schoolId,
                     ]
                 );
 
-                // Coinlarni hisoblash
+                // Yangi coinlarni hisoblash
                 $coins = 0;
-
                 if ($attendanceData['status'] === 'present') {
                     $coins += 2;
                 } elseif ($attendanceData['status'] === 'late') {
                     $coins += 1;
                 }
-
-                $coins += $attendanceData['homework_score'] ?? 0;
-                $coins += $attendanceData['participation_score'] ?? 0;
+                $coins += ($attendanceData['homework_score'] ?? 0) + ($attendanceData['participation_score'] ?? 0);
 
                 if ($coins > 0) {
                     CoinTransaction::updateOrCreate(
                         [
                             'student_id' => $student->id,
-                            'transaction_date' => $validated['attendance_date'],
+                            'transaction_date' => $attendanceData['attendance_date'],
                             'type' => 'attendance',
                         ],
                         [
                             'coins' => $coins,
                             'balance_after' => $student->coins + $coins,
-                            'description' => "Davomat: {$group->name} - " . Carbon::parse($validated['attendance_date'])->format('d.m.Y'),
-                            'school_id' => $attendance->school_id,
-                            'user_id' => Auth::id(),
+                            'description' => "Davomat: {$group->name} - " . Carbon::parse($attendanceData['attendance_date'])->format('d.m.Y'),
+                            'school_id' => $schoolId,
+                            'user_id' => auth()->id(),
                         ]
                     );
 
@@ -296,6 +313,7 @@ class AttendanceController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Attendance save error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Xatolik: ' . $e->getMessage()
