@@ -11,8 +11,7 @@
                 {{-- Course Icon --}}
                 <div
                     class="flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 rounded-3xl shadow-xl shadow-purple-200 dark:shadow-none flex items-center justify-center transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                    <svg class="w-10 h-10 lg:w-12 lg:h-12 text-white" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
+                    <svg class="w-10 h-10 lg:w-12 lg:h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
@@ -98,7 +97,8 @@
                 <a href="{{ route('courses.index') }}"
                     class="inline-flex items-center gap-2 px-4 lg:px-5 py-2.5 lg:py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300 font-bold rounded-xl transition-all active:scale-95 shadow-sm">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
                     <span class="hidden sm:inline">Orqaga</span>
                 </a>
@@ -212,7 +212,8 @@
                         <div class="flex items-center gap-3 mb-4">
                             <div
                                 class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-200 dark:shadow-none">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
@@ -347,7 +348,7 @@
                                     <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400">
                                         🟢 Boshlang'ich
                                     </span>
-                                @elseif($course->level =='intermediate')
+                                @elseif($course->level == 'intermediate')
                                     <span class="text-sm font-bold text-amber-600 dark:text-amber-400">
                                         🟡 O'rta
                                     </span>
@@ -394,23 +395,49 @@
                     <div class="pt-6 border-t border-gray-200 dark:border-gray-700">
                         <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-3">Tezkor amallar</h4>
                         <div class="space-y-2">
-                            {{-- {{ route('groups.create', ['course_id' => $course->id]) }} --}}
-                            <a href=""
-                                class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-xl transition-all group">
-                                <div
-                                    class="w-10 h-10 bg-purple-100 dark:bg-purple-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 4v16m8-8H4" />
-                                    </svg>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-sm font-bold text-gray-900 dark:text-white">Guruh qo'shish</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Bu kursga yangi guruh yaratish</p>
-                                </div>
-                            </a>
+                            @if ($course->is_active == true)
+                                <a href="{{ route('groups.create', ['course_id' => $course->id]) }}"
+                                    class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-xl transition-all group">
+                                    <div
+                                        class="w-10 h-10 bg-purple-100 dark:bg-purple-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4v16m8-8H4" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-bold text-gray-900 dark:text-white">Guruh qo'shish</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Bu kursga yangi guruh yaratish
+                                        </p>
+                                    </div>
+                                </a>
+                            @else
+                                <div class="border-t border-gray-100 dark:border-gray-800 pt-6">
+                                    <div
+                                        class="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/20 rounded-2xl shadow-sm">
+                                        <div class="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+                                            <svg class="w-5 h-5 text-amber-600 dark:text-amber-500 flex-shrink-0"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                            </svg>
+                                        </div>
 
+                                        <div class="flex-1">
+                                            <h4 class="text-sm font-semibold text-amber-900 dark:text-amber-400 mb-1">
+                                                Kurs holati: Faol emas
+                                            </h4>
+                                            <p class="text-xs leading-relaxed text-amber-800/80 dark:text-amber-500/80">
+                                                Ushbu kurs hozirda <span
+                                                    class="font-medium underline decoration-amber-300">faol emas</span>.
+                                                Kursni
+                                                faollashtirmasdan turib, yangi guruhlar tashkil etish imkoniyati cheklangan.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                             <a href="{{ route('courses.edit', $course->id) }}"
                                 class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-xl transition-all group">
                                 <div
@@ -423,7 +450,8 @@
                                 </div>
                                 <div class="flex-1">
                                     <p class="text-sm font-bold text-gray-900 dark:text-white">Tahrirlash</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Kurs ma'lumotlarini o'zgartirish</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Kurs ma'lumotlarini o'zgartirish
+                                    </p>
                                 </div>
                             </a>
                         </div>
