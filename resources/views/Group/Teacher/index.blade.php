@@ -142,8 +142,7 @@
             @endforelse
         </div>
     </div>
-
-    <!-- Add Teachers Modal -->
+    
     <div id="add-modal" onclick="document.getElementById('add-modal').classList.add('hidden')"
         class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
 

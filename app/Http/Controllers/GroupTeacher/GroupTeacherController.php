@@ -40,26 +40,31 @@ class GroupTeacherController extends Controller
      */
     public function store(Request $request, Group $group)
     {
+        $hasPrimary = GroupTeacher::where('group_id', $group->id)
+            ->where('is_primary', true)
+            ->exists();
+
         $request->validate([
             'teacher_ids' => 'required|array|min:1',
             'teacher_ids.*' => 'exists:teachers,id',
-            'primary_teacher_id' => 'required|exists:teachers,id',
+            'primary_teacher_id' => $hasPrimary
+                ? 'nullable|exists:teachers,id'
+                : 'required|exists:teachers,id',
         ]);
 
-        // 1. Avval eski primarylarni o‘chiramiz
-        GroupTeacher::where('group_id', $group->id)
-            ->update(['is_primary' => false]);
+        if ($request->filled('primary_teacher_id')) {
+            GroupTeacher::where('group_id', $group->id)
+                ->update(['is_primary' => false]);
+        }
 
-        // 2. Teacherlarni bittalab qo‘shamiz
         foreach ($request->teacher_ids as $teacherId) {
-
             GroupTeacher::updateOrCreate(
                 [
-                    'group_id'   => $group->id,
+                    'group_id' => $group->id,
                     'teacher_id' => $teacherId,
                 ],
                 [
-                    'is_primary' => $teacherId == $request->primary_teacher_id,
+                    'is_primary' => $request->primary_teacher_id == $teacherId,
                     'assigned_at' => now(),
                 ]
             );

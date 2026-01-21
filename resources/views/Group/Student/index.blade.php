@@ -1,6 +1,6 @@
 @extends('Layout.app')
 
-@section('title', $group->name . ' - Talabalar')
+@section('title', $group->name . ' - O\'quvchilar')
 
 @section('content')
     <div class="space-y-6">
@@ -17,7 +17,7 @@
                 </a>
                 <div>
                     <h1 class="text-3xl font-black text-gray-900 dark:text-white">{{ $group->name }}</h1>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Talabalar boshqaruvi</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">O'quvchilar boshqaruvi</p>
                 </div>
             </div>
             <button type="button" onclick="document.getElementById('add-modal').classList.remove('hidden')"
@@ -25,7 +25,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
-                Talaba qo'shish
+                O'quvchi qo'shish
             </button>
         </div>
 
@@ -34,7 +34,7 @@
             <div
                 class="bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-500/10 dark:to-purple-500/5 rounded-2xl p-6 border border-purple-200 dark:border-purple-500/20">
                 <p class="text-xs uppercase tracking-wider font-bold text-purple-600 dark:text-purple-400 mb-2">Jami
-                    talabalar</p>
+                    o'quvchi</p>
                 <p class="text-4xl font-black text-purple-600 dark:text-purple-400">{{ $group->activeStudents->count() }}
                 </p>
             </div>
@@ -57,10 +57,10 @@
             class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-purple-500/20 overflow-hidden">
             <div class="p-6 border-b border-gray-200 dark:border-gray-800">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-black text-gray-900 dark:text-white">Talabalar ro'yxati</h2>
+                    <h2 class="text-xl font-black text-gray-900 dark:text-white">O'quvchilar ro'yxati</h2>
                     <div class="relative">
                         <input type="text" id="searchInput" placeholder="Qidirish..."
-                            class="pl-10 pr-4 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            class="pl-10 pr-4 py-2 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-slate-400 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                         <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -69,14 +69,13 @@
                     </div>
                 </div>
             </div>
-
             <div class="overflow-x-auto">
                 <table class="w-full" id="studentsTable">
                     <thead class="bg-gray-50 dark:bg-slate-800">
                         <tr>
                             <th
                                 class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                Talaba</th>
+                                O'quvchi</th>
                             <th
                                 class="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                                 Telefon</th>
@@ -141,7 +140,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                onclick="return confirm('Talabani guruhdan chiqarmoqchimisiz?')"
+                                                onclick="return confirm('O\'quvchini guruhdan chiqarmoqchimisiz?')"
                                                 class="p-2 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-all group">
                                                 <svg class="w-5 h-5 text-rose-600 dark:text-rose-400" fill="none"
                                                     stroke="currentColor" viewBox="0 0 24 24">
@@ -165,8 +164,10 @@
                                                     d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                             </svg>
                                         </div>
-                                        <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">Talabalar yo'q</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">Bu guruhda hali talabalar yo'q
+                                        <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">O'quvchilar yo'q
+                                        </p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Bu guruhda hali o'quvchilar
+                                            yo'q
                                         </p>
                                     </div>
                                 </td>
@@ -179,13 +180,15 @@
     </div>
 
     <!-- Add Students Modal -->
-    <div id="add-modal"
+    <div id="add-modal" onclick="closeAddModal()"
         class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-        <div
+
+        <div onclick="event.stopPropagation()"
             class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-white/5 max-h-[90vh] flex flex-col">
+
             <div class="p-6 border-b border-gray-200 dark:border-gray-800">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-2xl font-black text-gray-900 dark:text-white">Talaba qo'shish</h3>
+                    <h3 class="text-2xl font-black text-gray-900 dark:text-white">O'quvchi qo'shish</h3>
                     <button type="button" onclick="document.getElementById('add-modal').classList.add('hidden')"
                         class="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-all">
                         <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,8 +205,8 @@
                     <!-- Search -->
                     <div class="mb-4">
                         <div class="relative">
-                            <input type="text" id="modalSearch" placeholder="Talaba qidirish..."
-                                class="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <input type="text" id="modalSearch" placeholder="o'quvchini qidirish..."
+                                class="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-slate-400 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                             <svg class="w-5 h-5 text-gray-400 absolute left-3 top-3.5" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -228,7 +231,7 @@
                             </label>
                         @empty
                             <div class="text-center py-8">
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Qo'shish uchun talabalar yo'q</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Qo'shish uchun o'quvchilar yo'q</p>
                             </div>
                         @endforelse
                     </div>
@@ -272,5 +275,9 @@
                 item.style.display = name.includes(searchTerm) ? '' : 'none';
             });
         });
+
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.add('hidden');
+        }
     </script>
 @endsection
