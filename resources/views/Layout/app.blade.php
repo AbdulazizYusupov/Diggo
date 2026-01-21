@@ -437,7 +437,7 @@
                             </div>
                         </div>
 
-                        
+
                         <a href="{{ route('payments.index') }}"
                             class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group transition-all {{ request()->routeIs('payments.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                             <svg class="h-5 w-5 text-gray-400 group-hover:text-green-500 flex-shrink-0 transition-colors {{ request()->routeIs('payments.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-green-500' }}"
@@ -770,7 +770,8 @@
             usersDropdown: document.getElementById('users-dropdown'),
             userMenuButton: document.getElementById('user-menu-button'),
             userMenu: document.getElementById('user-menu'),
-            successAlert: document.getElementById('alert-success')
+            successAlert: document.getElementById('alert-success'),
+            errorAlert: document.getElementById('alert-error')
         };
 
         /**
@@ -914,6 +915,13 @@
                 elements.successAlert.style.transition = "opacity 0.5s ease";
                 elements.successAlert.style.opacity = "0";
                 setTimeout(() => elements.successAlert.remove(), 500);
+            }, 5000);
+        }
+        if (elements.errorAlert) {
+            setTimeout(() => {
+                elements.errorAlert.style.transition = "opacity 0.5s ease";
+                elements.errorAlert.style.opacity = "0";
+                setTimeout(() => elements.errorAlert.remove(), 500);
             }, 5000);
         }
 

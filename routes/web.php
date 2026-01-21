@@ -5,6 +5,8 @@ use App\Http\Controllers\Course\CourseController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Director\DirectorController;
 use App\Http\Controllers\Group\GroupController;
+use App\Http\Controllers\GroupStudent\GroupStudentController;
+use App\Http\Controllers\GroupTeacher\GroupTeacherController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Profile\ProfileController;
@@ -54,6 +56,36 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('schools', SchoolController::class);
         Route::resource('courses', CourseController::class);
         Route::resource('groups', GroupController::class);
+        Route::prefix('groups/{group}')->group(function () {
+            // Students
+            Route::get('students', [GroupStudentController::class, 'index'])
+                ->name('groups.students.index');
+
+            Route::get('students/create', [GroupStudentController::class, 'create'])
+                ->name('groups.students.create');
+
+            Route::post('students', [GroupStudentController::class, 'store'])
+                ->name('groups.students.store');
+
+            Route::delete('students/{student}', [GroupStudentController::class, 'destroy'])
+                ->name('groups.students.destroy');
+
+            // Teachers
+            Route::get('teachers', [GroupTeacherController::class, 'index'])
+                ->name('groups.teachers.index');
+
+            Route::get('teachers/create', [GroupTeacherController::class, 'create'])
+                ->name('groups.teachers.create');
+
+            Route::post('teachers', [GroupTeacherController::class, 'store'])
+                ->name('groups.teachers.store');
+            Route::patch('teachers/{teacher}/primary', [GroupTeacherController::class, 'makePrimaryTeacher'])
+                ->name('groups.teachers.primary');
+
+            Route::delete('teachers/{teacher}', [GroupTeacherController::class, 'destroy'])
+                ->name('groups.teachers.destroy');
+        });
+        Route::resource('group-teachers', GroupTeacherController::class);
         Route::resource('payments', PaymentController::class);
         // Route::resource('lesson-charges', LessonChargeController::class);
         // Route::resource('attendances', AttendanceController::class);

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('group_teachers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('group_id')->constrained()->onDelete('cascade');
-            $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('teacher_id')->constrained('teachers')->onDelete('cascade');
             $table->boolean('is_primary')->default(false);
             $table->date('assigned_at')->nullable();
             $table->timestamps();

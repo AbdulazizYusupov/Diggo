@@ -32,7 +32,7 @@ class Group extends Model
 
     public function course()
     {
-        return $this->belongsTo(Cours::class,'cours_id');
+        return $this->belongsTo(Cours::class, 'cours_id');
     }
 
     public function teachers()
@@ -42,7 +42,8 @@ class Group extends Model
             'group_teachers',
             'group_id',
             'teacher_id'
-        );
+        )->withPivot('is_primary', 'assigned_at')
+            ->withTimestamps();;
     }
     public function students()
     {

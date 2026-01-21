@@ -11,8 +11,7 @@
                 {{-- Group Icon --}}
                 <div
                     class="flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-3xl shadow-xl shadow-blue-200 dark:shadow-none flex items-center justify-center transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                    <svg class="w-10 h-10 lg:w-12 lg:h-12 text-white" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
+                    <svg class="w-10 h-10 lg:w-12 lg:h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
@@ -92,9 +91,26 @@
                 <a href="{{ route('groups.index') }}"
                     class="inline-flex items-center gap-2 px-4 lg:px-5 py-2.5 lg:py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300 font-bold rounded-xl transition-all active:scale-95 shadow-sm">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
                     <span class="hidden sm:inline">Orqaga</span>
+                </a>
+                <a href="{{ route('groups.students.index', ['group' => $group->id]) }}"
+                    class="inline-flex items-center gap-2 px-4 lg:px-5 py-2.5 lg:py-3 bg-purple-500 hover:bg-purple-600 dark:bg-purple-600 dark:hover:bg-purple-700 text-white font-bold rounded-xl transition-all active:scale-95 shadow-sm shadow-purple-200 dark:shadow-none">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <span class="hidden sm:inline">Talabalar</span>
+                </a>
+                <a href="{{ route('groups.teachers.index', ['group' => $group->id]) }}"
+                    class="inline-flex items-center gap-2 px-4 lg:px-5 py-2.5 lg:py-3 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold rounded-xl transition-all active:scale-95 shadow-sm shadow-blue-200 dark:shadow-none">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span class="hidden sm:inline">O'qituvchilar</span>
                 </a>
 
                 <a href="{{ route('groups.edit', $group->id) }}"
@@ -238,7 +254,8 @@
                         {{-- Time & Duration --}}
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
                             <div class="p-4 bg-gray-50 dark:bg-slate-800 rounded-xl">
-                                <p class="text-xs uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 mb-2">
+                                <p
+                                    class="text-xs uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 mb-2">
                                     Dars vaqti</p>
                                 <p class="text-lg font-black text-gray-900 dark:text-white">
                                     {{ \Carbon\Carbon::parse($group->start_time)->format('H:i') }} -
@@ -247,7 +264,8 @@
                             </div>
 
                             <div class="p-4 bg-gray-50 dark:bg-slate-800 rounded-xl">
-                                <p class="text-xs uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 mb-2">
+                                <p
+                                    class="text-xs uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400 mb-2">
                                     Sig'im</p>
                                 <p class="text-lg font-black text-gray-900 dark:text-white">
                                     {{ $stats['total_students'] }} / {{ $group->capacity }} ta talaba
@@ -287,16 +305,16 @@
                                         <div
                                             class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-sm">
                                             <span class="text-white font-bold text-sm">
-                                                {{ substr($student->name, 0, 2) }}
+                                                {{ substr($student->user->name, 0, 2) }}
                                             </span>
                                         </div>
                                         <div>
                                             <p
                                                 class="text-sm font-bold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                                                {{ $student->name }}
+                                                {{ $student->user->name }}
                                             </p>
                                             <p class="text-xs text-gray-500 dark:text-gray-400">
-                                                {{ $student->phone ?? 'Telefon yo\'q' }}
+                                                {{ $student->user->phone ?? 'Telefon yo\'q' }}
                                             </p>
                                         </div>
                                     </div>
@@ -402,26 +420,28 @@
                                 </div>
                                 <div class="flex-1">
                                     <p class="text-sm font-bold text-gray-900 dark:text-white">Tahrirlash</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Guruh ma'lumotlarini o'zgartirish</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Guruh ma'lumotlarini o'zgartirish
+                                    </p>
                                 </div>
                             </a>
 
-                            @if($group->course)
-                            <a href="{{ route('courses.show', $group->course->id) }}"
-                                class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-xl transition-all group">
-                                <div
-                                    class="w-10 h-10 bg-purple-100 dark:bg-purple-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                    </svg>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-sm font-bold text-gray-900 dark:text-white">Kursga o'tish</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ $group->course->title }}</p>
-                                </div>
-                            </a>
+                            @if ($group->course)
+                                <a href="{{ route('courses.show', $group->course->id) }}"
+                                    class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-xl transition-all group">
+                                    <div
+                                        class="w-10 h-10 bg-purple-100 dark:bg-purple-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-bold text-gray-900 dark:text-white">Kursga o'tish</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $group->course->title }}
+                                        </p>
+                                    </div>
+                                </a>
                             @endif
                         </div>
                     </div>

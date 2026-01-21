@@ -47,10 +47,9 @@ class Teacher extends Model
             'group_teachers',   // pivot table
             'teacher_id',
             'group_id'
-        );
+        )->withPivot('is_primary', 'assigned_at') // SHU QATORNI QO'SHING
+            ->withTimestamps();;
     }
-
-
 
     /**
      * O'qituvchining davomat jurnali (qancha dars o'tganini hisoblash uchun).
@@ -63,6 +62,7 @@ class Teacher extends Model
     /**
      * Scope: Faqat hozirda dars o'tayotgan o'qituvchilar.
      */
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
