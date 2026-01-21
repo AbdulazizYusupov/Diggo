@@ -143,7 +143,7 @@
                     </div>
 
                     <input type="text" name="search" value="{{ $search }}" placeholder="Rol nomini qidiring..."
-                        class="block w-full pl-11 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all">
+                        class="block w-full pl-11 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all">
                 </div>
 
                 <div class="flex gap-2">

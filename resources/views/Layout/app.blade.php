@@ -310,11 +310,12 @@
 
                                     <a href="{{ route('role-permissions.index') }}"
                                         class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->is('role-permissions*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
+
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                             stroke-width="1.5" stroke="currentColor"
                                             class="w-4 h-4 mr-2 flex-shrink-0">
                                             <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .415.162.798.425 1.081m2.75 0a.75.75 0 0 1 1.06 1.06L12 9.75l-2.75-2.75a.75.75 0 0 1 1.06-1.06l1.69 1.69 1.69-1.69a.75.75 0 0 1 1.06 0Z" />
+                                                d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                                         </svg>
                                         <span class="sidebar-text">Rolga biriktirish</span>
                                     </a>
