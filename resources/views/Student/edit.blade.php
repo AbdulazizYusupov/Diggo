@@ -8,8 +8,8 @@
             <div class="flex items-center gap-4">
                 <div
                     class="hidden sm:flex p-3.5 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl shadow-sm border border-emerald-200 dark:border-emerald-800/50">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-emerald-600 dark:text-emerald-400"
+                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                     </svg>
@@ -50,7 +50,8 @@
         </div>
         <div
             class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <form action="{{ route('students.update', $student->id) }}" method="POST" enctype="multipart/form-data" class="p-8 space-y-8">
+            <form action="{{ route('students.update', $student->id) }}" method="POST" enctype="multipart/form-data"
+                class="p-8 space-y-8">
                 @csrf
                 @method('PUT')
                 {{-- Shaxsiy ma'lumotlar (User) --}}
@@ -72,7 +73,8 @@
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Familiya <span
                                     class="text-red-500">*</span></label>
-                            <input type="text" name="surname" value="{{ old('surname',$student->user->surname) }}" required placeholder="Aliyev"
+                            <input type="text" name="surname" value="{{ old('surname', $student->user->surname) }}"
+                                required placeholder="Aliyev"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none dark:text-white transition-all 
                             @error('surname') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             @error('surname')
@@ -84,7 +86,8 @@
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Ism <span
                                     class="text-red-500">*</span></label>
-                            <input type="text" name="name" value="{{ old('name',$student->user->name) }}" required placeholder="Aziz"
+                            <input type="text" name="name" value="{{ old('name', $student->user->name) }}" required
+                                placeholder="Aziz"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none dark:text-white transition-all
                             @error('name') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             @error('name')
@@ -95,8 +98,8 @@
                         {{-- Otasining ismi --}}
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Otasining ismi</label>
-                            <input type="text" name="middle_name" value="{{ old('middle_name',$student->user->middle_name) }}"
-                                placeholder="Rustamovich"
+                            <input type="text" name="middle_name"
+                                value="{{ old('middle_name', $student->user->middle_name) }}" placeholder="Rustamovich"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none dark:text-white transition-all
                             @error('middle_name') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             @error('middle_name')
@@ -112,8 +115,8 @@
                                     class="text-red-500">*</span></label>
                             <div class="relative">
                                 <span class="absolute inset-y-0 left-4 flex items-center text-gray-400">+998</span>
-                                <input type="text" name="phone" value="{{ old('phone',$student->user->phone) }}" required
-                                    placeholder=" (90) 123-45-67"
+                                <input type="text" name="phone" value="{{ old('phone', $student->user->phone) }}"
+                                    required placeholder=" (90) 123-45-67"
                                     class="w-full pl-14 pr-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none dark:text-white transition-all
                             @error('phone') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             </div>
@@ -126,7 +129,8 @@
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Tug'ilgan sana <span
                                     class="text-red-500">*</span></label>
-                            <input type="date" name="birth_date" value="{{ old('birth_date',$student->user->birth_date?->format('Y-m-d')) }}" required
+                            <input type="date" name="birth_date"
+                                value="{{ old('birth_date', $student->user->birth_date?->format('Y-m-d')) }}" required
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-pink-500 dark:text-white outline-none transition-all
                             @error('birth_date') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             @error('birth_date')
@@ -141,9 +145,12 @@
                             <select name="gender" required
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-pink-500 dark:text-white outline-none transition-all
                             @error('gender') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
-                                <option value="male" {{ old('gender',$student->user->gender) == 'male' ? 'selected' : '' }}>O'g'il bola
+                                <option value="male"
+                                    {{ old('gender', $student->user->gender) == 'male' ? 'selected' : '' }}>O'g'il bola
                                 </option>
-                                <option value="female" {{ old('gender',$student->user->gender) == 'female' ? 'selected' : '' }}>Qiz bola</option>
+                                <option value="female"
+                                    {{ old('gender', $student->user->gender) == 'female' ? 'selected' : '' }}>Qiz bola
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -167,21 +174,21 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Viloyat</label>
-                            <input type="text" name="region" value="{{ old('region',$student->user->region) }}"
+                            <input type="text" name="region" value="{{ old('region', $student->user->region) }}"
                                 placeholder="Toshkent viloyati"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-teal-500 outline-none dark:text-white transition-all
                     @error('region') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                         </div>
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Shahar / Tuman</label>
-                            <input type="text" name="city" value="{{ old('city',$student->user->city) }}"
+                            <input type="text" name="city" value="{{ old('city', $student->user->city) }}"
                                 placeholder="Chilonzor tumani"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-teal-500 outline-none dark:text-white transition-all
                     @error('city') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                         </div>
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Ko'cha va uy</label>
-                            <input type="text" name="address" value="{{ old('address',$student->user->address) }}"
+                            <input type="text" name="address" value="{{ old('address', $student->user->address) }}"
                                 placeholder="Bunyodkor ko'chasi, 12-uy"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-teal-500 outline-none dark:text-white transition-all
                     @error('address') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
@@ -208,7 +215,8 @@
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Ota-onaning to'liq
                                 ismi</label>
-                            <input type="text" name="parent_name" value="{{ old('parent_name',$student->parent_name) }}"
+                            <input type="text" name="parent_name"
+                                value="{{ old('parent_name', $student->parent_name) }}"
                                 placeholder="Aliyev Rustam Karimovich"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-violet-500 outline-none dark:text-white transition-all
                             @error('parent_name') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
@@ -223,7 +231,8 @@
                                 raqami</label>
                             <div class="relative">
                                 <span class="absolute inset-y-0 left-4 flex items-center text-gray-400">+998</span>
-                                <input type="text" name="parent_phone" value="{{ old('parent_phone',$student->parent_phone) }}"
+                                <input type="text" name="parent_phone"
+                                    value="{{ old('parent_phone', $student->parent_phone) }}"
                                     placeholder=" (90) 123-45-67"
                                     class="w-full pl-14 pr-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-violet-500 outline-none dark:text-white transition-all
                             @error('parent_phone') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
@@ -238,7 +247,8 @@
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Favqulodda holat uchun
                                 aloqa (ismi)</label>
                             <input type="text" name="emergency_contact_name"
-                                value="{{ old('emergency_contact_name',$student->emergency_contact_name) }}" placeholder="Karimova Nodira"
+                                value="{{ old('emergency_contact_name', $student->emergency_contact_name) }}"
+                                placeholder="Karimova Nodira"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-violet-500 outline-none dark:text-white transition-all
                             @error('emergency_contact_name') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             @error('emergency_contact_name')
@@ -253,7 +263,8 @@
                             <div class="relative">
                                 <span class="absolute inset-y-0 left-4 flex items-center text-gray-400">+998</span>
                                 <input type="text" name="emergency_contact_phone"
-                                    value="{{ old('emergency_contact_phone',$student->emergency_contact_phone) }}" placeholder=" (91) 234-56-78"
+                                    value="{{ old('emergency_contact_phone', $student->emergency_contact_phone) }}"
+                                    placeholder=" (91) 234-56-78"
                                     class="w-full pl-14 pr-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-violet-500 outline-none dark:text-white transition-all
                             @error('emergency_contact_phone') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             </div>
@@ -297,8 +308,8 @@
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Dastlabki balans
                                 (so'm)</label>
-                            <input type="number" name="balance" value="{{ old('balance', $student->balance) }}" min="0"
-                                step="0.01" placeholder="0"
+                            <input type="number" name="balance" value="{{ old('balance', $student->balance) }}"
+                                min="0" step="0.01" placeholder="0"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none dark:text-white transition-all
                             @error('balance') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             @error('balance')
@@ -310,8 +321,8 @@
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Dastlabki
                                 tangalar</label>
-                            <input type="number" name="coins" value="{{ old('coins',$student->coins ) }}" min="0"
-                                placeholder="0"
+                            <input type="number" name="coins" value="{{ old('coins', $student->coins) }}"
+                                min="0" placeholder="0"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none dark:text-white transition-all
                             @error('coins') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             @error('coins')
@@ -324,7 +335,7 @@
                         <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Qo'shimcha izoh</label>
                         <textarea name="notes" rows="3" placeholder="O'quvchi haqida qo'shimcha ma'lumotlar..."
                             class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none dark:text-white transition-all resize-none
-                        @error('notes') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">{{ old('notes',$student->notes) }}</textarea>
+                        @error('notes') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">{{ old('notes', $student->notes) }}</textarea>
                         @error('notes')
                             <p class="text-red-500 text-xs mt-1 ml-1">{{ $message }}</p>
                         @enderror
@@ -333,24 +344,57 @@
 
                 {{-- Guruh tanlash --}}
                 <div class="space-y-4">
-
-
                     <div class="space-y-1.5">
-                        <label for="school_id" class="text-xs font-semibold text-gray-700 dark:text-gray-300 ml-1">
-                            Schoolni tanlang</label>
-                        <select name="school_id" id="school_id"
-                            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border rounded-xl focus:ring-2 focus:ring-indigo-500 dark:text-white outline-none transition-all appearance-none cursor-pointer
-                                @error('school_id') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
-                            <option value="" disabled
-                                {{ !old('school_id', $student->school_id ?? '') ? 'selected' : '' }}>Schoolni tanlang...
-                            </option>
-                            @foreach ($schools ?? [] as $school)
-                                <option value="{{ $school->id }}"
-                                    {{ old('school_id', $student->school_id ?? '') == $school->id ? 'selected' : '' }}>
-                                    {{ $school->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 ml-1">
+                            Schoolni tanlang
+                        </label>
+
+                        <div class="relative" id="studentSchoolCustomContainer">
+                            <div onclick="toggleStudentSchoolDropdown()"
+                                class="w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border @error('school_id') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror rounded-xl cursor-pointer group hover:border-indigo-500 transition-all shadow-sm">
+
+                                <span id="selectedStudentSchoolLabel" class="text-sm dark:text-white">
+                                    @php
+                                        $currentId = old('school_id', $student->school_id ?? '');
+                                        $selectedSchool = ($schools ?? collect())->firstWhere('id', $currentId);
+                                    @endphp
+                                    {{ $selectedSchool ? $selectedSchool->name : 'Schoolni tanlang...' }}
+                                </span>
+
+                                <input type="hidden" name="school_id" id="student_school_id_input"
+                                    value="{{ $currentId }}">
+
+                                <svg class="w-4 h-4 text-gray-400 group-hover:text-indigo-500 transition-transform"
+                                    id="studentSchoolArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+
+                            <div id="studentSchoolMenu"
+                                class="hidden absolute z-[180] w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden">
+                                <div class="p-2 border-b dark:border-gray-700 bg-gray-50/30 dark:bg-slate-900/30">
+                                    <input type="text" id="studentSchoolSearchInput" oninput="filterStudentSchools()"
+                                        placeholder="School qidirish..."
+                                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none">
+                                </div>
+
+                                <div class="max-h-60 overflow-y-auto custom-scrollbar">
+                                    @foreach ($schools ?? [] as $school)
+                                        <div onclick="selectStudentSchool('{{ $school->id }}', '{{ $school->name }}')"
+                                            class="student-school-item px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 cursor-pointer border-b border-gray-50 dark:border-gray-700/50 last:border-none">
+                                            <span class="font-medium student-item-name">{{ $school->name }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div id="noStudentSchoolFound"
+                                    class="hidden p-4 text-center text-xs text-gray-500 italic">
+                                    School topilmadi...
+                                </div>
+                            </div>
+                        </div>
+
                         @error('school_id')
                             <p class="text-red-500 text-[10px] mt-1 ml-1 font-medium">{{ $message }}</p>
                         @enderror
@@ -376,7 +420,7 @@
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">O'quvchi surati</label>
                             <div class="flex items-center justify-center w-full">
                                 <div class="relative w-full">
-                                    
+
                                     <div id="preview-box"
                                         class="{{ $student->user->photo ? '' : 'hidden' }} relative w-full h-32 rounded-2xl overflow-hidden border-2 border-indigo-500">
                                         <img id="image-display"
@@ -474,9 +518,9 @@
 
                 <div class="flex items-center justify-end gap-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                     <a href="{{ route('students.index') }}"
-                            class="flex-1 sm:flex-initial px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold rounded-2xl transition-all text-center">
-                            Bekor qilish
-                        </a>
+                        class="flex-1 sm:flex-initial px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold rounded-2xl transition-all text-center">
+                        Bekor qilish
+                    </a>
                     <button type="submit"
                         class="group inline-flex items-center justify-center px-10 py-3.5 text-sm font-bold text-white bg-gradient-to-r from-cyan-600 via-blue-600 to-cyan-600 bg-size-200 bg-pos-0 hover:bg-pos-100 rounded-2xl shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 dark:shadow-cyan-900/30 dark:hover:shadow-cyan-900/50 transform hover:scale-[1.02] active:scale-95 transition-all duration-300">
                         <svg class="w-5 h-5 mr-2 group-hover:translate-x-1 transition-transform" fill="none"
@@ -493,6 +537,62 @@
     </div>
 
     <script>
+        // Student School Dropdownni ochish/yopish
+        function toggleStudentSchoolDropdown() {
+            const menu = document.getElementById('studentSchoolMenu');
+            const arrow = document.getElementById('studentSchoolArrow');
+            const isHidden = menu.classList.contains('hidden');
+
+            // Barcha boshqa dropdownlarni yopish
+            document.querySelectorAll('[id$="Menu"]').forEach(m => {
+                if (m.id !== 'studentSchoolMenu') m.classList.add('hidden');
+            });
+
+            menu.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+
+            if (isHidden) {
+                document.getElementById('studentSchoolSearchInput').focus();
+            }
+        }
+
+        // Maktabni tanlash
+        function selectStudentSchool(id, name) {
+            document.getElementById('student_school_id_input').value = id;
+            document.getElementById('selectedStudentSchoolLabel').innerText = name;
+            toggleStudentSchoolDropdown();
+        }
+
+        // Qidiruv funksiyasi
+        function filterStudentSchools() {
+            const input = document.getElementById('studentSchoolSearchInput');
+            const filter = input.value.toLowerCase();
+            const items = document.querySelectorAll('.student-school-item');
+            const noResult = document.getElementById('noStudentSchoolFound');
+            let hasResults = false;
+
+            items.forEach(item => {
+                const name = item.querySelector('.student-item-name').innerText.toLowerCase();
+                if (name.includes(filter)) {
+                    item.style.display = "";
+                    hasResults = true;
+                } else {
+                    item.style.display = "none";
+                }
+            });
+
+            noResult.classList.toggle('hidden', hasResults);
+        }
+
+        // Tashqariga bosilganda yopish
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('studentSchoolCustomContainer');
+            if (container && !container.contains(e.target)) {
+                document.getElementById('studentSchoolMenu').classList.add('hidden');
+                document.getElementById('studentSchoolArrow').classList.remove('rotate-180');
+            }
+        });
+
         function showPreview(input) {
             const previewBox = document.getElementById('preview-box');
             const uploadLabel = document.getElementById('upload-label');

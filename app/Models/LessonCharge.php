@@ -12,7 +12,6 @@ class LessonCharge extends Model
     protected $fillable = [
         'student_id',
         'group_id',
-        'school_id',
         'amount',
         'charge_month',
         'status',
@@ -32,10 +31,6 @@ class LessonCharge extends Model
     public function group()
     {
         return $this->belongsTo(Group::class);
-    }
-    public function school()
-    {
-        return $this->belongsTo(School::class);
     }
     public function creator()
     {

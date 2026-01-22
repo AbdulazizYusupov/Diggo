@@ -378,44 +378,57 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 gap-6">
-                        <div class="space-y-3">
-                            <label
-                                class="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
-                                <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
+                    <div class="mb-6 space-y-2">
+                        <label
+                            class="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide flex items-center gap-2">
+                            <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                            Maktabni tanlang
+                        </label>
+
+                        <div class="relative" id="schoolCustomSelect">
+                            <div onclick="toggleSchoolDropdown()"
+                                class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer group hover:border-orange-400 transition-all">
+                                <span id="selectedSchoolLabel" class="text-sm text-gray-500 dark:text-gray-400">--
+                                    Maktabni qidiring va tanlang --</span>
+                                <input type="hidden" name="school_id" id="school_id_input">
+                                <svg class="w-5 h-5 text-gray-400 group-hover:text-orange-500 transition-transform"
+                                    id="schoolArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        d="M19 9l-7 7-7-7" />
                                 </svg>
-                                Maktab
-                                <span class="text-xs text-gray-400 normal-case">(ixtiyoriy)</span>
-                            </label>
-                            <select name="school_id"
-                                class="w-full px-5 py-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-700/50 border-2 rounded-2xl focus:ring-4 focus:ring-orange-500/20 focus:border-orange-500 dark:text-white outline-none transition-all text-base font-medium
-                                @error('school_id') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
-                                <option value="">-- Maktab tanlanmagan --</option>
-                                @foreach ($schools as $school)
-                                    <option value="{{ $school->id }}"
-                                        {{ old('school_id') == $school->id ? 'selected' : '' }}>
-                                        {{ $school->name }}
-                                        @if ($school->address)
-                                            - {{ Str::limit($school->address, 50) }}
-                                        @endif
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('school_id')
-                                <p class="text-red-500 text-sm mt-2 ml-1 flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                    {{ $message }}
-                                </p>
-                            @enderror
+                            </div>
+
+                            <div id="schoolDropdown"
+                                class="hidden absolute z-[110] w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl overflow-hidden">
+                                <div class="p-2 border-b dark:border-gray-700">
+                                    <input type="text" id="schoolSearchInput" oninput="filterSchools()"
+                                        placeholder="Maktab nomini yozing..."
+                                        class="w-full px-3 py-2 bg-gray-100 dark:bg-slate-900 dark:text-white border-none rounded-lg text-sm focus:ring-1 focus:ring-orange-500">
+                                </div>
+                                <div class="max-h-48 overflow-y-auto custom-scrollbar" id="schoolOptionsList">
+                                    <div onclick="selectSchool('', '-- Maktab tanlanmagan --')"
+                                        class="px-4 py-2 text-sm text-gray-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 cursor-pointer">
+                                        -- Tanlamaslik --</div>
+                                    @foreach ($schools as $school)
+                                        <div onclick="selectSchool('{{ $school->id }}', '{{ $school->name }}')"
+                                            class="school-option px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-orange-500/10 cursor-pointer flex flex-col">
+                                            <span class="font-bold school-name">{{ $school->name }}</span>
+                                            @if ($school->address)
+                                                <span
+                                                    class="text-[10px] text-gray-400">{{ Str::limit($school->address, 40) }}</span>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    <hr class="border-gray-100 dark:border-gray-800 mb-4">
                 </div>
 
                 <!-- Section 4: Financial Information -->
@@ -739,6 +752,54 @@
             previewBox.classList.add('hidden');
             uploadLabel.classList.remove('hidden');
         }
+        // School Select Logic
+        function toggleSchoolDropdown() {
+            const dropdown = document.getElementById('schoolDropdown');
+            const arrow = document.getElementById('schoolArrow');
+            dropdown.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+            if (!dropdown.classList.contains('hidden')) {
+                document.getElementById('schoolSearchInput').focus();
+            }
+        }
+
+        function selectSchool(id, name) {
+            document.getElementById('school_id_input').value = id;
+            document.getElementById('selectedSchoolLabel').innerText = name;
+            document.getElementById('selectedSchoolLabel').classList.replace('text-gray-500', 'text-gray-900');
+            document.getElementById('selectedSchoolLabel').classList.add('dark:text-white');
+            toggleSchoolDropdown();
+        }
+
+        function filterSchools() {
+            const input = document.getElementById('schoolSearchInput');
+            const filter = input.value.toLowerCase();
+            const options = document.querySelectorAll('.school-option');
+
+            options.forEach(option => {
+                const text = option.querySelector('.school-name').innerText.toLowerCase();
+                if (text.includes(filter)) {
+                    option.style.display = "";
+                } else {
+                    option.style.display = "none";
+                }
+            });
+        }
+
+        // Modal ochilganda dropdown yopilishi uchun
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.add('hidden');
+            document.getElementById('schoolDropdown').classList.add('hidden');
+        }
+
+        // Dropdown tashqarisiga bosilganda yopish
+        document.addEventListener('click', function(event) {
+            const isClickInside = document.getElementById('schoolCustomSelect').contains(event.target);
+            if (!isClickInside) {
+                document.getElementById('schoolDropdown').classList.add('hidden');
+                document.getElementById('schoolArrow').classList.remove('rotate-180');
+            }
+        });
     </script>
 
     <style>

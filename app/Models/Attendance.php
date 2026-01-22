@@ -30,10 +30,6 @@ class Attendance extends Model
     {
         return $this->belongsTo(Group::class);
     }
-    public function school()
-    {
-        return $this->belongsTo(School::class);
-    }
     public function markedBy()
     {
         return $this->belongsTo(User::class, 'user_id');

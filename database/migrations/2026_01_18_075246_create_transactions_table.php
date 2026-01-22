@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('student_id')->constrained()->cascadeOnDelete();
             $table->decimal('amount', 15, 2);
-            $table->enum('type', ['deposit', 'withdraw', 'refund', 'adjustment'])->index();
+            $table->enum('type', ['deposit', 'withdraw', 'refund', 'adjustment','commission'])->index();
             $table->string('description')->nullable();
             $table->morphs('transactionable');
             $table->decimal('balance_after', 15, 2);

@@ -73,6 +73,7 @@ class AttendanceController extends Controller
      */
     public function store(Request $request)
     {
+        dd(123);
         $validated = $request->validate([
             'group_id' => 'required|exists:groups,id',
             'student_id' => 'required|exists:students,id',
@@ -315,8 +316,6 @@ class AttendanceController extends Controller
                             'activity_score' => $newActivity,
                             'user_id' => $userId,
                         ]);
-
-                        $attendanceId = $oldAttendance->id;
                     } else {
                         // Create new attendance
                         $attendance = Attendance::create([
@@ -328,8 +327,6 @@ class AttendanceController extends Controller
                             'activity_score' => $newActivity,
                             'user_id' => $userId,
                         ]);
-
-                        $attendanceId = $attendance->id;
                     }
 
                     // Student balansini refresh qilamiz
@@ -361,7 +358,6 @@ class AttendanceController extends Controller
                             CoinTransaction::create([
                                 'student_id' => $studentId,
                                 'user_id' => $userId,
-                                // 'activity_id' => $attendanceId,
                                 'coins' => $participationDifference,
                                 'type' => 'participation',
                                 'description' => $newStatus === 'present' ? 'Darsga keldi' : 'Darsga kechikdi',
@@ -377,7 +373,6 @@ class AttendanceController extends Controller
                             CoinTransaction::create([
                                 'student_id' => $studentId,
                                 'user_id' => $userId,
-                                // 'activity_id' => $attendanceId,
                                 'coins' => $deductAmount,
                                 'type' => 'penalty',
                                 'description' => 'Davomat tuzatildi (qatnashish)',
@@ -400,7 +395,6 @@ class AttendanceController extends Controller
                             CoinTransaction::create([
                                 'student_id' => $studentId,
                                 'user_id' => $userId,
-                                // 'activity_id' => $attendanceId,
                                 'coins' => $homeworkDifference,
                                 'type' => 'homework',
                                 'description' => "Uy vazifa bajarildi ({$newHomework} ball)",
@@ -416,7 +410,6 @@ class AttendanceController extends Controller
                             CoinTransaction::create([
                                 'student_id' => $studentId,
                                 'user_id' => $userId,
-                                // 'activity_id' => $attendanceId,
                                 'coins' => $deductAmount,
                                 'type' => 'penalty',
                                 'description' => 'Uy vazifa balli tuzatildi',
@@ -439,7 +432,6 @@ class AttendanceController extends Controller
                             CoinTransaction::create([
                                 'student_id' => $studentId,
                                 'user_id' => $userId,
-                                // 'activity_id' => $attendanceId,
                                 'coins' => $activityDifference,
                                 'type' => 'active_involvement',
                                 'description' => "Darsda faol ishtirok ({$newActivity} ball)",
@@ -455,7 +447,6 @@ class AttendanceController extends Controller
                             CoinTransaction::create([
                                 'student_id' => $studentId,
                                 'user_id' => $userId,
-                                // 'activity_id' => $attendanceId,
                                 'coins' => $deductAmount,
                                 'type' => 'penalty',
                                 'description' => 'Faollik balli tuzatildi',

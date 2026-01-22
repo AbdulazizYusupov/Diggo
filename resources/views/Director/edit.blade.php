@@ -1,6 +1,6 @@
 @extends('Layout.app')
 
-@section('title', "Direktor tahrirlash")
+@section('title', 'Direktor tahrirlash')
 
 @section('content')
     <div class="w-full">
@@ -25,7 +25,8 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
-                        <p class="text-xs lg:text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+                        <p
+                            class="text-xs lg:text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -60,8 +61,7 @@
 
                 <!-- Director Info Section -->
                 <div class="space-y-6">
-                    <div
-                        class="flex items-center gap-3 pb-4 border-b-2 border-purple-100 dark:border-purple-900/30">
+                    <div class="flex items-center gap-3 pb-4 border-b-2 border-purple-100 dark:border-purple-900/30">
                         <div class="p-2.5 bg-purple-50 dark:bg-purple-900/30 rounded-xl">
                             <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -79,7 +79,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div
                             class="p-4 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-2xl border border-purple-100 dark:border-purple-800/30">
-                            <p class="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider mb-1">
+                            <p
+                                class="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider mb-1">
                                 To'liq ism</p>
                             <p class="text-sm font-bold text-gray-900 dark:text-white">{{ $director->user->full_name }}</p>
                         </div>
@@ -93,7 +94,8 @@
 
                         <div
                             class="p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border border-green-100 dark:border-green-800/30">
-                            <p class="text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wider mb-1">
+                            <p
+                                class="text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wider mb-1">
                                 Jinsi</p>
                             <p class="text-sm font-bold text-gray-900 dark:text-white">
                                 {{ $director->user->gender === 'male' ? 'Erkak' : 'Ayol' }}</p>
@@ -103,8 +105,7 @@
 
                 <!-- School Selection -->
                 <div class="space-y-6">
-                    <div
-                        class="flex items-center gap-3 pb-4 border-b-2 border-orange-100 dark:border-orange-900/30">
+                    <div class="flex items-center gap-3 pb-4 border-b-2 border-orange-100 dark:border-orange-900/30">
                         <div class="p-2.5 bg-orange-50 dark:bg-orange-900/30 rounded-xl">
                             <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -118,51 +119,88 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 gap-4">
-                        <div class="space-y-2">
-                            <label class="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                            Maktabni tanlang
+                        </label>
+
+                        <div class="relative" id="editSchoolCustomContainer">
+                            <div onclick="toggleEditSchoolDropdown()"
+                                class="w-full flex items-center justify-between px-4 py-3.5 bg-gray-50 dark:bg-gray-700/50 border @error('school_id') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror rounded-2xl cursor-pointer group hover:border-orange-500 transition-all shadow-sm">
+
+                                <span id="selectedEditSchoolLabel" class="text-sm dark:text-white">
+                                    @php
+                                        $currentSchoolId = old('school_id', $director->school_id);
+                                        $selectedSchool = $schools->firstWhere('id', $currentSchoolId);
+                                    @endphp
+                                    {{ $selectedSchool ? $selectedSchool->name . ($selectedSchool->address ? ' - ' . Str::limit($selectedSchool->address, 30) : '') : 'Maktab tanlanmagan' }}
+                                </span>
+
+                                <input type="hidden" name="school_id" id="edit_school_id_input"
+                                    value="{{ $currentSchoolId }}">
+
+                                <svg class="w-5 h-5 text-gray-400 group-hover:text-orange-500 transition-transform"
+                                    id="editSchoolArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        d="M19 9l-7 7-7-7" />
                                 </svg>
-                                Maktabni tanlang
-                            </label>
-                            <select name="school_id"
-                                class="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-orange-500 dark:text-white outline-none transition-all text-sm
-                                @error('school_id') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
-                                <option value="">Maktab tanlanmagan</option>
-                                @foreach ($schools as $school)
-                                    <option value="{{ $school->id }}"
-                                        {{ old('school_id', $director->school_id) == $school->id ? 'selected' : '' }}>
-                                        {{ $school->name }}
-                                        @if($school->address)
-                                            - {{ Str::limit($school->address, 40) }}
-                                        @endif
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('school_id')
-                                <p class="text-red-500 text-xs mt-1 ml-1 flex items-center gap-1">
-                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                    {{ $message }}
-                                </p>
-                            @enderror
+                            </div>
+
+                            <div id="editSchoolMenu"
+                                class="hidden absolute z-[160] w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-2xl overflow-hidden">
+                                <div class="p-2 border-b dark:border-gray-700 bg-gray-50/30 dark:bg-slate-900/30">
+                                    <input type="text" id="editSchoolSearchInput" oninput="filterEditSchools()"
+                                        placeholder="Maktab nomi yoki manzilini yozing..."
+                                        class="w-full px-3 py-2.5 bg-white dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none">
+                                </div>
+
+                                <div class="max-h-64 overflow-y-auto custom-scrollbar">
+                                    <div onclick="selectEditSchool('', 'Maktab tanlanmagan')"
+                                        class="px-4 py-3 text-sm text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-700/50 cursor-pointer italic">
+                                        Maktabni bekor qilish
+                                    </div>
+
+                                    @foreach ($schools as $school)
+                                        <div onclick="selectEditSchool('{{ $school->id }}', '{{ $school->name }}{{ $school->address ? ' - ' . Str::limit($school->address, 30) : '' }}')"
+                                            class="edit-school-item px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-orange-500/10 cursor-pointer flex flex-col border-b border-gray-50 dark:border-gray-700/50 last:border-none">
+                                            <span class="font-bold edit-item-name">{{ $school->name }}</span>
+                                            @if ($school->address)
+                                                <span
+                                                    class="text-xs text-gray-400 edit-item-address">{{ $school->address }}</span>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div id="noEditSchoolFound" class="hidden p-5 text-center text-sm text-gray-500">
+                                    Bunday maktab topilmadi...
+                                </div>
+                            </div>
                         </div>
+
+                        @error('school_id')
+                            <p class="text-red-500 text-xs mt-1 ml-1 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
                 </div>
 
                 <!-- Commission & Balance Section -->
                 <div class="space-y-6">
-                    <div
-                        class="flex items-center gap-3 pb-4 border-b-2 border-emerald-100 dark:border-emerald-900/30">
+                    <div class="flex items-center gap-3 pb-4 border-b-2 border-emerald-100 dark:border-emerald-900/30">
                         <div class="p-2.5 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl">
-                            <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
+                            <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -176,8 +214,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Commission Percentage -->
                         <div class="space-y-2">
-                            <label
-                                class="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            <label class="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
                                 <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -187,7 +224,8 @@
                                 <span class="text-red-500">*</span>
                             </label>
                             <div class="relative">
-                                <input type="number" name="commission_percentage" step="0.01" min="0" max="100"
+                                <input type="number" name="commission_percentage" step="0.01" min="0"
+                                    max="100"
                                     value="{{ old('commission_percentage', $director->commission_percentage) }}" required
                                     placeholder="0.00"
                                     class="w-full pl-4 pr-12 py-3.5 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none dark:text-white transition-all
@@ -216,8 +254,7 @@
 
                         <!-- Balance -->
                         <div class="space-y-2">
-                            <label
-                                class="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            <label class="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
                                 <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -325,7 +362,8 @@
         </div>
 
         <!-- Additional Info -->
-        <div class="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-200 dark:border-amber-800/30">
+        <div
+            class="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-200 dark:border-amber-800/30">
             <div class="flex items-start gap-3">
                 <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" fill="none"
                     stroke="currentColor" viewBox="0 0 24 24">
@@ -342,4 +380,63 @@
             </div>
         </div>
     </div>
+    <script>
+        // Dropdown ochish/yopish
+        function toggleEditSchoolDropdown() {
+            const menu = document.getElementById('editSchoolMenu');
+            const arrow = document.getElementById('editSchoolArrow');
+            const isHidden = menu.classList.contains('hidden');
+
+            // Sahifadagi barcha boshqa custom menu-larni yopish
+            document.querySelectorAll('[id$="Menu"]').forEach(m => {
+                if (m.id !== 'editSchoolMenu') m.classList.add('hidden');
+            });
+
+            menu.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+
+            if (isHidden) {
+                document.getElementById('editSchoolSearchInput').focus();
+            }
+        }
+
+        // Tanlash
+        function selectEditSchool(id, text) {
+            document.getElementById('edit_school_id_input').value = id;
+            document.getElementById('selectedEditSchoolLabel').innerText = text;
+            toggleEditSchoolDropdown();
+        }
+
+        // Qidiruv funksiyasi
+        function filterEditSchools() {
+            const input = document.getElementById('editSchoolSearchInput');
+            const filter = input.value.toLowerCase();
+            const items = document.querySelectorAll('.edit-school-item');
+            const noResult = document.getElementById('noEditSchoolFound');
+            let foundAny = false;
+
+            items.forEach(item => {
+                const name = item.querySelector('.edit-item-name').innerText.toLowerCase();
+                const address = item.querySelector('.edit-item-address')?.innerText.toLowerCase() || '';
+
+                if (name.includes(filter) || address.includes(filter)) {
+                    item.style.display = "";
+                    foundAny = true;
+                } else {
+                    item.style.display = "none";
+                }
+            });
+
+            noResult.classList.toggle('hidden', foundAny);
+        }
+
+        // Tashqariga bosilganda yopish
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('editSchoolCustomContainer');
+            if (container && !container.contains(e.target)) {
+                document.getElementById('editSchoolMenu').classList.add('hidden');
+                document.getElementById('editSchoolArrow').classList.remove('rotate-180');
+            }
+        });
+    </script>
 @endsection

@@ -326,24 +326,57 @@
 
                 {{-- Guruh tanlash --}}
                 <div class="space-y-4">
-
-
                     <div class="space-y-1.5">
-                        <label for="school_id" class="text-xs font-semibold text-gray-700 dark:text-gray-300 ml-1">
-                            Schoolni tanlang</label>
-                        <select name="school_id" id="school_id"
-                            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border rounded-xl focus:ring-2 focus:ring-indigo-500 dark:text-white outline-none transition-all appearance-none cursor-pointer
-                                @error('school_id') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
-                            <option value="" disabled
-                                {{ !old('school_id', $teacher->school_id ?? '') ? 'selected' : '' }}>Schoolni tanlang...
-                            </option>
-                            @foreach ($schools ?? [] as $school)
-                                <option value="{{ $school->id }}"
-                                    {{ old('school_id', $teacher->school_id ?? '') == $school->id ? 'selected' : '' }}>
-                                    {{ $school->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 ml-1">
+                            Schoolni tanlang
+                        </label>
+
+                        <div class="relative" id="teacherSchoolCustomContainer">
+                            <div onclick="toggleTeacherSchoolDropdown()"
+                                class="w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border @error('school_id') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror rounded-xl cursor-pointer group hover:border-indigo-500 transition-all shadow-sm">
+
+                                <span id="selectedTeacherSchoolLabel" class="text-sm dark:text-white">
+                                    @php
+                                        $currentId = old('school_id', $teacher->school_id ?? '');
+                                        $selectedSchool = ($schools ?? collect())->firstWhere('id', $currentId);
+                                    @endphp
+                                    {{ $selectedSchool ? $selectedSchool->name : 'Schoolni tanlang...' }}
+                                </span>
+
+                                <input type="hidden" name="school_id" id="teacher_school_id_input"
+                                    value="{{ $currentId }}">
+
+                                <svg class="w-4 h-4 text-gray-400 group-hover:text-indigo-500 transition-transform"
+                                    id="teacherSchoolArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+
+                            <div id="teacherSchoolMenu"
+                                class="hidden absolute z-[170] w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden">
+                                <div class="p-2 border-b dark:border-gray-700 bg-gray-50/30 dark:bg-slate-900/30">
+                                    <input type="text" id="teacherSchoolSearchInput" oninput="filterTeacherSchools()"
+                                        placeholder="School qidirish..."
+                                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none">
+                                </div>
+
+                                <div class="max-h-60 overflow-y-auto custom-scrollbar">
+                                    @foreach ($schools ?? [] as $school)
+                                        <div onclick="selectTeacherSchool('{{ $school->id }}', '{{ $school->name }}')"
+                                            class="teacher-school-item px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 cursor-pointer border-b border-gray-50 dark:border-gray-700/50 last:border-none">
+                                            <span class="font-medium teacher-item-name">{{ $school->name }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div id="noTeacherSchoolFound"
+                                    class="hidden p-4 text-center text-xs text-gray-500 italic">
+                                    School topilmadi...
+                                </div>
+                            </div>
+                        </div>
+
                         @error('school_id')
                             <p class="text-red-500 text-[10px] mt-1 ml-1 font-medium">{{ $message }}</p>
                         @enderror
@@ -494,6 +527,62 @@
     </div>
 
     <script>
+        // Dropdownni ochish/yopish
+        function toggleTeacherSchoolDropdown() {
+            const menu = document.getElementById('teacherSchoolMenu');
+            const arrow = document.getElementById('teacherSchoolArrow');
+            const isHidden = menu.classList.contains('hidden');
+
+            // Barcha dropdownlarni yopish
+            document.querySelectorAll('[id$="Menu"]').forEach(m => {
+                if (m.id !== 'teacherSchoolMenu') m.classList.add('hidden');
+            });
+
+            menu.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+
+            if (isHidden) {
+                document.getElementById('teacherSchoolSearchInput').focus();
+            }
+        }
+
+        // Maktabni tanlash
+        function selectTeacherSchool(id, name) {
+            document.getElementById('teacher_school_id_input').value = id;
+            document.getElementById('selectedTeacherSchoolLabel').innerText = name;
+            toggleTeacherSchoolDropdown();
+        }
+
+        // Qidiruv funksiyasi
+        function filterTeacherSchools() {
+            const input = document.getElementById('teacherSchoolSearchInput');
+            const filter = input.value.toLowerCase();
+            const items = document.querySelectorAll('.teacher-school-item');
+            const noResult = document.getElementById('noTeacherSchoolFound');
+            let hasResults = false;
+
+            items.forEach(item => {
+                const name = item.querySelector('.teacher-item-name').innerText.toLowerCase();
+                if (name.includes(filter)) {
+                    item.style.display = "";
+                    hasResults = true;
+                } else {
+                    item.style.display = "none";
+                }
+            });
+
+            noResult.classList.toggle('hidden', hasResults);
+        }
+
+        // Tashqariga bosilganda yopish
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('teacherSchoolCustomContainer');
+            if (container && !container.contains(e.target)) {
+                document.getElementById('teacherSchoolMenu').classList.add('hidden');
+                document.getElementById('teacherSchoolArrow').classList.remove('rotate-180');
+            }
+        });
+
         function showPreview(input) {
             const previewBox = document.getElementById('preview-box');
             const uploadLabel = document.getElementById('upload-label');

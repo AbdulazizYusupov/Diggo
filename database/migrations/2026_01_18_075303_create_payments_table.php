@@ -23,12 +23,17 @@ return new class extends Migration
             $table->decimal('net_amount', 15, 2);
             $table->decimal('director_commission', 15, 2)->default(0);
 
-            $table->enum('payment_method', ['cash', 'card', 'transfer', 'other'])->default('cash');
+            $table->enum('payment_type', ['cash', 'card', 'transfer', 'other'])->default('cash');
             $table->enum('status', ['pending', 'paid', 'failed', 'cancelled'])->default('paid')->index();
 
             $table->date('payment_month')->index();
             $table->timestamp('paid_at')->nullable()->index();
+            $table->boolean('is_installment')->default(false);
+            $table->integer('installment_number')->nullable();
+            $table->integer('total_installments')->nullable();
 
+            $table->text('notes')->nullable();
+            
             $table->timestamps();
             $table->softDeletes();
 

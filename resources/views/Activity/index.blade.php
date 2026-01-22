@@ -192,16 +192,56 @@
 
                     {{-- 3. Group Filter (Yuqori qator, 3-ustun) --}}
                     <div class="lg:col-span-4">
-                        <select name="group_id"
-                            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 text-gray-900 dark:text-white text-sm outline-none transition-all cursor-pointer">
-                            <option value="">Guruh (Barchasi)</option>
-                            @foreach ($groups as $group)
-                                <option value="{{ $group->id }}"
-                                    {{ request('group_id') == $group->id ? 'selected' : '' }}>
-                                    {{ $group->name }} - {{ $group->course->title ?? '' }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="relative" id="filterGroupCustomContainer">
+                            <div onclick="toggleFilterGroupDropdown()"
+                                class="w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer group hover:border-purple-500 transition-all">
+
+                                <span id="selectedFilterGroupLabel" class="text-sm text-gray-600 dark:text-gray-300">
+                                    @php
+                                        $reqGroup = $groups->firstWhere('id', request('group_id'));
+                                    @endphp
+                                    {{ $reqGroup ? $reqGroup->name : 'Guruh (Barchasi)' }}
+                                </span>
+
+                                <input type="hidden" name="group_id" id="filter_group_id_input"
+                                    value="{{ request('group_id') }}">
+
+                                <svg class="w-4 h-4 text-gray-400 group-hover:text-purple-500 transition-transform"
+                                    id="filterGroupArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+
+                            <div id="filterGroupMenu"
+                                class="hidden absolute z-[140] w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden">
+                                <div class="p-2 border-b dark:border-gray-700">
+                                    <input type="text" id="filterGroupSearchInput" oninput="filterFilterGroups()"
+                                        placeholder="Guruhni qidirish..."
+                                        class="w-full px-3 py-2 bg-gray-100 dark:bg-slate-900 dark:text-white border-none rounded-lg text-xs focus:ring-1 focus:ring-purple-500 outline-none">
+                                </div>
+
+                                <div class="max-h-56 overflow-y-auto custom-scrollbar">
+                                    <div onclick="selectFilterGroup('', 'Guruh (Barchasi)')"
+                                        class="px-4 py-2.5 text-xs text-gray-500 hover:bg-gray-50 dark:hover:bg-slate-700/50 cursor-pointer border-b border-gray-50 dark:border-gray-700/50">
+                                        Barchasi
+                                    </div>
+
+                                    @foreach ($groups as $group)
+                                        <div onclick="selectFilterGroup('{{ $group->id }}', '{{ $group->name }}')"
+                                            class="filter-group-item px-4 py-2.5 text-xs text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-purple-500/10 cursor-pointer flex flex-col border-b border-gray-50 dark:border-gray-700/50 last:border-none">
+                                            <span class="font-bold filter-item-name">{{ $group->name }}</span>
+                                            <span
+                                                class="text-[10px] text-gray-400 filter-item-course">{{ $group->course->title ?? '' }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div id="noFilterGroupFound" class="hidden p-4 text-center text-xs text-gray-500">
+                                    Topilmadi...
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- 4. Date From (Pastki qator, 1-ustun) --}}
@@ -547,15 +587,58 @@
                         <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                             Guruh
                         </label>
-                        <select name="group_id"
-                            class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 text-gray-900 dark:text-white outline-none transition-all cursor-pointer">
-                            <option value="">Tanlang</option>
-                            @foreach ($groups as $group)
-                                <option value="{{ $group->id }}">{{ $group->name }} -
-                                    {{ $group->course->title ?? '' }}
-                                </option>
-                            @endforeach
-                        </select>
+
+                        <div class="relative" id="groupCustomSelectContainer">
+                            <div onclick="toggleGroupDropdown()" id="groupSelectButton"
+                                class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer group hover:border-purple-500 transition-all">
+
+                                <span id="selectedGroupLabel" class="text-sm text-gray-500 dark:text-gray-400">
+                                    @php
+                                        $selectedGroup = $groups->firstWhere('id', old('group_id'));
+                                    @endphp
+                                    {{ $selectedGroup ? $selectedGroup->name : 'Guruhni tanlang' }}
+                                </span>
+
+                                <input type="hidden" name="group_id" id="group_id_input"
+                                    value="{{ old('group_id') }}">
+
+                                <svg class="w-5 h-5 text-gray-400 group-hover:text-purple-500 transition-transform"
+                                    id="groupArrowIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+
+                            <div id="groupDropdownMenu"
+                                class="hidden absolute z-[130] w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden">
+                                <div class="p-2 border-b dark:border-gray-700">
+                                    <input type="text" id="groupSearchInput" oninput="filterGroupsFunc()"
+                                        placeholder="Guruh yoki kurs nomini yozing..."
+                                        class="w-full px-3 py-2 bg-gray-100 dark:bg-slate-900 dark:text-white border-none rounded-lg text-sm focus:ring-1 focus:ring-purple-500 outline-none">
+                                </div>
+
+                                <div class="max-h-60 overflow-y-auto custom-scrollbar">
+                                    <div onclick="selectGroupFunc('', 'Guruhni tanlang')"
+                                        class="px-4 py-3 text-sm text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-700/50 cursor-pointer italic">
+                                        Tanlovni bekor qilish
+                                    </div>
+
+                                    @foreach ($groups as $group)
+                                        <div onclick="selectGroupFunc('{{ $group->id }}', '{{ $group->name }}')"
+                                            class="group-option-item px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-purple-500/10 cursor-pointer flex flex-col border-b border-gray-50 dark:border-gray-700/50 last:border-none">
+                                            <span
+                                                class="font-bold group-search-name text-purple-600 dark:text-purple-400">{{ $group->name }}</span>
+                                            <span
+                                                class="text-xs text-gray-400 group-search-course">{{ $group->course->title ?? '' }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div id="noGroupFound" class="hidden p-4 text-center text-sm text-gray-500">
+                                    Guruh topilmadi...
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -718,6 +801,137 @@
     </div>
 
     <script>
+        // Filtr dropdownini ochish/yopish
+        function toggleFilterGroupDropdown() {
+            const menu = document.getElementById('filterGroupMenu');
+            const arrow = document.getElementById('filterGroupArrow');
+            const isHidden = menu.classList.contains('hidden');
+
+            // Boshqa barcha ochiq dropdownlarni yopish
+            document.getElementById('groupDropdownMenu')?.classList.add('hidden');
+            document.getElementById('courseDropdownMenu')?.classList.add('hidden');
+            document.getElementById('schoolDropdown')?.classList.add('hidden');
+
+            menu.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+
+            if (isHidden) {
+                document.getElementById('filterGroupSearchInput').focus();
+            }
+        }
+
+        // Filtr uchun guruh tanlash
+        function selectFilterGroup(id, name) {
+            document.getElementById('filter_group_id_input').value = id;
+            document.getElementById('selectedFilterGroupLabel').innerText = name;
+
+            // Tanlangandan so'ng avtomatik formani yuborish (Filter bo'lgani uchun qulay)
+            // Agar avtomatik filterlashni istasangiz pastdagi qatorni oching:
+            // document.getElementById('filter_group_id_input').closest('form').submit();
+
+            toggleFilterGroupDropdown();
+        }
+
+        // Filtr ichidagi qidiruv
+        function filterFilterGroups() {
+            const input = document.getElementById('filterGroupSearchInput');
+            const filter = input.value.toLowerCase();
+            const items = document.querySelectorAll('.filter-group-item');
+            const noResult = document.getElementById('noFilterGroupFound');
+            let hasMatch = false;
+
+            items.forEach(item => {
+                const name = item.querySelector('.filter-item-name').innerText.toLowerCase();
+                const course = item.querySelector('.filter-item-course').innerText.toLowerCase();
+
+                if (name.includes(filter) || course.includes(filter)) {
+                    item.style.display = "";
+                    hasMatch = true;
+                } else {
+                    item.style.display = "none";
+                }
+            });
+
+            noResult.classList.toggle('hidden', hasMatch);
+        }
+
+        // Tashqariga bosilganda yopish
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('filterGroupCustomContainer');
+            if (container && !container.contains(e.target)) {
+                document.getElementById('filterGroupMenu').classList.add('hidden');
+                document.getElementById('filterGroupArrow').classList.remove('rotate-180');
+            }
+        });
+        // Guruh Dropdownini boshqarish
+        function toggleGroupDropdown() {
+            const menu = document.getElementById('groupDropdownMenu');
+            const arrow = document.getElementById('groupArrowIcon');
+            const isHidden = menu.classList.contains('hidden');
+
+            // Boshqa ochiq dropdownlarni yopish
+            document.getElementById('courseDropdownMenu')?.classList.add('hidden');
+            document.getElementById('schoolDropdown')?.classList.add('hidden');
+
+            menu.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+
+            if (isHidden) {
+                document.getElementById('groupSearchInput').focus();
+            }
+        }
+
+        // Guruhni tanlash
+        function selectGroupFunc(id, groupName) {
+            const label = document.getElementById('selectedGroupLabel');
+            const input = document.getElementById('group_id_input');
+
+            input.value = id;
+            label.innerText = groupName;
+
+            if (id !== "") {
+                label.classList.add('text-gray-900', 'dark:text-white', 'font-medium');
+                label.classList.remove('text-gray-500');
+            } else {
+                label.classList.remove('text-gray-900', 'dark:text-white', 'font-medium');
+                label.classList.add('text-gray-500');
+            }
+
+            toggleGroupDropdown();
+        }
+
+        // Guruh qidiruvi
+        function filterGroupsFunc() {
+            const input = document.getElementById('groupSearchInput');
+            const filter = input.value.toLowerCase();
+            const options = document.querySelectorAll('.group-option-item');
+            const noResult = document.getElementById('noGroupFound');
+            let found = false;
+
+            options.forEach(option => {
+                const name = option.querySelector('.group-search-name').innerText.toLowerCase();
+                const course = option.querySelector('.group-search-course').innerText.toLowerCase();
+
+                if (name.includes(filter) || course.includes(filter)) {
+                    option.style.display = "";
+                    found = true;
+                } else {
+                    option.style.display = "none";
+                }
+            });
+
+            noResult.classList.toggle('hidden', found);
+        }
+
+        // Tashqariga bosilganda yopish (Guruh uchun)
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('groupCustomSelectContainer');
+            if (container && !container.contains(e.target)) {
+                document.getElementById('groupDropdownMenu').classList.add('hidden');
+                document.getElementById('groupArrowIcon').classList.remove('rotate-180');
+            }
+        });
+
         function openEditModal(activity) {
             document.getElementById('editForm').action = `/activities/${activity.id}`;
             document.getElementById('edit_name').value = activity.name;

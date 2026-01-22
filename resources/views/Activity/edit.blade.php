@@ -35,8 +35,9 @@
             @csrf
             @method('PUT')
 
-            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 lg:p-8 space-y-6">
-                
+            <div
+                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 lg:p-8 space-y-6">
+
                 <!-- Activity Name -->
                 <div>
                     <label for="name" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
@@ -70,7 +71,8 @@
                     <div>
                         <label for="type" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                             <span class="flex items-center gap-2">
-                                <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
                                 </svg>
@@ -90,7 +92,8 @@
                                 ];
                             @endphp
                             @foreach ($types as $type)
-                                <option value="{{ $type }}" {{ old('type', $activity->type) == $type ? 'selected' : '' }}>
+                                <option value="{{ $type }}"
+                                    {{ old('type', $activity->type) == $type ? 'selected' : '' }}>
                                     {{ $typeNames[$type] ?? ucfirst($type) }}
                                 </option>
                             @endforeach
@@ -111,7 +114,8 @@
                     <div>
                         <label for="date" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                             <span class="flex items-center gap-2">
-                                <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
@@ -119,7 +123,8 @@
                                 <span class="text-rose-500">*</span>
                             </span>
                         </label>
-                        <input type="date" name="date" id="date" value="{{ old('date', $activity->date->format('Y-m-d')) }}" required
+                        <input type="date" name="date" id="date"
+                            value="{{ old('date', $activity->date->format('Y-m-d')) }}" required
                             class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all font-medium">
                         @error('date')
                             <p class="mt-1.5 text-sm text-rose-500 flex items-center gap-1">
@@ -137,29 +142,66 @@
                 <!-- Group & Max Coins Row -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Group Selection -->
-                    <div>
-                        <label for="group_id" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">
                             <span class="flex items-center gap-2">
                                 <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
-                                Guruh
-                                <span class="text-rose-500">*</span>
+                                Guruh <span class="text-rose-500">*</span>
                             </span>
                         </label>
-                        <select name="group_id" id="group_id" required
-                            class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium appearance-none cursor-pointer">
-                            <option value="">Guruhni tanlang</option>
-                            @foreach ($groups as $group)
-                                <option value="{{ $group->id }}" {{ old('group_id', $activity->group_id) == $group->id ? 'selected' : '' }}>
-                                    {{ $group->name }}
-                                    @if($group->course)
-                                        - {{ $group->course->title }}
-                                    @endif
-                                </option>
-                            @endforeach
-                        </select>
+
+                        <div class="relative" id="actionGroupCustomContainer">
+                            <div onclick="toggleActionGroupDropdown()"
+                                class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('group_id') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl cursor-pointer group hover:border-blue-500 transition-all shadow-sm">
+
+                                <span id="selectedActionGroupLabel" class="text-sm font-medium dark:text-white">
+                                    @php
+                                        $initialId = old('group_id', $activity->group_id ?? '');
+                                        $selected = $groups->firstWhere('id', $initialId);
+                                    @endphp
+                                    {{ $selected ? $selected->name . ($selected->course ? ' - ' . $selected->course->title : '') : 'Guruhni tanlang' }}
+                                </span>
+
+                                <input type="hidden" name="group_id" id="action_group_id_input"
+                                    value="{{ $initialId }}" required>
+
+                                <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-transform"
+                                    id="actionGroupArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+
+                            <div id="actionGroupMenu"
+                                class="hidden absolute z-[150] w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden">
+                                <div class="p-2 border-b dark:border-gray-700 bg-gray-50/50 dark:bg-slate-900/50">
+                                    <input type="text" id="actionGroupSearchInput" oninput="filterActionGroups()"
+                                        placeholder="Guruh nomini yozing..."
+                                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none">
+                                </div>
+
+                                <div class="max-h-64 overflow-y-auto custom-scrollbar">
+                                    @foreach ($groups as $group)
+                                        <div onclick="selectActionGroup('{{ $group->id }}', '{{ $group->name }}{{ $group->course ? ' - ' . $group->course->title : '' }}')"
+                                            class="action-group-item px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-500/10 cursor-pointer flex flex-col border-b border-gray-50 dark:border-gray-700/50 last:border-none">
+                                            <span class="font-bold action-item-name">{{ $group->name }}</span>
+                                            @if ($group->course)
+                                                <span
+                                                    class="text-xs text-gray-400 action-item-course">{{ $group->course->title }}</span>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div id="noActionGroupFound" class="hidden p-5 text-center text-sm text-gray-500">
+                                    Guruh topilmadi...
+                                </div>
+                            </div>
+                        </div>
+
                         @error('group_id')
                             <p class="mt-1.5 text-sm text-rose-500 flex items-center gap-1">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -176,7 +218,8 @@
                     <div>
                         <label for="max_coins" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                             <span class="flex items-center gap-2">
-                                <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
@@ -184,7 +227,8 @@
                                 <span class="text-rose-500">*</span>
                             </span>
                         </label>
-                        <input type="number" name="max_coins" id="max_coins" value="{{ old('max_coins', $activity->max_coins) }}" required min="1" max="1000"
+                        <input type="number" name="max_coins" id="max_coins"
+                            value="{{ old('max_coins', $activity->max_coins) }}" required min="1" max="1000"
                             class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all font-medium"
                             placeholder="100">
                         @error('max_coins')
@@ -228,10 +272,12 @@
                 </div>
 
                 <!-- Info Box -->
-                <div class="bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-500/10 dark:to-blue-500/5 border border-blue-200 dark:border-blue-500/20 rounded-xl p-4">
+                <div
+                    class="bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-500/10 dark:to-blue-500/5 border border-blue-200 dark:border-blue-500/20 rounded-xl p-4">
                     <div class="flex gap-3">
                         <div class="flex-shrink-0">
-                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor"
+                                viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                                     clip-rule="evenodd" />
@@ -240,7 +286,8 @@
                         <div class="flex-1">
                             <h4 class="text-sm font-bold text-blue-900 dark:text-blue-300 mb-1">Ma'lumot</h4>
                             <p class="text-sm text-blue-700 dark:text-blue-400 leading-relaxed">
-                                Faoliyatni tahrirlash faqat asosiy ma'lumotlarni o'zgartiradi. Talabalar natijalari saqlanib qoladi.
+                                Faoliyatni tahrirlash faqat asosiy ma'lumotlarni o'zgartiradi. Talabalar natijalari saqlanib
+                                qoladi.
                             </p>
                         </div>
                     </div>
@@ -255,8 +302,7 @@
                     <button type="submit"
                         class="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold rounded-xl shadow-lg shadow-amber-200 dark:shadow-none transition-all active:scale-95 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M5 13l4 4L19 7" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
                         O'zgarishlarni saqlash
                     </button>
@@ -289,4 +335,60 @@
             </div>
         </div>
     </div>
+    <script>
+        function toggleActionGroupDropdown() {
+            const menu = document.getElementById('actionGroupMenu');
+            const arrow = document.getElementById('actionGroupArrow');
+            const isHidden = menu.classList.contains('hidden');
+
+            // Barcha boshqa dropdownlarni yopish
+            document.querySelectorAll('[id$="Menu"]').forEach(m => {
+                if (m.id !== 'actionGroupMenu') m.classList.add('hidden');
+            });
+
+            menu.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+
+            if (isHidden) {
+                document.getElementById('actionGroupSearchInput').focus();
+            }
+        }
+
+        function selectActionGroup(id, labelText) {
+            document.getElementById('action_group_id_input').value = id;
+            document.getElementById('selectedActionGroupLabel').innerText = labelText;
+            toggleActionGroupDropdown();
+        }
+
+        function filterActionGroups() {
+            const input = document.getElementById('actionGroupSearchInput');
+            const filter = input.value.toLowerCase();
+            const items = document.querySelectorAll('.action-group-item');
+            const noResult = document.getElementById('noActionGroupFound');
+            let hasResults = false;
+
+            items.forEach(item => {
+                const name = item.querySelector('.action-item-name').innerText.toLowerCase();
+                const course = item.querySelector('.action-item-course')?.innerText.toLowerCase() || '';
+
+                if (name.includes(filter) || course.includes(filter)) {
+                    item.style.display = "";
+                    hasResults = true;
+                } else {
+                    item.style.display = "none";
+                }
+            });
+
+            noResult.classList.toggle('hidden', hasResults);
+        }
+
+        // Tashqariga bosilganda yopish
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('actionGroupCustomContainer');
+            if (container && !container.contains(e.target)) {
+                document.getElementById('actionGroupMenu').classList.add('hidden');
+                document.getElementById('actionGroupArrow').classList.remove('rotate-180');
+            }
+        });
+    </script>
 @endsection

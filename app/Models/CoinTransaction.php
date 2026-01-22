@@ -11,7 +11,6 @@ class CoinTransaction extends Model
 
     protected $fillable = [
         'student_id',
-        'school_id',
         'user_id',
         'activity_id',
         'coins',
@@ -32,10 +31,6 @@ class CoinTransaction extends Model
     public function student()
     {
         return $this->belongsTo(Student::class);
-    }
-    public function school()
-    {
-        return $this->belongsTo(School::class);
     }
     public function awardedBy()
     {

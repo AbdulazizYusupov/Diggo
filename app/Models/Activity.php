@@ -28,10 +28,6 @@ class Activity extends Model
     {
         return $this->belongsTo(Group::class);
     }
-    public function school()
-    {
-        return $this->belongsTo(School::class);
-    }
     public function coinTransactions()
     {
         return $this->hasMany(CoinTransaction::class);
