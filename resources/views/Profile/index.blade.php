@@ -383,87 +383,87 @@
             </div>
         </div>
     </div>
+    @push('scripts')
+        <script>
+            const input = document.getElementById('photo-input');
+            const img = document.getElementById('profile-photo');
+            const placeholder = document.getElementById('profile-placeholder');
+            const badge = document.getElementById('photo-changed');
+            const removeBtn = document.getElementById('remove-photo');
+            const removePhotoInput = document.getElementById('remove-photo-input');
 
-    <script>
-        const input = document.getElementById('photo-input');
-        const img = document.getElementById('profile-photo');
-        const placeholder = document.getElementById('profile-placeholder');
-        const badge = document.getElementById('photo-changed');
-        const removeBtn = document.getElementById('remove-photo');
-        const removePhotoInput = document.getElementById('remove-photo-input');
+
+            // 🔑 DASTLABKI HOLATNI TO‘G‘RI ANIQLASH
+            document.addEventListener('DOMContentLoaded', () => {
+                const hasPhoto = img.dataset.hasPhoto === '1';
+
+                if (hasPhoto) {
+                    img.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                    removeBtn.classList.remove('hidden');
+                } else {
+                    img.classList.add('hidden');
+                    placeholder.classList.remove('hidden');
+                    removeBtn.classList.add('hidden');
+                }
+            });
 
 
-        // 🔑 DASTLABKI HOLATNI TO‘G‘RI ANIQLASH
-        document.addEventListener('DOMContentLoaded', () => {
-            const hasPhoto = img.dataset.hasPhoto === '1';
+            function previewPhoto(input) {
+                if (!input.files || !input.files[0]) return;
 
-            if (hasPhoto) {
-                img.classList.remove('hidden');
-                placeholder.classList.add('hidden');
-                removeBtn.classList.remove('hidden');
-            } else {
+                const file = input.files[0];
+
+
+                if (!file.type.startsWith('image/')) {
+                    alert('Faqat rasm fayl tanlang');
+                    input.value = '';
+                    return;
+                }
+
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Rasm hajmi 2MB dan oshmasin');
+                    input.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = e => {
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                    img.classList.add('ring-emerald-400');
+
+                    placeholder.classList.add('hidden');
+                    badge.classList.remove('hidden');
+                    removeBtn.classList.remove('hidden');
+
+                    removePhotoInput.value = 0;
+                };
+
+                reader.readAsDataURL(file);
+            }
+
+            function removePhoto() {
+                // serverga signal beramiz
+                removePhotoInput.value = 1;
+
+                // input ochiladi
+                input.disabled = false;
+                input.value = '';
+
+                // preview o‘chirish
+                img.src = '';
                 img.classList.add('hidden');
+                img.classList.remove('ring-emerald-400');
+
                 placeholder.classList.remove('hidden');
+
+                badge.classList.add('hidden');
                 removeBtn.classList.add('hidden');
+
+                // overlay qayta aktiv
             }
-        });
-
-
-        function previewPhoto(input) {
-            if (!input.files || !input.files[0]) return;
-
-            const file = input.files[0];
-
-
-            if (!file.type.startsWith('image/')) {
-                alert('Faqat rasm fayl tanlang');
-                input.value = '';
-                return;
-            }
-
-            if (file.size > 2 * 1024 * 1024) {
-                alert('Rasm hajmi 2MB dan oshmasin');
-                input.value = '';
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = e => {
-                img.src = e.target.result;
-                img.classList.remove('hidden');
-                img.classList.add('ring-emerald-400');
-
-                placeholder.classList.add('hidden');
-                badge.classList.remove('hidden');
-                removeBtn.classList.remove('hidden');
-
-                removePhotoInput.value = 0;
-            };
-
-            reader.readAsDataURL(file);
-        }
-
-        function removePhoto() {
-            // serverga signal beramiz
-            removePhotoInput.value = 1;
-
-            // input ochiladi
-            input.disabled = false;
-            input.value = '';
-
-            // preview o‘chirish
-            img.src = '';
-            img.classList.add('hidden');
-            img.classList.remove('ring-emerald-400');
-
-            placeholder.classList.remove('hidden');
-
-            badge.classList.add('hidden');
-            removeBtn.classList.add('hidden');
-
-            // overlay qayta aktiv
-        }
-    </script>
-
+        </script>
+    @endpush
 
 @endsection

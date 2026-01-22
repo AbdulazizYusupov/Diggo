@@ -799,159 +799,159 @@
             </form>
         </div>
     </div>
+    @push('scripts')
+        <script>
+            // Filtr dropdownini ochish/yopish
+            function toggleFilterGroupDropdown() {
+                const menu = document.getElementById('filterGroupMenu');
+                const arrow = document.getElementById('filterGroupArrow');
+                const isHidden = menu.classList.contains('hidden');
 
-    <script>
-        // Filtr dropdownini ochish/yopish
-        function toggleFilterGroupDropdown() {
-            const menu = document.getElementById('filterGroupMenu');
-            const arrow = document.getElementById('filterGroupArrow');
-            const isHidden = menu.classList.contains('hidden');
+                // Boshqa barcha ochiq dropdownlarni yopish
+                document.getElementById('groupDropdownMenu')?.classList.add('hidden');
+                document.getElementById('courseDropdownMenu')?.classList.add('hidden');
+                document.getElementById('schoolDropdown')?.classList.add('hidden');
 
-            // Boshqa barcha ochiq dropdownlarni yopish
-            document.getElementById('groupDropdownMenu')?.classList.add('hidden');
-            document.getElementById('courseDropdownMenu')?.classList.add('hidden');
-            document.getElementById('schoolDropdown')?.classList.add('hidden');
+                menu.classList.toggle('hidden');
+                arrow.classList.toggle('rotate-180');
 
-            menu.classList.toggle('hidden');
-            arrow.classList.toggle('rotate-180');
-
-            if (isHidden) {
-                document.getElementById('filterGroupSearchInput').focus();
+                if (isHidden) {
+                    document.getElementById('filterGroupSearchInput').focus();
+                }
             }
-        }
 
-        // Filtr uchun guruh tanlash
-        function selectFilterGroup(id, name) {
-            document.getElementById('filter_group_id_input').value = id;
-            document.getElementById('selectedFilterGroupLabel').innerText = name;
+            // Filtr uchun guruh tanlash
+            function selectFilterGroup(id, name) {
+                document.getElementById('filter_group_id_input').value = id;
+                document.getElementById('selectedFilterGroupLabel').innerText = name;
 
-            // Tanlangandan so'ng avtomatik formani yuborish (Filter bo'lgani uchun qulay)
-            // Agar avtomatik filterlashni istasangiz pastdagi qatorni oching:
-            // document.getElementById('filter_group_id_input').closest('form').submit();
+                // Tanlangandan so'ng avtomatik formani yuborish (Filter bo'lgani uchun qulay)
+                // Agar avtomatik filterlashni istasangiz pastdagi qatorni oching:
+                // document.getElementById('filter_group_id_input').closest('form').submit();
 
-            toggleFilterGroupDropdown();
-        }
+                toggleFilterGroupDropdown();
+            }
 
-        // Filtr ichidagi qidiruv
-        function filterFilterGroups() {
-            const input = document.getElementById('filterGroupSearchInput');
-            const filter = input.value.toLowerCase();
-            const items = document.querySelectorAll('.filter-group-item');
-            const noResult = document.getElementById('noFilterGroupFound');
-            let hasMatch = false;
+            // Filtr ichidagi qidiruv
+            function filterFilterGroups() {
+                const input = document.getElementById('filterGroupSearchInput');
+                const filter = input.value.toLowerCase();
+                const items = document.querySelectorAll('.filter-group-item');
+                const noResult = document.getElementById('noFilterGroupFound');
+                let hasMatch = false;
 
-            items.forEach(item => {
-                const name = item.querySelector('.filter-item-name').innerText.toLowerCase();
-                const course = item.querySelector('.filter-item-course').innerText.toLowerCase();
+                items.forEach(item => {
+                    const name = item.querySelector('.filter-item-name').innerText.toLowerCase();
+                    const course = item.querySelector('.filter-item-course').innerText.toLowerCase();
 
-                if (name.includes(filter) || course.includes(filter)) {
-                    item.style.display = "";
-                    hasMatch = true;
+                    if (name.includes(filter) || course.includes(filter)) {
+                        item.style.display = "";
+                        hasMatch = true;
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
+
+                noResult.classList.toggle('hidden', hasMatch);
+            }
+
+            // Tashqariga bosilganda yopish
+            document.addEventListener('click', function(e) {
+                const container = document.getElementById('filterGroupCustomContainer');
+                if (container && !container.contains(e.target)) {
+                    document.getElementById('filterGroupMenu').classList.add('hidden');
+                    document.getElementById('filterGroupArrow').classList.remove('rotate-180');
+                }
+            });
+            // Guruh Dropdownini boshqarish
+            function toggleGroupDropdown() {
+                const menu = document.getElementById('groupDropdownMenu');
+                const arrow = document.getElementById('groupArrowIcon');
+                const isHidden = menu.classList.contains('hidden');
+
+                // Boshqa ochiq dropdownlarni yopish
+                document.getElementById('courseDropdownMenu')?.classList.add('hidden');
+                document.getElementById('schoolDropdown')?.classList.add('hidden');
+
+                menu.classList.toggle('hidden');
+                arrow.classList.toggle('rotate-180');
+
+                if (isHidden) {
+                    document.getElementById('groupSearchInput').focus();
+                }
+            }
+
+            // Guruhni tanlash
+            function selectGroupFunc(id, groupName) {
+                const label = document.getElementById('selectedGroupLabel');
+                const input = document.getElementById('group_id_input');
+
+                input.value = id;
+                label.innerText = groupName;
+
+                if (id !== "") {
+                    label.classList.add('text-gray-900', 'dark:text-white', 'font-medium');
+                    label.classList.remove('text-gray-500');
                 } else {
-                    item.style.display = "none";
+                    label.classList.remove('text-gray-900', 'dark:text-white', 'font-medium');
+                    label.classList.add('text-gray-500');
+                }
+
+                toggleGroupDropdown();
+            }
+
+            // Guruh qidiruvi
+            function filterGroupsFunc() {
+                const input = document.getElementById('groupSearchInput');
+                const filter = input.value.toLowerCase();
+                const options = document.querySelectorAll('.group-option-item');
+                const noResult = document.getElementById('noGroupFound');
+                let found = false;
+
+                options.forEach(option => {
+                    const name = option.querySelector('.group-search-name').innerText.toLowerCase();
+                    const course = option.querySelector('.group-search-course').innerText.toLowerCase();
+
+                    if (name.includes(filter) || course.includes(filter)) {
+                        option.style.display = "";
+                        found = true;
+                    } else {
+                        option.style.display = "none";
+                    }
+                });
+
+                noResult.classList.toggle('hidden', found);
+            }
+
+            // Tashqariga bosilganda yopish (Guruh uchun)
+            document.addEventListener('click', function(e) {
+                const container = document.getElementById('groupCustomSelectContainer');
+                if (container && !container.contains(e.target)) {
+                    document.getElementById('groupDropdownMenu').classList.add('hidden');
+                    document.getElementById('groupArrowIcon').classList.remove('rotate-180');
                 }
             });
 
-            noResult.classList.toggle('hidden', hasMatch);
-        }
+            function openEditModal(activity) {
+                document.getElementById('editForm').action = `/activities/${activity.id}`;
+                document.getElementById('edit_name').value = activity.name;
+                document.getElementById('edit_type').value = activity.type;
+                document.getElementById('edit_group_id').value = activity.group_id || '';
 
-        // Tashqariga bosilganda yopish
-        document.addEventListener('click', function(e) {
-            const container = document.getElementById('filterGroupCustomContainer');
-            if (container && !container.contains(e.target)) {
-                document.getElementById('filterGroupMenu').classList.add('hidden');
-                document.getElementById('filterGroupArrow').classList.remove('rotate-180');
-            }
-        });
-        // Guruh Dropdownini boshqarish
-        function toggleGroupDropdown() {
-            const menu = document.getElementById('groupDropdownMenu');
-            const arrow = document.getElementById('groupArrowIcon');
-            const isHidden = menu.classList.contains('hidden');
-
-            // Boshqa ochiq dropdownlarni yopish
-            document.getElementById('courseDropdownMenu')?.classList.add('hidden');
-            document.getElementById('schoolDropdown')?.classList.add('hidden');
-
-            menu.classList.toggle('hidden');
-            arrow.classList.toggle('rotate-180');
-
-            if (isHidden) {
-                document.getElementById('groupSearchInput').focus();
-            }
-        }
-
-        // Guruhni tanlash
-        function selectGroupFunc(id, groupName) {
-            const label = document.getElementById('selectedGroupLabel');
-            const input = document.getElementById('group_id_input');
-
-            input.value = id;
-            label.innerText = groupName;
-
-            if (id !== "") {
-                label.classList.add('text-gray-900', 'dark:text-white', 'font-medium');
-                label.classList.remove('text-gray-500');
-            } else {
-                label.classList.remove('text-gray-900', 'dark:text-white', 'font-medium');
-                label.classList.add('text-gray-500');
-            }
-
-            toggleGroupDropdown();
-        }
-
-        // Guruh qidiruvi
-        function filterGroupsFunc() {
-            const input = document.getElementById('groupSearchInput');
-            const filter = input.value.toLowerCase();
-            const options = document.querySelectorAll('.group-option-item');
-            const noResult = document.getElementById('noGroupFound');
-            let found = false;
-
-            options.forEach(option => {
-                const name = option.querySelector('.group-search-name').innerText.toLowerCase();
-                const course = option.querySelector('.group-search-course').innerText.toLowerCase();
-
-                if (name.includes(filter) || course.includes(filter)) {
-                    option.style.display = "";
-                    found = true;
+                if (activity.date) {
+                    const dateObj = new Date(activity.date);
+                    const y = dateObj.getFullYear();
+                    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+                    const d = String(dateObj.getDate()).padStart(2, '0');
+                    document.getElementById('edit_date').value = `${y}-${m}-${d}`;
                 } else {
-                    option.style.display = "none";
+                    document.getElementById('edit_date').value = '';
                 }
-            });
 
-            noResult.classList.toggle('hidden', found);
-        }
-
-        // Tashqariga bosilganda yopish (Guruh uchun)
-        document.addEventListener('click', function(e) {
-            const container = document.getElementById('groupCustomSelectContainer');
-            if (container && !container.contains(e.target)) {
-                document.getElementById('groupDropdownMenu').classList.add('hidden');
-                document.getElementById('groupArrowIcon').classList.remove('rotate-180');
+                document.getElementById('edit_max_coins').value = activity.max_coins;
+                document.getElementById('edit_description').value = activity.description || '';
+                document.getElementById('editModal').classList.remove('hidden');
             }
-        });
-
-        function openEditModal(activity) {
-            document.getElementById('editForm').action = `/activities/${activity.id}`;
-            document.getElementById('edit_name').value = activity.name;
-            document.getElementById('edit_type').value = activity.type;
-            document.getElementById('edit_group_id').value = activity.group_id || '';
-
-            if (activity.date) {
-                const dateObj = new Date(activity.date);
-                const y = dateObj.getFullYear();
-                const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-                const d = String(dateObj.getDate()).padStart(2, '0');
-                document.getElementById('edit_date').value = `${y}-${m}-${d}`;
-            } else {
-                document.getElementById('edit_date').value = '';
-            }
-
-            document.getElementById('edit_max_coins').value = activity.max_coins;
-            document.getElementById('edit_description').value = activity.description || '';
-            document.getElementById('editModal').classList.remove('hidden');
-        }
-    </script>
-
+        </script>
+    @endpush
 @endsection

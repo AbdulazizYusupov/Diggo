@@ -501,51 +501,52 @@
             </div>
         </div>
     </div>
-
-    <script>
-        // Copy Modal
-        function openCopyModal() {
-            document.getElementById('copyModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeCopyModal() {
-            document.getElementById('copyModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Revoke Modal
-        function openRevokeModal(role) {
-            const modal = document.getElementById('revokeModal');
-            const form = document.getElementById('revokeForm');
-
-            form.action = `/role-permissions/${role.id}/revoke-all`;
-            document.getElementById('revokeRoleName').textContent = role.name;
-
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeRevokeModal() {
-            document.getElementById('revokeModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Close modals on Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeCopyModal();
-                closeRevokeModal();
+    @push('scripts')
+        <script>
+            // Copy Modal
+            function openCopyModal() {
+                document.getElementById('copyModal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
             }
-        });
 
-        // Close modals on backdrop click
-        document.getElementById('copyModal').addEventListener('click', function(e) {
-            if (e.target === this) closeCopyModal();
-        });
+            function closeCopyModal() {
+                document.getElementById('copyModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
 
-        document.getElementById('revokeModal').addEventListener('click', function(e) {
-            if (e.target === this) closeRevokeModal();
-        });
-    </script>
+            // Revoke Modal
+            function openRevokeModal(role) {
+                const modal = document.getElementById('revokeModal');
+                const form = document.getElementById('revokeForm');
+
+                form.action = `/role-permissions/${role.id}/revoke-all`;
+                document.getElementById('revokeRoleName').textContent = role.name;
+
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeRevokeModal() {
+                document.getElementById('revokeModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+
+            // Close modals on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeCopyModal();
+                    closeRevokeModal();
+                }
+            });
+
+            // Close modals on backdrop click
+            document.getElementById('copyModal').addEventListener('click', function(e) {
+                if (e.target === this) closeCopyModal();
+            });
+
+            document.getElementById('revokeModal').addEventListener('click', function(e) {
+                if (e.target === this) closeRevokeModal();
+            });
+        </script>
+    @endpush
 @endsection

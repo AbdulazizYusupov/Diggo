@@ -108,7 +108,8 @@
                 @foreach ($groupedPermissions as $module => $permissions)
                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden permission-module"
                         data-module="{{ $module }}">
-                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-b border-gray-200 dark:border-gray-700 p-6">
+                        <div
+                            class="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-b border-gray-200 dark:border-gray-700 p-6">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-4">
                                     <div class="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl">
@@ -123,7 +124,9 @@
                                             {{ str_replace('-', ' ', $module) }}
                                         </h3>
                                         <p class="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
-                                            <span class="module-selected-count">{{ $permissions->whereIn('id', $assignedPermissions)->count() }}</span> /
+                                            <span
+                                                class="module-selected-count">{{ $permissions->whereIn('id', $assignedPermissions)->count() }}</span>
+                                            /
                                             {{ $permissions->count() }} tanlangan
                                         </p>
                                     </div>
@@ -182,7 +185,8 @@
                     </div>
                 @endforeach
 
-                <div id="noResults" class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
+                <div id="noResults"
+                    class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
                     <div class="inline-flex p-4 bg-gray-100 dark:bg-gray-700 rounded-full mb-4">
                         <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -208,7 +212,8 @@
                         <a href="{{ route('role-permissions.index') }}"
                             class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold rounded-xl transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
                             </svg>
                             Bekor qilish
                         </a>
@@ -225,82 +230,83 @@
             </div>
         </form>
     </div>
+    @push('scripts')
+        <script>
+            // Update counts
+            function updateCounts() {
+                const checkboxes = document.querySelectorAll('.permission-checkbox');
+                const checked = document.querySelectorAll('.permission-checkbox:checked');
 
-    <script>
-        // Update counts
-        function updateCounts() {
-            const checkboxes = document.querySelectorAll('.permission-checkbox');
-            const checked = document.querySelectorAll('.permission-checkbox:checked');
+                document.getElementById('selectedCount').textContent = checked.length;
+                document.getElementById('selectedCountBottom').textContent = checked.length;
+                document.getElementById('unselectedCount').textContent = checkboxes.length - checked.length;
 
-            document.getElementById('selectedCount').textContent = checked.length;
-            document.getElementById('selectedCountBottom').textContent = checked.length;
-            document.getElementById('unselectedCount').textContent = checkboxes.length - checked.length;
+                // Update module counts
+                document.querySelectorAll('.permission-module').forEach(module => {
+                    const moduleCheckboxes = module.querySelectorAll('.permission-checkbox');
+                    const moduleChecked = module.querySelectorAll('.permission-checkbox:checked');
+                    module.querySelector('.module-selected-count').textContent = moduleChecked.length;
+                });
+            }
 
-            // Update module counts
-            document.querySelectorAll('.permission-module').forEach(module => {
-                const moduleCheckboxes = module.querySelectorAll('.permission-checkbox');
-                const moduleChecked = module.querySelectorAll('.permission-checkbox:checked');
-                module.querySelector('.module-selected-count').textContent = moduleChecked.length;
-            });
-        }
+            // Select all
+            function selectAll() {
+                document.querySelectorAll('.permission-checkbox').forEach(cb => cb.checked = true);
+                updateCounts();
+            }
 
-        // Select all
-        function selectAll() {
-            document.querySelectorAll('.permission-checkbox').forEach(cb => cb.checked = true);
-            updateCounts();
-        }
+            // Deselect all
+            function deselectAll() {
+                document.querySelectorAll('.permission-checkbox').forEach(cb => cb.checked = false);
+                updateCounts();
+            }
 
-        // Deselect all
-        function deselectAll() {
-            document.querySelectorAll('.permission-checkbox').forEach(cb => cb.checked = false);
-            updateCounts();
-        }
+            // Select module
+            function selectModule(module) {
+                document.querySelectorAll(`[data-module="${module}"] .permission-checkbox`).forEach(cb => cb.checked = true);
+                updateCounts();
+            }
 
-        // Select module
-        function selectModule(module) {
-            document.querySelectorAll(`[data-module="${module}"] .permission-checkbox`).forEach(cb => cb.checked = true);
-            updateCounts();
-        }
+            // Deselect module
+            function deselectModule(module) {
+                document.querySelectorAll(`[data-module="${module}"] .permission-checkbox`).forEach(cb => cb.checked = false);
+                updateCounts();
+            }
 
-        // Deselect module
-        function deselectModule(module) {
-            document.querySelectorAll(`[data-module="${module}"] .permission-checkbox`).forEach(cb => cb.checked = false);
-            updateCounts();
-        }
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const modules = document.querySelectorAll('.permission-module');
+                let visibleCount = 0;
 
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const modules = document.querySelectorAll('.permission-module');
-            let visibleCount = 0;
+                modules.forEach(module => {
+                    const items = module.querySelectorAll('.permission-item');
+                    let moduleHasVisible = false;
 
-            modules.forEach(module => {
-                const items = module.querySelectorAll('.permission-item');
-                let moduleHasVisible = false;
+                    items.forEach(item => {
+                        const permissionName = item.dataset.permission;
+                        if (permissionName.includes(searchTerm)) {
+                            item.style.display = '';
+                            moduleHasVisible = true;
+                            visibleCount++;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
 
-                items.forEach(item => {
-                    const permissionName = item.dataset.permission;
-                    if (permissionName.includes(searchTerm)) {
-                        item.style.display = '';
-                        moduleHasVisible = true;
-                        visibleCount++;
-                    } else {
-                        item.style.display = 'none';
-                    }
+                    module.style.display = moduleHasVisible ? '' : 'none';
                 });
 
-                module.style.display = moduleHasVisible ? '' : 'none';
+                document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
             });
 
-            document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
-        });
+            // Update counts on checkbox change
+            document.querySelectorAll('.permission-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', updateCounts);
+            });
 
-        // Update counts on checkbox change
-        document.querySelectorAll('.permission-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', updateCounts);
-        });
-
-        // Initial count
-        updateCounts();
-    </script>
+            // Initial count
+            updateCounts();
+        </script>
+    @endpush
 @endsection

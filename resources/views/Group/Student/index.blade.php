@@ -252,32 +252,33 @@
             </form>
         </div>
     </div>
+    @push('scripts')
+        <script>
+            // Table search
+            document.getElementById('searchInput')?.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll('.student-row');
 
-    <script>
-        // Table search
-        document.getElementById('searchInput')?.addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('.student-row');
-
-            rows.forEach(row => {
-                const name = row.querySelector('.student-name')?.textContent.toLowerCase() || '';
-                row.style.display = name.includes(searchTerm) ? '' : 'none';
+                rows.forEach(row => {
+                    const name = row.querySelector('.student-name')?.textContent.toLowerCase() || '';
+                    row.style.display = name.includes(searchTerm) ? '' : 'none';
+                });
             });
-        });
 
-        // Modal search
-        document.getElementById('modalSearch')?.addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const items = document.querySelectorAll('.student-item');
+            // Modal search
+            document.getElementById('modalSearch')?.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const items = document.querySelectorAll('.student-item');
 
-            items.forEach(item => {
-                const name = item.querySelector('.student-item-name')?.textContent.toLowerCase() || '';
-                item.style.display = name.includes(searchTerm) ? '' : 'none';
+                items.forEach(item => {
+                    const name = item.querySelector('.student-item-name')?.textContent.toLowerCase() || '';
+                    item.style.display = name.includes(searchTerm) ? '' : 'none';
+                });
             });
-        });
 
-        function closeAddModal() {
-            document.getElementById('add-modal').classList.add('hidden');
-        }
-    </script>
+            function closeAddModal() {
+                document.getElementById('add-modal').classList.add('hidden');
+            }
+        </script>
+    @endpush
 @endsection

@@ -212,15 +212,14 @@
                                             $activityScore = $attendance->activity_score ?? 0;
 
                                             // Coin hisoblash - to'liq
-                                            $dailyCoins = 0;
-                                            if ($status === 'present') {
-                                                $dailyCoins = 4; // Keldi = 4 coin
-                                            } elseif ($status === 'late') {
-                                                $dailyCoins = 3; // Kechikdi = 3 coin
-                                            }
-                                            // Homework va Activity coinlarini qo'shamiz (faqat kelgan yoki kechikkan bo'lsa)
-                                            if ($status === 'present' || $status === 'late')
-                                            {
+$dailyCoins = 0;
+if ($status === 'present') {
+    $dailyCoins = 4; // Keldi = 4 coin
+} elseif ($status === 'late') {
+    $dailyCoins = 3; // Kechikdi = 3 coin
+}
+// Homework va Activity coinlarini qo'shamiz (faqat kelgan yoki kechikkan bo'lsa)
+if ($status === 'present' || $status === 'late') {
                                                 $dailyCoins += $homeworkScore + $activityScore;
                                             }
                                             $totalCoins += $dailyCoins;
@@ -367,50 +366,51 @@
             </div>
         </form>
     </div>
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const statusRadios = document.querySelectorAll('.attendance-status');
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const statusRadios = document.querySelectorAll('.attendance-status');
-
-            // Sahifa yuklanganda barcha holatlarni tekshirish
-            statusRadios.forEach(radio => {
-                if (radio.checked) {
-                    toggleHomeworkActivity(radio);
-                }
-            });
-
-            // Radio o'zgarganda
-            statusRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    toggleHomeworkActivity(this);
+                // Sahifa yuklanganda barcha holatlarni tekshirish
+                statusRadios.forEach(radio => {
+                    if (radio.checked) {
+                        toggleHomeworkActivity(radio);
+                    }
                 });
-            });
 
-            function toggleHomeworkActivity(radio) {
-                const container = radio.closest('td').querySelector('.homework-activity-container');
-                const status = radio.value;
-
-                if (status === 'absent' || status === 'excused') {
-                    // Kelmagan - homework va activity yashirish
-                    container.style.opacity = '0.3';
-                    container.style.pointerEvents = 'none';
-
-                    // Barcha radio buttonlarni 0 ga o'rnatish
-                    const hwRadios = container.querySelectorAll('input[type="radio"][name*="homework_score"]');
-                    const actRadios = container.querySelectorAll('input[type="radio"][name*="activity_score"]');
-
-                    hwRadios.forEach(r => {
-                        if (r.value === '0') r.checked = true;
+                // Radio o'zgarganda
+                statusRadios.forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        toggleHomeworkActivity(this);
                     });
-                    actRadios.forEach(r => {
-                        if (r.value === '0') r.checked = true;
-                    });
-                } else {
-                    // Kelgan yoki kechikkan - homework va activity ko'rsatish
-                    container.style.opacity = '1';
-                    container.style.pointerEvents = 'auto';
+                });
+
+                function toggleHomeworkActivity(radio) {
+                    const container = radio.closest('td').querySelector('.homework-activity-container');
+                    const status = radio.value;
+
+                    if (status === 'absent' || status === 'excused') {
+                        // Kelmagan - homework va activity yashirish
+                        container.style.opacity = '0.3';
+                        container.style.pointerEvents = 'none';
+
+                        // Barcha radio buttonlarni 0 ga o'rnatish
+                        const hwRadios = container.querySelectorAll('input[type="radio"][name*="homework_score"]');
+                        const actRadios = container.querySelectorAll('input[type="radio"][name*="activity_score"]');
+
+                        hwRadios.forEach(r => {
+                            if (r.value === '0') r.checked = true;
+                        });
+                        actRadios.forEach(r => {
+                            if (r.value === '0') r.checked = true;
+                        });
+                    } else {
+                        // Kelgan yoki kechikkan - homework va activity ko'rsatish
+                        container.style.opacity = '1';
+                        container.style.pointerEvents = 'auto';
+                    }
                 }
-            }
-        });
-    </script>
+            });
+        </script>
+    @endpush
 @endsection

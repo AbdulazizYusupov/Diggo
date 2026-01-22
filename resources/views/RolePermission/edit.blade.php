@@ -315,127 +315,128 @@
             </div>
         </form>
     </div>
+    @push('scripts')
+        <script>
+            // Update counts
+            function updateCounts() {
+                const checkboxes = document.querySelectorAll('.permission-checkbox');
+                const checked = document.querySelectorAll('.permission-checkbox:checked');
 
-    <script>
-        // Update counts
-        function updateCounts() {
-            const checkboxes = document.querySelectorAll('.permission-checkbox');
-            const checked = document.querySelectorAll('.permission-checkbox:checked');
+                document.getElementById('selectedCount').textContent = checked.length;
+                document.getElementById('selectedCountBottom').textContent = checked.length;
+                document.getElementById('unselectedCount').textContent = checkboxes.length - checked.length;
 
-            document.getElementById('selectedCount').textContent = checked.length;
-            document.getElementById('selectedCountBottom').textContent = checked.length;
-            document.getElementById('unselectedCount').textContent = checkboxes.length - checked.length;
+                // Update module counts
+                document.querySelectorAll('.permission-module').forEach(module => {
+                    const moduleCheckboxes = module.querySelectorAll('.permission-checkbox');
+                    const moduleChecked = module.querySelectorAll('.permission-checkbox:checked');
+                    module.querySelector('.module-selected-count').textContent = moduleChecked.length;
+                });
+            }
 
-            // Update module counts
-            document.querySelectorAll('.permission-module').forEach(module => {
-                const moduleCheckboxes = module.querySelectorAll('.permission-checkbox');
-                const moduleChecked = module.querySelectorAll('.permission-checkbox:checked');
-                module.querySelector('.module-selected-count').textContent = moduleChecked.length;
-            });
-        }
+            // Select all
+            function selectAll() {
+                document.querySelectorAll('.permission-checkbox').forEach(cb => cb.checked = true);
+                updateCounts();
+            }
 
-        // Select all
-        function selectAll() {
-            document.querySelectorAll('.permission-checkbox').forEach(cb => cb.checked = true);
-            updateCounts();
-        }
+            // Deselect all
+            function deselectAll() {
+                document.querySelectorAll('.permission-checkbox').forEach(cb => cb.checked = false);
+                updateCounts();
+            }
 
-        // Deselect all
-        function deselectAll() {
-            document.querySelectorAll('.permission-checkbox').forEach(cb => cb.checked = false);
-            updateCounts();
-        }
+            // Select module
+            function selectModule(module) {
+                document.querySelectorAll(`[data-module="${module}"] .permission-checkbox`).forEach(cb => cb.checked = true);
+                updateCounts();
+            }
 
-        // Select module
-        function selectModule(module) {
-            document.querySelectorAll(`[data-module="${module}"] .permission-checkbox`).forEach(cb => cb.checked = true);
-            updateCounts();
-        }
+            // Deselect module
+            function deselectModule(module) {
+                document.querySelectorAll(`[data-module="${module}"] .permission-checkbox`).forEach(cb => cb.checked = false);
+                updateCounts();
+            }
 
-        // Deselect module
-        function deselectModule(module) {
-            document.querySelectorAll(`[data-module="${module}"] .permission-checkbox`).forEach(cb => cb.checked = false);
-            updateCounts();
-        }
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const modules = document.querySelectorAll('.permission-module');
+                let visibleCount = 0;
 
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const modules = document.querySelectorAll('.permission-module');
-            let visibleCount = 0;
+                modules.forEach(module => {
+                    const items = module.querySelectorAll('.permission-item');
+                    let moduleHasVisible = false;
 
-            modules.forEach(module => {
-                const items = module.querySelectorAll('.permission-item');
-                let moduleHasVisible = false;
+                    items.forEach(item => {
+                        const permissionName = item.dataset.permission;
+                        if (permissionName.includes(searchTerm)) {
+                            item.style.display = '';
+                            moduleHasVisible = true;
+                            visibleCount++;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
 
-                items.forEach(item => {
-                    const permissionName = item.dataset.permission;
-                    if (permissionName.includes(searchTerm)) {
-                        item.style.display = '';
-                        moduleHasVisible = true;
-                        visibleCount++;
-                    } else {
-                        item.style.display = 'none';
-                    }
+                    module.style.display = moduleHasVisible ? '' : 'none';
                 });
 
-                module.style.display = moduleHasVisible ? '' : 'none';
+                document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
             });
 
-            document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
-        });
+            // Update counts on checkbox change
+            document.querySelectorAll('.permission-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', updateCounts);
+            });
 
-        // Update counts on checkbox change
-        document.querySelectorAll('.permission-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', updateCounts);
-        });
-
-        // Initial count
-        updateCounts();
+            // Initial count
+            updateCounts();
 
 
-        const searchInput = document.getElementById('searchInput');
-        const clearBtn = document.getElementById('clearSearch');
+            const searchInput = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('clearSearch');
 
-        // Qidiruv funksiyasini alohida nom bilan yozib olamiz qayta ishlatish uchun
-        function performSearch(term) {
-            const modules = document.querySelectorAll('.permission-module');
-            let visibleCount = 0;
+            // Qidiruv funksiyasini alohida nom bilan yozib olamiz qayta ishlatish uchun
+            function performSearch(term) {
+                const modules = document.querySelectorAll('.permission-module');
+                let visibleCount = 0;
 
-            modules.forEach(module => {
-                const items = module.querySelectorAll('.permission-item');
-                let moduleHasVisible = false;
+                modules.forEach(module => {
+                    const items = module.querySelectorAll('.permission-item');
+                    let moduleHasVisible = false;
 
-                items.forEach(item => {
-                    const permissionName = item.dataset.permission;
-                    if (permissionName.includes(term.toLowerCase())) {
-                        item.style.display = '';
-                        moduleHasVisible = true;
-                        visibleCount++;
-                    } else {
-                        item.style.display = 'none';
-                    }
+                    items.forEach(item => {
+                        const permissionName = item.dataset.permission;
+                        if (permissionName.includes(term.toLowerCase())) {
+                            item.style.display = '';
+                            moduleHasVisible = true;
+                            visibleCount++;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    module.style.display = moduleHasVisible ? '' : 'none';
                 });
 
-                module.style.display = moduleHasVisible ? '' : 'none';
+                document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
+
+                // Tugmani ko'rsatish yoki yashirish
+                clearBtn.classList.toggle('hidden', term.length === 0);
+            }
+
+            // Inputga yozilganda
+            searchInput.addEventListener('input', function(e) {
+                performSearch(e.target.value);
             });
 
-            document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
-
-            // Tugmani ko'rsatish yoki yashirish
-            clearBtn.classList.toggle('hidden', term.length === 0);
-        }
-
-        // Inputga yozilganda
-        searchInput.addEventListener('input', function(e) {
-            performSearch(e.target.value);
-        });
-
-        // Tozalash tugmasi bosilganda
-        clearBtn.addEventListener('click', function() {
-            searchInput.value = '';
-            performSearch('');
-            searchInput.focus();
-        });
-    </script>
+            // Tozalash tugmasi bosilganda
+            clearBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                performSearch('');
+                searchInput.focus();
+            });
+        </script>
+    @endpush
 @endsection

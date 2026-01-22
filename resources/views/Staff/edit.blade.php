@@ -433,60 +433,61 @@
             </form>
         </div>
     </div>
+    @push('scripts')
+        <script>
+            function updateSalaryFields() {
+                const type = document.getElementById('salary_type_select').value;
+                const container = document.getElementById('salary_input_container');
+                const label = document.getElementById('salary_label');
+                const percentFields = document.getElementById('percent_fields');
 
-    <script>
-        function updateSalaryFields() {
-            const type = document.getElementById('salary_type_select').value;
-            const container = document.getElementById('salary_input_container');
-            const label = document.getElementById('salary_label');
-            const percentFields = document.getElementById('percent_fields');
-
-            if (type === 'percent') {
-                container.classList.add('hidden');
-                percentFields.classList.remove('hidden');
-            } else {
-                container.classList.remove('hidden');
-                percentFields.classList.add('hidden');
-
-                if (type === 'fixed') {
-                    label.innerText = "Qat'iy maosh miqdori (so'm)";
+                if (type === 'percent') {
+                    container.classList.add('hidden');
+                    percentFields.classList.remove('hidden');
                 } else {
-                    label.innerText = "Har bir talaba uchun to'lov (so'm)";
+                    container.classList.remove('hidden');
+                    percentFields.classList.add('hidden');
+
+                    if (type === 'fixed') {
+                        label.innerText = "Qat'iy maosh miqdori (so'm)";
+                    } else {
+                        label.innerText = "Har bir talaba uchun to'lov (so'm)";
+                    }
                 }
             }
-        }
 
-        function showPreview(input) {
-            const previewBox = document.getElementById('preview-box');
-            const uploadLabel = document.getElementById('upload-label');
-            const imageDisplay = document.getElementById('image-display');
+            function showPreview(input) {
+                const previewBox = document.getElementById('preview-box');
+                const uploadLabel = document.getElementById('upload-label');
+                const imageDisplay = document.getElementById('image-display');
 
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
 
-                reader.onload = function(e) {
-                    imageDisplay.src = e.target.result;
-                    previewBox.classList.remove('hidden');
-                    uploadLabel.classList.add('hidden');
+                    reader.onload = function(e) {
+                        imageDisplay.src = e.target.result;
+                        previewBox.classList.remove('hidden');
+                        uploadLabel.classList.add('hidden');
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
                 }
-
-                reader.readAsDataURL(input.files[0]);
             }
-        }
 
-        function resetImage() {
-            const previewBox = document.getElementById('preview-box');
-            const uploadLabel = document.getElementById('upload-label');
-            const photoInput = document.getElementById('photo-input');
-            const imageDisplay = document.getElementById('image-display');
+            function resetImage() {
+                const previewBox = document.getElementById('preview-box');
+                const uploadLabel = document.getElementById('upload-label');
+                const photoInput = document.getElementById('photo-input');
+                const imageDisplay = document.getElementById('image-display');
 
-            // Input qiymatini tozalash
-            photoInput.value = "";
-            // Previewni yashirish
-            imageDisplay.src = "";
-            previewBox.classList.add('hidden');
-            // Yuklash tugmasini qaytarish
-            uploadLabel.classList.remove('hidden');
-        }
-    </script>
+                // Input qiymatini tozalash
+                photoInput.value = "";
+                // Previewni yashirish
+                imageDisplay.src = "";
+                previewBox.classList.add('hidden');
+                // Yuklash tugmasini qaytarish
+                uploadLabel.classList.remove('hidden');
+            }
+        </script>
+    @endpush
 @endsection

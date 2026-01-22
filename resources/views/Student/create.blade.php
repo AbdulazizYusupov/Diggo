@@ -525,92 +525,93 @@
             </form>
         </div>
     </div>
+    @push('scripts')
+        <script>
+            // Dropdownni ochish/yopish
+            function toggleTeacherSchoolDropdown() {
+                const menu = document.getElementById('teacherSchoolMenu');
+                const arrow = document.getElementById('teacherSchoolArrow');
+                const isHidden = menu.classList.contains('hidden');
 
-    <script>
-        // Dropdownni ochish/yopish
-        function toggleTeacherSchoolDropdown() {
-            const menu = document.getElementById('teacherSchoolMenu');
-            const arrow = document.getElementById('teacherSchoolArrow');
-            const isHidden = menu.classList.contains('hidden');
+                // Barcha dropdownlarni yopish
+                document.querySelectorAll('[id$="Menu"]').forEach(m => {
+                    if (m.id !== 'teacherSchoolMenu') m.classList.add('hidden');
+                });
 
-            // Barcha dropdownlarni yopish
-            document.querySelectorAll('[id$="Menu"]').forEach(m => {
-                if (m.id !== 'teacherSchoolMenu') m.classList.add('hidden');
-            });
+                menu.classList.toggle('hidden');
+                arrow.classList.toggle('rotate-180');
 
-            menu.classList.toggle('hidden');
-            arrow.classList.toggle('rotate-180');
-
-            if (isHidden) {
-                document.getElementById('teacherSchoolSearchInput').focus();
+                if (isHidden) {
+                    document.getElementById('teacherSchoolSearchInput').focus();
+                }
             }
-        }
 
-        // Maktabni tanlash
-        function selectTeacherSchool(id, name) {
-            document.getElementById('teacher_school_id_input').value = id;
-            document.getElementById('selectedTeacherSchoolLabel').innerText = name;
-            toggleTeacherSchoolDropdown();
-        }
+            // Maktabni tanlash
+            function selectTeacherSchool(id, name) {
+                document.getElementById('teacher_school_id_input').value = id;
+                document.getElementById('selectedTeacherSchoolLabel').innerText = name;
+                toggleTeacherSchoolDropdown();
+            }
 
-        // Qidiruv funksiyasi
-        function filterTeacherSchools() {
-            const input = document.getElementById('teacherSchoolSearchInput');
-            const filter = input.value.toLowerCase();
-            const items = document.querySelectorAll('.teacher-school-item');
-            const noResult = document.getElementById('noTeacherSchoolFound');
-            let hasResults = false;
+            // Qidiruv funksiyasi
+            function filterTeacherSchools() {
+                const input = document.getElementById('teacherSchoolSearchInput');
+                const filter = input.value.toLowerCase();
+                const items = document.querySelectorAll('.teacher-school-item');
+                const noResult = document.getElementById('noTeacherSchoolFound');
+                let hasResults = false;
 
-            items.forEach(item => {
-                const name = item.querySelector('.teacher-item-name').innerText.toLowerCase();
-                if (name.includes(filter)) {
-                    item.style.display = "";
-                    hasResults = true;
-                } else {
-                    item.style.display = "none";
+                items.forEach(item => {
+                    const name = item.querySelector('.teacher-item-name').innerText.toLowerCase();
+                    if (name.includes(filter)) {
+                        item.style.display = "";
+                        hasResults = true;
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
+
+                noResult.classList.toggle('hidden', hasResults);
+            }
+
+            // Tashqariga bosilganda yopish
+            document.addEventListener('click', function(e) {
+                const container = document.getElementById('teacherSchoolCustomContainer');
+                if (container && !container.contains(e.target)) {
+                    document.getElementById('teacherSchoolMenu').classList.add('hidden');
+                    document.getElementById('teacherSchoolArrow').classList.remove('rotate-180');
                 }
             });
 
-            noResult.classList.toggle('hidden', hasResults);
-        }
+            function showPreview(input) {
+                const previewBox = document.getElementById('preview-box');
+                const uploadLabel = document.getElementById('upload-label');
+                const imageDisplay = document.getElementById('image-display');
 
-        // Tashqariga bosilganda yopish
-        document.addEventListener('click', function(e) {
-            const container = document.getElementById('teacherSchoolCustomContainer');
-            if (container && !container.contains(e.target)) {
-                document.getElementById('teacherSchoolMenu').classList.add('hidden');
-                document.getElementById('teacherSchoolArrow').classList.remove('rotate-180');
-            }
-        });
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
 
-        function showPreview(input) {
-            const previewBox = document.getElementById('preview-box');
-            const uploadLabel = document.getElementById('upload-label');
-            const imageDisplay = document.getElementById('image-display');
+                    reader.onload = function(e) {
+                        imageDisplay.src = e.target.result;
+                        previewBox.classList.remove('hidden');
+                        uploadLabel.classList.add('hidden');
+                    }
 
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-
-                reader.onload = function(e) {
-                    imageDisplay.src = e.target.result;
-                    previewBox.classList.remove('hidden');
-                    uploadLabel.classList.add('hidden');
+                    reader.readAsDataURL(input.files[0]);
                 }
-
-                reader.readAsDataURL(input.files[0]);
             }
-        }
 
-        function resetImage() {
-            const previewBox = document.getElementById('preview-box');
-            const uploadLabel = document.getElementById('upload-label');
-            const photoInput = document.getElementById('photo-input');
-            const imageDisplay = document.getElementById('image-display');
+            function resetImage() {
+                const previewBox = document.getElementById('preview-box');
+                const uploadLabel = document.getElementById('upload-label');
+                const photoInput = document.getElementById('photo-input');
+                const imageDisplay = document.getElementById('image-display');
 
-            photoInput.value = "";
-            imageDisplay.src = "";
-            previewBox.classList.add('hidden');
-            uploadLabel.classList.remove('hidden');
-        }
-    </script>
+                photoInput.value = "";
+                imageDisplay.src = "";
+                previewBox.classList.add('hidden');
+                uploadLabel.classList.remove('hidden');
+            }
+        </script>
+    @endpush
 @endsection

@@ -455,63 +455,64 @@
             </div>
         </div>
     </div>
+    @push('scripts')
+        <script>
+            // Manage Roles Modal
+            function openManageRolesModal(user) {
+                const modal = document.getElementById('manageRolesModal');
+                const form = document.getElementById('manageRolesForm');
 
-    <script>
-        // Manage Roles Modal
-        function openManageRolesModal(user) {
-            const modal = document.getElementById('manageRolesModal');
-            const form = document.getElementById('manageRolesForm');
+                form.action = `/settings/sync-roles/${user.id}`;
+                document.getElementById('manageUserName').textContent = user.full_name;
 
-            form.action = `/settings/sync-roles/${user.id}`;
-            document.getElementById('manageUserName').textContent = user.full_name;
+                // Reset checkboxes
+                const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = user.roles.some(role => role.name === checkbox.value);
+                });
 
-            // Reset checkboxes
-            const checkboxes = form.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = user.roles.some(role => role.name === checkbox.value);
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeManageRolesModal() {
+                document.getElementById('manageRolesModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+
+            // Remove All Roles Modal
+            function openRemoveAllRolesModal(user) {
+                const modal = document.getElementById('removeAllRolesModal');
+                const form = document.getElementById('removeAllRolesForm');
+
+                form.action = `/settings/sync-roles/${user.id}`;
+                document.getElementById('removeAllUserName').textContent = user.full_name;
+
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeRemoveAllRolesModal() {
+                document.getElementById('removeAllRolesModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+
+            // Close modals on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeManageRolesModal();
+                    closeRemoveAllRolesModal();
+                }
             });
 
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
+            // Close modals on backdrop click
+            document.getElementById('manageRolesModal').addEventListener('click', function(e) {
+                if (e.target === this) closeManageRolesModal();
+            });
 
-        function closeManageRolesModal() {
-            document.getElementById('manageRolesModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Remove All Roles Modal
-        function openRemoveAllRolesModal(user) {
-            const modal = document.getElementById('removeAllRolesModal');
-            const form = document.getElementById('removeAllRolesForm');
-
-            form.action = `/settings/sync-roles/${user.id}`;
-            document.getElementById('removeAllUserName').textContent = user.full_name;
-
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeRemoveAllRolesModal() {
-            document.getElementById('removeAllRolesModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Close modals on Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeManageRolesModal();
-                closeRemoveAllRolesModal();
-            }
-        });
-
-        // Close modals on backdrop click
-        document.getElementById('manageRolesModal').addEventListener('click', function(e) {
-            if (e.target === this) closeManageRolesModal();
-        });
-
-        document.getElementById('removeAllRolesModal').addEventListener('click', function(e) {
-            if (e.target === this) closeRemoveAllRolesModal();
-        });
-    </script>
+            document.getElementById('removeAllRolesModal').addEventListener('click', function(e) {
+                if (e.target === this) closeRemoveAllRolesModal();
+            });
+        </script>
+    @endpush
 @endsection

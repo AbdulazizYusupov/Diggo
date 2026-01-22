@@ -142,7 +142,7 @@
             @endforelse
         </div>
     </div>
-    
+
     <div id="add-modal" onclick="document.getElementById('add-modal').classList.add('hidden')"
         class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
 
@@ -265,34 +265,34 @@
             </div>
         </div>
     </div>
+    @push('scripts')
+        <script>
+            // DELETE MODAL
+            function openDeleteModal(action) {
+                const modal = document.getElementById('delete-modal');
+                const form = document.getElementById('delete-form');
 
-    <script>
-        // DELETE MODAL
-        function openDeleteModal(action) {
-            const modal = document.getElementById('delete-modal');
-            const form = document.getElementById('delete-form');
+                if (!modal || !form) return;
 
-            if (!modal || !form) return;
+                form.action = action;
+                modal.classList.remove('hidden');
+            }
 
-            form.action = action;
-            modal.classList.remove('hidden');
-        }
+            function closeDeleteModal() {
+                document.getElementById('delete-modal')?.classList.add('hidden');
+            }
 
-        function closeDeleteModal() {
-            document.getElementById('delete-modal')?.classList.add('hidden');
-        }
+            // MODAL SEARCH
+            document.getElementById('modalSearch')?.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const items = document.querySelectorAll('.teacher-item');
 
-        // MODAL SEARCH
-        document.getElementById('modalSearch')?.addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const items = document.querySelectorAll('.teacher-item');
-
-            items.forEach(item => {
-                const name =
-                    item.querySelector('.teacher-item-name')?.textContent.toLowerCase() || '';
-                item.style.display = name.includes(searchTerm) ? '' : 'none';
+                items.forEach(item => {
+                    const name =
+                        item.querySelector('.teacher-item-name')?.textContent.toLowerCase() || '';
+                    item.style.display = name.includes(searchTerm) ? '' : 'none';
+                });
             });
-        });
-    </script>
-
+        </script>
+    @endpush
 @endsection

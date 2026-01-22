@@ -331,74 +331,76 @@
             </div>
         </form>
     </div>
-    <script>
-        // Kurslar Dropdownini ochish/yopish
-        function toggleCourseDropdown() {
-            const menu = document.getElementById('courseDropdownMenu');
-            const arrow = document.getElementById('courseArrowIcon');
-            const isHidden = menu.classList.contains('hidden');
+    @push('scripts')
+        <script>
+            // Kurslar Dropdownini ochish/yopish
+            function toggleCourseDropdown() {
+                const menu = document.getElementById('courseDropdownMenu');
+                const arrow = document.getElementById('courseArrowIcon');
+                const isHidden = menu.classList.contains('hidden');
 
-            // Boshqa barcha dropdownlarni yopish (agar bo'lsa)
-            document.getElementById('schoolDropdown')?.classList.add('hidden');
+                // Boshqa barcha dropdownlarni yopish (agar bo'lsa)
+                document.getElementById('schoolDropdown')?.classList.add('hidden');
 
-            menu.classList.toggle('hidden');
-            arrow.classList.toggle('rotate-180');
+                menu.classList.toggle('hidden');
+                arrow.classList.toggle('rotate-180');
 
-            if (isHidden) {
-                document.getElementById('courseSearchInput').focus();
-            }
-        }
-
-        // Kursni tanlash
-        function selectCourseFunc(id, displayText) {
-            const label = document.getElementById('selectedCourseLabel');
-            const input = document.getElementById('cours_id_input');
-
-            input.value = id;
-            label.innerText = displayText;
-
-            // Dizaynni yangilash
-            if (id !== "") {
-                label.classList.add('text-gray-900', 'dark:text-white', 'font-medium');
-                label.classList.remove('text-gray-500');
-            } else {
-                label.classList.remove('text-gray-900', 'dark:text-white', 'font-medium');
-                label.classList.add('text-gray-500');
+                if (isHidden) {
+                    document.getElementById('courseSearchInput').focus();
+                }
             }
 
-            toggleCourseDropdown();
-        }
+            // Kursni tanlash
+            function selectCourseFunc(id, displayText) {
+                const label = document.getElementById('selectedCourseLabel');
+                const input = document.getElementById('cours_id_input');
 
-        // Qidiruv funksiyasi
-        function filterCoursesFunc() {
-            const input = document.getElementById('courseSearchInput');
-            const filter = input.value.toLowerCase();
-            const options = document.querySelectorAll('.course-option-item');
-            const noResult = document.getElementById('noCourseFound');
-            let hasVisible = false;
+                input.value = id;
+                label.innerText = displayText;
 
-            options.forEach(option => {
-                const code = option.querySelector('.course-search-text').innerText.toLowerCase();
-                const title = option.querySelector('.course-search-title').innerText.toLowerCase();
-
-                if (code.includes(filter) || title.includes(filter)) {
-                    option.style.display = "";
-                    hasVisible = true;
+                // Dizaynni yangilash
+                if (id !== "") {
+                    label.classList.add('text-gray-900', 'dark:text-white', 'font-medium');
+                    label.classList.remove('text-gray-500');
                 } else {
-                    option.style.display = "none";
+                    label.classList.remove('text-gray-900', 'dark:text-white', 'font-medium');
+                    label.classList.add('text-gray-500');
+                }
+
+                toggleCourseDropdown();
+            }
+
+            // Qidiruv funksiyasi
+            function filterCoursesFunc() {
+                const input = document.getElementById('courseSearchInput');
+                const filter = input.value.toLowerCase();
+                const options = document.querySelectorAll('.course-option-item');
+                const noResult = document.getElementById('noCourseFound');
+                let hasVisible = false;
+
+                options.forEach(option => {
+                    const code = option.querySelector('.course-search-text').innerText.toLowerCase();
+                    const title = option.querySelector('.course-search-title').innerText.toLowerCase();
+
+                    if (code.includes(filter) || title.includes(filter)) {
+                        option.style.display = "";
+                        hasVisible = true;
+                    } else {
+                        option.style.display = "none";
+                    }
+                });
+
+                noResult.classList.toggle('hidden', hasVisible);
+            }
+
+            // Dropdown tashqarisiga bosilganda yopish
+            document.addEventListener('click', function(e) {
+                const container = document.getElementById('courseCustomSelectContainer');
+                if (container && !container.contains(e.target)) {
+                    document.getElementById('courseDropdownMenu').classList.add('hidden');
+                    document.getElementById('courseArrowIcon').classList.remove('rotate-180');
                 }
             });
-
-            noResult.classList.toggle('hidden', hasVisible);
-        }
-
-        // Dropdown tashqarisiga bosilganda yopish
-        document.addEventListener('click', function(e) {
-            const container = document.getElementById('courseCustomSelectContainer');
-            if (container && !container.contains(e.target)) {
-                document.getElementById('courseDropdownMenu').classList.add('hidden');
-                document.getElementById('courseArrowIcon').classList.remove('rotate-180');
-            }
-        });
-    </script>
+        </script>
+    @endpush
 @endsection

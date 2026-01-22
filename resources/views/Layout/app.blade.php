@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Edu Center</title>
-    <meta name="csrf-token" content="# csrf_token() #">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') - Edu Center</title>
-    @stack('styles')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
     <style>
         /* Flag icons */
         .flag-icon {
@@ -957,6 +957,7 @@
         applyTheme(currentTheme);
         updateSidebarView();
     </script>
+    @stack('scripts')
 </body>
 
 </html>

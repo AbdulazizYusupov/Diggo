@@ -503,73 +503,74 @@
             </div>
         </div>
     </div>
-
-    <script>
-        // Sync Modal
-        function openSyncModal() {
-            document.getElementById('syncModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeSyncModal() {
-            document.getElementById('syncModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Edit Modal
-        function openEditModal(permission) {
-            const modal = document.getElementById('editModal');
-            const form = document.getElementById('editForm');
-
-            form.action = `/permissions/${permission.id}`;
-            document.getElementById('edit_name').value = permission.name;
-
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeEditModal() {
-            document.getElementById('editModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Delete Modal
-        function openDeleteModal(permission) {
-            const modal = document.getElementById('deleteModal');
-            const form = document.getElementById('deleteForm');
-
-            form.action = `/permissions/${permission.id}`;
-            document.getElementById('deletePermissionName').textContent = permission.name;
-
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Close modals on Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeSyncModal();
-                closeEditModal();
-                closeDeleteModal();
+    @push('scripts')
+        <script>
+            // Sync Modal
+            function openSyncModal() {
+                document.getElementById('syncModal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
             }
-        });
 
-        // Close modals on backdrop click
-        document.getElementById('syncModal').addEventListener('click', function(e) {
-            if (e.target === this) closeSyncModal();
-        });
+            function closeSyncModal() {
+                document.getElementById('syncModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
 
-        document.getElementById('editModal').addEventListener('click', function(e) {
-            if (e.target === this) closeEditModal();
-        });
+            // Edit Modal
+            function openEditModal(permission) {
+                const modal = document.getElementById('editModal');
+                const form = document.getElementById('editForm');
 
-        document.getElementById('deleteModal').addEventListener('click', function(e) {
-            if (e.target === this) closeDeleteModal();
-        });
-    </script>
+                form.action = `/permissions/${permission.id}`;
+                document.getElementById('edit_name').value = permission.name;
+
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeEditModal() {
+                document.getElementById('editModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+
+            // Delete Modal
+            function openDeleteModal(permission) {
+                const modal = document.getElementById('deleteModal');
+                const form = document.getElementById('deleteForm');
+
+                form.action = `/permissions/${permission.id}`;
+                document.getElementById('deletePermissionName').textContent = permission.name;
+
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeDeleteModal() {
+                document.getElementById('deleteModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+
+            // Close modals on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeSyncModal();
+                    closeEditModal();
+                    closeDeleteModal();
+                }
+            });
+
+            // Close modals on backdrop click
+            document.getElementById('syncModal').addEventListener('click', function(e) {
+                if (e.target === this) closeSyncModal();
+            });
+
+            document.getElementById('editModal').addEventListener('click', function(e) {
+                if (e.target === this) closeEditModal();
+            });
+
+            document.getElementById('deleteModal').addEventListener('click', function(e) {
+                if (e.target === this) closeDeleteModal();
+            });
+        </script>
+    @endpush
 @endsection

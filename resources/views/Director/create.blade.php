@@ -1,7 +1,21 @@
 @extends('Layout.app')
 
 @section('title', "Yangi direktor qo'shish")
+@push('styles')
+    <style>
+        .bg-size-200 {
+            background-size: 200%;
+        }
 
+        .bg-pos-0 {
+            background-position: 0%;
+        }
+
+        .bg-pos-100:hover {
+            background-position: 100%;
+        }
+    </style>
+@endpush
 @section('content')
     <div class="w-full max-w-7xl mx-auto">
         <!-- Header Section -->
@@ -721,98 +735,86 @@
             </form>
         </div>
     </div>
+    @push('scripts')
+        <script>
+            function showPreview(input) {
+                const previewBox = document.getElementById('preview-box');
+                const uploadLabel = document.getElementById('upload-label');
+                const imageDisplay = document.getElementById('image-display');
 
-    <script>
-        function showPreview(input) {
-            const previewBox = document.getElementById('preview-box');
-            const uploadLabel = document.getElementById('upload-label');
-            const imageDisplay = document.getElementById('image-display');
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
 
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imageDisplay.src = e.target.result;
+                        previewBox.classList.remove('hidden');
+                        uploadLabel.classList.add('hidden');
+                    }
 
-                reader.onload = function(e) {
-                    imageDisplay.src = e.target.result;
-                    previewBox.classList.remove('hidden');
-                    uploadLabel.classList.add('hidden');
+                    reader.readAsDataURL(input.files[0]);
                 }
-
-                reader.readAsDataURL(input.files[0]);
             }
-        }
 
-        function resetImage() {
-            const previewBox = document.getElementById('preview-box');
-            const uploadLabel = document.getElementById('upload-label');
-            const photoInput = document.getElementById('photo-input');
-            const imageDisplay = document.getElementById('image-display');
+            function resetImage() {
+                const previewBox = document.getElementById('preview-box');
+                const uploadLabel = document.getElementById('upload-label');
+                const photoInput = document.getElementById('photo-input');
+                const imageDisplay = document.getElementById('image-display');
 
-            photoInput.value = "";
-            imageDisplay.src = "";
-            previewBox.classList.add('hidden');
-            uploadLabel.classList.remove('hidden');
-        }
-        // School Select Logic
-        function toggleSchoolDropdown() {
-            const dropdown = document.getElementById('schoolDropdown');
-            const arrow = document.getElementById('schoolArrow');
-            dropdown.classList.toggle('hidden');
-            arrow.classList.toggle('rotate-180');
-            if (!dropdown.classList.contains('hidden')) {
-                document.getElementById('schoolSearchInput').focus();
+                photoInput.value = "";
+                imageDisplay.src = "";
+                previewBox.classList.add('hidden');
+                uploadLabel.classList.remove('hidden');
             }
-        }
+            // School Select Logic
+            function toggleSchoolDropdown() {
+                const dropdown = document.getElementById('schoolDropdown');
+                const arrow = document.getElementById('schoolArrow');
+                dropdown.classList.toggle('hidden');
+                arrow.classList.toggle('rotate-180');
+                if (!dropdown.classList.contains('hidden')) {
+                    document.getElementById('schoolSearchInput').focus();
+                }
+            }
 
-        function selectSchool(id, name) {
-            document.getElementById('school_id_input').value = id;
-            document.getElementById('selectedSchoolLabel').innerText = name;
-            document.getElementById('selectedSchoolLabel').classList.replace('text-gray-500', 'text-gray-900');
-            document.getElementById('selectedSchoolLabel').classList.add('dark:text-white');
-            toggleSchoolDropdown();
-        }
+            function selectSchool(id, name) {
+                document.getElementById('school_id_input').value = id;
+                document.getElementById('selectedSchoolLabel').innerText = name;
+                document.getElementById('selectedSchoolLabel').classList.replace('text-gray-500', 'text-gray-900');
+                document.getElementById('selectedSchoolLabel').classList.add('dark:text-white');
+                toggleSchoolDropdown();
+            }
 
-        function filterSchools() {
-            const input = document.getElementById('schoolSearchInput');
-            const filter = input.value.toLowerCase();
-            const options = document.querySelectorAll('.school-option');
+            function filterSchools() {
+                const input = document.getElementById('schoolSearchInput');
+                const filter = input.value.toLowerCase();
+                const options = document.querySelectorAll('.school-option');
 
-            options.forEach(option => {
-                const text = option.querySelector('.school-name').innerText.toLowerCase();
-                if (text.includes(filter)) {
-                    option.style.display = "";
-                } else {
-                    option.style.display = "none";
+                options.forEach(option => {
+                    const text = option.querySelector('.school-name').innerText.toLowerCase();
+                    if (text.includes(filter)) {
+                        option.style.display = "";
+                    } else {
+                        option.style.display = "none";
+                    }
+                });
+            }
+
+            // Modal ochilganda dropdown yopilishi uchun
+            function closeAddModal() {
+                document.getElementById('add-modal').classList.add('hidden');
+                document.getElementById('schoolDropdown').classList.add('hidden');
+            }
+
+            // Dropdown tashqarisiga bosilganda yopish
+            document.addEventListener('click', function(event) {
+                const isClickInside = document.getElementById('schoolCustomSelect').contains(event.target);
+                if (!isClickInside) {
+                    document.getElementById('schoolDropdown').classList.add('hidden');
+                    document.getElementById('schoolArrow').classList.remove('rotate-180');
                 }
             });
-        }
+        </script>
+    @endpush
 
-        // Modal ochilganda dropdown yopilishi uchun
-        function closeAddModal() {
-            document.getElementById('add-modal').classList.add('hidden');
-            document.getElementById('schoolDropdown').classList.add('hidden');
-        }
-
-        // Dropdown tashqarisiga bosilganda yopish
-        document.addEventListener('click', function(event) {
-            const isClickInside = document.getElementById('schoolCustomSelect').contains(event.target);
-            if (!isClickInside) {
-                document.getElementById('schoolDropdown').classList.add('hidden');
-                document.getElementById('schoolArrow').classList.remove('rotate-180');
-            }
-        });
-    </script>
-
-    <style>
-        .bg-size-200 {
-            background-size: 200%;
-        }
-
-        .bg-pos-0 {
-            background-position: 0%;
-        }
-
-        .bg-pos-100:hover {
-            background-position: 100%;
-        }
-    </style>
 @endsection

@@ -335,60 +335,62 @@
             </div>
         </div>
     </div>
-    <script>
-        function toggleActionGroupDropdown() {
-            const menu = document.getElementById('actionGroupMenu');
-            const arrow = document.getElementById('actionGroupArrow');
-            const isHidden = menu.classList.contains('hidden');
+    @push('scripts')
+        <script>
+            function toggleActionGroupDropdown() {
+                const menu = document.getElementById('actionGroupMenu');
+                const arrow = document.getElementById('actionGroupArrow');
+                const isHidden = menu.classList.contains('hidden');
 
-            // Barcha boshqa dropdownlarni yopish
-            document.querySelectorAll('[id$="Menu"]').forEach(m => {
-                if (m.id !== 'actionGroupMenu') m.classList.add('hidden');
-            });
+                // Barcha boshqa dropdownlarni yopish
+                document.querySelectorAll('[id$="Menu"]').forEach(m => {
+                    if (m.id !== 'actionGroupMenu') m.classList.add('hidden');
+                });
 
-            menu.classList.toggle('hidden');
-            arrow.classList.toggle('rotate-180');
+                menu.classList.toggle('hidden');
+                arrow.classList.toggle('rotate-180');
 
-            if (isHidden) {
-                document.getElementById('actionGroupSearchInput').focus();
+                if (isHidden) {
+                    document.getElementById('actionGroupSearchInput').focus();
+                }
             }
-        }
 
-        function selectActionGroup(id, labelText) {
-            document.getElementById('action_group_id_input').value = id;
-            document.getElementById('selectedActionGroupLabel').innerText = labelText;
-            toggleActionGroupDropdown();
-        }
+            function selectActionGroup(id, labelText) {
+                document.getElementById('action_group_id_input').value = id;
+                document.getElementById('selectedActionGroupLabel').innerText = labelText;
+                toggleActionGroupDropdown();
+            }
 
-        function filterActionGroups() {
-            const input = document.getElementById('actionGroupSearchInput');
-            const filter = input.value.toLowerCase();
-            const items = document.querySelectorAll('.action-group-item');
-            const noResult = document.getElementById('noActionGroupFound');
-            let hasResults = false;
+            function filterActionGroups() {
+                const input = document.getElementById('actionGroupSearchInput');
+                const filter = input.value.toLowerCase();
+                const items = document.querySelectorAll('.action-group-item');
+                const noResult = document.getElementById('noActionGroupFound');
+                let hasResults = false;
 
-            items.forEach(item => {
-                const name = item.querySelector('.action-item-name').innerText.toLowerCase();
-                const course = item.querySelector('.action-item-course')?.innerText.toLowerCase() || '';
+                items.forEach(item => {
+                    const name = item.querySelector('.action-item-name').innerText.toLowerCase();
+                    const course = item.querySelector('.action-item-course')?.innerText.toLowerCase() || '';
 
-                if (name.includes(filter) || course.includes(filter)) {
-                    item.style.display = "";
-                    hasResults = true;
-                } else {
-                    item.style.display = "none";
+                    if (name.includes(filter) || course.includes(filter)) {
+                        item.style.display = "";
+                        hasResults = true;
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
+
+                noResult.classList.toggle('hidden', hasResults);
+            }
+
+            // Tashqariga bosilganda yopish
+            document.addEventListener('click', function(e) {
+                const container = document.getElementById('actionGroupCustomContainer');
+                if (container && !container.contains(e.target)) {
+                    document.getElementById('actionGroupMenu').classList.add('hidden');
+                    document.getElementById('actionGroupArrow').classList.remove('rotate-180');
                 }
             });
-
-            noResult.classList.toggle('hidden', hasResults);
-        }
-
-        // Tashqariga bosilganda yopish
-        document.addEventListener('click', function(e) {
-            const container = document.getElementById('actionGroupCustomContainer');
-            if (container && !container.contains(e.target)) {
-                document.getElementById('actionGroupMenu').classList.add('hidden');
-                document.getElementById('actionGroupArrow').classList.remove('rotate-180');
-            }
-        });
-    </script>
+        </script>
+    @endpush
 @endsection

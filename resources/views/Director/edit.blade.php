@@ -380,63 +380,65 @@
             </div>
         </div>
     </div>
-    <script>
-        // Dropdown ochish/yopish
-        function toggleEditSchoolDropdown() {
-            const menu = document.getElementById('editSchoolMenu');
-            const arrow = document.getElementById('editSchoolArrow');
-            const isHidden = menu.classList.contains('hidden');
+    @push('scripts')
+        <script>
+            // Dropdown ochish/yopish
+            function toggleEditSchoolDropdown() {
+                const menu = document.getElementById('editSchoolMenu');
+                const arrow = document.getElementById('editSchoolArrow');
+                const isHidden = menu.classList.contains('hidden');
 
-            // Sahifadagi barcha boshqa custom menu-larni yopish
-            document.querySelectorAll('[id$="Menu"]').forEach(m => {
-                if (m.id !== 'editSchoolMenu') m.classList.add('hidden');
-            });
+                // Sahifadagi barcha boshqa custom menu-larni yopish
+                document.querySelectorAll('[id$="Menu"]').forEach(m => {
+                    if (m.id !== 'editSchoolMenu') m.classList.add('hidden');
+                });
 
-            menu.classList.toggle('hidden');
-            arrow.classList.toggle('rotate-180');
+                menu.classList.toggle('hidden');
+                arrow.classList.toggle('rotate-180');
 
-            if (isHidden) {
-                document.getElementById('editSchoolSearchInput').focus();
+                if (isHidden) {
+                    document.getElementById('editSchoolSearchInput').focus();
+                }
             }
-        }
 
-        // Tanlash
-        function selectEditSchool(id, text) {
-            document.getElementById('edit_school_id_input').value = id;
-            document.getElementById('selectedEditSchoolLabel').innerText = text;
-            toggleEditSchoolDropdown();
-        }
+            // Tanlash
+            function selectEditSchool(id, text) {
+                document.getElementById('edit_school_id_input').value = id;
+                document.getElementById('selectedEditSchoolLabel').innerText = text;
+                toggleEditSchoolDropdown();
+            }
 
-        // Qidiruv funksiyasi
-        function filterEditSchools() {
-            const input = document.getElementById('editSchoolSearchInput');
-            const filter = input.value.toLowerCase();
-            const items = document.querySelectorAll('.edit-school-item');
-            const noResult = document.getElementById('noEditSchoolFound');
-            let foundAny = false;
+            // Qidiruv funksiyasi
+            function filterEditSchools() {
+                const input = document.getElementById('editSchoolSearchInput');
+                const filter = input.value.toLowerCase();
+                const items = document.querySelectorAll('.edit-school-item');
+                const noResult = document.getElementById('noEditSchoolFound');
+                let foundAny = false;
 
-            items.forEach(item => {
-                const name = item.querySelector('.edit-item-name').innerText.toLowerCase();
-                const address = item.querySelector('.edit-item-address')?.innerText.toLowerCase() || '';
+                items.forEach(item => {
+                    const name = item.querySelector('.edit-item-name').innerText.toLowerCase();
+                    const address = item.querySelector('.edit-item-address')?.innerText.toLowerCase() || '';
 
-                if (name.includes(filter) || address.includes(filter)) {
-                    item.style.display = "";
-                    foundAny = true;
-                } else {
-                    item.style.display = "none";
+                    if (name.includes(filter) || address.includes(filter)) {
+                        item.style.display = "";
+                        foundAny = true;
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
+
+                noResult.classList.toggle('hidden', foundAny);
+            }
+
+            // Tashqariga bosilganda yopish
+            document.addEventListener('click', function(e) {
+                const container = document.getElementById('editSchoolCustomContainer');
+                if (container && !container.contains(e.target)) {
+                    document.getElementById('editSchoolMenu').classList.add('hidden');
+                    document.getElementById('editSchoolArrow').classList.remove('rotate-180');
                 }
             });
-
-            noResult.classList.toggle('hidden', foundAny);
-        }
-
-        // Tashqariga bosilganda yopish
-        document.addEventListener('click', function(e) {
-            const container = document.getElementById('editSchoolCustomContainer');
-            if (container && !container.contains(e.target)) {
-                document.getElementById('editSchoolMenu').classList.add('hidden');
-                document.getElementById('editSchoolArrow').classList.remove('rotate-180');
-            }
-        });
-    </script>
+        </script>
+    @endpush
 @endsection

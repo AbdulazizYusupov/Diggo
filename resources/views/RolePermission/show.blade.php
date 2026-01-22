@@ -210,17 +210,7 @@
                 </p>
 
                 <a href="{{ route('role-permissions.edit', $role->id) }}"
-                    class="inline-flex items-center gap-2 px-6 py-3 
-           /* Light mode: Yumshoqroq indigo va border */
-           bg-indigo-500 hover:bg-indigo-600 text-white
-           border border-indigo-400/50 shadow-sm shadow-indigo-100
-           
-           /* Dark mode: Bir oz shaffofroq */
-           dark:bg-indigo-600 dark:hover:bg-indigo-700
-           dark:border-indigo-500/30 dark:shadow-none
-           
-           font-semibold rounded-xl transition-all duration-200 
-           transform hover:scale-[1.01] active:scale-[0.99] group">
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white border border-indigo-400/50 shadow-sm shadow-indigo-100 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:border-indigo-500/30 dark:shadow-none font-semibold rounded-xl transition-all duration-200 transform hover:scale-[1.01] active:scale-[0.99] group">
 
                     <svg class="w-5 h-5 text-white/90 group-hover:rotate-90 transition-transform duration-300"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
