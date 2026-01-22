@@ -42,7 +42,6 @@ class PermissionController extends Controller
             $skipped = 0;
 
             foreach ($routes as $route) {
-                // Check if permission already exists
                 $exists = Permission::where('name', $route['name'])->exists();
 
                 if (!$exists) {
@@ -60,6 +59,38 @@ class PermissionController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('permissions.index')->with('error', 'Xatolik yuz berdi: ' . $e->getMessage());
         }
+    }
+    private function getApplicationRoutes()
+    {
+        $routes = [];
+        $routeCollection = Route::getRoutes();
+
+        foreach ($routeCollection as $route) {
+            $name = $route->getName();
+
+            // Filtrlash shartlari
+            if (
+                !$name ||
+                str_starts_with($name, 'ignition.') ||
+                str_starts_with($name, 'sanctum.') ||
+                str_starts_with($name, '_ignition.') ||
+                str_contains($name, 'generated') || // <--- Mana shu qator qo'shildi
+                $name === 'storage.local'
+            ) {
+                continue;
+            }
+
+            $routes[] = [
+                'name' => $name,
+                'method' => implode('|', $route->methods()),
+                'uri' => $route->uri(),
+                'action' => $route->getActionName(),
+            ];
+        }
+        // Sort routes alphabetically
+        usort($routes, fn($a, $b) => strcmp($a['name'], $b['name']));
+
+        return $routes;
     }
     public function bulkDelete(Request $request)
     {
@@ -85,38 +116,7 @@ class PermissionController extends Controller
         }
     }
 
-    private function getApplicationRoutes()
-    {
-        $routes = [];
-        $routeCollection = Route::getRoutes();
-        // dd($routeCollection);
-        foreach ($routeCollection as $route) {
-            $name = $route->getName();
 
-            // Skip unnamed routes and certain patterns
-            if (
-                !$name ||
-                str_starts_with($name, 'ignition.') ||
-                str_starts_with($name, 'sanctum.') ||
-                str_starts_with($name, '_ignition.') ||
-                $name === 'storage.local'
-            ) {
-                continue;
-            }
-
-            $routes[] = [
-                'name' => $name,
-                'method' => implode('|', $route->methods()),
-                'uri' => $route->uri(),
-                'action' => $route->getActionName(),
-            ];
-        }
-
-        // Sort routes alphabetically
-        usort($routes, fn($a, $b) => strcmp($a['name'], $b['name']));
-
-        return $routes;
-    }
 
     private function calculateStats($routes)
     {
@@ -212,9 +212,9 @@ class PermissionController extends Controller
      */
     public function destroy(string $id)
     {
-        $permission =Permission::findOrFail($id);
+        $permission = Permission::findOrFail($id);
         $permission->delete();
-        return redirect()->back()->with('success','Permission muvaffaqiyatli o\'chirildi');
+        return redirect()->back()->with('success', 'Permission muvaffaqiyatli o\'chirildi');
         // dd($id);
     }
 }
