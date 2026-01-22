@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AttendanceController extends Controller
 {
@@ -20,14 +21,14 @@ class AttendanceController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $today = now()->toDateString();
+        $todayDayName = strtolower(now()->locale('en')->dayName);
 
         $groups = Group::with(['course', 'activeStudents'])
             ->where('is_active', true)
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
-                    // Guruh nomi bo'yicha qidirish
                     $q->where('name', 'like', "%{$search}%")
-                        // Kurs nomi bo'yicha qidirish (relationship orqali)
                         ->orWhereHas('course', function ($c) use ($search) {
                             $c->where('name', 'like', "%{$search}%");
                         });
@@ -35,9 +36,28 @@ class AttendanceController extends Controller
             })
             ->orderBy('name')
             ->paginate(12)
-            ->withQueryString(); // Sahifadan sahifaga o'tganda qidiruv so'zini saqlab qoladi
+            ->withQueryString();
 
-        return view('Attendance.index', compact('groups','search'));
+        // Har bir guruh uchun bugungi dars va davomat holatini aniqlash
+        $groups->getCollection()->transform(function ($group) use ($today, $todayDayName) {
+            // Bugungi kun dars kunlaridan birimi?
+            $hasTodayLesson = in_array($todayDayName, $group->days_of_week ?? []);
+
+            // Bugun davomat yuklangan bo'lsa
+            $hasAttendanceToday = false;
+            if ($hasTodayLesson) {
+                $hasAttendanceToday = Attendance::where('group_id', $group->id)
+                    ->whereDate('date', $today)
+                    ->exists();
+            }
+
+            $group->has_today_lesson = $hasTodayLesson;
+            $group->has_attendance_today = $hasAttendanceToday;
+
+            return $group;
+        });
+
+        return view('Attendance.index', compact('groups', 'search'));
     }
 
     /**
@@ -53,7 +73,6 @@ class AttendanceController extends Controller
      */
     public function store(Request $request)
     {
-
         $validated = $request->validate([
             'group_id' => 'required|exists:groups,id',
             'student_id' => 'required|exists:students,id',
@@ -233,13 +252,13 @@ class AttendanceController extends Controller
     }
     public function bulkStore(Request $request)
     {
-        // 1. Validationni to'g'irlaymiz
+        // 1. Validation
         $validated = $request->validate([
             'group_id' => 'required|exists:groups,id',
             'attendances' => 'required|array',
             'attendances.*.*.student_id' => 'required|exists:students,id',
             'attendances.*.*.date' => 'required|date',
-            'attendances.*.*.status' => 'nullable|in:present,late,absent,excused', // nullable qildik
+            'attendances.*.*.status' => 'nullable|in:present,late,absent,excused',
             'attendances.*.*.homework_score' => 'nullable|integer|min:0|max:2',
             'attendances.*.*.activity_score' => 'nullable|integer|min:0|max:2',
         ]);
@@ -247,66 +266,226 @@ class AttendanceController extends Controller
         DB::beginTransaction();
         try {
             $group = Group::findOrFail($validated['group_id']);
-            $schoolId = Auth::user()->teacher?->school_id ?? Auth::user()->school_id;
+            $userId = Auth::id();
 
-            // Massivni chuqur aylanib chiqamiz
             foreach ($validated['attendances'] as $studentAttendances) {
                 foreach ($studentAttendances as $attendanceData) {
 
-                    // Agar status tanlanmagan bo'lsa, bu o'quvchini tashlab ketamiz
+                    // Agar status bo'sh bo'lsa, skip qilamiz
                     if (empty($attendanceData['status'])) {
                         continue;
                     }
 
-                    $student = Student::findOrFail($attendanceData['student_id']);
+                    $studentId = $attendanceData['student_id'];
+                    $date = $attendanceData['date'];
 
-                    // Eski davomatni tekshirish va coinlarni qaytarish (Sizning kodingiz...)
+                    // Studentni topamiz
+                    $student = Student::findOrFail($studentId);
+
+                    // Eski davomatni tekshiramiz
                     $oldAttendance = Attendance::where([
-                        'student_id' => $student->id,
+                        'student_id' => $studentId,
                         'group_id' => $group->id,
-                        'date' => $attendanceData['date'],
+                        'date' => $date,
                     ])->first();
 
-                    if ($oldAttendance) {
-                        $oldCoins = ($oldAttendance->status === 'present' ? 2 : ($oldAttendance->status === 'late' ? 1 : 0));
-                        $oldCoins += ($oldAttendance->homework_score + $oldAttendance->participation_score);
-                        $student->decrement('coins', $oldCoins);
+                    // Eski qiymatlarni saqlaymiz
+                    $oldStatus = $oldAttendance->status ?? null;
+                    $oldHomework = $oldAttendance->homework_score ?? 0;
+                    $oldActivity = $oldAttendance->activity_score ?? 0;
+
+                    // Yangi qiymatlar
+                    $newStatus = $attendanceData['status'];
+
+                    // MUHIM: Agar talaba kelmagan bo'lsa, homework va activity 0 bo'lishi kerak
+                    if ($newStatus === 'absent' || $newStatus === 'excused') {
+                        $newHomework = 0;
+                        $newActivity = 0;
+                    } else {
+                        $newHomework = $attendanceData['homework_score'] ?? 0;
+                        $newActivity = $attendanceData['activity_score'] ?? 0;
                     }
 
-                    // Yangi davomatni saqlash
-                    $attendance = Attendance::updateOrCreate(
-                        [
-                            'student_id' => $student->id,
+                    // Agar mavjud bo'lsa - update, yo'q bo'lsa - create
+                    if ($oldAttendance) {
+                        // Update existing attendance
+                        $oldAttendance->update([
+                            'status' => $newStatus,
+                            'homework_score' => $newHomework,
+                            'activity_score' => $newActivity,
+                            'user_id' => $userId,
+                        ]);
+
+                        $attendanceId = $oldAttendance->id;
+                    } else {
+                        // Create new attendance
+                        $attendance = Attendance::create([
+                            'student_id' => $studentId,
                             'group_id' => $group->id,
-                            'date' => $attendanceData['date'],
-                        ],
-                        [
-                            'status' => $attendanceData['status'],
-                            'homework_score' => $attendanceData['homework_score'] ?? 0,
-                            'participation_score' => $attendanceData['activity_score'] ?? 0,
-                            'user_id' => Auth::id(),
-                            'school_id' => $schoolId,
-                        ]
-                    );
+                            'date' => $date,
+                            'status' => $newStatus,
+                            'homework_score' => $newHomework,
+                            'activity_score' => $newActivity,
+                            'user_id' => $userId,
+                        ]);
 
-                    // Yangi coinlarni hisoblash
-                    $newCoins = ($attendanceData['status'] === 'present' ? 2 : ($attendanceData['status'] === 'late' ? 1 : 0));
-                    $newCoins += ($attendanceData['homework_score'] ?? 0) + ($attendanceData['activity_score'] ?? 0);
+                        $attendanceId = $attendance->id;
+                    }
 
-                    if ($newCoins > 0) {
-                        $student->increment('coins', $newCoins);
-                        // CoinTransaction logikasini shu yerga yozasiz...
+                    // Student balansini refresh qilamiz
+                    $student->refresh();
+                    $currentBalance = $student->coins ?? 0;
+
+                    // 1. PARTICIPATION (Keldi/Kechikdi) coin hisoblash
+                    $oldParticipationCoins = 0;
+                    if ($oldStatus === 'present') {
+                        $oldParticipationCoins = 4;
+                    } elseif ($oldStatus === 'late') {
+                        $oldParticipationCoins = 3;
+                    }
+
+                    $newParticipationCoins = 0;
+                    if ($newStatus === 'present') {
+                        $newParticipationCoins = 4;
+                    } elseif ($newStatus === 'late') {
+                        $newParticipationCoins = 3;
+                    }
+
+                    $participationDifference = $newParticipationCoins - $oldParticipationCoins;
+
+                    if ($participationDifference !== 0) {
+                        if ($participationDifference > 0) {
+                            $student->increment('coins', $participationDifference);
+                            $currentBalance += $participationDifference;
+
+                            CoinTransaction::create([
+                                'student_id' => $studentId,
+                                'user_id' => $userId,
+                                // 'activity_id' => $attendanceId,
+                                'coins' => $participationDifference,
+                                'type' => 'participation',
+                                'description' => $newStatus === 'present' ? 'Darsga keldi' : 'Darsga kechikdi',
+                                'balance_after' => $currentBalance,
+                                'transaction_date' => $date,
+                                'expiry_date' => null,
+                            ]);
+                        } else {
+                            $deductAmount = abs($participationDifference);
+                            $student->decrement('coins', $deductAmount);
+                            $currentBalance -= $deductAmount;
+
+                            CoinTransaction::create([
+                                'student_id' => $studentId,
+                                'user_id' => $userId,
+                                // 'activity_id' => $attendanceId,
+                                'coins' => $deductAmount,
+                                'type' => 'penalty',
+                                'description' => 'Davomat tuzatildi (qatnashish)',
+                                'balance_after' => $currentBalance,
+                                'transaction_date' => $date,
+                                'expiry_date' => null,
+                            ]);
+                        }
+                    }
+
+                    // 2. HOMEWORK coin hisoblash
+                    // Faqat kelgan yoki kechikkan talabalar uchun
+                    $homeworkDifference = $newHomework - $oldHomework;
+
+                    if ($homeworkDifference !== 0) {
+                        if ($homeworkDifference > 0) {
+                            $student->increment('coins', $homeworkDifference);
+                            $currentBalance += $homeworkDifference;
+
+                            CoinTransaction::create([
+                                'student_id' => $studentId,
+                                'user_id' => $userId,
+                                // 'activity_id' => $attendanceId,
+                                'coins' => $homeworkDifference,
+                                'type' => 'homework',
+                                'description' => "Uy vazifa bajarildi ({$newHomework} ball)",
+                                'balance_after' => $currentBalance,
+                                'transaction_date' => $date,
+                                'expiry_date' => null,
+                            ]);
+                        } else {
+                            $deductAmount = abs($homeworkDifference);
+                            $student->decrement('coins', $deductAmount);
+                            $currentBalance -= $deductAmount;
+
+                            CoinTransaction::create([
+                                'student_id' => $studentId,
+                                'user_id' => $userId,
+                                // 'activity_id' => $attendanceId,
+                                'coins' => $deductAmount,
+                                'type' => 'penalty',
+                                'description' => 'Uy vazifa balli tuzatildi',
+                                'balance_after' => $currentBalance,
+                                'transaction_date' => $date,
+                                'expiry_date' => null,
+                            ]);
+                        }
+                    }
+
+                    // 3. ACTIVE INVOLVEMENT coin hisoblash
+                    // Faqat kelgan yoki kechikkan talabalar uchun
+                    $activityDifference = $newActivity - $oldActivity;
+
+                    if ($activityDifference !== 0) {
+                        if ($activityDifference > 0) {
+                            $student->increment('coins', $activityDifference);
+                            $currentBalance += $activityDifference;
+
+                            CoinTransaction::create([
+                                'student_id' => $studentId,
+                                'user_id' => $userId,
+                                // 'activity_id' => $attendanceId,
+                                'coins' => $activityDifference,
+                                'type' => 'active_involvement',
+                                'description' => "Darsda faol ishtirok ({$newActivity} ball)",
+                                'balance_after' => $currentBalance,
+                                'transaction_date' => $date,
+                                'expiry_date' => null,
+                            ]);
+                        } else {
+                            $deductAmount = abs($activityDifference);
+                            $student->decrement('coins', $deductAmount);
+                            $currentBalance -= $deductAmount;
+
+                            CoinTransaction::create([
+                                'student_id' => $studentId,
+                                'user_id' => $userId,
+                                // 'activity_id' => $attendanceId,
+                                'coins' => $deductAmount,
+                                'type' => 'penalty',
+                                'description' => 'Faollik balli tuzatildi',
+                                'balance_after' => $currentBalance,
+                                'transaction_date' => $date,
+                                'expiry_date' => null,
+                            ]);
+                        }
                     }
                 }
             }
 
             DB::commit();
 
-            // Oddiy forma uchun redirect ma'qul, agar AJAX bo'lmasa
-            return redirect()->back()->with('success', 'Davomat muvaffaqiyatli saqlandi!');
+            return redirect()
+                ->back()
+                ->with('success', 'Davomat muvaffaqiyatli saqlandi!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Xatolik: ' . $e->getMessage());
+
+            Log::error('Attendance bulk store error: ' . $e->getMessage(), [
+                'user_id' => Auth::id(),
+                'group_id' => $request->group_id,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()
+                ->back()
+                ->with('error', 'Xatolik yuz berdi: ' . $e->getMessage())
+                ->withInput();
         }
     }
     public function statistics(Group $group, Request $request)
