@@ -93,29 +93,16 @@
                 @endphp
 
                 <a href="{{ route('attendance.show', $group->id) }}"
-                    class="group {{ $cardClass }} rounded-2xl shadow-sm border p-6 pt-12 hover:shadow-lg hover:scale-[1.02] transition-all duration-200 relative">
+                    class="group {{ $cardClass }} rounded-2xl shadow-sm border p-6 hover:shadow-lg hover:scale-[1.02] transition-all duration-200 relative overflow-hidden">
 
-                    <!-- STATUS BADGES STACK -->
-                    <div class="absolute top-3 right-3 flex flex-col gap-2 items-end">
-
-                        {{-- Faol --}}
-                        <span
-                            class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg
-                   bg-emerald-100 text-emerald-700
-                   dark:bg-emerald-900/30 dark:text-emerald-400 shadow-sm">
-                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Faol
-                        </span>
-
-                        {{-- Yuklangan / Yuklanmagan --}}
+                    <!-- STATUS BADGES - Yuqori o'ng burchak -->
+                    <div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end z-10">
+                        {{-- Yuklangan / Yuklanmagan (eng yuqorida) --}}
                         @if ($group->has_today_lesson)
                             @if ($group->has_attendance_today)
                                 <span
-                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg
-                           bg-emerald-500 text-white shadow-sm">
-                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-md bg-emerald-500 text-white shadow-sm">
+                                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                                             clip-rule="evenodd" />
@@ -124,9 +111,8 @@
                                 </span>
                             @else
                                 <span
-                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg
-                           bg-rose-500 text-white shadow-sm animate-pulse">
-                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-md bg-rose-500 text-white shadow-sm animate-pulse">
+                                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
                                             clip-rule="evenodd" />
@@ -135,47 +121,56 @@
                                 </span>
                             @endif
                         @endif
+
+                        {{-- Faol badge --}}
+                        <span
+                            class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                            <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 8 8">
+                                <circle cx="4" cy="4" r="3" />
+                            </svg>
+                            Faol
+                        </span>
                     </div>
 
                     <!-- HEADER -->
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
-                                <span class="text-white font-bold text-lg">
-                                    {{ substr($group->name, 0, 2) }}
-                                </span>
-                            </div>
-                            <div>
-                                <h3
-                                    class="text-lg font-bold text-gray-900 dark:text-white
-                           group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                    {{ $group->name }}
-                                </h3>
-                                @if ($group->course)
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">
-                                        {{ $group->course->title }}
-                                    </p>
-                                @endif
-                            </div>
+                    <div class="flex items-start gap-3 mb-4 pr-24">
+                        <div
+                            class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+                            <span class="text-white font-bold text-lg">
+                                {{ mb_substr($group->name, 0, 2) }}
+                            </span>
+                        </div>
+
+                        <div class="flex-1 min-w-0">
+                            <h3
+                                class="text-base font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight mb-1 line-clamp-2">
+                                {{ $group->name }}
+                            </h3>
+                            @if ($group->course)
+                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                    {{ $group->course->title }}
+                                </p>
+                            @endif
                         </div>
                     </div>
 
                     <!-- INFO -->
-                    <div class="space-y-3 mb-4">
+                    <div class="space-y-2.5 mb-4">
+                        <!-- O'quvchilar soni -->
                         <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="1.5" class="w-4 h-4 text-purple-500 shrink-0">
+                                stroke-width="1.5" class="w-4 h-4 text-purple-500 flex-shrink-0">
                                 <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031 c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21 c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719 m12 0a5.971 5.971 0 0 0-.941-3.197m0 0 A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772 m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197 a5.971 5.971 0 0 0-.94 3.197M15 6.75 a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3 a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0 a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                                    d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                             </svg>
-
                             <span class="font-semibold">{{ $group->activeStudents->count() }}</span>
                             <span>o'quvchi</span>
                         </div>
 
+                        <!-- Dars vaqti -->
                         <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                            <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -185,6 +180,7 @@
                             </span>
                         </div>
 
+                        <!-- Dars kunlari -->
                         <div class="flex flex-wrap gap-1">
                             @php
                                 $dayNames = [
@@ -209,10 +205,10 @@
                     </div>
 
                     <!-- FOOTER -->
-                    <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="pt-3 border-t border-gray-200 dark:border-gray-700">
                         <div class="flex items-center justify-between text-sm">
                             <span class="text-gray-500 dark:text-gray-400">Davomatni boshqarish</span>
-                            <svg class="w-5 h-5 text-blue-500 group-hover:translate-x-1 transition-transform"
+                            <svg class="w-5 h-5 text-blue-500 group-hover:translate-x-1 transition-transform flex-shrink-0"
                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>
