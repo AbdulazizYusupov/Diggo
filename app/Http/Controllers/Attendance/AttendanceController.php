@@ -17,14 +17,27 @@ class AttendanceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+
         $groups = Group::with(['course', 'activeStudents'])
             ->where('is_active', true)
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    // Guruh nomi bo'yicha qidirish
+                    $q->where('name', 'like', "%{$search}%")
+                        // Kurs nomi bo'yicha qidirish (relationship orqali)
+                        ->orWhereHas('course', function ($c) use ($search) {
+                            $c->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
             ->orderBy('name')
-            ->paginate(12);
+            ->paginate(12)
+            ->withQueryString(); // Sahifadan sahifaga o'tganda qidiruv so'zini saqlab qoladi
 
-        return view('Attendance.index', compact('groups'));
+        return view('Attendance.index', compact('groups','search'));
     }
 
     /**

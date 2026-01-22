@@ -167,7 +167,7 @@
                                     class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                                     Boshlanish vaqti <span class="text-rose-500">*</span>
                                 </label>
-                                <input type="time" name="start_time" id="start_time"
+                                <input type="time" name="start_time" id="start_time" step="60"
                                     value="{{ old('start_time', '09:00') }}" required
                                     class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl 
                                            focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 
@@ -184,7 +184,7 @@
                                     class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                                     Tugash vaqti <span class="text-rose-500">*</span>
                                 </label>
-                                <input type="time" name="end_time" id="end_time" value="{{ old('end_time', '11:00') }}"
+                                <input type="time" name="end_time" id="end_time" step="60" value="{{ old('end_time', '11:00') }}"
                                     required
                                     class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl 
                                            focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 
