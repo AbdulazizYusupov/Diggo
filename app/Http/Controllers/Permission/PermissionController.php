@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 
 class PermissionController extends Controller
 {
@@ -38,26 +39,45 @@ class PermissionController extends Controller
     {
         try {
             $routes = $this->getApplicationRoutes();
-            $synced = 0;
+
+            // 1. Bazadagi barcha mavjud permissionlarni bitta so'rovda olamiz
+            $existingPermissions = Permission::pluck('name')->toArray();
+            $existingPermissionsMap = array_flip($existingPermissions); // Qidirish tez bo'lishi uchun
+
+            $newPermissions = [];
             $skipped = 0;
 
             foreach ($routes as $route) {
-                $exists = Permission::where('name', $route['name'])->exists();
+                $routeName = $route['name'];
 
-                if (!$exists) {
-                    Permission::create([
-                        'name' => $route['name'],
-                        'guard_name' => 'web'
-                    ]);
-                    $synced++;
+                // 2. Bazada bor-yo'qligini massiv ichidan qidiramiz (juda tez ishlaydi)
+                if (!isset($existingPermissionsMap[$routeName])) {
+                    $newPermissions[] = [
+                        'name'       => $routeName,
+                        'guard_name' => 'web',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
                 } else {
                     $skipped++;
                 }
             }
 
-            return redirect()->route('permissions.index')->with('success', "Muvaffaqiyatli! {$synced} ta yangi ruxsat qo'shildi. {$skipped} ta allaqachon mavjud.");
+            // 3. Yangi permissionlarni bittada bazaga yozamiz (Bulk Insert)
+            if (!empty($newPermissions)) {
+                Permission::insert($newPermissions);
+
+                // Spatie keshini tozalash
+                app(PermissionRegistrar::class)->forgetCachedPermissions();
+            }
+
+            $synced = count($newPermissions);
+
+            return redirect()->route('permissions.index')
+                ->with('success', "Muvaffaqiyatli! {$synced} ta yangi ruxsat qo'shildi. {$skipped} ta allaqachon mavjud.");
         } catch (\Exception $e) {
-            return redirect()->route('permissions.index')->with('error', 'Xatolik yuz berdi: ' . $e->getMessage());
+            return redirect()->route('permissions.index')
+                ->with('error', 'Xatolik yuz berdi: ' . $e->getMessage());
         }
     }
     private function getApplicationRoutes()
@@ -116,8 +136,6 @@ class PermissionController extends Controller
         }
     }
 
-
-
     private function calculateStats($routes)
     {
         $routeNames = collect($routes)->pluck('name')->toArray();
@@ -126,7 +144,6 @@ class PermissionController extends Controller
         $synced = count(array_intersect($routeNames, $permissionNames));
         $unsynced = count(array_diff($routeNames, $permissionNames));
         $orphaned = count(array_diff($permissionNames, $routeNames));
-
         return [
             'total_routes' => count($routes),
             'total_permissions' => count($permissionNames),
@@ -167,7 +184,6 @@ class PermissionController extends Controller
     {
         //
     }
-
     /**
      * Update the specified resource in storage.
      */
@@ -205,7 +221,6 @@ class PermissionController extends Controller
                 ->with('error', 'Xatolik yuz berdi: ' . $e->getMessage());
         }
     }
-
 
     /**
      * Remove the specified resource from storage.
