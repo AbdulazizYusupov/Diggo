@@ -20,6 +20,8 @@ return new class extends Migration
             $table->enum('status', ['present', 'absent', 'late', 'excused'])->default('present')->index();
             $table->text('notes')->nullable();
             $table->timestamps();
+            $table->integer('homework_score')->nullable();
+            $table->integer('activity_score')->nullable();
             $table->index(['group_id', 'date']);
             $table->index(['student_id', 'group_id']);
             $table->unique(['student_id', 'group_id', 'date'], 'student_group_date_unique');

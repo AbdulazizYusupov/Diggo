@@ -8,14 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Attendance extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'student_id',
         'group_id',
         'user_id',
         'date',
         'status',
-        'notes'
+        'notes',
+        'homework_score',
+        'activity_score',
     ];
 
     protected $casts = ['date' => 'date'];
