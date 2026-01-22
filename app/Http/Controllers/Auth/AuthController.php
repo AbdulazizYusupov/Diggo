@@ -15,25 +15,23 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'phone' => ['required', 'string'],
-            'password' => ['required', 'string'],
+            'phone' => ['required', 'string', 'min:9'],
+            'password' => ['required', 'string', 'min:6'],
         ]);
-
 
         $credentials = $request->only('phone', 'password');
         $credentials['is_active'] = 1;
 
         if (Auth::attempt($credentials, $request->filled('remember_me'))) {
-
             $request->session()->regenerate();
-
-            return redirect()->intended('/dashboard');
+            return redirect()->route('dashboard');
         }
 
         return back()->withErrors([
             'phone' => 'Telefon raqam yoki parol noto‘g‘ri',
         ])->onlyInput('phone');
     }
+
     public function logout(Request $request)
     {
         Auth::logout();
