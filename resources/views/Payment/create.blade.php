@@ -33,34 +33,73 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">O'quvchi</label>
-                        <select name="student_id" id="studentSelect" required
-                            class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white outline-none transition-all">
-                            <option value="">-- O'quvchini tanlang --</option>
-                            @foreach ($students as $student)
-                                <option value="{{ $student->id }}" data-balance="{{ $student->balance }}"
-                                    data-commission="{{ $student->director->commission_percentage ?? 0 }}"
-                                    {{ old('student_id', $selectedStudent?->id) == $student->id ? 'selected' : '' }}>
-                                    {{ $student->user->full_name }} - {{ $student->user->phone }}
-                                </option>
-                            @endforeach
-                        </select>
+
+                        <div class="relative" id="studentSearchContainer">
+                            <div onclick="toggleStudentDropdown()"
+                                class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('student_id') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl cursor-pointer group hover:border-emerald-500 transition-all shadow-sm">
+
+                                <span id="selectedStudentLabel" class="text-sm dark:text-white">
+                                    @php
+                                        $currentStudentId = old('student_id', $selectedStudent?->id);
+                                        $foundStudent = $students->firstWhere('id', $currentStudentId);
+                                    @endphp
+                                    {{ $foundStudent ? $foundStudent->user->full_name . ' - ' . $foundStudent->user->phone : '-- O\'quvchini tanlang --' }}
+                                </span>
+
+                                <input type="hidden" name="student_id" id="student_id_input"
+                                    value="{{ $currentStudentId }}" required>
+
+                                <svg class="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-transform"
+                                    id="studentArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+
+                            <div id="studentMenu"
+                                class="hidden absolute z-[200] w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden">
+                                <div class="p-2 border-b dark:border-gray-700 bg-gray-50/30 dark:bg-slate-900/30">
+                                    <input type="text" id="studentSearchInput" oninput="filterStudents()"
+                                        placeholder="Ism yoki telefon orqali qidirish..."
+                                        class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
+                                </div>
+
+                                <div class="max-h-64 overflow-y-auto custom-scrollbar">
+                                    @foreach ($students as $student)
+                                        <div onclick="selectStudent('{{ $student->id }}', '{{ $student->user->full_name }}', '{{ $student->user->phone }}', '{{ $student->balance }}', '{{ $student->director->commission_percentage ?? 0 }}')"
+                                            class="student-item px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 cursor-pointer border-b border-gray-50 dark:border-gray-700/50 last:border-none flex flex-col">
+                                            <span class="font-bold student-name-text">{{ $student->user->full_name }}</span>
+                                            <span
+                                                class="text-xs text-gray-500 student-phone-text">{{ $student->user->phone }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div id="noStudentFound" class="hidden p-5 text-center text-sm text-gray-500">
+                                    O'quvchi topilmadi...
+                                </div>
+                            </div>
+                        </div>
+
                         @error('student_id')
                             <p class="mt-1 text-sm text-rose-500">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    <!-- Student Info Display -->
                     <div id="studentInfo"
-                        class="hidden p-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-xl">
+                        class="{{ $currentStudentId ? '' : 'hidden' }} p-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-xl">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">Joriy balans</p>
-                                <p class="text-lg font-bold text-emerald-600 dark:text-emerald-400" id="currentBalance">0
-                                    so'm</p>
+                                <p class="text-lg font-bold text-emerald-600 dark:text-emerald-400" id="currentBalance">
+                                    {{ number_format($foundStudent->balance ?? 0, 0, '.', ' ') }} so'm
+                                </p>
                             </div>
                             <div>
                                 <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">Direktor komissiyasi</p>
-                                <p class="text-lg font-bold text-purple-600 dark:text-purple-400" id="commissionRate">0%</p>
+                                <p class="text-lg font-bold text-purple-600 dark:text-purple-400" id="commissionRate">
+                                    {{ $foundStudent->director->commission_percentage ?? 0 }}%
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -127,8 +166,8 @@
                         <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                             To'lov oyi <span class="text-rose-500">*</span>
                         </label>
-                        <input type="month" name="payment_month" value="{{ old('payment_month', now()->format('Y-m')) }}"
-                            required
+                        <input type="month" name="payment_month"
+                            value="{{ old('payment_month', now()->format('Y-m')) }}" required
                             class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white outline-none transition-all">
                         @error('payment_month')
                             <p class="mt-1 text-sm text-rose-500">{{ $message }}</p>
@@ -231,6 +270,78 @@
             const installmentFields = document.getElementById('installmentFields');
 
             // Student selection change
+            function toggleStudentDropdown() {
+                const menu = document.getElementById('studentMenu');
+                const arrow = document.getElementById('studentArrow');
+                const isHidden = menu.classList.contains('hidden');
+
+                // Barcha boshqa menyularni yopish
+                document.querySelectorAll('[id$="Menu"]').forEach(m => {
+                    if (m.id !== 'studentMenu') m.classList.add('hidden');
+                });
+
+                menu.classList.toggle('hidden');
+                arrow.classList.toggle('rotate-180');
+
+                if (isHidden) {
+                    document.getElementById('studentSearchInput').focus();
+                }
+            }
+
+            function selectStudent(id, name, phone, balance, commission) {
+                // 1. Input va Labelni yangilash
+                document.getElementById('student_id_input').value = id;
+                document.getElementById('selectedStudentLabel').innerText = name + " - " + phone;
+
+                // 2. Balans va Komissiya info blokini yangilash
+                const infoBlock = document.getElementById('studentInfo');
+                const balanceText = document.getElementById('currentBalance');
+                const commissionText = document.getElementById('commissionRate');
+
+                infoBlock.classList.remove('hidden');
+
+                // Raqamni formatlash (masalan: 100 000)
+                const formattedBalance = new Intl.NumberFormat('uz-UZ').format(balance) + " so'm";
+                balanceText.innerText = formattedBalance;
+                commissionText.innerText = commission + "%";
+
+                // 3. Menyuni yopish
+                toggleStudentDropdown();
+
+                // Agar sahifada boshqa hisob-kitob funksiyalari bo'lsa, ularni shu yerda chaqirish mumkin
+                // Masalan: calculateTotal();
+            }
+
+            function filterStudents() {
+                const input = document.getElementById('studentSearchInput');
+                const filter = input.value.toLowerCase();
+                const items = document.querySelectorAll('.student-item');
+                const noResult = document.getElementById('noStudentFound');
+                let found = false;
+
+                items.forEach(item => {
+                    const name = item.querySelector('.student-name-text').innerText.toLowerCase();
+                    const phone = item.querySelector('.student-phone-text').innerText.toLowerCase();
+
+                    if (name.includes(filter) || phone.includes(filter)) {
+                        item.style.display = "";
+                        found = true;
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
+
+                noResult.classList.toggle('hidden', found);
+            }
+
+            // Tashqariga bosilganda yopish
+            document.addEventListener('click', function(e) {
+                const container = document.getElementById('studentSearchContainer');
+                if (container && !container.contains(e.target)) {
+                    document.getElementById('studentMenu').classList.add('hidden');
+                    document.getElementById('studentArrow').classList.remove('rotate-180');
+                }
+            });
             studentSelect.addEventListener('change', function() {
                 const option = this.options[this.selectedIndex];
                 if (this.value) {
