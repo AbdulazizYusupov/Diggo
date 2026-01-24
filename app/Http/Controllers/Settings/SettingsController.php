@@ -14,10 +14,15 @@ class SettingsController extends Controller
     {
         $search = $request->get('search', '');
         $roleFilter = $request->get('role', '');
-        $typeFilter = $request->get('type', ''); // teacher, student, staff, director
+        $typeFilter = $request->get('type', '');
 
         // Foydalanuvchilarni olish
         $users = User::with(['roles', 'student', 'teacher', 'staff', 'director'])
+            ->when(Auth::id() !== 1, function ($query) {
+                $query->whereDoesntHave('roles', function ($q) {
+                    $q->where('name', 'admin');
+                });
+            })
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
@@ -106,17 +111,27 @@ class SettingsController extends Controller
      */
     public function syncRoles(Request $request, User $user)
     {
-        $auth = Auth::user();
-        if ($auth->id == $user->id && $auth->hasRole('admin')) {
-            return redirect()->back()->with('error', 'Bu amalni bajarish butun bir tizimni ishdan chiqarishi mumkin!!!');
+        if ($user->id == 1) {
+            return redirect()->back()->with('error', 'Superadmin ruxsatlarini o\'zgartirish taqiqlangan!');
         }
+
+        if ($user->hasRole('admin') && Auth::id() != 1) {
+            return redirect()->back()->with('error', 'Siz boshqa adminlarning ruxsatlarini o\'zgartira olmaysiz!');
+        }
+
+
         $request->validate([
             'roles' => 'nullable|array',
             'roles.*' => 'exists:roles,name',
         ]);
 
         $roles = $request->input('roles', []);
+
         $user->syncRoles($roles);
+
+        if (in_array('admin', $roles) && Auth::id() != 1) {
+            return redirect()->back()->with('error', 'Admin roli berish huquqi faqat Superadmindagina bor!');
+        }
 
         $message = empty($roles)
             ? "{$user->full_name} dan barcha rollar olib tashlandi!"

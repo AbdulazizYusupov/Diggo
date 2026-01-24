@@ -290,7 +290,7 @@
                                             <span>{{ $director->school->address }}</span>
                                         </div>
                                     @endif
-                                    <a href=""
+                                    <a href="{{ route('schools.show',$director->school->id) }}"
                                         class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-bold rounded-xl transition-all">
                                         Maktabni ko'rish
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
