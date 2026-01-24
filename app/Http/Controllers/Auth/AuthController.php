@@ -12,22 +12,48 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    // public function index()
+    // {
+    //     $path = storage_path('app/public/Login');
+
+    //     // Agar papka mavjud bo'lsa, fayllarni massivga olamiz
+    //     $files = File::exists($path) ? File::files($path) : [];
+
+    //     // Random bitta rasm nomini tanlash
+    //     $randomImage = 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&q=80'; // Default rasm
+
+    //     if (count($files) > 0) {
+    //         $file = $files[array_rand($files)];
+    //         // Fayl nomini olamiz (masalan: rasm1.jpg)
+    //         $randomImage = asset('storage/Login/' . $file->getFilename());
+    //     }
+    //     return view('Auth.login',compact('randomImage'));
+    // }
     public function index()
     {
-        $path = storage_path('app/public/Login');
+        // 1. Papka manzili: public/asset/Login
+        $path = public_path('asset/Login');
 
-        // Agar papka mavjud bo'lsa, fayllarni massivga olamiz
-        $files = File::exists($path) ? File::files($path) : [];
+        // Default rasm (zaxira uchun)
+        $randomImage = 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&q=80';
 
-        // Random bitta rasm nomini tanlash
-        $randomImage = 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&q=80'; // Default rasm
+        // 2. Papka borligini va ichida fayllar borligini tekshirish
+        if (File::isDirectory($path)) {
+            // Faqat rasm formatidagi fayllarni olish (xavfsizroq yo'li)
+            $files = File::glob($path . '/*.{jpg,jpeg,png,gif,webp,svg}', GLOB_BRACE);
 
-        if (count($files) > 0) {
-            $file = $files[array_rand($files)];
-            // Fayl nomini olamiz (masalan: rasm1.jpg)
-            $randomImage = asset('storage/Login/' . $file->getFilename());
+            if (count($files) > 0) {
+                // 3. Random bitta fayl yo'lini tanlash
+                $randomFilePath = $files[array_rand($files)];
+
+                // 4. basename() orqali faqat fayl nomini ajratib olamiz (masalan: rasm.jpg)
+                $fileName = basename($randomFilePath);
+
+                // 5. URL: http://sayt.uz/asset/Login/rasm.jpg
+                $randomImage = asset('asset/Login/' . $fileName);
+            }
         }
-        return view('Auth.login',compact('randomImage'));
+        return view('Auth.login', compact('randomImage'));
     }
     public function login(Request $request)
     {
