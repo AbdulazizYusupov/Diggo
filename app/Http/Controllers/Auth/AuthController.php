@@ -65,13 +65,13 @@ class AuthController extends Controller
         $credentials = $request->only('phone', 'password');
         $credentials['is_active'] = 1;
 
-        if (Auth::attempt($credentials, $request->filled('remember_me'))) {
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
             return redirect()->route('dashboard');
         }
 
         return back()->withErrors([
-            'phone' => 'Telefon raqam yoki parol noto‘g‘ri',
+            'phone' => 'These credentials do not match our records.',
         ])->onlyInput('phone');
     }
 

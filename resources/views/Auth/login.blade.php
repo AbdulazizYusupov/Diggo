@@ -6,34 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kirish - Diggo O'quv Markazi</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-        .preload * {
-            animation: none !important;
-            transition: none !important;
-        }
-
         * {
             font-family: 'Inter', sans-serif;
         }
 
-        /* Background sozlamalari */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* Background */
         .bg-image {
+            background-image: url('{{ $randomImage }}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
         }
 
-        /* Rangli qatlam (Gradient Overlay) */
-        .overlay {
-            /* Gradient o'rniga juda kuchsiz qora rang bering, shunda textlar o'qilishi oson bo'ladi */
-            background: rgba(0, 0, 0, 0.2);
-            /* 0.2 - bu 20% xiralik */
+        @media (max-width: 768px) {
+            .bg-image {
+                background-attachment: scroll;
+            }
         }
 
-        /* Shisha effekti (Glassmorphism) */
+        /* Overlay */
+        .overlay {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .dark .overlay {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Glass Effect */
         .glass {
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(20px);
@@ -42,19 +56,47 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
-        /* Inputlar uchun effekt */
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .glass {
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+            }
+        }
+
+        /* Input Fields */
         .input-field {
             background: rgba(255, 255, 255, 0.9);
             transition: all 0.3s ease;
         }
 
-        .input-field:focus {
-            background: rgba(255, 255, 255, 1);
+        .input-wrapper:focus-within {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
 
-        /* Tugma uchun gradient */
+        .input-field:focus {
+            background: rgba(255, 255, 255, 1);
+        }
+
+
+        .dark .input-field:focus {
+            background: rgba(30, 41, 59, 1);
+        }
+
+        .dark .input-field::placeholder {
+            color: #94a3b8;
+        }
+
+        .dark label {
+            color: #e2e8f0;
+        }
+
+        /* Button Gradient */
         .btn-gradient {
             background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
             transition: all 0.4s ease;
@@ -66,13 +108,7 @@
             box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4);
         }
 
-        /* --- ANIMATSIYALAR --- */
-
-        /* Kirish animatsiyasi */
-        .fade-in {
-            animation: fadeIn 1s ease-out;
-        }
-
+        /* Animations */
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -85,11 +121,6 @@
             }
         }
 
-        /* Suzish animatsiyasi (Logo uchun) */
-        .float-animation {
-            animation: float 3s ease-in-out infinite;
-        }
-
         @keyframes float {
 
             0%,
@@ -100,11 +131,6 @@
             50% {
                 transform: translateY(-15px);
             }
-        }
-
-        /* Pulsatsiya effekti (Logo orqasidagi nur uchun) */
-        .logo-pulse {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
 
         @keyframes pulse {
@@ -121,85 +147,84 @@
             }
         }
 
-        /* Scrollbar dizayni (agar kerak bo'lsa) */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
+        .fade-in {
+            animation: fadeIn 1s ease-out forwards;
+            opacity: 0;
         }
 
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
         }
 
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-        }
-
-        /* Dark Mode holati uchun overlay va glass effektini o'zgartiramiz */
-        .dark .overlay {
-            background: rgba(0, 0, 0, 0.7);
-            /* Qorong'uroq parda */
-        }
-
-        .dark .glass {
-            background: rgba(15, 23, 42, 0.6);
-            /* To'q ko'k/qora shaffof fon */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .dark .input-field {
-            background: rgba(30, 41, 59, 0.9);
-            color: white;
-        }
-
-        .dark .input-field::placeholder {
-            color: #94a3b8;
-        }
-
-        .dark label {
-            color: #e2e8f0;
+        .logo-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
 
         @media (max-width: 768px) {
-            .bg-image {
-                background-attachment: scroll;
-            }
-        }
-
-        html,
-        body {
-            height: 100%;
-            overflow: hidden;
-        }
-
-        body {
-            overflow: hidden;
-        }
-
-        @media (max-width: 768px) {
-            .glass {
-                backdrop-filter: blur(8px);
-                -webkit-backdrop-filter: blur(8px);
-            }
 
             .float-animation,
             .logo-pulse {
                 animation: none;
             }
         }
+
+        /* Theme Toggle Button - sahifa yuklanganda ko'rinishi */
+        #theme-toggle {
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.3s forwards;
+        }
+
+        .input-wrapper:focus-within svg {
+            color: #6366f1;
+            /* indigo */
+        }
+
+        input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 1000px white inset !important;
+            -webkit-text-fill-color: #1f2937 !important;
+        }
+
+        .dark input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 1000px #1e293b inset !important;
+            -webkit-text-fill-color: #fff !important;
+        }
+
+        .input-error {
+            border: 2px solid #ef4444 !important;
+        }
+
+        .input-error::placeholder {
+            color: #fca5a5;
+        }
+
+        .input-wrapper {
+            will-change: transform;
+        }
     </style>
 </head>
 
-<body class="h-full bg-image preload" style="background-image: url('{{ $randomImage }}');">
-
+<body class="h-full bg-image">
     <!-- Overlay -->
     <div class="overlay fixed inset-0"></div>
 
+    <!-- Theme Toggle Button -->
+    <div class="fixed top-12 right-5 z-50">
+        <button id="theme-toggle"
+            class="bg-white/20 backdrop-blur-md p-3 rounded-full border border-white/30 text-white hover:bg-white/40 transition-all">
+            <svg id="theme-toggle-light-icon" class="hidden w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                    d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z">
+                </path>
+            </svg>
+            <svg id="theme-toggle-dark-icon" class="hidden w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+    </div>
+
     <!-- Main Container -->
-    <div class="relative z-10 h-screen flex items-center justify-center px-4 mt-[-40px]">
-
+    <div class="relative z-10 h-screen flex items-center justify-center px-4">
         <div class="max-w-md w-full space-y-8 fade-in">
-
             <!-- Logo Section -->
             <div class="text-center">
                 <div class="flex justify-center mb-3">
@@ -214,45 +239,22 @@
                         </div>
                     </div>
                 </div>
-                <h1 class="text-4xl font-extrabold text-white tracking-tight mb-0">
-                    Diggo Portal
-                </h1>
-                {{-- <p class="text-white/90 text-sm font-medium">
-                    Bilimga sarguzasht shu yerdan boshlanadi
-                </p> --}}
+                <h1 class="text-4xl font-extrabold text-white tracking-tight">Diggo Portal</h1>
             </div>
-            <div class="fixed top-12 inset-x-0 flex justify-end px-5 z-50">
-                <button id="theme-toggle"
-                    class="bg-white/20 backdrop-blur-md p-3 rounded-full border border-white/30 text-white hover:bg-white/40 transition-all">
-                    <svg id="theme-toggle-light-icon" class="hidden w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z">
-                        </path>
-                    </svg>
-                    <svg id="theme-toggle-dark-icon" class="hidden w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-                    </svg>
-                </button>
-            </div>
+
             <!-- Login Card -->
             <div class="glass rounded-3xl p-8 space-y-6">
-
-                {{-- <!-- Welcome Text -->
-                <div class="text-center">
-                    <h2 class="text-2xl font-bold text-white mb-1">Xush kelibsiz!</h2>
-                    <p class="text-white/80 text-sm">Tizimga kirish uchun ma'lumotlarni kiriting</p>
-                </div> --}}
-
                 <!-- Login Form -->
                 <form action="{{ route('login') }}" method="POST" class="space-y-5">
                     @csrf
 
                     <!-- ID/Email Input -->
                     <div>
-                        <label class="block text-white font-semibold mb-2 text-sm">
-                            ID raqam yoki Email
-                        </label>
-                        <div class="relative">
+                        <label
+                            class="block font-semibold mb-2 text-sm {{ $errors->has('phone') ? 'text-red-400' : 'text-white' }}">
+                            ID raqam yoki Email</label>
+                        <div class="relative input-wrapper transition-all duration-300">
+
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
@@ -260,17 +262,19 @@
                                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                             </div>
-                            <input name="phone" type="text" required placeholder="ID raqamingizni kiriting"
-                                class="input-field w-full pl-12 pr-4 py-3.5 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 text-gray-800 placeholder-gray-500" />
+                            <input type="text" name="phone" value="{{ old('phone') }}" required
+                                placeholder="ID raqamingizni kiriting"
+                                class="input-field w-full pl-12 pr-4 py-3.5 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 text-gray-800 placeholder-gray-500 {{ $errors->has('phone') ? 'input-error' : '' }}" />
+                            @error('phone')
+                                <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
-
                     <!-- Password Input -->
                     <div>
-                        <label class="block text-white font-semibold mb-2 text-sm">
-                            Maxfiy parol
-                        </label>
-                        <div class="relative">
+                        <label class="block text-white font-semibold mb-2 text-sm">Maxfiy parol</label>
+                        <div class="relative input-wrapper transition-all duration-300">
+
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
@@ -280,8 +284,10 @@
                             </div>
                             <input type="password" id="password" name="password" required placeholder="••••••••"
                                 class="input-field w-full pl-12 pr-12 py-3.5 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 text-gray-800 placeholder-gray-500" />
-                            <button type="button" onclick="togglePassword()"
+
+                            <button type="button" id="togglePassword" tabindex="-1"
                                 class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 transition-colors">
+
                                 <svg id="eyeIcon" class="h-5 w-5" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -290,16 +296,16 @@
                                         d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
                             </button>
+
                         </div>
                     </div>
 
                     <!-- Remember Me -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="remember" name="remember_me"
+                        <input type="checkbox" id="remember" name="remember"
                             class="w-4 h-4 rounded border-white/30 text-indigo-600 focus:ring-2 focus:ring-white/50 bg-white/20 cursor-pointer" />
-                        <label for="remember" class="ml-2 text-sm text-white font-medium cursor-pointer">
-                            Eslab qolish
-                        </label>
+                        <label for="remember" class="ml-2 text-sm text-white font-medium cursor-pointer">Eslab
+                            qolish</label>
                     </div>
 
                     <!-- Submit Button -->
@@ -322,66 +328,68 @@
                     </p>
                 </div>
             </div>
-
         </div>
     </div>
 
     <script>
-        function togglePassword() {
-            const pw = document.getElementById('password');
-            const eye = document.getElementById('eyeIcon');
-            if (pw.type === 'password') {
-                pw.type = 'text';
-                eye.innerHTML =
+        // Password Toggle
+        const togglePassword = document.getElementById('togglePassword');
+        const password = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        togglePassword.addEventListener('click', function() {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+
+            if (type === 'text') {
+                eyeIcon.innerHTML =
                     `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.29-3.902M6.172 6.172A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a10.05 10.05 0 01-1.563 2.773M2 2l20 20"/>`;
             } else {
-                pw.type = 'password';
-                eye.innerHTML =
+                eyeIcon.innerHTML =
                     `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
             }
-        }
+        });
 
-        var themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-        var themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+        // Theme Toggle
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+        const html = document.documentElement;
 
-        // LocalStorage va tizim sozlamalarini tekshirish
-        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia(
-                '(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            themeToggleLightIcon.classList.remove('hidden');
-        } else {
-            document.documentElement.classList.remove('dark');
-            themeToggleDarkIcon.classList.remove('hidden');
-        }
+        // Initialize theme
+        function initTheme() {
+            const savedTheme = localStorage.getItem('color-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-        var themeToggleBtn = document.getElementById('theme-toggle');
-
-        themeToggleBtn.addEventListener('click', function() {
-            themeToggleDarkIcon.classList.toggle('hidden');
-            themeToggleLightIcon.classList.toggle('hidden');
-            if (localStorage.getItem('color-theme')) {
-                if (localStorage.getItem('color-theme') === 'light') {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('color-theme', 'dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('color-theme', 'light');
-                }
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                html.classList.add('dark');
+                themeToggleLightIcon.classList.remove('hidden');
+                themeToggleDarkIcon.classList.add('hidden');
             } else {
-                if (document.documentElement.classList.contains('dark')) {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('color-theme', 'light');
-                } else {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('color-theme', 'dark');
-                }
+                html.classList.remove('dark');
+                themeToggleDarkIcon.classList.remove('hidden');
+                themeToggleLightIcon.classList.add('hidden');
+            }
+        }
+
+        // Toggle theme
+        themeToggleBtn.addEventListener('click', function() {
+            html.classList.toggle('dark');
+
+            if (html.classList.contains('dark')) {
+                localStorage.setItem('color-theme', 'dark');
+                themeToggleLightIcon.classList.remove('hidden');
+                themeToggleDarkIcon.classList.add('hidden');
+            } else {
+                localStorage.setItem('color-theme', 'light');
+                themeToggleDarkIcon.classList.remove('hidden');
+                themeToggleLightIcon.classList.add('hidden');
             }
         });
-        window.addEventListener('load', () => {
-            document.body.classList.remove('preload');
-        });
-    </script>
 
+        // Initialize on page load
+        initTheme();
+    </script>
 </body>
 
 </html>
