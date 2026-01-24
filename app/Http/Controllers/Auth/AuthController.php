@@ -29,7 +29,7 @@ class AuthController extends Controller
         }
         return view('Auth.login',compact('randomImage'));
     }
-    public function login1(Request $request)
+    public function login(Request $request)
     {
         $request->validate([
             'phone' => ['required', 'string', 'min:9'],
@@ -49,7 +49,7 @@ class AuthController extends Controller
         ])->onlyInput('phone');
     }
 
-    public function login(Request $request)
+    public function login1(Request $request)
     {
         $request->validate([
             'phone' => ['required', 'string', 'min:9'],

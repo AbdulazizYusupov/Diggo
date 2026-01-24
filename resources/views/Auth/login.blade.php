@@ -9,6 +9,11 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
+        .preload * {
+            animation: none !important;
+            transition: none !important;
+        }
+
         * {
             font-family: 'Inter', sans-serif;
         }
@@ -154,21 +159,50 @@
         .dark label {
             color: #e2e8f0;
         }
+
+        @media (max-width: 768px) {
+            .bg-image {
+                background-attachment: scroll;
+            }
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .glass {
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+            }
+
+            .float-animation,
+            .logo-pulse {
+                animation: none;
+            }
+        }
     </style>
 </head>
 
-<body class="h-full bg-image" style="background-image: url('{{ $randomImage }}');">
+<body class="h-full bg-image preload" style="background-image: url('{{ $randomImage }}');">
 
     <!-- Overlay -->
     <div class="overlay fixed inset-0"></div>
 
     <!-- Main Container -->
-    <div class="relative z-10 min-h-screen flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+    <div class="relative z-10 h-screen flex items-center justify-center px-4 mt-[-40px]">
+
         <div class="max-w-md w-full space-y-8 fade-in">
 
             <!-- Logo Section -->
             <div class="text-center">
-                <div class="flex justify-center mb-6">
+                <div class="flex justify-center mb-3">
                     <div class="relative">
                         <div class="absolute inset-0 bg-white/30 rounded-full blur-xl logo-pulse"></div>
                         <div
@@ -180,14 +214,14 @@
                         </div>
                     </div>
                 </div>
-                <h1 class="text-4xl font-extrabold text-white tracking-tight mb-2">
+                <h1 class="text-4xl font-extrabold text-white tracking-tight mb-0">
                     Diggo Portal
                 </h1>
-                <p class="text-white/90 text-sm font-medium">
+                {{-- <p class="text-white/90 text-sm font-medium">
                     Bilimga sarguzasht shu yerdan boshlanadi
-                </p>
+                </p> --}}
             </div>
-            <div class="fixed top-5 right-5 z-50">
+            <div class="fixed top-12 inset-x-0 flex justify-end px-5 z-50">
                 <button id="theme-toggle"
                     class="bg-white/20 backdrop-blur-md p-3 rounded-full border border-white/30 text-white hover:bg-white/40 transition-all">
                     <svg id="theme-toggle-light-icon" class="hidden w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -203,11 +237,11 @@
             <!-- Login Card -->
             <div class="glass rounded-3xl p-8 space-y-6">
 
-                <!-- Welcome Text -->
+                {{-- <!-- Welcome Text -->
                 <div class="text-center">
                     <h2 class="text-2xl font-bold text-white mb-1">Xush kelibsiz!</h2>
                     <p class="text-white/80 text-sm">Tizimga kirish uchun ma'lumotlarni kiriting</p>
-                </div>
+                </div> --}}
 
                 <!-- Login Form -->
                 <form action="{{ route('login') }}" method="POST" class="space-y-5">
@@ -342,6 +376,9 @@
                     localStorage.setItem('color-theme', 'dark');
                 }
             }
+        });
+        window.addEventListener('load', () => {
+            document.body.classList.remove('preload');
         });
     </script>
 
