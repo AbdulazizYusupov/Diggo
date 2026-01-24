@@ -18,21 +18,21 @@ class RolePermissionSeeder extends Seeder
         $adminUser1 = User::create([
             'name' => 'Muhammadnabi',
             'surname' => 'Xoliqulov',
-            'phone' => '998881156101',
+            'phone' => '881156101',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('password'),
         ]);
         $adminUser2 = User::create([
             'name' => 'Abdulaziz',
             'surname' => 'Yusupov',
-            'phone' => '998937450307',
+            'phone' => '937450307',
             'email' => 'admin1@gmail.com',
             'password' => Hash::make('password'),
         ]);
         $adminUser3 = User::create([
             'name' => 'System',
             'surname' => 'Admin',
-            'phone' => '998990000000',
+            'phone' => '505717071',
             'email' => 'admin2@gmail.com',
             'password' => Hash::make('password'),
         ]);
