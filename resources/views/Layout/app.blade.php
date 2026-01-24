@@ -361,6 +361,19 @@
                             <span class="ml-3 sidebar-text">Guruhlar</span>
                             <span class="nav-tooltip">Guruhlar</span>
                         </a>
+                        <a href="{{ route('lessons.index') }}"
+                            class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('lessons.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="2" stroke="currentColor"
+                                class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('lessons.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+
+                            <span class="ml-3 sidebar-text">Lessons</span>
+                            <span class="nav-tooltip">Lessons</span>
+                        </a>
                         <a href="{{ route('activities.index') }}"
                             class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('activities.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 

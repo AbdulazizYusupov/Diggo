@@ -13,18 +13,20 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('lesson_id')->constrained()->cascadeOnDelete();
             $table->foreignId('student_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('group_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained(); //createdBy
-            $table->date('date')->index();
-            $table->enum('status', ['present', 'absent', 'late', 'excused'])->default('present')->index();
-            $table->text('notes')->nullable();
-            $table->timestamps();
+            $table->foreignId('marked_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->enum('status', ['present', 'absent', 'late', 'excused'])->default('present');
+            $table->integer('late_minutes')->nullable(); // Kechikish daqiqasi
             $table->integer('homework_score')->nullable();
             $table->integer('activity_score')->nullable();
-            $table->index(['group_id', 'date']);
-            $table->index(['student_id', 'group_id']);
-            $table->unique(['student_id', 'group_id', 'date'], 'student_group_date_unique');
+            $table->text('notes')->nullable();
+            $table->timestamp('marked_at')->nullable();
+
+            $table->timestamps();
+            $table->softDeletes();
+            $table->unique(['lesson_id', 'student_id', 'deleted_at']);
+            $table->index(['student_id', 'lesson_id']);
         });
     }
 

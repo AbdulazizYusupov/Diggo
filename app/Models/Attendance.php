@@ -4,34 +4,72 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Attendance extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'lesson_id',
         'student_id',
-        'group_id',
-        'user_id',
-        'date',
+        'marked_by',
         'status',
-        'notes',
+        'late_minutes',
         'homework_score',
         'activity_score',
+        'notes',
+        'marked_at',
     ];
 
-    protected $casts = ['date' => 'date'];
+    /**
+     * Ma'lumot turlarini formatlash.
+     */
+    protected $casts = [
+        'status' => 'string', // Enum bo'lsa ham string sifatida olinadi
+        'late_minutes' => 'integer',
+        'homework_score' => 'integer',
+        'activity_score' => 'integer',
+        'marked_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
 
-    public function student()
+    // --- Aloqalar (Relationships) ---
+
+    /**
+     * Davomat tegishli bo'lgan dars.
+     */
+    public function lesson(): BelongsTo
     {
-        return $this->belongsTo(Student::class);
+        return $this->belongsTo(Lesson::class);
     }
-    public function group()
+
+    /**
+     * Davomat qilingan talaba.
+     */
+    public function student(): BelongsTo
     {
-        return $this->belongsTo(Group::class);
+        return $this->belongsTo(Student::class); // Student modeli bor deb hisoblaymiz
     }
-    public function markedBy()
+
+    /**
+     * Davomatni belgilagan foydalanuvchi (O'qituvchi yoki Admin).
+     */
+    public function marker(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'marked_by');
+    }
+
+    // --- Scopes (Filtrlash uchun qulayliklar) ---
+
+    public function scopeAbsent($query)
+    {
+        return $query->where('status', 'absent');
+    }
+
+    public function scopeLate($query)
+    {
+        return $query->where('status', 'late');
     }
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\Director\DirectorController;
 use App\Http\Controllers\Group\GroupController;
 use App\Http\Controllers\GroupStudent\GroupStudentController;
 use App\Http\Controllers\GroupTeacher\GroupTeacherController;
+use App\Http\Controllers\Lesson\LessonController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Profile\ProfileController;
@@ -26,7 +27,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/login', [AuthController::class, 'index'])->name('login.index');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::middleware(['auth'])->group(function () {
-    
+
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -98,6 +99,9 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/bulk-store', [AttendanceController::class, 'bulkStore'])->name('bulk-store');
             Route::get('/group/{group}/statistics', [AttendanceController::class, 'statistics'])->name('statistics');
         });
+        Route::resource('lessons', LessonController::class);
+        Route::patch('lessons/{lesson}/complete', [LessonController::class, 'complete'])->name('lessons.complete');
+        Route::post('lessons/{lesson}/cancel', [LessonController::class, 'cancel'])->name('lessons.cancel');
         // Route::resource('attendances', AttendanceController::class);
         // Route::resource('lesson-charges', LessonChargeController::class);
         // Route::resource('coin-transactions', CoinTransactionController::class);
