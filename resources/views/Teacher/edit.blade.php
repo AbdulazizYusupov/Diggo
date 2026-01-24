@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="w-full">
-        <!-- Header Section -->
+        
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
             <div class="flex items-center gap-4">
                 <div
@@ -221,12 +221,14 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- Salary Type --}}
                         <div class="space-y-2">
-                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Maosh turi <span
-                                    class="text-red-500">*</span></label>
-                            <select name="salary_type" required
+                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">
+                                Maosh turi <span class="text-red-500">*</span>
+                            </label>
+                            <select name="salary_type" id="salary_type_select" required
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-indigo-500 dark:text-white outline-none transition-all
-                    @error('salary_type') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
+            @error('salary_type') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                                 <option value="fixed"
                                     {{ old('salary_type', $teacher->salary_type) == 'fixed' ? 'selected' : '' }}>Qat'iy
                                     maosh</option>
@@ -242,19 +244,37 @@
                             </select>
                         </div>
 
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Maosh miqdori (so'm)
-                                <span class="text-red-500">*</span></label>
-                            <input type="number" name="salary_amount"
+                        {{-- Salary Amount --}}
+                        <div class="space-y-2" id="salary_amount_wrapper">
+                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">
+                                Maosh miqdori (so'm) <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" name="salary_amount" id="salary_amount_input"
                                 value="{{ old('salary_amount', $teacher->salary_amount) }}" required min="0"
                                 step="0.01" placeholder="3000000"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none dark:text-white transition-all
-                    @error('salary_amount') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
+            @error('salary_amount') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             @error('salary_amount')
                                 <p class="text-red-500 text-xs mt-1 ml-1">{{ $message }}</p>
                             @enderror
                         </div>
+
+                        {{-- Percent per student --}}
+                        <div class="space-y-2" id="percent_wrapper">
+                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">
+                                Har bir talaba tulovidan olinadigan foiz (%) <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" name="percent_per_student" id="percent_input"
+                                value="{{ old('percent_per_student', $teacher->percent_per_student) }}" min="0"
+                                max="100" step="0.01" placeholder="30"
+                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none dark:text-white transition-all
+            @error('percent_per_student') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
+                            @error('percent_per_student')
+                                <p class="text-red-500 text-xs mt-1 ml-1">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
+
 
                     <div class="space-y-2">
                         <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Har bir talaba uchun
@@ -515,6 +535,39 @@
                 previewBox.classList.add('hidden');
                 uploadLabel.classList.remove('hidden');
             }
+
+            function updateSalaryFields() {
+                const salaryType = document.getElementById('salary_type_select').value;
+                const amountWrapper = document.getElementById('salary_amount_wrapper');
+                const percentWrapper = document.getElementById('percent_wrapper');
+                const amountInput = document.getElementById('salary_amount_input');
+                const percentInput = document.getElementById('percent_input');
+
+                if (salaryType === 'percent') {
+                    amountWrapper.style.display = 'none';
+                    amountInput.value = 0;
+
+                    percentWrapper.style.display = 'block';
+                } else {
+                    percentWrapper.style.display = 'none';
+                    percentInput.value = 0;
+
+                    amountWrapper.style.display = 'block';
+                }
+            }
+
+            const salarySelect = document.getElementById('salary_type_select');
+            salarySelect.addEventListener('change', updateSalaryFields);
+
+            // Sahifa yuklanganda old value bilan toggle ishlashi
+            updateSalaryFields();
+
+            // Percent input 0-100 check
+            const percentInput = document.getElementById('percent_input');
+            percentInput.addEventListener('input', function() {
+                if (this.value > 100) this.value = 100;
+                if (this.value < 0) this.value = 0;
+            });
         </script>
     @endpush
 @endsection

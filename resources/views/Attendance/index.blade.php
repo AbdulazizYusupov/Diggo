@@ -73,7 +73,9 @@
                 </div>
             </form>
         </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+           
             @forelse($groups as $group)
                 @php
                     // Card rang logikasi
@@ -121,7 +123,6 @@
                                 </span>
                             @endif
                         @endif
-
                         {{-- Faol badge --}}
                         <span
                             class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
@@ -146,9 +147,9 @@
                                 class="text-base font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight mb-1 line-clamp-2">
                                 {{ $group->name }}
                             </h3>
-                            @if ($group->course)
+                            @if (optional($group->course))
                                 <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                    {{ $group->course->title }}
+                                    {{ optional($group->course)->title }}
                                 </p>
                             @endif
                         </div>
@@ -182,18 +183,6 @@
 
                         <!-- Dars kunlari -->
                         <div class="flex flex-wrap gap-1">
-                            @php
-                                $dayNames = [
-                                    'monday' => 'Du',
-                                    'tuesday' => 'Se',
-                                    'wednesday' => 'Ch',
-                                    'thursday' => 'Pa',
-                                    'friday' => 'Ju',
-                                    'saturday' => 'Sh',
-                                    'sunday' => 'Ya',
-                                ];
-                                $todayDayName = strtolower(now()->locale('en')->dayName);
-                            @endphp
 
                             @foreach ($group->days_of_week ?? [] as $day)
                                 <span

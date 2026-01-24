@@ -62,4 +62,8 @@ class Group extends Model
             ->wherePivot('status', 'active')
             ->withPivot('joined_at', 'left_at', 'status')->withTimestamps();
     }
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }

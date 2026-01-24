@@ -18,7 +18,7 @@ class AttendanceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index1(Request $request)
     {
         $search = $request->input('search');
         $today = now()->toDateString();
@@ -59,6 +59,107 @@ class AttendanceController extends Controller
 
         return view('Attendance.index', compact('groups', 'search'));
     }
+    public function index2(Request $request)
+    {
+        $search = $request->input('search');
+        $today = now()->toDateString();
+        $todayDayName = strtolower(now()->locale('en')->dayName);
+
+
+        $groups = Group::with(['course', 'activeStudents'])
+            ->withExists(['attendances as has_attendance_today' => function ($query) use ($today) {
+                $query->whereDate('date', $today);
+            }])
+            ->where('is_active', true)
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhereHas('course', function ($c) use ($search) {
+                            $c->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->orderBy('name')
+            ->paginate(12)
+            ->withQueryString();
+
+        // Faqat bugun dars borligini tekshirish qoldi
+        $groups->getCollection()->transform(function ($group) use ($todayDayName) {
+            $group->has_today_lesson = in_array($todayDayName, $group->days_of_week ?? []);
+            return $group;
+        });
+
+        $dayNames = [
+            'monday' => 'Du',
+            'tuesday' => 'Se',
+            'wednesday' => 'Ch',
+            'thursday' => 'Pa',
+            'friday' => 'Ju',
+            'saturday' => 'Sh',
+            'sunday' => 'Ya',
+        ];
+        $todayDayName = strtolower(now()->locale('en')->dayName);
+        return view('Attendance.index', compact('groups', 'search', 'dayNames', 'todayDayName'));
+    }
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+        $search = $request->input('search');
+        $today = now()->toDateString();
+        $todayDayName = strtolower(now()->locale('en')->dayName);
+
+        // 1. Asosiy so'rovni boshlaymiz
+        $query = Group::with(['course', 'activeStudents'])
+            ->withExists(['attendances as has_attendance_today' => function ($query) use ($today) {
+                $query->whereDate('date', $today);
+            }])
+            ->where('is_active', true);
+
+        // 2. Rolga qarab filtrlash
+        if ($user->hasRole('admin')) {
+            // Admin bo'lsa hech qanday qo'shimcha filtrsiz hamma guruhlar (is_active: true bo'lgan)
+        } elseif ($user->hasRole('teacher')) {
+            // Agar foydalanuvchida teacher bog'liqligi bo'lsa (yoki teacher bo'lsa)
+            // Faqat shu o'qituvchiga biriktirilgan guruhlarni olamiz
+            $query->whereHas('teachers', function ($q) use ($user) {
+                $q->where('teacher_id', $user->teacher->id); // teacher_id foydalanuvchining teacher modelidagi ID si
+            });
+        } else {
+            // Agar admin ham, teacher ham bo'lmasa, bo'sh natija qaytarish uchun noto'g'ri shart beramiz
+            $query->whereKey([]);
+        }
+
+        // 3. Qidiruv logikasi
+        $query->when($search, function ($query, $search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhereHas('course', function ($c) use ($search) {
+                        $c->where('name', 'like', "%{$search}%");
+                    });
+            });
+        });
+
+        // 4. Ma'lumotlarni olish
+        $groups = $query->orderBy('name')->paginate(12)->withQueryString();
+
+        // 5. Bugun dars borligini belgilash (transform)
+        $groups->getCollection()->map(function ($group) use ($todayDayName) {
+            $group->has_today_lesson = in_array($todayDayName, $group->days_of_week ?? []);
+            return $group;
+        });
+
+        $dayNames = [
+            'monday' => 'Du',
+            'tuesday' => 'Se',
+            'wednesday' => 'Ch',
+            'thursday' => 'Pa',
+            'friday' => 'Ju',
+            'saturday' => 'Sh',
+            'sunday' => 'Ya',
+        ];
+
+        return view('Attendance.index', compact('groups', 'search', 'dayNames', 'todayDayName'));
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -73,7 +174,6 @@ class AttendanceController extends Controller
      */
     public function store(Request $request)
     {
-        dd(123);
         $validated = $request->validate([
             'group_id' => 'required|exists:groups,id',
             'student_id' => 'required|exists:students,id',

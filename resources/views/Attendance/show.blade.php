@@ -20,7 +20,7 @@
                         {{ $group->name }}
                     </h1>
                     <p class="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400">
-                        {{ $group->course->title ?? 'Kurs mavjud emas' }} • {{ $students->count() }} o'quvchi
+                        {{ optional($group->course)->title ?? 'Kurs mavjud emas' }} • {{ $students->count() }} o'quvchi
                     </p>
                 </div>
             </div>
@@ -180,12 +180,13 @@
                                         <div class="flex items-center gap-2">
                                             <div
                                                 class="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-xs md:text-sm shadow-lg flex-shrink-0">
-                                                {{ substr($student->user->surname ?? 'N', 0, 1) }}{{ substr($student->user->name ?? 'A', 0, 1) }}
+                                                {{ substr(optional($student->user)->surname ?? 'N', 0, 1) }}{{ substr(optional($student->user)->name ?? 'A', 0, 1) }}
                                             </div>
                                             <div class="min-w-0">
                                                 <div
                                                     class="text-xs md:text-sm font-bold text-gray-900 dark:text-white truncate">
-                                                    {{ $student->user->surname ?? '' }} {{ $student->user->name ?? '' }}
+                                                    {{ optional($student->user)->surname ?? '' }}
+                                                    {{ optional($student->user)->name ?? '' }}
                                                 </div>
                                                 <div
                                                     class="text-[10px] md:text-xs text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
@@ -212,14 +213,14 @@
                                             $activityScore = $attendance->activity_score ?? 0;
 
                                             // Coin hisoblash - to'liq
-$dailyCoins = 0;
-if ($status === 'present') {
-    $dailyCoins = 4; // Keldi = 4 coin
-} elseif ($status === 'late') {
-    $dailyCoins = 3; // Kechikdi = 3 coin
-}
-// Homework va Activity coinlarini qo'shamiz (faqat kelgan yoki kechikkan bo'lsa)
-if ($status === 'present' || $status === 'late') {
+                                            $dailyCoins = 0;
+                                            if ($status === 'present') {
+                                                $dailyCoins = 4; // Keldi = 4 coin
+                                            } elseif ($status === 'late') {
+                                                $dailyCoins = 3; // Kechikdi = 3 coin
+                                            }
+                                            // Homework va Activity coinlarini qo'shamiz (faqat kelgan yoki kechikkan bo'lsa)
+                                            if ($status === 'present' || $status === 'late') {
                                                 $dailyCoins += $homeworkScore + $activityScore;
                                             }
                                             $totalCoins += $dailyCoins;

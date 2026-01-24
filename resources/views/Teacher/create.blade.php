@@ -200,7 +200,7 @@
                                     class="text-red-500">*</span></label>
                             <select name="salary_type" id="salary_type_select" required onchange="updateSalaryFields()"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-indigo-500 dark:text-white outline-none transition-all
-                    @error('salary_type') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
+                                @error('salary_type') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                                 <option value="fixed" {{ old('salary_type') == 'fixed' ? 'selected' : '' }}>Qat'iy maosh
                                 </option>
                                 <option value="hourly" {{ old('salary_type') == 'hourly' ? 'selected' : '' }}>Soatlik
@@ -215,28 +215,27 @@
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Maosh miqdori (so'm)
                                 <span class="text-red-500">*</span></label>
-                            <input type="number" name="salary_amount" value="{{ old('salary_amount') }}" required
+                            <input type="number" name="salary_amount" value="{{ old('salary_amount') }}"
                                 min="0" step="0.01" placeholder="3000000"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none dark:text-white transition-all
-                    @error('salary_amount') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
+                                @error('salary_amount') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
                             @error('salary_amount')
                                 <p class="text-red-500 text-xs mt-1 ml-1">{{ $message }}</p>
                             @enderror
                         </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Har bir talaba uchun
-                            qo'shimcha foiz (%)</label>
-                        <input type="number" name="percent_per_student" value="{{ old('percent_per_student', 0) }}"
-                            min="0" max="100" step="0.01" placeholder="5"
-                            class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none dark:text-white transition-all
-                        @error('percent_per_student') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
-                        <p class="text-xs text-gray-500 dark:text-gray-400 ml-1">Agar kerak bo'lsa, har bir talaba uchun
-                            qo'shimcha foiz kiriting</p>
-                        @error('percent_per_student')
-                            <p class="text-red-500 text-xs mt-1 ml-1">{{ $message }}</p>
-                        @enderror
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Har bir talaba
+                                tulovidan
+                                olinadigan foiz (%)
+                                <span class="text-red-500">*</span></label>
+                            <input type="number" name="percent_per_student" value="{{ old('percent_per_student') }}"
+                                min="0" max="100" step="0.01" placeholder="30" id="percent_per_student"
+                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none dark:text-white transition-all
+                                @error('percent_per_student') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror">
+                            @error('percent_per_student')
+                                <p class="text-red-500 text-xs mt-1 ml-1">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
                 </div>
 
@@ -411,6 +410,43 @@
                 previewBox.classList.add('hidden');
                 uploadLabel.classList.remove('hidden');
             }
+
+            function updateSalaryFields() {
+                const salaryType = document.getElementById('salary_type_select').value;
+                const amountInputWrapper = document.querySelector('input[name="salary_amount"]').closest('div');
+                const percentInputWrapper = document.querySelector('input[name="percent_per_student"]').closest('div');
+                const amountInput = document.querySelector('input[name="salary_amount"]');
+                const percentInput = document.querySelector('input[name="percent_per_student"]');
+
+                if (salaryType === 'percent') {
+                    // Foiz tanlansa
+                    amountInputWrapper.style.display = 'none';
+                    amountInput.value = 0;
+
+                    percentInputWrapper.style.display = 'block';
+                } else {
+                    // Boshqa tur tanlansa
+                    percentInputWrapper.style.display = 'none';
+                    percentInput.value = 0;
+
+                    amountInputWrapper.style.display = 'block';
+                }
+            }
+            // Select elementga onchange event qo'shamiz
+            document.getElementById('salary_type_select').addEventListener('change', updateSalaryFields);
+            updateSalaryFields();
+
+            const percentInput = document.getElementById('percent_per_student');
+
+            percentInput.addEventListener('input', function() {
+                let value = parseFloat(this.value);
+
+                if (value > 100) {
+                    this.value = 100; // 100 dan oshsa avtomatik 100 ga set qiladi
+                } else if (value < 0) {
+                    this.value = 0; // 0 dan kichik bo‘lsa 0 ga set qiladi
+                }
+            });
         </script>
     @endpush
 @endsection
