@@ -105,7 +105,7 @@
                             <div>
                                 <p class="text-[10px] md:text-xs text-amber-600 dark:text-amber-400 font-medium">Kechikdi
                                 </p>
-                                <p class="text-xs md:text-sm font-bold text-amber-700 dark:text-amber-300">+3</p>
+                                <p class="text-xs md:text-sm font-bold text-amber-700 dark:text-amber-300">+2/+3</p>
                             </div>
                         </div>
                         <div
@@ -139,7 +139,7 @@
         </div>
 
         <!-- Attendance Form -->
-        <form method="POST" action="{{ route('attendance.bulk-store') }}">
+        <form method="POST" action="{{ route('attendance.store') }}" id="attendanceForm">
             @csrf
             <input type="hidden" name="group_id" value="{{ $group->id }}">
 
@@ -171,9 +171,6 @@
                         </thead>
                         <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-gray-700">
                             @foreach ($students as $studentIndex => $student)
-                                @php
-                                    $totalCoins = 0;
-                                @endphp
                                 <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
                                     <td
                                         class="px-2 md:px-4 py-2 md:py-3 whitespace-nowrap sticky left-0 bg-white dark:bg-slate-800 z-10 border-r border-gray-200 dark:border-gray-700">
@@ -203,88 +200,57 @@
                                     </td>
 
                                     @foreach ($lessonDays as $dayIndex => $day)
-                                        @php
-                                            $key = $student->id . '_' . $day->format('Y-m-d');
-                                            $attendanceCollection = $attendances[$key] ?? collect();
-                                            $attendance = $attendanceCollection->first();
-
-                                            $status = $attendance->status ?? '';
-                                            $homeworkScore = $attendance->homework_score ?? 0;
-                                            $activityScore = $attendance->activity_score ?? 0;
-
-                                            // Coin hisoblash - to'liq
-                                            $dailyCoins = 0;
-                                            if ($status === 'present') {
-                                                $dailyCoins = 4; // Keldi = 4 coin
-                                            } elseif ($status === 'late') {
-                                                $dailyCoins = 3; // Kechikdi = 3 coin
-                                            }
-                                            // Homework va Activity coinlarini qo'shamiz (faqat kelgan yoki kechikkan bo'lsa)
-                                            if ($status === 'present' || $status === 'late') {
-                                                $dailyCoins += $homeworkScore + $activityScore;
-                                            }
-                                            $totalCoins += $dailyCoins;
-                                        @endphp
-
-                                        <td class="px-1.5 md:px-3 py-2 md:py-3 text-center align-top">
+                                        <td class="px-1.5 md:px-3 py-2 md:py-3 text-center align-top"
+                                            data-student="{{ $student->id }}" data-day="{{ $day->format('Y-m-d') }}">
                                             <input type="hidden"
                                                 name="attendances[{{ $studentIndex }}][{{ $dayIndex }}][student_id]"
                                                 value="{{ $student->id }}">
                                             <input type="hidden"
                                                 name="attendances[{{ $studentIndex }}][{{ $dayIndex }}][date]"
                                                 value="{{ $day->format('Y-m-d') }}">
+                                            <input type="hidden" class="late-minutes-input"
+                                                name="attendances[{{ $studentIndex }}][{{ $dayIndex }}][late_minutes]"
+                                                value="{{ $attendancesByStudentDay[$student->id][$day->format('Y-m-d')]['late_minutes'] ?? 0 }}">
 
                                             <div class="flex flex-col items-center gap-1.5 md:gap-2">
                                                 <!-- Attendance Status Row -->
                                                 <div class="flex items-center justify-center gap-0.5 md:gap-1">
-                                                    <label class="relative cursor-pointer">
-                                                        <input type="radio"
-                                                            name="attendances[{{ $studentIndex }}][{{ $dayIndex }}][status]"
-                                                            value="present" {{ $status === 'present' ? 'checked' : '' }}
-                                                            class="peer sr-only attendance-status">
-                                                        <div
-                                                            class="w-7 h-7 md:w-9 md:h-9 rounded-md md:rounded-lg transition-all flex items-center justify-center bg-gray-100 dark:bg-slate-700 text-gray-400 peer-checked:bg-emerald-500 peer-checked:text-white peer-checked:ring-2 peer-checked:ring-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/30">
-                                                            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none"
-                                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="2.5" d="M5 13l4 4L19 7" />
-                                                            </svg>
-                                                        </div>
-                                                    </label>
-                                                    <label class="relative cursor-pointer">
-                                                        <input type="radio"
-                                                            name="attendances[{{ $studentIndex }}][{{ $dayIndex }}][status]"
-                                                            value="late" {{ $status === 'late' ? 'checked' : '' }}
-                                                            class="peer sr-only attendance-status">
-                                                        <div
-                                                            class="w-7 h-7 md:w-9 md:h-9 rounded-md md:rounded-lg transition-all flex items-center justify-center bg-gray-100 dark:bg-slate-700 text-gray-400 peer-checked:bg-amber-500 peer-checked:text-white peer-checked:ring-2 peer-checked:ring-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/30">
-                                                            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none"
-                                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="2"
-                                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                            </svg>
-                                                        </div>
-                                                    </label>
-                                                    <label class="relative cursor-pointer">
-                                                        <input type="radio"
-                                                            name="attendances[{{ $studentIndex }}][{{ $dayIndex }}][status]"
-                                                            value="absent" {{ $status === 'absent' ? 'checked' : '' }}
-                                                            class="peer sr-only attendance-status">
-                                                        <div
-                                                            class="w-7 h-7 md:w-9 md:h-9 rounded-md md:rounded-lg transition-all flex items-center justify-center bg-gray-100 dark:bg-slate-700 text-gray-400 peer-checked:bg-rose-500 peer-checked:text-white peer-checked:ring-2 peer-checked:ring-rose-300 hover:bg-rose-50 dark:hover:bg-rose-900/30">
-                                                            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none"
-                                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
-                                                            </svg>
-                                                        </div>
-                                                    </label>
+                                                    @foreach (['present', 'late', 'absent'] as $statusType)
+                                                        <label class="relative cursor-pointer">
+                                                            <input type="radio"
+                                                                name="attendances[{{ $studentIndex }}][{{ $dayIndex }}][status]"
+                                                                value="{{ $statusType }}"
+                                                                {{ isset($attendancesByStudentDay[$student->id][$day->format('Y-m-d')]) && $attendancesByStudentDay[$student->id][$day->format('Y-m-d')]['status'] === $statusType ? 'checked' : '' }}
+                                                                class="peer sr-only attendance-status"
+                                                                data-type="{{ $statusType }}">
+                                                            <div
+                                                                class="w-7 h-7 md:w-9 md:h-9 rounded-md md:rounded-lg transition-all flex items-center justify-center bg-gray-100 dark:bg-slate-700 text-gray-400 
+                                                                {{ $statusType === 'present' ? 'peer-checked:bg-emerald-500 peer-checked:text-white peer-checked:ring-2 peer-checked:ring-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/30' : '' }}
+                                                                {{ $statusType === 'late' ? 'peer-checked:bg-amber-500 peer-checked:text-white peer-checked:ring-2 peer-checked:ring-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/30' : '' }}
+                                                                {{ $statusType === 'absent' ? 'peer-checked:bg-rose-500 peer-checked:text-white peer-checked:ring-2 peer-checked:ring-rose-300 hover:bg-rose-50 dark:hover:bg-rose-900/30' : '' }}">
+                                                                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none"
+                                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                                    @if ($statusType === 'present')
+                                                                        <path stroke-linecap="round"
+                                                                            stroke-linejoin="round" stroke-width="2.5"
+                                                                            d="M5 13l4 4L19 7" />
+                                                                    @elseif($statusType === 'late')
+                                                                        <path stroke-linecap="round"
+                                                                            stroke-linejoin="round" stroke-width="2"
+                                                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                    @else
+                                                                        <path stroke-linecap="round"
+                                                                            stroke-linejoin="round" stroke-width="2.5"
+                                                                            d="M6 18L18 6M6 6l12 12" />
+                                                                    @endif
+                                                                </svg>
+                                                            </div>
+                                                        </label>
+                                                    @endforeach
                                                 </div>
 
                                                 <!-- Homework & Activity Container -->
-                                                <div class="homework-activity-container w-full"
-                                                    data-student="{{ $studentIndex }}" data-day="{{ $dayIndex }}">
+                                                <div class="homework-activity-container w-full">
                                                     <!-- Homework Score Row -->
                                                     <div
                                                         class="flex items-center justify-center gap-0.5 md:gap-1 pt-1.5 md:pt-2 border-t border-gray-100 dark:border-gray-700 w-full">
@@ -293,7 +259,7 @@
                                                                 <input type="radio"
                                                                     name="attendances[{{ $studentIndex }}][{{ $dayIndex }}][homework_score]"
                                                                     value="{{ $score }}"
-                                                                    {{ ($attendance->homework_score ?? 0) == $score ? 'checked' : '' }}
+                                                                    {{ isset($attendancesByStudentDay[$student->id][$day->format('Y-m-d')]) && $attendancesByStudentDay[$student->id][$day->format('Y-m-d')]['homework_score'] == $score ? 'checked' : ($score == 0 && !isset($attendancesByStudentDay[$student->id][$day->format('Y-m-d')]) ? 'checked' : '') }}
                                                                     class="peer sr-only">
                                                                 <div
                                                                     class="w-5 h-5 md:w-6 md:h-6 rounded text-[9px] md:text-[10px] font-bold transition-all flex items-center justify-center bg-gray-50 dark:bg-slate-800 text-gray-400 peer-checked:bg-blue-600 peer-checked:text-white hover:bg-blue-50 dark:hover:bg-blue-900/20">
@@ -313,7 +279,7 @@
                                                                 <input type="radio"
                                                                     name="attendances[{{ $studentIndex }}][{{ $dayIndex }}][activity_score]"
                                                                     value="{{ $score }}"
-                                                                    {{ ($attendance->activity_score ?? 0) == $score ? 'checked' : '' }}
+                                                                    {{ isset($attendancesByStudentDay[$student->id][$day->format('Y-m-d')]) && $attendancesByStudentDay[$student->id][$day->format('Y-m-d')]['activity_score'] == $score ? 'checked' : ($score == 0 && !isset($attendancesByStudentDay[$student->id][$day->format('Y-m-d')]) ? 'checked' : '') }}
                                                                     class="peer sr-only">
                                                                 <div
                                                                     class="w-5 h-5 md:w-6 md:h-6 rounded text-[9px] md:text-[10px] font-bold transition-all flex items-center justify-center bg-gray-50 dark:bg-slate-800 text-gray-400 peer-checked:bg-purple-600 peer-checked:text-white hover:bg-purple-50 dark:hover:bg-purple-900/20">
@@ -327,10 +293,10 @@
                                                 </div>
 
                                                 <!-- Daily Coins Display -->
-                                                @if ($dailyCoins > 0)
+                                                @if (isset($attendancesByStudentDay[$student->id][$day->format('Y-m-d')]) && $attendancesByStudentDay[$student->id][$day->format('Y-m-d')]['daily_coins'] > 0)
                                                     <div
                                                         class="text-[10px] md:text-xs font-bold text-amber-600 dark:text-amber-400 pt-0.5 md:pt-1">
-                                                        +{{ $dailyCoins }}
+                                                        +{{ $attendancesByStudentDay[$student->id][$day->format('Y-m-d')]['daily_coins'] }}
                                                     </div>
                                                 @endif
                                             </div>
@@ -341,7 +307,7 @@
                                     <td
                                         class="px-2 md:px-4 py-2 md:py-3 text-center bg-purple-50 dark:bg-purple-900/10 sticky right-0 z-10 border-l border-gray-200 dark:border-gray-700">
                                         <div class="text-base md:text-xl font-black text-purple-600 dark:text-purple-400">
-                                            {{ $totalCoins }}
+                                            {{ $studentTotalCoins[$student->id] ?? 0 }}
                                         </div>
                                         <div
                                             class="text-[8px] md:text-[10px] text-purple-500 dark:text-purple-500 font-semibold">
@@ -367,49 +333,163 @@
             </div>
         </form>
     </div>
+
+    <!-- Late Modal -->
+    <div id="lateModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Kechikish vaqti</h3>
+                <button type="button" onclick="closeLateModal()"
+                    class="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Necha daqiqa kechikdi?
+                </label>
+                <input type="number" id="lateMinutesInput" min="1" max="120" 
+                    class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 outline-none"
+                    placeholder="Daqiqalar" value="5">
+                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                    • 0-15 daqiqa: +3 coin<br>
+                    • 15+ daqiqa: +2 coin
+                </p>
+            </div>
+
+            <div class="flex gap-3">
+                <button type="button" onclick="closeLateModal()"
+                    class="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-300 font-semibold rounded-xl transition-colors">
+                    Bekor qilish
+                </button>
+                <button type="button" onclick="confirmLateMinutes()"
+                    class="flex-1 px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl transition-colors">
+                    Tasdiqlash
+                </button>
+            </div>
+        </div>
+    </div>
+
     @push('scripts')
         <script>
+            let currentLateCell = null;
+
             document.addEventListener('DOMContentLoaded', function() {
+                initializeAttendance();
+            });
+
+            function initializeAttendance() {
                 const statusRadios = document.querySelectorAll('.attendance-status');
-
-                // Sahifa yuklanganda barcha holatlarni tekshirish
+                
                 statusRadios.forEach(radio => {
-                    if (radio.checked) {
-                        toggleHomeworkActivity(radio);
-                    }
-                });
-
-                // Radio o'zgarganda
-                statusRadios.forEach(radio => {
-                    radio.addEventListener('change', function() {
-                        toggleHomeworkActivity(this);
+                    radio.addEventListener('click', function(e) {
+                        const wasChecked = this.dataset.checked === 'true';
+                        const allRadiosInGroup = document.querySelectorAll(
+                            `input[name="${this.name}"]`
+                        );
+                        
+                        if (wasChecked) {
+                            this.checked = false;
+                            this.dataset.checked = 'false';
+                            handleStatusChange(this, null);
+                        } else {
+                            allRadiosInGroup.forEach(r => r.dataset.checked = 'false');
+                            this.dataset.checked = 'true';
+                            
+                            if (this.dataset.type === 'late') {
+                                openLateModal(this);
+                            } else {
+                                handleStatusChange(this, this.value);
+                            }
+                        }
                     });
-                });
 
-                function toggleHomeworkActivity(radio) {
-                    const container = radio.closest('td').querySelector('.homework-activity-container');
-                    const status = radio.value;
-
-                    if (status === 'absent' || status === 'excused') {
-                        // Kelmagan - homework va activity yashirish
-                        container.style.opacity = '0.3';
-                        container.style.pointerEvents = 'none';
-
-                        // Barcha radio buttonlarni 0 ga o'rnatish
-                        const hwRadios = container.querySelectorAll('input[type="radio"][name*="homework_score"]');
-                        const actRadios = container.querySelectorAll('input[type="radio"][name*="activity_score"]');
-
-                        hwRadios.forEach(r => {
-                            if (r.value === '0') r.checked = true;
-                        });
-                        actRadios.forEach(r => {
-                            if (r.value === '0') r.checked = true;
-                        });
-                    } else {
-                        // Kelgan yoki kechikkan - homework va activity ko'rsatish
-                        container.style.opacity = '1';
-                        container.style.pointerEvents = 'auto';
+                    if (radio.checked) {
+                        radio.dataset.checked = 'true';
                     }
+                });
+            }
+
+            function handleStatusChange(radio, status) {
+                const cell = radio.closest('td');
+                const container = cell.querySelector('.homework-activity-container');
+                
+                if (status === 'absent' || status === null) {
+                    container.classList.add('opacity-30', 'pointer-events-none');
+                    resetScores(cell);
+                } else {
+                    container.classList.remove('opacity-30', 'pointer-events-none');
+                }
+            }
+
+            function resetScores(cell) {
+                const hwRadios = cell.querySelectorAll('input[name*="homework_score"]');
+                const actRadios = cell.querySelectorAll('input[name*="activity_score"]');
+                
+                hwRadios.forEach(r => {
+                    if (r.value === '0') r.checked = true;
+                });
+                actRadios.forEach(r => {
+                    if (r.value === '0') r.checked = true;
+                });
+            }
+
+            function openLateModal(radio) {
+                currentLateCell = radio.closest('td');
+                const lateMinutesInput = currentLateCell.querySelector('.late-minutes-input');
+                const currentMinutes = lateMinutesInput ? lateMinutesInput.value : 5;
+                
+                document.getElementById('lateMinutesInput').value = currentMinutes || 5;
+                document.getElementById('lateModal').classList.remove('hidden');
+                document.getElementById('lateMinutesInput').focus();
+            }
+
+            function closeLateModal() {
+                if (currentLateCell) {
+                    const lateRadio = currentLateCell.querySelector('input[data-type="late"]');
+                    if (lateRadio) {
+                        lateRadio.checked = false;
+                        lateRadio.dataset.checked = 'false';
+                    }
+                }
+                
+                document.getElementById('lateModal').classList.add('hidden');
+                currentLateCell = null;
+            }
+
+            function confirmLateMinutes() {
+                const minutes = parseInt(document.getElementById('lateMinutesInput').value) || 5;
+                
+                if (currentLateCell) {
+                    const lateMinutesInput = currentLateCell.querySelector('.late-minutes-input');
+                    if (lateMinutesInput) {
+                        lateMinutesInput.value = minutes;
+                    }
+                    
+                    const lateRadio = currentLateCell.querySelector('input[data-type="late"]');
+                    if (lateRadio) {
+                        lateRadio.dataset.checked = 'true';
+                    }
+                    
+                    handleStatusChange(currentLateCell.querySelector('.attendance-status[data-type="late"]'), 'late');
+                }
+                
+                document.getElementById('lateModal').classList.add('hidden');
+                currentLateCell = null;
+            }
+
+            document.getElementById('lateModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeLateModal();
+                }
+            });
+
+            document.getElementById('lateMinutesInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    confirmLateMinutes();
                 }
             });
         </script>
