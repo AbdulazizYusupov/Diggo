@@ -264,88 +264,123 @@ class GroupController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, Group $group)
-{
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'cours_id' => 'required|exists:cours,id',
-        'start_time' => 'required|date_format:H:i',
-        'end_time' => 'required|date_format:H:i|after:start_time',
-        'days_of_week' => 'required|array|min:1',
-        'days_of_week.*' => 'in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
-        'capacity' => 'required|integer|min:1|max:100',
-        'start_date' => 'required|date',
-        'end_date' => 'required|date|after:start_date',
-        'is_active' => 'boolean'
-    ]);
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'cours_id' => 'required|exists:cours,id',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'days_of_week' => 'required|array|min:1',
+            'days_of_week.*' => 'in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
+            'capacity' => 'required|integer|min:1|max:100',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'is_active' => 'boolean'
+        ]);
 
-    $validated['is_active'] = $request->has('is_active');
-    $validated['days_of_week'] = array_map('strtolower', $validated['days_of_week']);
+        $validated['is_active'] = $request->has('is_active');
+        $validated['days_of_week'] = array_map('strtolower', $validated['days_of_week']);
 
-    $course = Cours::findOrFail($validated['cours_id']);
-    $start = Carbon::parse($validated['start_date']);
-    $end = Carbon::parse($validated['end_date']);
-    $monthsDiff = (int) $start->diffInMonths($end);
+        $course = Cours::findOrFail($validated['cours_id']);
 
-    if ($monthsDiff > $course->duration_months) {
-        return back()->withErrors(['end_date' => "Kurs muddati maksimal {$course->duration_months} oy bo'lishi kerak."]);
-    }
+        // Sanalarni Carbon obyektiga o'tkazish
+        $newStart = Carbon::parse($validated['start_date'])->startOfDay();
+        $newEnd = Carbon::parse($validated['end_date'])->startOfDay();
 
-    // Jadval o'zgarganini tekshirish
-    $scheduleChanged = ($group->start_date != $validated['start_date'] ||
-        $group->end_date != $validated['end_date'] ||
-        $group->start_time != $validated['start_time'] ||
-        $group->end_time != $validated['end_time'] ||
-        json_encode($group->days_of_week) != json_encode($validated['days_of_week']));
+        $monthsDiff = (int) $newStart->diffInMonths($newEnd);
 
-    try {
-        DB::transaction(function () use ($group, $validated, $scheduleChanged) {
-            $group->update($validated);
+        if ($monthsDiff > $course->duration_months) {
+            return back()->withErrors(['end_date' => "Kurs muddati maksimal {$course->duration_months} oy bo'lishi kerak."]);
+        }
 
-            if ($scheduleChanged) {
-                // MUHIM: Kelajakdagi BARCHA darslarni o'chirish (davomati bo'lmaganlarni)
-                $group->lessons()
-                    ->where('lesson_date', '>=', now()->toDateString())
-                    ->whereDoesntHave('attendances')
-                    ->delete();
+        // Jadval o'zgarganini aniqroq tekshirish
+        // (format('Y-m-d') ishlatish string solishtirishda xatolikni oldini oladi)
+        $scheduleChanged = (
+            $group->start_date->format('Y-m-d') !== $newStart->format('Y-m-d') ||
+            $group->end_date->format('Y-m-d') !== $newEnd->format('Y-m-d') ||
+            $group->start_time !== $validated['start_time'] ||
+            $group->end_time !== $validated['end_time'] ||
+            serialize($group->days_of_week) !== serialize($validated['days_of_week'])
+        );
 
-                // Yangi darslarni generatsiya qilish
-                $lessons = [];
-                
-                // Bugundan yoki start_date dan boshlaymiz
-                $genStartDate = Carbon::parse($group->start_date)->isFuture()
-                    ? Carbon::parse($group->start_date)
-                    : now();
+        try {
+            DB::transaction(function () use ($group, $validated) {
+                $group->update($validated);
 
-                $period = CarbonPeriod::create($genStartDate->toDateString(), $group->end_date);
+                // 1. Yangi jadval bo'yicha barcha kerakli sanalarni hisoblaymiz
+                $startDate = now()->startOfDay()->max(Carbon::parse($group->start_date));
+                $endDate = Carbon::parse($group->end_date);
 
+                $period = CarbonPeriod::create($startDate, $endDate);
+
+                // Performance uchun selectedDays array'ini flip qilib olamiz
+                $selectedDays = array_flip(array_map('strtolower', $group->days_of_week));
+
+                $newDates = [];
                 foreach ($period as $date) {
-                    $dayName = strtolower($date->format('l'));
-
-                    if (in_array($dayName, $group->days_of_week)) {
-                        $lessons[] = [
-                            'group_id' => $group->id,
-                            'teacher_id' => $group->teacher_id ?? null,
-                            'lesson_date' => $date->toDateString(),
-                            'start_time' => $group->start_time,
-                            'end_time' => $group->end_time,
-                            'status' => 'scheduled',
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ];
+                    if (isset($selectedDays[strtolower($date->format('l'))])) {
+                        $newDates[] = $date->toDateString();
                     }
                 }
 
-                if (!empty($lessons)) {
-                    Lesson::insert($lessons);
-                }
-            }
-        });
+                // 2. Bazadagi mavjud kelajakdagi darslarni olamiz
+                $existingLessons = $group->lessons()
+                    ->where('lesson_date', '>=', now()->toDateString())
+                    ->select('id', 'lesson_date') // faqat kerakli ustunlarni olamiz
+                    ->get();
 
-        return redirect()->route('groups.index')->with('success', 'Guruh va darslar yangilandi!');
-    } catch (\Exception $e) {
-        return back()->with('error', 'Xatolik: ' . $e->getMessage());
+                $existingDates = $existingLessons->pluck('lesson_date')->toArray();
+
+                // 3. Ortiqcha darslarni o'chirish (davomatlari yo'qlar)
+                $datesToDelete = array_diff($existingDates, $newDates);
+                if (!empty($datesToDelete)) {
+                    $group->lessons()
+                        ->whereIn('lesson_date', $datesToDelete)
+                        ->whereDoesntHave('attendances')
+                        ->delete();
+                }
+
+                // 4. Yangi darslarni qo'shish
+                $datesToAdd = array_diff($newDates, $existingDates);
+                $newLessonsData = [];
+                $now = now();
+                foreach ($datesToAdd as $dateString) {
+                    $newLessonsData[] = [
+                        'group_id' => $group->id,
+                        'teacher_id' => $group->teacher_id ?? null,
+                        'lesson_date' => $dateString,
+                        'start_time' => $group->start_time,
+                        'end_time' => $group->end_time,
+                        'status' => 'scheduled',
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
+
+                // Agar juda katta bo'lsa, chunk qilib insert qilish mumkin
+                if (!empty($newLessonsData)) {
+                    foreach (array_chunk($newLessonsData, 500) as $chunk) {
+                        Lesson::insert($chunk);
+                    }
+                }
+
+                // 5. Mavjud darslarni update qilish (davomatlari yo'qlar)
+                $group->lessons()
+                    ->where('lesson_date', '>=', now()->toDateString())
+                    ->whereDoesntHave('attendances')
+                    ->update([
+                        'start_time' => $group->start_time,
+                        'end_time' => $group->end_time,
+                        'teacher_id' => $group->teacher_id ?? null,
+                    ]);
+            });
+
+            return redirect()->route('groups.index')
+                ->with('success', 'Guruh jadvali muvaffaqiyatli sinxronizatsiya qilindi!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Xatolik: ' . $e->getMessage());
+        }
     }
-}
 
     /**
      * Remove the specified resource from storage.

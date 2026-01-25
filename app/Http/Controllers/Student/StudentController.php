@@ -148,7 +148,6 @@ class StudentController extends Controller
                 'photo' => $photoPath,
                 'is_active' => $request->has('is_active'),
             ]);
-
             $role = Role::where('name', 'student')->first();
             if ($role) {
                 $user->assignRole($role);
