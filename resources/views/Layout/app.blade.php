@@ -260,68 +260,72 @@
 
                             <span class="nav-tooltip">Boshqaruv paneli</span>
                         </a>
-                        <div class="space-y-1">
-                            <button id="roles-dropdown-btn"
-                                onclick="const dropdown = this.nextElementSibling; dropdown.classList.toggle('open'); this.querySelector('.arrow-icon').classList.toggle('rotate-180');"
-                                class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->is('roles*', 'permissions*', 'role-permissions*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                        {{-- @hasanyrole('teacher|admin|staff') --}}
+                        @role('admin')
+                            <div class="space-y-1">
+                                <button id="roles-dropdown-btn"
+                                    onclick="const dropdown = this.nextElementSibling; dropdown.classList.toggle('open'); this.querySelector('.arrow-icon').classList.toggle('rotate-180');"
+                                    class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->is('roles*', 'permissions*', 'role-permissions*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 {{ request()->is('roles*', 'permissions*', 'role-permissions*') ? 'text-indigo-600' : 'text-gray-400' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.744c0 5.621 3.401 10.449 8.243 12.446a11.95 11.95 0 008.157-12.446c0-1.302-.207-2.557-.598-3.744A11.959 11.959 0 0112 2.714z" />
-                                </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor"
+                                        class="h-5 w-5 flex-shrink-0 {{ request()->is('roles*', 'permissions*', 'role-permissions*') ? 'text-indigo-600' : 'text-gray-400' }}">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.744c0 5.621 3.401 10.449 8.243 12.446a11.95 11.95 0 008.157-12.446c0-1.302-.207-2.557-.598-3.744A11.959 11.959 0 0112 2.714z" />
+                                    </svg>
 
-                                <span class="ml-3 sidebar-text">Ruxsatnomalar</span>
+                                    <span class="ml-3 sidebar-text">Ruxsatnomalar</span>
 
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="2" stroke="currentColor"
-                                    class="arrow-icon ml-auto h-4 w-4 text-gray-400 sidebar-text transition-transform duration-300 {{ request()->is('roles*', 'permissions*', 'role-permissions*') ? 'rotate-180' : '' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                </svg>
-                                <span class="nav-tooltip">Ruxsatnomalar</span>
-                            </button>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="2" stroke="currentColor"
+                                        class="arrow-icon ml-auto h-4 w-4 text-gray-400 sidebar-text transition-transform duration-300 {{ request()->is('roles*', 'permissions*', 'role-permissions*') ? 'rotate-180' : '' }}">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                    </svg>
+                                    <span class="nav-tooltip">Ruxsatnomalar</span>
+                                </button>
 
-                            <div id="roles-dropdown"
-                                class="dropdown-content {{ request()->is('roles*', 'permissions*', 'role-permissions*') ? 'open' : '' }}">
+                                <div id="roles-dropdown"
+                                    class="dropdown-content {{ request()->is('roles*', 'permissions*', 'role-permissions*') ? 'open' : '' }}">
 
-                                <div class="ml-8 space-y-1 py-2">
-                                    <a href="{{ route('roles.index') }}"
-                                        class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('roles.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2 flex-shrink-0">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-                                        </svg>
-                                        <span class="sidebar-text">Rollar (Roles)</span>
-                                    </a>
+                                    <div class="ml-8 space-y-1 py-2">
+                                        <a href="{{ route('roles.index') }}"
+                                            class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('roles.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2 flex-shrink-0">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                            </svg>
+                                            <span class="sidebar-text">Rollar (Roles)</span>
+                                        </a>
 
-                                    <a href="{{ route('permissions.index') }}"
-                                        class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->is('permissions*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke-width="1.5" stroke="currentColor"
-                                            class="w-4 h-4 mr-2 flex-shrink-0">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
-                                        </svg>
-                                        <span class="sidebar-text">Huquqlar (Permissions)</span>
-                                    </a>
+                                        <a href="{{ route('permissions.index') }}"
+                                            class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->is('permissions*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor"
+                                                class="w-4 h-4 mr-2 flex-shrink-0">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
+                                            </svg>
+                                            <span class="sidebar-text">Huquqlar (Permissions)</span>
+                                        </a>
 
-                                    <a href="{{ route('role-permissions.index') }}"
-                                        class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->is('role-permissions*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
+                                        <a href="{{ route('role-permissions.index') }}"
+                                            class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->is('role-permissions*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
 
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke-width="1.5" stroke="currentColor"
-                                            class="w-4 h-4 mr-2 flex-shrink-0">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-                                        </svg>
-                                        <span class="sidebar-text">Rolga biriktirish</span>
-                                    </a>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor"
+                                                class="w-4 h-4 mr-2 flex-shrink-0">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                                            </svg>
+                                            <span class="sidebar-text">Rolga biriktirish</span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endrole
+
                         <a href="{{ route('schools.index') }}"
                             class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('schools.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 
@@ -399,6 +403,7 @@
                             <span class="ml-3 sidebar-text">Attendance</span>
                             <span class="nav-tooltip">Attendance</span>
                         </a>
+
                         <div class="space-y-1">
                             <button id="users-dropdown-btn" {{-- onclick="const dropdown = this.nextElementSibling; dropdown.classList.toggle('open'); this.querySelector('.arrow-icon').classList.toggle('rotate-180');" --}}
                                 class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->is('staffs*', 'directors*', 'teachers*', 'students*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
@@ -497,6 +502,7 @@
                             <span class="ml-3 sidebar-text">Statistika</span>
                             <span class="nav-tooltip">Statistika</span>
                         </a>
+                        {{-- @endhasanyrole --}}
                     </nav>
                 </div>
             </div>
