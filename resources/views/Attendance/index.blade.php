@@ -187,7 +187,7 @@
                             @foreach ($group->days_of_week ?? [] as $day)
                                 <span
                                     class="inline-flex items-center px-2 py-0.5 text-xs font-bold rounded {{ $day === $todayDayName ? 'bg-blue-500 text-white ring-2 ring-blue-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' }}">
-                                    {{ $dayNames[$day] ?? $day }}
+                                    {{ DAY_NAMES[$day] ?? $day }}
                                 </span>
                             @endforeach
                         </div>

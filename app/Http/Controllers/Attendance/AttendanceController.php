@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 use function Symfony\Component\Clock\now;
 
@@ -21,11 +22,12 @@ class AttendanceController extends Controller
      */
     public function index(Request $request)
     {
+        
         $user = Auth::user();
         $search = $request->input('search');
         $today = now()->format('Y-m-d');
 
-        $todayDayName = strtolower(now()->format('l'));
+        $todayDayName = strtolower(Carbon::now()->format('l'));
 
         /** -----------------------------
          * 1️⃣ BASE QUERY
@@ -95,40 +97,19 @@ class AttendanceController extends Controller
         /** -----------------------------
          * 7️⃣ DATA TRANSFORM (QUERY YO‘Q)
          * ----------------------------- */
-        $groups->getCollection()->transform(function ($group) use (
-            $todayDayName,
-            $todayLessons,
-            $attendanceExists
-        ) {
-            $group->has_today_lesson =
-                in_array($todayDayName, $group->days_of_week ?? []);
+        $groups->getCollection()->transform(function ($group) use ($todayDayName, $todayLessons, $attendanceExists) {
+            $group->has_today_lesson = in_array($todayDayName, $group->days_of_week ?? []);
 
             $lesson = $todayLessons->get($group->id);
 
-            $group->has_attendance_today = $lesson
-                ? $attendanceExists->has($lesson->id)
-                : false;
+            $group->has_attendance_today = $lesson ? $attendanceExists->has($lesson->id) : false;
 
             return $group;
         });
 
-        /** -----------------------------
-         * 8️⃣ DAY NAMES
-         * ----------------------------- */
-        $dayNames = [
-            'monday'    => 'Du',
-            'tuesday'   => 'Se',
-            'wednesday' => 'Ch',
-            'thursday'  => 'Pa',
-            'friday'    => 'Ju',
-            'saturday'  => 'Sh',
-            'sunday'    => 'Ya',
-        ];
-
         return view('Attendance.index', compact(
             'groups',
             'search',
-            'dayNames',
             'todayDayName'
         ));
     }
@@ -144,10 +125,7 @@ class AttendanceController extends Controller
         $month = $request->get('month', Carbon::now()->month);
         $year = $request->get('year', Carbon::now()->year);
 
-        // $month = $request->get('month', now()->format('m'));
-        // $year  = $request->get('year', now()->format('Y'));
-
-
+        
         // Oy bo'yicha darslarni olish
         $lessons = Lesson::where('group_id', $groupId)
             ->whereYear('lesson_date', $year)
@@ -197,7 +175,7 @@ class AttendanceController extends Controller
                 }
             }
         }
-
+        $today = Carbon::today();
         return view('Attendance.show', compact(
             'group',
             'students',
@@ -205,7 +183,8 @@ class AttendanceController extends Controller
             'attendancesByStudentDay',
             'studentTotalCoins',
             'month',
-            'year'
+            'year',
+            'today'
         ));
     }
 
@@ -214,6 +193,7 @@ class AttendanceController extends Controller
      */
     public function store(Request $request)
     {
+
         $validated = $request->validate([
             'group_id' => 'required|exists:groups,id',
             'attendances' => 'required|array',
@@ -223,7 +203,7 @@ class AttendanceController extends Controller
         DB::beginTransaction();
         try {
             $groupId = $validated['group_id'];
-            $studentCoinsToAdd = []; // Student ID => qo'shiladigan coinlar
+            $studentCoinsToAdd = [];
 
             foreach ($validated['attendances'] as $studentData) {
                 foreach ($studentData as $dayData) {
@@ -312,6 +292,7 @@ class AttendanceController extends Controller
      */
     public function statistics($groupId, Request $request)
     {
+        
         $group = Group::with(['course', 'activeStudents.user'])->findOrFail($groupId);
 
         $month = $request->get('month');

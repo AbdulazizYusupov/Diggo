@@ -188,11 +188,17 @@
                                     </th>
                                     @foreach ($lessonDays as $day)
                                         <th
-                                            class="px-2 md:px-3 py-2 md:py-3 text-center text-[10px] md:text-xs font-bold text-white uppercase min-w-[115px] md:min-w-[145px]">
+                                            class="px-2 md:px-3 py-2 md:py-3 text-center text-[10px] md:text-xs font-bold uppercase min-w-[115px] md:min-w-[145px] transition-colors {{ $day->isSameDay($today) ? 'bg-yellow-500 text-black ring-2 ring-yellow-300' : 'text-white' }}">
+
                                             <div class="flex flex-col items-center gap-0.5 md:gap-1">
-                                                <span>{{ $day->format('d') }}</span>
                                                 <span
-                                                    class="text-blue-200 text-[9px] md:text-[10px]">{{ $day->locale('uz')->shortDayName }}</span>
+                                                    class="{{ $day->isSameDay($today) ? 'text-lg md:text-xl scale-110' : '' }}">
+                                                    {{ $day->format('d') }}
+                                                </span>
+                                                <span
+                                                    class="text-[9px] md:text-[10px] {{ $day->isSameDay($today) ? 'text-black font-black' : 'text-blue-200' }}">
+                                                    {{ $day->locale('uz')->shortDayName }}
+                                                </span>
                                             </div>
                                         </th>
                                     @endforeach
@@ -262,8 +268,9 @@
                                                             <label class="relative cursor-pointer">
                                                                 <input type="radio"
                                                                     name="attendances[{{ $studentIndex }}][{{ $dayIndex }}][status]"
-                                                                    value="{{ $statusType }}"
-                                                                    {{ isset($attendancesByStudentDay[$student->id][$day->format('Y-m-d')]) && $attendancesByStudentDay[$student->id][$day->format('Y-m-d')]['status'] === $statusType ? 'checked' : '' }}
+                                                                    value="{{ $statusType }}" {{-- Checked holati --}}
+                                                                    @checked(($attendancesByStudentDay[$student->id][$day->format('Y-m-d')]['status'] ?? '') === $statusType) {{-- Disable qilish sharti --}}
+                                                                    @disabled(!auth()->user()->hasAnyRole(['admin', 'staff']) && !$day->isSameDay($today))
                                                                     class="peer sr-only attendance-status"
                                                                     data-type="{{ $statusType }}">
                                                                 <div
@@ -303,7 +310,7 @@
                                                                         name="attendances[{{ $studentIndex }}][{{ $dayIndex }}][homework_score]"
                                                                         value="{{ $score }}"
                                                                         {{ isset($attendancesByStudentDay[$student->id][$day->format('Y-m-d')]) && $attendancesByStudentDay[$student->id][$day->format('Y-m-d')]['homework_score'] == $score ? 'checked' : ($score == 0 && !isset($attendancesByStudentDay[$student->id][$day->format('Y-m-d')]) ? 'checked' : '') }}
-                                                                        class="peer sr-only">
+                                                                        @disabled(!auth()->user()->hasAnyRole(['admin', 'staff']) && !$day->isSameDay($today)) class="peer sr-only">
                                                                     <div
                                                                         class="w-5 h-5 md:w-6 md:h-6 rounded text-[9px] md:text-[10px] font-bold transition-all flex items-center justify-center bg-gray-50 dark:bg-slate-800 text-gray-400 peer-checked:bg-blue-600 peer-checked:text-white hover:bg-blue-50 dark:hover:bg-blue-900/20">
                                                                         {{ $score }}
@@ -322,7 +329,7 @@
                                                                         name="attendances[{{ $studentIndex }}][{{ $dayIndex }}][activity_score]"
                                                                         value="{{ $score }}"
                                                                         {{ isset($attendancesByStudentDay[$student->id][$day->format('Y-m-d')]) && $attendancesByStudentDay[$student->id][$day->format('Y-m-d')]['activity_score'] == $score ? 'checked' : ($score == 0 && !isset($attendancesByStudentDay[$student->id][$day->format('Y-m-d')]) ? 'checked' : '') }}
-                                                                        class="peer sr-only">
+                                                                        @disabled(!auth()->user()->hasAnyRole(['admin', 'staff']) && !$day->isSameDay($today)) class="peer sr-only">
                                                                     <div
                                                                         class="w-5 h-5 md:w-6 md:h-6 rounded text-[9px] md:text-[10px] font-bold transition-all flex items-center justify-center bg-gray-50 dark:bg-slate-800 text-gray-400 peer-checked:bg-purple-600 peer-checked:text-white hover:bg-purple-50 dark:hover:bg-purple-900/20">
                                                                         {{ $score }}
