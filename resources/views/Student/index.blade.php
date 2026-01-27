@@ -385,14 +385,16 @@
 
                                     {{-- Delete Confirmation Modal --}}
                                     <div id="delete-modal-{{ $student->id }}"
-                                        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                                        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all"
                                         onclick="if(event.target === this) this.classList.add('hidden')">
-                                        <div class="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 p-8 transform transition-all"
-                                            onclick="event.stopPropagation()">
+
+                                        <div class="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col transform transition-all"
+                                            style="max-height: 90vh;" onclick="event.stopPropagation()">
+
                                             {{-- Close Button --}}
                                             <button type="button"
                                                 onclick="document.getElementById('delete-modal-{{ $student->id }}').classList.add('hidden')"
-                                                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                                                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors z-10">
                                                 <svg class="w-6 h-6" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -400,44 +402,52 @@
                                                 </svg>
                                             </button>
 
-                                            {{-- Modal Content --}}
-                                            <div class="text-center">
-                                                <div
-                                                    class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/30 dark:to-red-800/30 mb-6">
-                                                    <svg class="h-8 w-8 text-red-600 dark:text-red-400" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.27 16c-.77 1.333.192 3 1.732 3z" />
-                                                    </svg>
-                                                </div>
+                                            <div class="overflow-y-auto p-8" style="scrollbar-width: thin;">
+                                                <div class="text-center">
 
-                                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                                                    O'chirishni tasdiqlaysizmi?
-                                                </h3>
-                                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                                                    <span class="font-semibold text-gray-700 dark:text-gray-300">
-                                                        {{ $student->user->full_name }}
-                                                    </span>
-                                                    ni o'chirishni xohlaysizmi? Bu amalni qaytarib bo'lmaydi!
-                                                </p>
+                                                    {{-- Modal Content --}}
+                                                    <div
+                                                        class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/30 dark:to-red-800/30 mb-6 flex-shrink-0">
+                                                        <svg class="h-8 w-8 text-red-600 dark:text-red-400" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.27 16c-.77 1.333.192 3 1.732 3z" />
+                                                        </svg>
+                                                    </div>
 
-                                                {{-- Action Buttons --}}
-                                                <div class="flex gap-3">
-                                                    <button type="button"
-                                                        onclick="document.getElementById('delete-modal-{{ $student->id }}').classList.add('hidden')"
-                                                        class="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium rounded-xl transition-all">
-                                                        Bekor qilish
-                                                    </button>
-                                                    <form action="{{ route('students.destroy', $student->id) }}"
-                                                        method="POST" class="flex-1">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit"
-                                                            class="w-full px-4 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-medium rounded-xl transition-all shadow-lg hover:shadow-xl">
-                                                            O'chirish
+                                                    <h3
+                                                        class="text-xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
+                                                        O'chirishni tasdiqlaysizmi?
+                                                    </h3>
+
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-8 whitespace-normal break-words leading-relaxed"
+                                                        style="word-wrap: break-word;">
+                                                        <span class="font-semibold text-gray-700 dark:text-gray-300">
+                                                            {{ $student->user->full_name }}
+                                                        </span>
+                                                        ni o'chirishni xohlaysizmi? Bu amalni qaytarib bo'lmaydi!
+                                                        {{-- Agar bu yerga qo'shimcha ogohlantirish matnlari kelsa, modal pastga kengayaveradi --}}
+                                                    </p>
+
+                                                    {{-- Action Buttons --}}
+                                                    <div class="flex flex-wrap sm:flex-nowrap gap-3 mt-auto">
+                                                        <button type="button"
+                                                            onclick="document.getElementById('delete-modal-{{ $student->id }}').classList.add('hidden')"
+                                                            class="flex-1 min-w-[120px] px-4 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium rounded-xl transition-all active:scale-95">
+                                                            Bekor qilish
                                                         </button>
-                                                    </form>
+
+                                                        <form action="{{ route('students.destroy', $student->id) }}"
+                                                            method="POST" class="flex-1 min-w-[120px] m-0">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit"
+                                                                class="w-full px-4 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-medium rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-95">
+                                                                O'chirish
+                                                            </button>
+                                                        </form>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

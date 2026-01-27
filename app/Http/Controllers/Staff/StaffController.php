@@ -247,12 +247,23 @@ class StaffController extends Controller
         $staff = Staff::findOrFail($id);
         $user = $staff->user;
 
-        if ($user && $user->photo && Storage::disk('public')->exists($user->photo)) {
-            Storage::disk('public')->delete($user->photo);
+        DB::beginTransaction();
+        try {
+            if ($user && $user->photo && Storage::disk('public')->exists($user->photo)) {
+                Storage::disk('public')->delete($user->photo);
+            }
+
+            $staff->delete();
+
+            if ($user) {
+                $user->delete();
+            }
+
+            DB::commit();
+            return redirect()->route('staffs.index')->with('success', 'Xodim va uning akkaunti muvaffaqiyatli o\'chirildi');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'O\'chirishda xatolik yuz berdi: ' . $e->getMessage());
         }
-
-        $staff->delete();
-
-        return redirect()->route('staffs.index')->with('success', 'Xodim muvaffaqiyatli o\'chirildi');
     }
 }

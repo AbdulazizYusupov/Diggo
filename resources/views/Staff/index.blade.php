@@ -309,49 +309,56 @@
                                             </svg>
                                         </button>
                                         <div id="delete-modal-{{ $staff->id }}"
-                                            class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+                                            class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm transition-all">
 
-                                            <div
-                                                class="relative w-full max-w-md p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border-2 border-gray-300 dark:border-gray-600 overflow-hidden">
+                                            <div class="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border-2 border-gray-300 dark:border-gray-600 flex flex-col"
+                                                style="max-height: 90vh;">
 
-                                                <div class="text-center">
-                                                    <div
-                                                        class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
-                                                        <svg class="h-8 w-8 text-red-600 dark:text-red-400" fill="none"
-                                                            stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                                        </svg>
-                                                    </div>
+                                                <div class="overflow-y-auto p-6" style="scrollbar-width: thin;">
+                                                    <div class="text-center">
 
-                                                    <h3
-                                                        class="text-xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
-                                                        Tasdiqlang</h3>
+                                                        <div
+                                                            class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4 flex-shrink-0">
+                                                            <svg class="h-8 w-8 text-red-600 dark:text-red-400"
+                                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                            </svg>
+                                                        </div>
 
-                                                    <p
-                                                        class="text-sm text-gray-500 dark:text-gray-400 mb-6 px-2 break-words leading-relaxed">
-                                                        Rostdan ham <span
-                                                            class="font-bold text-gray-900 dark:text-white break-words">{{ $staff->user->full_name }}</span>ni
-                                                        o'chirmoqchimisiz?
-                                                    </p>
+                                                        <h3
+                                                            class="text-xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
+                                                            Tasdiqlang
+                                                        </h3>
 
-                                                    <div class="flex flex-wrap sm:flex-nowrap gap-3">
-                                                        <button type="button"
-                                                            onclick="document.getElementById('delete-modal-{{ $staff->id }}').classList.add('hidden')"
-                                                            class="w-full sm:flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold rounded-2xl transition-all">
-                                                            Bekor qilish
-                                                        </button>
+                                                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 px-2 break-words leading-relaxed whitespace-normal"
+                                                            style="word-wrap: break-word; overflow-wrap: break-word;">
+                                                            Rostdan ham
+                                                            <span class="font-bold text-gray-900 dark:text-white">
+                                                                {{ $staff->user->full_name }}
+                                                            </span>
+                                                            ni o'chirmoqchimisiz?
+                                                        </p>
 
-                                                        <form action="{{ route('staffs.destroy', $staff->id) }}"
-                                                            method="POST" class="w-full sm:flex-1 m-0">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                class="w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl shadow-lg transition-all transform active:scale-95">
-                                                                O'chirilsin
+                                                        <div class="flex flex-wrap sm:flex-nowrap gap-3 mt-auto">
+                                                            <button type="button"
+                                                                onclick="document.getElementById('delete-modal-{{ $staff->id }}').classList.add('hidden')"
+                                                                class="w-full sm:flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold rounded-2xl transition-all active:scale-95">
+                                                                Bekor qilish
                                                             </button>
-                                                        </form>
+
+                                                            <form action="{{ route('staffs.destroy', $staff->id) }}"
+                                                                method="POST" class="w-full sm:flex-1 m-0">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit"
+                                                                    class="w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl shadow-lg transition-all transform active:scale-95">
+                                                                    O'chirilsin
+                                                                </button>
+                                                            </form>
+                                                        </div>
+
                                                     </div>
                                                 </div>
                                             </div>

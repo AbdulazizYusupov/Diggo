@@ -381,43 +381,55 @@
 
                                         <div id="delete-modal-{{ $director->id }}"
                                             class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all">
-                                            <div
-                                                class="relative w-full max-w-sm p-8 bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-white/5 transform transition-all">
-                                                <div class="text-center">
-                                                    <div
-                                                        class="mx-auto flex items-center justify-center h-20 w-20 rounded-3xl bg-rose-50 dark:bg-rose-500/10 mb-6 rotate-3">
-                                                        <svg class="h-10 w-10 text-rose-500" fill="none"
-                                                            stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                                        </svg>
-                                                    </div>
 
-                                                    <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-2">
-                                                        O'chirishni tasdiqlang</h3>
-                                                    <p
-                                                        class="text-sm text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
-                                                        Rostdan ham <span
-                                                            class="font-bold text-slate-900 dark:text-white underline decoration-rose-500/30">{{ $director->user->full_name }}</span>
-                                                        profilini tizimdan butunlay o'chirmoqchimisiz?
-                                                    </p>
+                                            <div class="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-white/5 transform transition-all flex flex-col"
+                                                style="max-height: 90vh;">
 
-                                                    <div class="grid grid-cols-2 gap-3">
-                                                        <button type="button"
-                                                            onclick="document.getElementById('delete-modal-{{ $director->id }}').classList.add('hidden')"
-                                                            class="px-5 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-2xl transition-all active:scale-95">
-                                                            Bekor qilish
-                                                        </button>
-                                                        <form action="{{ route('directors.destroy', $director->id) }}"
-                                                            method="POST" class="m-0">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                class="w-full px-5 py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-2xl shadow-lg shadow-rose-200 dark:shadow-none transition-all transform active:scale-95">
-                                                                O'chirilsin
+                                                <div class="overflow-y-auto p-6 sm:p-8" style="scrollbar-width: thin;">
+                                                    <div class="text-center">
+
+                                                        <div
+                                                            class="mx-auto flex items-center justify-center h-20 w-20 rounded-3xl bg-rose-50 dark:bg-rose-500/10 mb-6 rotate-3 flex-shrink-0">
+                                                            <svg class="h-10 w-10 text-rose-500" fill="none"
+                                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                            </svg>
+                                                        </div>
+
+                                                        <h3
+                                                            class="text-2xl font-black text-slate-900 dark:text-white mb-2 leading-tight">
+                                                            O'chirishni tasdiqlang
+                                                        </h3>
+
+                                                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-8 leading-relaxed break-words whitespace-normal"
+                                                            style="word-wrap: break-word;">
+                                                            Rostdan ham
+                                                            <span
+                                                                class="font-bold text-slate-900 dark:text-white underline decoration-rose-500/30">
+                                                                {{ $director->user->full_name }}
+                                                            </span>
+                                                            profilini tizimdan butunlay o'chirmoqchimisiz?
+                                                        </p>
+
+                                                        <div class="grid grid-cols-2 gap-3 mt-auto">
+                                                            <button type="button"
+                                                                onclick="document.getElementById('delete-modal-{{ $director->id }}').classList.add('hidden')"
+                                                                class="px-4 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-2xl transition-all active:scale-95 text-sm">
+                                                                Bekor qilish
                                                             </button>
-                                                        </form>
+                                                            <form action="{{ route('directors.destroy', $director->id) }}"
+                                                                method="POST" class="m-0">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit"
+                                                                    class="w-full px-4 py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-2xl shadow-lg shadow-rose-200 dark:shadow-none transition-all transform active:scale-95 text-sm">
+                                                                    O'chirilsin
+                                                                </button>
+                                                            </form>
+                                                        </div>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -444,7 +456,7 @@
                 </table>
             </div>
 
-            
+
         </div>
         @if ($directors->hasPages())
             <div

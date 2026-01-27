@@ -204,8 +204,8 @@ class DirectorController extends Controller
      */
     public function show(string $id)
     {
-        $director= Director::findOrFail($id);
-        return view('Director.show',compact('director'));
+        $director = Director::findOrFail($id);
+        return view('Director.show', compact('director'));
     }
 
     /**
@@ -242,6 +242,26 @@ class DirectorController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $director = Director::findOrFail($id);
+        $user = $director->user;
+
+        DB::beginTransaction();
+        try {
+            if ($user && $user->photo && Storage::disk('public')->exists($user->photo)) {
+                Storage::disk('public')->delete($user->photo);
+            }
+
+            $director->delete();
+
+            if ($user) {
+                $user->delete();
+            }
+
+            DB::commit();
+            return redirect()->route('directors.index')->with('success', 'Direktor va uning akkaunti muvaffaqiyatli o\'chirildi');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'O\'chirishda xatolik yuz berdi: ' . $e->getMessage());
+        }
     }
 }

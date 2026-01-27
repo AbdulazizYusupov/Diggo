@@ -341,45 +341,58 @@
 
                                         <!-- Delete Modal -->
                                         <div id="delete-modal-{{ $teacher->id }}"
-                                            class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
-                                            <div
-                                                class="relative w-full max-w-md p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border-2 border-gray-300 dark:border-gray-600 overflow-hidden">
-                                                <div class="text-center">
-                                                    <div
-                                                        class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
-                                                        <svg class="h-8 w-8 text-red-600 dark:text-red-400" fill="none"
-                                                            stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-                                                                d="
-                                                                M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667
-                                                                1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.27 16c-.77
-                                                                1.333.192 3 1.732 3z" />
-                                                        </svg>
-                                                    </div>
-                                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                                                        O‘chirishni tasdiqlaysizmi?
-                                                    </h3>
-                                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                                                        Ushbu o‘qituvchi butunlay o‘chiriladi. Bu amalni qaytarib bo‘lmaydi.
-                                                    </p>
+                                            class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm transition-all">
 
-                                                    <div class="flex items-center justify-center gap-3">
-                                                        <button type="button"
-                                                            onclick="document.getElementById('delete-modal-{{ $teacher->id }}').classList.add('hidden')"
-                                                            class="px-5 py-2.5 rounded-xl bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium transition">
-                                                            Bekor qilish
-                                                        </button>
+                                            <div class="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border-2 border-gray-300 dark:border-gray-600 flex flex-col"
+                                                style="max-height: 90vh;">
 
-                                                        <form action="{{ route('teachers.destroy', $teacher->id) }}"
-                                                            method="POST">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium transition">
-                                                                Ha, o‘chirish
+                                                <div class="overflow-y-auto p-6 sm:p-8" style="scrollbar-width: thin;">
+                                                    <div class="text-center">
+
+                                                        <div
+                                                            class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4 flex-shrink-0">
+                                                            <svg class="h-8 w-8 text-red-600 dark:text-red-400"
+                                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.27 16c-.77 1.333.192 3 1.732 3z" />
+                                                            </svg>
+                                                        </div>
+
+                                                        <h3
+                                                            class="text-xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
+                                                            O‘chirishni tasdiqlaysizmi?
+                                                        </h3>
+
+                                                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 px-2 break-words leading-relaxed whitespace-normal"
+                                                            style="word-wrap: break-word;">
+                                                            Rostdan ham o'qituvchi
+                                                            <span class="font-bold text-gray-900 dark:text-white">
+                                                                {{ $teacher->user->full_name }}
+                                                            </span>
+                                                            ma'lumotlarini butunlay o‘chirmoqchimisiz? Bu amalni qaytarib
+                                                            bo‘lmaydi.
+                                                        </p>
+
+                                                        <div
+                                                            class="flex flex-wrap sm:flex-nowrap items-center justify-center gap-3 mt-auto">
+                                                            <button type="button"
+                                                                onclick="document.getElementById('delete-modal-{{ $teacher->id }}').classList.add('hidden')"
+                                                                class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium transition active:scale-95">
+                                                                Bekor qilish
                                                             </button>
-                                                        </form>
+
+                                                            <form action="{{ route('teachers.destroy', $teacher->id) }}"
+                                                                method="POST" class="w-full sm:w-auto m-0">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit"
+                                                                    class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium transition shadow-lg active:scale-95">
+                                                                    Ha, o‘chirish
+                                                                </button>
+                                                            </form>
+                                                        </div>
+
                                                     </div>
                                                 </div>
                                             </div>
