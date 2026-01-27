@@ -200,6 +200,20 @@
         .input-wrapper {
             will-change: transform;
         }
+
+        /* Dark mode uchun input matn rangi va foni */
+        .dark .input-field {
+            background: rgba(30, 41, 59, 0.8);
+            /* Dark mode fon rangi */
+            color: white !important;
+            /* Matn ko'rinishi uchun */
+        }
+
+        /* Autofill (avtomatik to'ldirish) muammosini hal qilish */
+        .dark input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 1000px #1e293b inset !important;
+            -webkit-text-fill-color: #ffffff !important;
+        }
     </style>
 </head>
 
@@ -262,9 +276,12 @@
                                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                             </div>
+                            {{-- <input type="text" name="phone" value="{{ old('phone') }}" required
+                                placeholder="ID raqamingizni kiriting"
+                                class="input-field w-full pl-12 pr-4 py-3.5 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 text-gray-800 placeholder-gray-500 {{ $errors->has('phone') ? 'input-error' : '' }}" /> --}}
                             <input type="text" name="phone" value="{{ old('phone') }}" required
                                 placeholder="ID raqamingizni kiriting"
-                                class="input-field w-full pl-12 pr-4 py-3.5 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 text-gray-800 placeholder-gray-500 {{ $errors->has('phone') ? 'input-error' : '' }}" />
+                                class="input-field w-full pl-12 pr-4 py-3.5 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 text-gray-800 dark:text-white placeholder-gray-500 {{ $errors->has('phone') ? 'input-error' : '' }}" />
                             @error('phone')
                                 <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -282,9 +299,10 @@
                                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg>
                             </div>
+                            {{-- <input type="password" id="password" name="password" required placeholder="••••••••"
+                                class="input-field w-full pl-12 pr-12 py-3.5 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 text-gray-800 placeholder-gray-500" /> --}}
                             <input type="password" id="password" name="password" required placeholder="••••••••"
-                                class="input-field w-full pl-12 pr-12 py-3.5 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 text-gray-800 placeholder-gray-500" />
-
+                                class="input-field w-full pl-12 pr-12 py-3.5 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-white/50 text-gray-800 dark:text-white placeholder-gray-500" />
                             <button type="button" id="togglePassword" tabindex="-1"
                                 class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 transition-colors">
 
@@ -391,4 +409,5 @@
         initTheme();
     </script>
 </body>
+
 </html>
