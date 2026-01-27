@@ -178,7 +178,7 @@
             class="sidebar fixed inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-all duration-300 ease-in-out lg:static lg:flex lg:flex-shrink-0">
             <div class="flex flex-col h-full w-full">
                 <div
-                    class="flex flex-col flex-grow bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700/50 pt-5 pb-4 overflow-y-auto transition-colors duration-200 shadow-xl lg:shadow-none">
+                    class="flex flex-col flex-grow bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700/50 pt-5 pb-4 overflow-y-auto overflow-x-hidden transition-colors duration-200 shadow-xl lg:shadow-none">
 
                     <!-- Header with Logo and Toggle -->
                     <div class="flex items-center justify-between px-6 mb-8">
