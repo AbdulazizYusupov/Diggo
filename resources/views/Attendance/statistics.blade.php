@@ -31,11 +31,16 @@
                 <select name="month"
                     class="px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white">
                     <option value="">Barcha oylar</option>
-                    @for ($m = 1; $m <= 12; $m++)
+                    {{-- @for ($m = 1; $m <= 12; $m++)
                         <option value="{{ $m }}" {{ $month == $m ? 'selected' : '' }}>
                             {{ \Carbon\Carbon::create(null, $m, 1)->locale('uz')->monthName }}
                         </option>
-                    @endfor
+                    @endfor --}}
+                    @for ($m = 1; $m <= 12; $m++)
+                            <option value="{{ $m }}" {{ $month == $m ? 'selected' : '' }}>
+                                {{ get_month_name($m) }}
+                            </option>
+                        @endfor
                 </select>
 
                 <select name="year"

@@ -6,12 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Group;
 use App\Models\Lesson;
-use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 
 use function Symfony\Component\Clock\now;
 
@@ -22,7 +20,7 @@ class AttendanceController extends Controller
      */
     public function index(Request $request)
     {
-        
+
         $user = Auth::user();
         $search = $request->input('search');
         $today = now()->format('Y-m-d');
@@ -125,7 +123,7 @@ class AttendanceController extends Controller
         $month = $request->get('month', Carbon::now()->month);
         $year = $request->get('year', Carbon::now()->year);
 
-        
+
         // Oy bo'yicha darslarni olish
         $lessons = Lesson::where('group_id', $groupId)
             ->whereYear('lesson_date', $year)
@@ -292,7 +290,7 @@ class AttendanceController extends Controller
      */
     public function statistics($groupId, Request $request)
     {
-        
+
         $group = Group::with(['course', 'activeStudents.user'])->findOrFail($groupId);
 
         $month = $request->get('month');

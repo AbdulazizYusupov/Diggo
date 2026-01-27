@@ -32,18 +32,18 @@
                         class="px-3 py-2 md:px-4 md:py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs md:text-sm font-medium text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/20">
                         @for ($m = 1; $m <= 12; $m++)
                             <option value="{{ $m }}" {{ $month == $m ? 'selected' : '' }}>
-                                {{ \Carbon\Carbon::create(null, $m, 1)->locale('uz')->monthName }}
+                                {{ get_month_name($m) }}
                             </option>
                         @endfor
                     </select>
 
                     <select name="year"
                         class="px-3 py-2 md:px-4 md:py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs md:text-sm font-medium text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/20">
-                        @for ($y = now()->year - 1; $y <= now()->year + 1; $y++)
+                        @foreach (get_attendance_years() as $y)
                             <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>
                                 {{ $y }}
                             </option>
-                        @endfor
+                        @endforeach
                     </select>
 
                     <button type="submit"
@@ -197,7 +197,7 @@
                                                 </span>
                                                 <span
                                                     class="text-[9px] md:text-[10px] {{ $day->isSameDay($today) ? 'text-black font-black' : 'text-blue-200' }}">
-                                                    {{ $day->locale('uz')->shortDayName }}
+                                                   {{ get_day_name($day->format('l')) }}
                                                 </span>
                                             </div>
                                         </th>

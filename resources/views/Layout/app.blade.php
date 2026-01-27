@@ -154,7 +154,7 @@
             margin-right: 0;
         }
     </style>
-    <script>
+    {{-- <script>
         (function() {
             try {
                 const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
@@ -162,6 +162,29 @@
                     document.documentElement.classList.add('sidebar-collapsed');
                 }
             } catch (e) {}
+        })();
+    </script> --}}
+    <script>
+        // ✅ DARK MODE FLASH OLDINI OLISH (BIRINCHI!)
+        (function() {
+            try {
+                // Dark mode
+                const theme = localStorage.getItem('theme') || 'system';
+                const isDark = theme === 'dark' ||
+                    (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+                if (isDark) {
+                    document.documentElement.classList.add('dark');
+                }
+
+                // Sidebar state
+                const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (collapsed) {
+                    document.documentElement.classList.add('sidebar-collapsed');
+                }
+            } catch (e) {
+                console.error('Theme init error:', e);
+            }
         })();
     </script>
 </head>
@@ -669,6 +692,7 @@
                                         </svg>
                                         Your Profile
                                     </a>
+                                    @role('admin')
                                     <a href="{{ route('settings.index') }}"
                                         class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
                                         <svg class="mr-3 h-4 w-4 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
@@ -680,6 +704,7 @@
                                         </svg>
                                         Settings
                                     </a>
+                                    @endrole
                                     <a href="#"
                                         class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
                                         <svg class="mr-3 h-4 w-4 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
