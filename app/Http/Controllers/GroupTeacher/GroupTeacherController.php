@@ -5,8 +5,10 @@ namespace App\Http\Controllers\GroupTeacher;
 use App\Http\Controllers\Controller;
 use App\Models\Group;
 use App\Models\GroupTeacher;
+use App\Models\Lesson;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GroupTeacherController extends Controller
 {
@@ -40,35 +42,50 @@ class GroupTeacherController extends Controller
      */
     public function store(Request $request, Group $group)
     {
-        $hasPrimary = GroupTeacher::where('group_id', $group->id)
+        // Hozirgi asosiy o'qituvchini topamiz
+        $currentPrimary = GroupTeacher::where('group_id', $group->id)
             ->where('is_primary', true)
-            ->exists();
+            ->first();
 
         $request->validate([
             'teacher_ids' => 'required|array|min:1',
             'teacher_ids.*' => 'exists:teachers,id',
-            'primary_teacher_id' => $hasPrimary
+            'primary_teacher_id' => $currentPrimary
                 ? 'nullable|exists:teachers,id'
                 : 'required|exists:teachers,id',
         ]);
 
-        if ($request->filled('primary_teacher_id')) {
-            GroupTeacher::where('group_id', $group->id)
-                ->update(['is_primary' => false]);
-        }
+        DB::transaction(function () use ($request, $group, $currentPrimary) {
+            // 1. Agar yangi primary tanlangan bo'lsa, eskisini bekor qilamiz
+            if ($request->filled('primary_teacher_id')) {
+                GroupTeacher::where('group_id', $group->id)
+                    ->update(['is_primary' => false]);
 
-        foreach ($request->teacher_ids as $teacherId) {
-            GroupTeacher::updateOrCreate(
-                [
-                    'group_id' => $group->id,
-                    'teacher_id' => $teacherId,
-                ],
-                [
-                    'is_primary' => $request->primary_teacher_id == $teacherId,
-                    'assigned_at' => now(),
-                ]
-            );
-        }
+                $targetPrimaryId = $request->primary_teacher_id;
+            } else {
+                // Agar yangi primary tanlanmagan bo'lsa, mavjudini saqlab qolamiz
+                $targetPrimaryId = $currentPrimary->teacher_id;
+            }
+
+            // 2. O'qituvchilarni bog'laymiz
+            foreach ($request->teacher_ids as $teacherId) {
+                GroupTeacher::updateOrCreate(
+                    ['group_id' => $group->id, 'teacher_id' => $teacherId],
+                    [
+                        'is_primary' => $targetPrimaryId == $teacherId,
+                        'assigned_at' => now(),
+                    ]
+                );
+            }
+
+            // 3. Darslarni yangilaymiz (Hech qachon null bo'lmasligini ta'minlaydi)
+            Lesson::where('group_id', $group->id)
+                ->where(function ($query) use ($targetPrimaryId) {
+                    $query->whereNull('teacher_id')
+                        ->orWhere('teacher_id', '!=', $targetPrimaryId);
+                })
+                ->update(['teacher_id' => $targetPrimaryId]);
+        });
 
         return back()->with('success', 'O‘qituvchilar muvaffaqiyatli qo‘shildi');
     }

@@ -269,15 +269,15 @@
                                 </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                        {{ $lesson->group->name }}
+                                        {{ $lesson->group?->name ?? 'Guruh topilmadi' }}
                                     </div>
                                     <div class="text-xs text-gray-500 dark:text-gray-400">
-                                        {{ $lesson->group->course->name ?? 'N/A' }}
+                                        {{ $lesson->group?->course?->title ?? 'N/A1' }}
                                     </div>
                                 </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900 dark:text-white">
-                                        {{ $lesson->teacher->full_name ?? 'Biriktirilmagan' }}
+                                        {{ $lesson->teacher?->user?->full_name ?? 'Biriktirilmagan' }}
                                     </div>
                                 </td>
                                 <td class="px-4 lg:px-6 py-4">
@@ -306,7 +306,7 @@
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                                     <span
                                         class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-lg bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">
-                                        {{ $lesson->attendances_count ?? 0 }} talaba
+                                        {{ $lesson->attendances->count() ?? 0 }} talaba
                                     </span>
                                 </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -382,7 +382,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- /Delete Modal -->
                                     </div>
                                 </td>
                             </tr>

@@ -17,9 +17,90 @@ class LessonController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // public function index(Request $request)
+    // {
+    //     $query = Lesson::with(['group.course', 'teacher', 'attendances']);
+
+    //     // Filter by status
+    //     if ($request->filled('status')) {
+    //         $query->where('status', $request->status);
+    //     }
+
+    //     // Filter by group
+    //     if ($request->filled('group_id')) {
+    //         $query->where('group_id', $request->group_id);
+    //     }
+
+    //     // Filter by teacher
+    //     if ($request->filled('teacher_id')) {
+    //         $query->where('teacher_id', $request->teacher_id);
+    //     }
+
+    //     // Filter by date range
+    //     if ($request->filled('date_from')) {
+    //         $query->whereDate('lesson_date', '>=', $request->date_from);
+    //     }
+    //     if ($request->filled('date_to')) {
+    //         $query->whereDate('lesson_date', '<=', $request->date_to);
+    //     }
+
+    //     // Search by topic
+    //     if ($request->filled('search')) {
+    //         $query->where('topic', 'like', '%' . $request->search . '%');
+    //     }
+
+    //     // Sort
+    //     $sortBy = $request->get('sort_by', 'lesson_date');
+    //     $sortOrder = $request->get('sort_order', 'desc');
+    //     $query->orderBy($sortBy, $sortOrder);
+
+    //     $lessons = $query->paginate(15);
+
+    //     // Statistics
+    //     $totalLessons = Lesson::count();
+    //     $scheduledLessons = Lesson::where('status', 'scheduled')->count();
+    //     $completedLessons = Lesson::where('status', 'completed')->count();
+    //     $cancelledLessons = Lesson::where('status', 'cancelled')->count();
+    //     $todayLessons = Lesson::whereDate('lesson_date', today())->count();
+
+    //     // For filters
+    //     $groups = Group::where('is_active', true)
+    //         ->with('course')
+    //         ->orderBy('name')
+    //         ->get();
+
+    //     $teachers = User::whereHas('teacher')
+    //         ->where('is_active', true)
+    //         ->orderBy('name')
+    //         ->get();
+
+    //     return view('Lesson.index', compact(
+    //         'lessons',
+    //         'totalLessons',
+    //         'scheduledLessons',
+    //         'completedLessons',
+    //         'cancelledLessons',
+    //         'todayLessons',
+    //         'groups',
+    //         'teachers'
+    //     ));
+    // }
     public function index(Request $request)
     {
+        $user = Auth::user();
+
+        // Teacher profilini olish (agar foydalanuvchi teacher bo'lsa)
+        $teacherProfile = $user->teacher;
+
+        // Base query
         $query = Lesson::with(['group.course', 'teacher', 'attendances']);
+
+        // Role-based filtering
+        if ($user->hasRole('teacher')) {
+            // Bu yerda $user->id emas, $user->teacher->id ishlatiladi
+            // optional() xatolikni oldini olish uchun (agar profil hali yaratilmagan bo'lsa)
+            $query->where('teacher_id', optional($teacherProfile)->id);
+        }
 
         // Filter by status
         if ($request->filled('status')) {
@@ -31,8 +112,8 @@ class LessonController extends Controller
             $query->where('group_id', $request->group_id);
         }
 
-        // Filter by teacher
-        if ($request->filled('teacher_id')) {
+        // Filter by teacher (faqat admin uchun)
+        if ($request->filled('teacher_id') && $user->hasRole('admin')) {
             $query->where('teacher_id', $request->teacher_id);
         }
 
@@ -56,23 +137,47 @@ class LessonController extends Controller
 
         $lessons = $query->paginate(15);
 
-        // Statistics
-        $totalLessons = Lesson::count();
-        $scheduledLessons = Lesson::where('status', 'scheduled')->count();
-        $completedLessons = Lesson::where('status', 'completed')->count();
-        $cancelledLessons = Lesson::where('status', 'cancelled')->count();
-        $todayLessons = Lesson::whereDate('lesson_date', today())->count();
+        // Statistics - role ga qarab
+        if ($user->hasRole('teacher')) {
+            $t_id = optional($teacherProfile)->id;
 
-        // For filters
-        $groups = Group::where('is_active', true)
-            ->with('course')
-            ->orderBy('name')
-            ->get();
+            $totalLessons = Lesson::where('teacher_id', $t_id)->count();
+            $scheduledLessons = Lesson::where('teacher_id', $t_id)->where('status', 'scheduled')->count();
+            $completedLessons = Lesson::where('teacher_id', $t_id)->where('status', 'completed')->count();
+            $cancelledLessons = Lesson::where('teacher_id', $t_id)->where('status', 'cancelled')->count();
+            $todayLessons = Lesson::where('teacher_id', $t_id)->whereDate('lesson_date', today())->count();
+        } else {
+            $totalLessons = Lesson::count();
+            $scheduledLessons = Lesson::where('status', 'scheduled')->count();
+            $completedLessons = Lesson::where('status', 'completed')->count();
+            $cancelledLessons = Lesson::where('status', 'cancelled')->count();
+            $todayLessons = Lesson::whereDate('lesson_date', today())->count();
+        }
 
-        $teachers = User::whereHas('teacher')
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
+        // For filters - role ga qarab
+        if ($user->hasRole('teacher')) {
+            $t_id = optional($teacherProfile)->id;
+
+            $groups = Group::where('is_active', true)
+                ->whereHas('lessons', function ($q) use ($t_id) {
+                    $q->where('teacher_id', $t_id);
+                })
+                ->with('course')
+                ->orderBy('name')
+                ->get();
+
+            $teachers = collect();
+        } else {
+            $groups = Group::where('is_active', true)
+                ->with('course')
+                ->orderBy('name')
+                ->get();
+
+            $teachers = User::whereHas('teacher')
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get();
+        }
 
         return view('Lesson.index', compact(
             'lessons',

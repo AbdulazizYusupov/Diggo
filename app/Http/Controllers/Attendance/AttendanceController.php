@@ -84,6 +84,7 @@ class AttendanceController extends Controller
         /** -----------------------------
          * 6️⃣ ATTENDANCE BORLIGI (1 QUERY)
          * ----------------------------- */
+        
         $attendanceExists = Attendance::whereIn(
             'lesson_id',
             $todayLessons->pluck('id')
