@@ -11,8 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-use function Symfony\Component\Clock\now;
-
 class AttendanceController extends Controller
 {
     /**
@@ -20,12 +18,13 @@ class AttendanceController extends Controller
      */
     public function index(Request $request)
     {
-
         $user = Auth::user();
         $search = $request->input('search');
-        $today = now()->format('Y-m-d');
-
-        $todayDayName = strtolower(Carbon::now()->format('l'));
+        
+        // ❌ XATO: use function Symfony\Component\Clock\now;
+        // ✅ TO'G'RI: Carbon yoki now() helper
+        $today = Carbon::today()->format('Y-m-d');
+        $todayDayName = strtolower(Carbon::today()->format('l'));
 
         /** -----------------------------
          * 1️⃣ BASE QUERY
@@ -40,11 +39,10 @@ class AttendanceController extends Controller
         if ($user->hasRole('teacher')) {
             $query->whereHas(
                 'teachers',
-                fn($q) =>
-                $q->where('teacher_id', $user->teacher->id)
+                fn($q) => $q->where('teacher_id', $user->teacher->id)
             );
-        } elseif (! $user->hasRole('admin')) {
-            // hech kim ko‘rmasin
+        } elseif (!$user->hasRole('admin')) {
+            // hech kim ko'rmasin
             $query->whereRaw('1 = 0');
         }
 
@@ -53,12 +51,10 @@ class AttendanceController extends Controller
          * ----------------------------- */
         if ($search) {
             $query->where(
-                fn($q) =>
-                $q->where('name', 'like', "%{$search}%")
+                fn($q) => $q->where('name', 'like', "%{$search}%")
                     ->orWhereHas(
                         'course',
-                        fn($c) =>
-                        $c->where('name', 'like', "%{$search}%")
+                        fn($c) => $c->where('name', 'like', "%{$search}%")
                     )
             );
         }
@@ -84,7 +80,6 @@ class AttendanceController extends Controller
         /** -----------------------------
          * 6️⃣ ATTENDANCE BORLIGI (1 QUERY)
          * ----------------------------- */
-        
         $attendanceExists = Attendance::whereIn(
             'lesson_id',
             $todayLessons->pluck('id')
@@ -94,14 +89,20 @@ class AttendanceController extends Controller
             ->flip();
 
         /** -----------------------------
-         * 7️⃣ DATA TRANSFORM (QUERY YO‘Q)
+         * 7️⃣ DATA TRANSFORM (QUERY YO'Q)
          * ----------------------------- */
         $groups->getCollection()->transform(function ($group) use ($todayDayName, $todayLessons, $attendanceExists) {
-            $group->has_today_lesson = in_array($todayDayName, $group->days_of_week ?? []);
-
+            // Bugun dars mavjudmi bazada? (ASOSIY TEKSHIRUV)
             $lesson = $todayLessons->get($group->id);
-
+            
+            // ✅ VARIANT 1: Faqat bazada mavjud darslarni ko'rsatish
+            $group->has_today_lesson = $lesson !== null;
+            
+            // Davomat yuklanganmi?
             $group->has_attendance_today = $lesson ? $attendanceExists->has($lesson->id) : false;
+            
+            // 🔍 QOSHIMCHA: Guruh jadvalidagi kun (debug/info uchun)
+            $group->scheduled_for_today = in_array($todayDayName, $group->days_of_week ?? []);
 
             return $group;
         });
@@ -113,7 +114,6 @@ class AttendanceController extends Controller
         ));
     }
 
-
     /**
      * Guruh davomatini ko'rsatish
      */
@@ -123,7 +123,6 @@ class AttendanceController extends Controller
 
         $month = $request->get('month', Carbon::now()->month);
         $year = $request->get('year', Carbon::now()->year);
-
 
         // Oy bo'yicha darslarni olish
         $lessons = Lesson::where('group_id', $groupId)
@@ -167,14 +166,16 @@ class AttendanceController extends Controller
                         'homework_score' => $attendance->homework_score ?? 0,
                         'activity_score' => $attendance->activity_score ?? 0,
                         'daily_coins' => $dailyCoins,
-                        'notes' => $attendance->notes ?? '', // Kechikish sababi
+                        'notes' => $attendance->notes ?? '',
                     ];
 
                     $studentTotalCoins[$student->id] += $dailyCoins;
                 }
             }
         }
+        
         $today = Carbon::today();
+        
         return view('Attendance.show', compact(
             'group',
             'students',
@@ -192,7 +193,6 @@ class AttendanceController extends Controller
      */
     public function store(Request $request)
     {
-
         $validated = $request->validate([
             'group_id' => 'required|exists:groups,id',
             'attendances' => 'required|array',
@@ -247,7 +247,7 @@ class AttendanceController extends Controller
                     $newCoins = $attendanceData['daily_coins'];
                     $coinDifference = $newCoins - $oldCoins;
 
-                    // Coin farqini yig'ish (bir student uchun barcha kunlar)
+                    // Coin farqini yig'ish
                     if (!isset($studentCoinsToAdd[$dayData['student_id']])) {
                         $studentCoinsToAdd[$dayData['student_id']] = 0;
                     }
@@ -267,7 +267,7 @@ class AttendanceController extends Controller
             // O'tgan darslarni completed qilish
             Lesson::where('group_id', $groupId)
                 ->where('status', 'scheduled')
-                ->whereDate('lesson_date', '<=', now())
+                ->whereDate('lesson_date', '<=', Carbon::now())
                 ->update(['status' => 'completed']);
 
             DB::commit();
@@ -286,41 +286,29 @@ class AttendanceController extends Controller
     /**
      * Statistika sahifasi
      */
-    /**
-     * Statistika sahifasi - to'liq tahlil
-     */
     public function statistics($groupId, Request $request)
     {
-
         $group = Group::with(['course', 'activeStudents.user'])->findOrFail($groupId);
 
         $month = $request->get('month');
         $year = $request->get('year', Carbon::now()->year);
 
-
         $students = $group->activeStudents;
         $studentStats = [];
 
-        // ===== DARSLAR QUERY (FILTER BILAN) =====
+        // Darslar query
         $lessonsQuery = Lesson::where('group_id', $groupId)
-            // ->where('status', 'completed')
             ->whereYear('lesson_date', $year);
 
-        // Agar oy tanlangan bo'lsa, filter qo'shamiz
         if ($month) {
-            // dd($month);
             $lessonsQuery->whereMonth('lesson_date', $month);
         }
 
         $totalLessons = $lessonsQuery->count();
         $lessonIds = $lessonsQuery->pluck('id')->toArray();
-        // if (request('month')) {
-        //     dd($lessonIds,$groupId);
-        // }
 
-        // ===== HAR BIR STUDENT UCHUN STATISTIKA =====
+        // Har bir student uchun statistika
         foreach ($students as $student) {
-            // FAQAT SHU OYDAGI/YILDAGI DARSLAR BO'YICHA DAVOMAT
             $attendances = Attendance::whereIn('lesson_id', $lessonIds)
                 ->where('student_id', $student->id)
                 ->with('lesson')
@@ -331,10 +319,8 @@ class AttendanceController extends Controller
             $absent = $attendances->where('status', 'absent')->count();
             $excused = $attendances->where('status', 'excused')->count();
 
-            // daily_coins dan to'g'ridan-to'g'ri
             $totalCoins = $attendances->sum('daily_coins');
 
-            // Faqat kelgan/kechikkanlar uchun o'rtacha
             $attendedLessons = $attendances->whereIn('status', ['present', 'late']);
             $avgHomework = $attendedLessons->count() > 0
                 ? $attendedLessons->avg('homework_score')
@@ -347,7 +333,6 @@ class AttendanceController extends Controller
                 ? round(($present + $late) / $totalLessons * 100, 1)
                 : 0;
 
-            // Kechikishlar tahlili
             $lateDetails = $attendances->where('status', 'late')->map(function ($att) {
                 return [
                     'date' => $att->lesson->lesson_date->format('d.m.Y'),
@@ -371,10 +356,6 @@ class AttendanceController extends Controller
             ];
         }
 
-        // Attendance rate bo'yicha saralash
-        // usort($studentStats, fn($a, $b) => $b['attendance_rate'] <=> $a['attendance_rate']);
-
-        // ===== MUHIM: $month va $year ni view ga uzatish =====
         return view('Attendance.statistics', compact(
             'group',
             'studentStats',
@@ -385,15 +366,12 @@ class AttendanceController extends Controller
 
     /**
      * Davomat ma'lumotlarini tayyorlash
-     * 
-     * @param array $dayData
-     * @return array
      */
     private function prepareAttendanceData(array $dayData): array
     {
         $status = $dayData['status'] ?? 'absent';
         $lateMinutes = intval($dayData['late_minutes'] ?? 0);
-        $notes = $dayData['notes'] ?? ''; // Kechikish/Yo'qlama sababi
+        $notes = $dayData['notes'] ?? '';
         $homeworkScore = 0;
         $activityScore = 0;
 
@@ -418,7 +396,7 @@ class AttendanceController extends Controller
         return [
             'status' => $status,
             'late_minutes' => $status === 'late' ? $lateMinutes : null,
-            'notes' => $notes, // Sabab saqlash
+            'notes' => $notes,
             'homework_score' => $homeworkScore,
             'activity_score' => $activityScore,
             'attendance_coins' => $attendanceCoins,
@@ -429,67 +407,44 @@ class AttendanceController extends Controller
     }
 
     /**
-     * Davomat coinlarini hisoblash (yangi tizim)
-     * 
-     * Qoidalar:
-     * - Vaqtida (present): +2 coin
-     * - 0-10 daqiqa kechikish: +2 coin
-     * - 10-15 daqiqa kechikish: +2 coin
-     * - 15-30 daqiqa kechikish: +1 coin
-     * - 30+ daqiqa kechikish: 0 coin (avtomatik absent)
-     * 
-     * @param string $status
-     * @param int $lateMinutes
-     * @return int
+     * Davomat coinlarini hisoblash
      */
     private function calculateAttendanceCoins(string $status, int $lateMinutes): int
     {
         if ($status === 'present') {
-            return 2; // Vaqtida kelgan
+            return 2;
         }
 
         if ($status === 'late') {
             if ($lateMinutes < 15) {
-                // 0-14 daqiqa: +2 coin
                 return 2;
             } elseif ($lateMinutes < 30) {
-                // 15-29 daqiqa: +1 coin
                 return 1;
             }
-            // 30+ daqiqa: 0 coin (bu holat prepareAttendanceData da absent ga o'tkaziladi)
         }
 
-        return 0; // Absent yoki boshqa holatlar
+        return 0;
     }
 
     /**
      * Kunlik jami coinlarni hisoblash
-     * 
-     * Jami = Davomat coins + Homework (0-3) + Activity (0-3)
-     * Maksimal: 2 + 3 + 3 = 8 coin/kun
-     * 
-     * @param Attendance $attendance
-     * @return int
      */
     private function calculateDailyCoins(Attendance $attendance): int
     {
         $coins = 0;
 
-        // Davomat coinlari
         if ($attendance->status === 'present') {
             $coins += 2;
         } elseif ($attendance->status === 'late') {
             $lateMinutes = $attendance->late_minutes ?? 0;
 
             if ($lateMinutes < 15) {
-                $coins += 2; // 0-14 daqiqa
+                $coins += 2;
             } elseif ($lateMinutes < 30) {
-                $coins += 1; // 15-29 daqiqa
+                $coins += 1;
             }
-            // 30+ kelmagan hisoblanadi
         }
 
-        // Homework va Activity (faqat kelgan/kechikkan bo'lsa)
         if (in_array($attendance->status, ['present', 'late'])) {
             $coins += min(3, max(0, $attendance->homework_score ?? 0));
             $coins += min(3, max(0, $attendance->activity_score ?? 0));
