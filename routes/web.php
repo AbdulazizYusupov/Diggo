@@ -1,10 +1,11 @@
 <?php
 
 use App\Http\Controllers\Activity\ActivityController;
+use App\Http\Controllers\ActivityResult\ActivityResultController;
 use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Course\CourseController;
-use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Dashboard\DashboardController; 
 use App\Http\Controllers\Director\DirectorController;
 use App\Http\Controllers\Group\GroupController;
 use App\Http\Controllers\GroupStudent\GroupStudentController;
@@ -91,6 +92,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('group-teachers', GroupTeacherController::class);
         Route::resource('payments', PaymentController::class);
         Route::resource('activities', ActivityController::class);
+        Route::resource('activityresults', ActivityResultController::class);
 
         Route::prefix('attendance')->name('attendance.')->group(function () {
             Route::get('/', [AttendanceController::class, 'index'])->name('index');
