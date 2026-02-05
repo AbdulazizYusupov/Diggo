@@ -52,6 +52,17 @@ class Student extends Model
             'group_id'
         );
     }
+    public function activeGroups()
+    {
+        return $this->belongsToMany(
+            Group::class,
+            'group_students',
+            'student_id',
+            'group_id'
+        )->where('groups.is_active', true);
+    }
+
+
 
 
     public function transactions()
@@ -69,5 +80,9 @@ class Student extends Model
     public function coinTransactions()
     {
         return $this->hasMany(CoinTransaction::class);
+    }
+    public function groupStudents()
+    {
+        return $this->hasMany(GroupStudent::class);
     }
 }

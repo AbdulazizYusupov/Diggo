@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 
 class DirectorController extends Controller
@@ -140,7 +141,8 @@ class DirectorController extends Controller
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 
             // Director modeliga xos maydonlar
-            'school_id' => 'required|exists:schools,id',
+            // 'school_id' => 'required|exists:schools,id',
+            'school_id' => ['required','exists:schools,id',Rule::unique('directors', 'school_id')->whereNull('deleted_at')],
             'commission_percentage' => 'required|numeric|min:0|max:100',
             'balance' => 'nullable|numeric|min:0',
             'is_active' => 'nullable|boolean',

@@ -29,7 +29,6 @@ class DirectorDashboardController extends Controller
         $director = Director::with(['school', 'user'])
             ->where('user_id', $user->id)
             ->firstOrFail();
-
         // Asosiy statistika
         $stats = $this->getStatistics($director);
 
@@ -47,6 +46,7 @@ class DirectorDashboardController extends Controller
 
         // Davomat statistikasi
         $attendanceStats = $this->getAttendanceStatistics($director);
+        // dd($attendanceStats);
 
         return view('Panel.Director.index', compact(
             'director',
@@ -160,7 +160,7 @@ class DirectorDashboardController extends Controller
                     ->where('director_id', $director->id);
             })
             ->where('status', 'completed')
-            ->orderBy('payment_date', 'desc')
+            ->orderBy('paid_at', 'desc')
             ->limit(10)
             ->get()
             ->map(function ($payment) use ($director) {
@@ -307,7 +307,7 @@ class DirectorDashboardController extends Controller
 
         $students = $query->paginate(20);
 
-        return view('director.students', compact('students', 'director'));
+        return view('Panel.Director.student', compact('students', 'director'));
     }
 
     public function commissions(Request $request)
@@ -350,6 +350,6 @@ class DirectorDashboardController extends Controller
                 ->sum('amount'),
         ];
 
-        return view('director.commissions', compact('commissions', 'director', 'stats'));
+        return view('Panel.Director.commission', compact('commissions', 'director', 'stats'));
     }
 }
