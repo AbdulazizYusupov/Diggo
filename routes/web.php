@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Course\CourseController;
 use App\Http\Controllers\Dashboard\DashboardController; 
 use App\Http\Controllers\Director\DirectorController;
+use App\Http\Controllers\DirectorDashboard\DirectorDashboardController;
 use App\Http\Controllers\Group\GroupController;
 use App\Http\Controllers\GroupStudent\GroupStudentController;
 use App\Http\Controllers\GroupTeacher\GroupTeacherController;
@@ -101,6 +102,17 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/bulk-store', [AttendanceController::class, 'bulkStore'])->name('bulk-store');
             Route::get('/group/{group}/statistics', [AttendanceController::class, 'statistics'])->name('statistics');
         });
+        Route::prefix('director')->name('director.')->group(function () {
+            Route::get('/', [DirectorDashboardController::class, 'index'])->name('dashboard');
+
+            // Students
+            Route::get('/students', [DirectorDashboardController::class, 'students'])->name('students');
+
+            // Commissions
+            Route::get('/commissions', [DirectorDashboardController::class, 'commissions'])->name('commissions');
+        });
+
+
         Route::resource('lessons', LessonController::class);
         Route::patch('lessons/{lesson}/complete', [LessonController::class, 'complete'])->name('lessons.complete');
         Route::post('lessons/{lesson}/cancel', [LessonController::class, 'cancel'])->name('lessons.cancel');
