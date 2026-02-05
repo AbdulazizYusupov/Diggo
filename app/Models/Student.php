@@ -65,14 +65,14 @@ class Student extends Model
 
 
 
-    public function transactions()
-    {
-        return $this->hasMany(Transaction::class);
-    }
-    public function payments()
-    {
-        return $this->hasMany(Payment::class);
-    }
+    // public function transactions()
+    // {
+    //     return $this->hasMany(Transaction::class);
+    // }
+    // public function payments()
+    // {
+    //     return $this->hasMany(Payment::class);
+    // }
     public function lessonCharges()
     {
         return $this->hasMany(LessonCharge::class);
@@ -84,5 +84,17 @@ class Student extends Model
     public function groupStudents()
     {
         return $this->hasMany(GroupStudent::class);
+    }
+
+
+    // Student.php ichida
+    public function payments()
+    {
+        return $this->morphMany(Payment::class, 'payable');
+    }
+
+    public function transactions()
+    {
+        return $this->morphMany(Transaction::class, 'transactionable');
     }
 }

@@ -11,7 +11,7 @@ class Director extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['user_id','school_id', 'commission_percentage', 'balance'];
+    protected $fillable = ['user_id', 'school_id', 'commission_percentage', 'balance'];
     protected $casts = ['commission_percentage' => 'decimal:2', 'balance' => 'decimal:2'];
 
     public function user()
@@ -28,8 +28,19 @@ class Director extends Model
     {
         return $this->hasMany(Student::class);
     }
+    // public function commissions()
+    // {
+    //     return $this->hasMany(DirectorCommission::class);
+    // }
+
+    // Director.php ichida
+    public function transactions()
+    {
+        return $this->morphMany(Transaction::class, 'transactionable');
+    }
+
     public function commissions()
     {
-        return $this->hasMany(DirectorCommission::class);
+        return $this->transactions()->where('type', 'director_commission');
     }
 }

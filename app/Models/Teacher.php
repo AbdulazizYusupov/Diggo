@@ -87,4 +87,15 @@ class Teacher extends Model
     {
         return $this->salary_type === 'percent';
     }
+
+    // Teacher.php ichida
+    public function transactions()
+    {
+        return $this->morphMany(Transaction::class, 'transactionable');
+    }
+
+    public function commissions()
+    {
+        return $this->transactions()->where('type', 'teacher_commission');
+    }
 }

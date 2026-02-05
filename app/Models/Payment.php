@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Payment extends Model
@@ -11,13 +14,14 @@ class Payment extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'student_id',
+        'payable_type',
+        'payable_id',
         'user_id',
+        'director_id',
         'amount',
         'discount',
         'net_amount',
         'director_commission',
-        'director_id',
         'payment_type',
         'status',
         'payment_month',
@@ -38,25 +42,102 @@ class Payment extends Model
         'paid_at' => 'datetime',
     ];
 
-    public function student()
+    /**
+     * Polymorphic relationship (Student, Group, va h.k.)
+     */
+    public function payable(): MorphTo
     {
-        return $this->belongsTo(Student::class);
+        return $this->morphTo();
     }
-    
-    public function recordedBy()
+
+    /**
+     * Kassir (to'lovni qabul qilgan user)
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-    public function director()
+
+    /**
+     * Alias for user (backward compatibility)
+     */
+    public function recordedBy(): BelongsTo
+    {
+        return $this->user();
+    }
+
+    /**
+     * Director (agar mavjud bo'lsa)
+     */
+    public function director(): BelongsTo
     {
         return $this->belongsTo(Director::class);
     }
-    public function transaction()
+
+    /**
+     * Barcha transactionlar (payment, commission va h.k.)
+     */
+    public function transactions(): MorphMany
     {
-        return $this->morphOne(Transaction::class, 'transactionable');
+        return $this->morphMany(Transaction::class, 'source');
     }
-    public function commission()
+
+    /**
+     * Student to'lovi (backward compatibility)
+     */
+    public function student()
     {
-        return $this->hasOne(DirectorCommission::class);
+        return $this->payable()->where('payable_type', Student::class);
+    }
+
+    /**
+     * Direktor komissiya transactionlari
+     */
+    public function directorCommissions()
+    {
+        return $this->transactions()
+            ->where('type', 'director_commission');
+    }
+
+    /**
+     * O'qituvchi komissiya transactionlari
+     */
+    public function teacherCommissions()
+    {
+        return $this->transactions()
+            ->where('type', 'teacher_commission');
+    }
+
+    /**
+     * To'lov transactionlari
+     */
+    public function paymentTransactions()
+    {
+        return $this->transactions()
+            ->where('type', 'payment');
+    }
+
+    /**
+     * Scopes
+     */
+    public function scopePaid($query)
+    {
+        return $query->where('status', 'paid');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeThisMonth($query)
+    {
+        return $query->whereMonth('paid_at', now()->month)
+            ->whereYear('paid_at', now()->year);
+    }
+
+    public function scopeByPaymentType($query, string $type)
+    {
+        return $query->where('payment_type', $type);
     }
 }
