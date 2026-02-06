@@ -16,6 +16,13 @@ use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\Transaction;
 use App\Models\User;
+use Database\Seeders\Activity\ActivitySeeder;
+use Database\Seeders\Course\CourseSeeder;
+use Database\Seeders\Director\DirectorSeeder;
+use Database\Seeders\School\SchoolSeeder;
+use Database\Seeders\Staff\StaffSeeder;
+use Database\Seeders\Student\StudentSeeder;
+use Database\Seeders\Teacher\TeacherSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +47,14 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
-            RolePermissionSeeder::class
+            RolePermissionSeeder::class,
+            TeacherSeeder::class,
+            SchoolSeeder::class,
+            DirectorSeeder::class,
+            StudentSeeder::class,
+            StaffSeeder::class,
+            CourseSeeder::class,
+            ActivitySeeder::class
         ]);
     }
 }

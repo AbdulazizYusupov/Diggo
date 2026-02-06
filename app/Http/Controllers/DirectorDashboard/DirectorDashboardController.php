@@ -5,10 +5,10 @@ namespace App\Http\Controllers\DirectorDashboard;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Director;
-use App\Models\DirectorCommission;
 use App\Models\GroupStudent;
 use App\Models\Payment;
 use App\Models\Student;
+use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,6 +29,7 @@ class DirectorDashboardController extends Controller
         $director = Director::with(['school', 'user'])
             ->where('user_id', $user->id)
             ->firstOrFail();
+
         // Asosiy statistika
         $stats = $this->getStatistics($director);
 
@@ -46,7 +47,6 @@ class DirectorDashboardController extends Controller
 
         // Davomat statistikasi
         $attendanceStats = $this->getAttendanceStatistics($director);
-        // dd($attendanceStats);
 
         return view('Panel.Director.index', compact(
             'director',
@@ -58,6 +58,7 @@ class DirectorDashboardController extends Controller
             'attendanceStats'
         ));
     }
+
     private function getStatistics($director)
     {
         $schoolId = $director->school_id;
@@ -70,35 +71,39 @@ class DirectorDashboardController extends Controller
         // Faol o'quvchilar
         $activeStudents = Student::where('school_id', $schoolId)
             ->where('director_id', $director->id)
-            // ->whereHas('groupStudents', function ($query) {
-            //     $query->where('status', 'active');
-            // })
             ->count();
 
-        // Shu oylik komissiya
-        $thisMonthCommission = DirectorCommission::where('director_id', $director->id)
+        // Shu oylik komissiya (Transaction orqali)
+        $thisMonthCommission = Transaction::where('transactionable_type', Director::class)
+            ->where('transactionable_id', $director->id)
+            ->where('type', 'director_commission')
             ->where('status', 'paid')
             ->whereMonth('paid_at', Carbon::now()->month)
             ->whereYear('paid_at', Carbon::now()->year)
             ->sum('amount');
 
-        // Kutilayotgan komissiya
-        $pendingCommission = DirectorCommission::where('director_id', $director->id)
+        // Kutilayotgan komissiya (Transaction orqali)
+        $pendingCommission = Transaction::where('transactionable_type', Director::class)
+            ->where('transactionable_id', $director->id)
+            ->where('type', 'director_commission')
             ->where('status', 'pending')
             ->sum('amount');
 
         // Jami to'lovlar (shu oyda)
-        $thisMonthPayments = Payment::whereHas('student', function ($query) use ($schoolId, $director) {
-            $query->where('school_id', $schoolId)
-                ->where('director_id', $director->id);
-        })
+        $thisMonthPayments = Payment::where('payable_type', Student::class)
+            ->whereHasMorph('payable', [Student::class], function ($query) use ($schoolId, $director) {
+                $query->where('school_id', $schoolId)
+                    ->where('director_id', $director->id);
+            })
             ->whereMonth('paid_at', Carbon::now()->month)
             ->whereYear('paid_at', Carbon::now()->year)
-            ->where('status', 'completed')
+            ->where('status', 'paid')
             ->sum('amount');
 
         // Jami komissiya (barcha vaqt)
-        $totalCommissionEarned = DirectorCommission::where('director_id', $director->id)
+        $totalCommissionEarned = Transaction::where('transactionable_type', Director::class)
+            ->where('transactionable_id', $director->id)
+            ->where('type', 'director_commission')
             ->where('status', 'paid')
             ->sum('amount');
 
@@ -135,7 +140,9 @@ class DirectorDashboardController extends Controller
 
     private function getMonthlyCommissions($director)
     {
-        return DirectorCommission::where('director_id', $director->id)
+        return Transaction::where('transactionable_type', Director::class)
+            ->where('transactionable_id', $director->id)
+            ->where('type', 'director_commission')
             ->where('status', 'paid')
             ->where('paid_at', '>=', Carbon::now()->subMonths(6))
             ->select(
@@ -154,12 +161,13 @@ class DirectorDashboardController extends Controller
 
     private function getRecentPayments($director)
     {
-        return Payment::with(['student.user', 'cours'])
-            ->whereHas('student', function ($query) use ($director) {
+        return Payment::with(['payable.user'])
+            ->where('payable_type', Student::class)
+            ->whereHasMorph('payable', [Student::class], function ($query) use ($director) {
                 $query->where('school_id', $director->school_id)
                     ->where('director_id', $director->id);
             })
-            ->where('status', 'completed')
+            ->where('status', 'paid')
             ->orderBy('paid_at', 'desc')
             ->limit(10)
             ->get()
@@ -320,8 +328,11 @@ class DirectorDashboardController extends Controller
 
         $director = Director::where('user_id', $user->id)->firstOrFail();
 
-        $query = DirectorCommission::with(['payment.student.user', 'payment.cours'])
-            ->where('director_id', $director->id);
+        // Transaction orqali komissiyalarni olish (polymorphic)
+        $query = Transaction::with(['source.payable.user'])
+            ->where('transactionable_type', Director::class)
+            ->where('transactionable_id', $director->id)
+            ->where('type', 'director_commission');
 
         // Filter by status
         if ($status = $request->get('status')) {
@@ -338,14 +349,21 @@ class DirectorDashboardController extends Controller
 
         $commissions = $query->orderBy('created_at', 'desc')->paginate(20);
 
+        // Statistika
         $stats = [
-            'total_paid' => DirectorCommission::where('director_id', $director->id)
+            'total_paid' => Transaction::where('transactionable_type', Director::class)
+                ->where('transactionable_id', $director->id)
+                ->where('type', 'director_commission')
                 ->where('status', 'paid')
                 ->sum('amount'),
-            'total_pending' => DirectorCommission::where('director_id', $director->id)
+            'total_pending' => Transaction::where('transactionable_type', Director::class)
+                ->where('transactionable_id', $director->id)
+                ->where('type', 'director_commission')
                 ->where('status', 'pending')
                 ->sum('amount'),
-            'total_cancelled' => DirectorCommission::where('director_id', $director->id)
+            'total_cancelled' => Transaction::where('transactionable_type', Director::class)
+                ->where('transactionable_id', $director->id)
+                ->where('type', 'director_commission')
                 ->where('status', 'cancelled')
                 ->sum('amount'),
         ];
