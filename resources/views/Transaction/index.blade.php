@@ -39,7 +39,7 @@
             </div>
 
             {{-- Export Button --}}
-            <a href="{{ route('transactions.export', request()->all()) }}"
+            <button type="button" onclick="openExportModal()"
                 class="inline-flex items-center justify-center gap-2 px-6 py-3 
                bg-emerald-500 hover:bg-emerald-600 text-white 
                dark:bg-emerald-600 dark:hover:bg-emerald-700
@@ -53,7 +53,7 @@
                         d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                 </svg>
                 <span class="font-bold">Export</span>
-            </a>
+            </button>
         </div>
 
         <!-- Stats Cards -->
@@ -235,13 +235,13 @@
                         <select name="transactionable_type"
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 text-gray-900 dark:text-white text-sm outline-none transition-all cursor-pointer">
                             <option value="">Kim uchun (Barchasi)</option>
-                            <option value="student"
-                                {{ request('transactionable_type') === 'student' ? 'selected' : '' }}>Talabalar</option>
+                            <option value="student" {{ request('transactionable_type') === 'student' ? 'selected' : '' }}>
+                                Talabalar</option>
                             <option value="director"
                                 {{ request('transactionable_type') === 'director' ? 'selected' : '' }}>Direktorlar
                             </option>
-                            <option value="teacher"
-                                {{ request('transactionable_type') === 'teacher' ? 'selected' : '' }}>O'qituvchilar
+                            <option value="teacher" {{ request('transactionable_type') === 'teacher' ? 'selected' : '' }}>
+                                O'qituvchilar
                             </option>
                         </select>
                     </div>
@@ -331,8 +331,7 @@
         </div>
 
         <!-- Modern Table -->
-        <div
-            class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-900">
@@ -491,4 +490,163 @@
             </div>
         @endif
     </div>
+
+    <!-- Export Modal -->
+    <div id="exportModal"
+        class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div
+            class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-purple-500/20 w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="p-2 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 dark:text-emerald-400">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Export sozlamalari</h3>
+                        <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5 hidden sm:block">Export
+                            qilinadigan ustunlarni tanlang
+                        </p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeExportModal()"
+                    class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <form id="exportForm" method="GET" action="{{ route('transactions.export') }}"
+                class="overflow-y-auto flex-1">
+                <!-- Hidden inputs for filters -->
+                @foreach (request()->all() as $key => $value)
+                    @if (!in_array($key, ['page']))
+                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                    @endif
+                @endforeach
+
+                <div class="p-4 sm:p-6 space-y-4">
+                    <!-- Year Selection -->
+                    <div
+                        class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-500/10 dark:to-purple-500/10 rounded-xl p-3 sm:p-4 border border-blue-100 dark:border-blue-500/20">
+
+                        <label class="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            Export yili
+                        </label>
+
+                        <input type="number" name="export_year" value="{{ date('Y') }}" min="2000"
+                            max="2100"
+                            class="w-28 text-center px-4 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-gray-600 rounded-full text-sm font-semibold text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all overflow-hidden text-ellipsis">
+                    </div>
+
+
+                    <!-- Select All Controls -->
+                    <div
+                        class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 sm:p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-500/10 dark:to-blue-500/10 rounded-xl border border-purple-100 dark:border-purple-500/20">
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 dark:text-purple-400 flex-shrink-0"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                            </svg>
+                            <span class="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">Tanlangan:
+                                <span id="selectedCount">0</span> / {{ collect($export_keys)->flatten()->count() }}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="toggleAllColumns(true)"
+                                class="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all active:scale-95">
+                                Hammasini tanlash
+                            </button>
+                            <button type="button" onclick="toggleAllColumns(false)"
+                                class="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all active:scale-95">
+                                Hammasini bekor qilish
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Columns Grid - Responsive 1/2/3/4 Columns -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
+                        @foreach (collect($export_keys)->flatten() as $column)
+                            <label
+                                class="flex items-start gap-2 p-2.5 sm:p-3 bg-gray-50 dark:bg-slate-800 hover:bg-white dark:hover:bg-slate-700 rounded-lg cursor-pointer transition-all border border-gray-200 dark:border-gray-700">
+                                <input type="checkbox" name="columns[]" value="{{ $column }}"
+                                    onchange="updateSelectedCount()"
+                                    class="w-4 h-4 mt-0.5 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 focus:ring-2 cursor-pointer flex-shrink-0">
+                                <div class="flex-1 min-w-0">
+                                    <div
+                                        class="text-xs sm:text-sm font-medium text-gray-900 dark:text-white break-words leading-tight">
+                                        {{ $export_values[$column] }}
+                                    </div>
+                                </div>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div
+                    class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 p-4 sm:p-6 bg-gray-50 dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700">
+                    <button type="button" onclick="closeExportModal()"
+                        class="px-4 sm:px-6 py-2.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all active:scale-95 text-sm sm:text-base">
+                        Bekor qilish
+                    </button>
+                    <button type="submit"
+                        class="px-4 sm:px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 text-sm sm:text-base">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-4 h-4 sm:w-5 sm:h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                        Export qilish
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openExportModal() {
+            document.getElementById('exportModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function toggleAllColumns(checked) {
+            const checkboxes = document.querySelectorAll('input[name="columns[]"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = checked;
+            });
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const checkboxes = document.querySelectorAll('input[name="columns[]"]');
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+            document.getElementById('selectedCount').textContent = checkedCount;
+        }
+
+        // Close modal on ESC key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeExportModal();
+            }
+        });
+
+        // Close modal on backdrop click
+        document.getElementById('exportModal')?.addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeExportModal();
+            }
+        });
+    </script>
 @endsection

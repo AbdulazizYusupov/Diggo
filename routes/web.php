@@ -117,8 +117,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/commissions', [DirectorDashboardController::class, 'commissions'])->name('commissions');
         });
 
-        Route::resource('transactions', TransactionController::class)->only(['index', 'show']);
         Route::get('transactions/export', [TransactionController::class, 'export'])->name('transactions.export');
+        Route::resource('transactions', TransactionController::class)->only(['index', 'show']);
 
         Route::resource('lessons', LessonController::class);
         Route::patch('lessons/{lesson}/complete', [LessonController::class, 'complete'])->name('lessons.complete');
