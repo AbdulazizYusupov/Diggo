@@ -15,6 +15,7 @@ class Payment extends Model
 
     protected $fillable = [
         'payable_type',
+        'group_id',
         'payable_id',
         'user_id',
         'amount',
@@ -81,10 +82,10 @@ class Payment extends Model
         return $this->morphMany(Transaction::class, 'source');
     }
 
-   
+
     public function student(): BelongsTo
     {
-       
+
         return $this->belongsTo(Student::class, 'payable_id');
     }
 

@@ -42,6 +42,7 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->morphs('payable'); // Student, Group
+            $table->foreignId('group_id')->constrained();
             $table->foreignId('user_id')->constrained(); // Kassir
             $table->decimal('amount', 15, 2);
             $table->decimal('discount', 15, 2)->default(0);

@@ -55,18 +55,29 @@ class Group extends Model
         );
     }
 
-
     public function activeStudents()
     {
         return $this->belongsToMany(Student::class, 'group_students')
             ->wherePivot('status', 'active')
             ->withPivot('joined_at', 'left_at', 'status')->withTimestamps();
     }
+    // Group.php modeli
+    public function groupStudents()
+    {
+        // Bu GroupStudent degan alohida Model borligini anglatadi
+        return $this->hasMany(GroupStudent::class, 'group_id');
+    }
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
     }
-    public function lessons(){
+    public function lessons()
+    {
         return $this->hasMany(Lesson::class);
+    }
+    public function teacher()
+    {
+        // Agar o'qituvchi bevosita guruhga bog'langan bo'lsa
+        return $this->belongsTo(Teacher::class);
     }
 }

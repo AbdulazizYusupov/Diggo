@@ -522,7 +522,7 @@
             </div>
 
             <!-- Modal Body -->
-            <form id="exportForm" method="GET" action="{{ route('transactions.export') }}"
+            <form id="exportForm" method="GET"  action="{{ route('transactions.export') }}"
                 class="overflow-y-auto flex-1">
                 <!-- Hidden inputs for filters -->
                 @foreach (request()->all() as $key => $value)

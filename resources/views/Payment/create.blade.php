@@ -77,8 +77,10 @@
                                             data-student-name="{{ $student->user->full_name }}"
                                             data-student-phone="{{ $student->user->phone }}"
                                             class="student-item px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 cursor-pointer border-b border-gray-50 dark:border-gray-700/50 last:border-none flex flex-col">
-                                            <span class="font-bold student-name-text">{{ $student->user->full_name }}</span>
-                                            <span class="text-xs text-gray-500 student-phone-text">{{ $student->user->phone }}</span>
+                                            <span
+                                                class="font-bold student-name-text">{{ $student->user->full_name }}</span>
+                                            <span
+                                                class="text-xs text-gray-500 student-phone-text">{{ $student->user->phone }}</span>
                                         </div>
                                     @endforeach
                                 </div>
@@ -115,6 +117,78 @@
                 </div>
             </div>
 
+            <!-- Group Selection -->
+            <div
+                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
+                <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Guruhni tanlash
+                </h2>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Guruh</label>
+
+                    <div class="relative" id="groupSearchContainer">
+                        <div onclick="toggleGroupDropdown()"
+                            class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('group_id') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl cursor-pointer group hover:border-emerald-500 transition-all shadow-sm">
+
+                            <span id="selectedGroupLabel" class="text-sm text-gray-900 dark:text-white">
+                                @php
+                                    $currentGroupId = old('group_id');
+                                    $foundGroup = $groups->firstWhere('id', $currentGroupId);
+                                @endphp
+                                {{ $foundGroup ? $foundGroup->name . ' - ' . ($foundGroup->subject->name ?? '') : '-- Guruhni tanlang --' }}
+                            </span>
+
+                            <input type="hidden" name="group_id" id="group_id_input" value="{{ $currentGroupId }}">
+
+                            <svg class="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-transform"
+                                id="groupArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+
+                        <div id="groupMenu"
+                            class="hidden absolute z-[199] w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden">
+                            <div class="p-2 border-b dark:border-gray-700 bg-gray-50/30 dark:bg-slate-900/30">
+                                <input type="text" id="groupSearchInput" oninput="filterGroups()"
+                                    placeholder="Guruh nomi yoki fan orqali qidirish..."
+                                    class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
+                            </div>
+
+                            <div class="max-h-64 overflow-y-auto custom-scrollbar">
+                                @foreach ($groups as $group)
+                                    <div onclick="selectGroup('{{ $group->id }}', '{{ $group->name }}', '{{ $group->subject->name ?? '' }}')"
+                                        data-group-id="{{ $group->id }}" data-group-name="{{ $group->name }}"
+                                        data-group-subject="{{ $group->subject->name ?? '' }}"
+                                        class="group-item px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 cursor-pointer border-b border-gray-50 dark:border-gray-700/50 last:border-none flex flex-col">
+                                        <span class="font-bold group-name-text">{{ $group->name }}</span>
+                                        <span class="text-xs text-gray-500 group-subject-text">
+                                            {{ $group->subject->name ?? 'Fan ko\'rsatilmagan' }}
+                                            @if ($group->teacher)
+                                                • {{ $group->teacher->user->full_name }}
+                                            @endif
+                                        </span>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <div id="noGroupFound" class="hidden p-5 text-center text-sm text-gray-500">
+                                Guruh topilmadi...
+                            </div>
+                        </div>
+                    </div>
+
+                    @error('group_id')
+                        <p class="mt-1 text-sm text-rose-500">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
             <!-- Payment Details -->
             <div
                 class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
@@ -144,8 +218,8 @@
                         <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                             Chegirma (%)
                         </label>
-                        <input type="number" name="discount" id="discount" step="0.01" min="0" max="100"
-                            value="{{ old('discount', 0) }}"
+                        <input type="number" name="discount" id="discount" step="0.01" min="0"
+                            max="100" value="{{ old('discount', 0) }}"
                             class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white outline-none transition-all"
                             placeholder="0">
                         @error('discount')
@@ -236,22 +310,27 @@
                         <span class="text-sm font-bold text-gray-900 dark:text-white" id="summaryAmount">0 so'm</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">Chegirma (<span id="discountPercent">0</span>%):</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Chegirma (<span
+                                id="discountPercent">0</span>%):</span>
                         <span class="text-sm font-bold text-rose-500" id="summaryDiscount">0 so'm</span>
                     </div>
                     <div
                         class="pt-3 border-t border-emerald-300 dark:border-emerald-700 flex justify-between items-center">
                         <span class="text-base font-bold text-gray-900 dark:text-white">Jami (chegirmadan keyin):</span>
-                        <span class="text-xl font-black text-emerald-600 dark:text-emerald-400" id="summaryNet">0 so'm</span>
+                        <span class="text-xl font-black text-emerald-600 dark:text-emerald-400" id="summaryNet">0
+                            so'm</span>
                     </div>
                     <div class="pt-3 border-t border-emerald-300 dark:border-emerald-700">
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-sm text-gray-600 dark:text-gray-400">Student balansiga tushadi:</span>
-                            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" id="summaryStudentBalance">0 so'm</span>
+                            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" id="summaryStudentBalance">0
+                                so'm</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Direktor komissiyasi (<span id="commissionPercent">0</span>%):</span>
-                            <span class="text-sm font-bold text-purple-600 dark:text-purple-400" id="summaryCommission">0 so'm</span>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Direktor komissiyasi (<span
+                                    id="commissionPercent">0</span>%):</span>
+                            <span class="text-sm font-bold text-purple-600 dark:text-purple-400" id="summaryCommission">0
+                                so'm</span>
                         </div>
                     </div>
                 </div>
@@ -287,13 +366,39 @@
             function toggleStudentDropdown() {
                 const menu = document.getElementById('studentMenu');
                 const arrow = document.getElementById('studentArrow');
+                const groupMenu = document.getElementById('groupMenu');
                 const isHidden = menu.classList.contains('hidden');
+
+                // Close group menu if open
+                if (!groupMenu.classList.contains('hidden')) {
+                    toggleGroupDropdown();
+                }
 
                 menu.classList.toggle('hidden');
                 arrow.classList.toggle('rotate-180');
 
                 if (isHidden) {
                     document.getElementById('studentSearchInput').focus();
+                }
+            }
+
+            // Toggle group dropdown
+            function toggleGroupDropdown() {
+                const menu = document.getElementById('groupMenu');
+                const arrow = document.getElementById('groupArrow');
+                const studentMenu = document.getElementById('studentMenu');
+                const isHidden = menu.classList.contains('hidden');
+
+                // Close student menu if open
+                if (!studentMenu.classList.contains('hidden')) {
+                    toggleStudentDropdown();
+                }
+
+                menu.classList.toggle('hidden');
+                arrow.classList.toggle('rotate-180');
+
+                if (isHidden) {
+                    document.getElementById('groupSearchInput').focus();
                 }
             }
 
@@ -322,6 +427,22 @@
 
                 // Update summary
                 updateSummary();
+
+                // Reload page to update groups based on selected student
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('student_id', id);
+                window.location.href = currentUrl.toString();
+            }
+
+            // Select group
+            function selectGroup(id, name, subject) {
+                // Update input and label
+                document.getElementById('group_id_input').value = id;
+                const label = name + (subject ? ' - ' + subject : '');
+                document.getElementById('selectedGroupLabel').innerText = label;
+
+                // Close dropdown
+                toggleGroupDropdown();
             }
 
             // Filter students
@@ -347,12 +468,42 @@
                 noResult.classList.toggle('hidden', found);
             }
 
-            // Close dropdown when clicking outside
+            // Filter groups
+            function filterGroups() {
+                const input = document.getElementById('groupSearchInput');
+                const filter = input.value.toLowerCase();
+                const items = document.querySelectorAll('.group-item');
+                const noResult = document.getElementById('noGroupFound');
+                let found = false;
+
+                items.forEach(item => {
+                    const name = item.querySelector('.group-name-text').innerText.toLowerCase();
+                    const subject = item.querySelector('.group-subject-text').innerText.toLowerCase();
+
+                    if (name.includes(filter) || subject.includes(filter)) {
+                        item.style.display = "";
+                        found = true;
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
+
+                noResult.classList.toggle('hidden', found);
+            }
+
+            // Close dropdowns when clicking outside
             document.addEventListener('click', function(e) {
-                const container = document.getElementById('studentSearchContainer');
-                if (container && !container.contains(e.target)) {
+                const studentContainer = document.getElementById('studentSearchContainer');
+                const groupContainer = document.getElementById('groupSearchContainer');
+
+                if (studentContainer && !studentContainer.contains(e.target)) {
                     document.getElementById('studentMenu').classList.add('hidden');
                     document.getElementById('studentArrow').classList.remove('rotate-180');
+                }
+
+                if (groupContainer && !groupContainer.contains(e.target)) {
+                    document.getElementById('groupMenu').classList.add('hidden');
+                    document.getElementById('groupArrow').classList.remove('rotate-180');
                 }
             });
 
@@ -373,7 +524,7 @@
                 // Calculate amounts
                 const discountAmount = (amount * discountPercent) / 100;
                 const netAmount = amount - discountAmount;
-                const commissionAmount = (amount * currentCommissionPercent) / 100; // Commission from PAID amount
+                const commissionAmount = (amount * currentCommissionPercent) / 100;
 
                 // Update display
                 document.getElementById('summaryAmount').textContent = formatNumber(amount) + ' so\'m';
