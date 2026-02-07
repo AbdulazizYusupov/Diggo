@@ -20,7 +20,7 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
         $search = $request->input('search');
-        
+
         // ❌ XATO: use function Symfony\Component\Clock\now;
         // ✅ TO'G'RI: Carbon yoki now() helper
         $today = Carbon::today()->format('Y-m-d');
@@ -94,13 +94,13 @@ class AttendanceController extends Controller
         $groups->getCollection()->transform(function ($group) use ($todayDayName, $todayLessons, $attendanceExists) {
             // Bugun dars mavjudmi bazada? (ASOSIY TEKSHIRUV)
             $lesson = $todayLessons->get($group->id);
-            
+
             // ✅ VARIANT 1: Faqat bazada mavjud darslarni ko'rsatish
             $group->has_today_lesson = $lesson !== null;
-            
+
             // Davomat yuklanganmi?
             $group->has_attendance_today = $lesson ? $attendanceExists->has($lesson->id) : false;
-            
+
             // 🔍 QOSHIMCHA: Guruh jadvalidagi kun (debug/info uchun)
             $group->scheduled_for_today = in_array($todayDayName, $group->days_of_week ?? []);
 
@@ -173,9 +173,9 @@ class AttendanceController extends Controller
                 }
             }
         }
-        
+
         $today = Carbon::today();
-        
+
         return view('Attendance.show', compact(
             'group',
             'students',
@@ -188,9 +188,6 @@ class AttendanceController extends Controller
         ));
     }
 
-    /**
-     * Davomatni saqlash va studentlarning coinlarini yangilash
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -209,12 +206,7 @@ class AttendanceController extends Controller
                     if (!isset($dayData['student_id']) || !isset($dayData['date'])) {
                         continue;
                     }
-
-                    // Status mavjud emas yoki bo'sh bo'lsa, skip qilamiz
-                    if (!isset($dayData['status']) || empty($dayData['status'])) {
-                        continue;
-                    }
-
+ 
                     // Darsni topish
                     $lesson = Lesson::where('group_id', $groupId)
                         ->whereDate('lesson_date', $dayData['date'])
@@ -224,15 +216,29 @@ class AttendanceController extends Controller
                         continue;
                     }
 
-                    // Ma'lumotlarni tayyorlash
-                    $attendanceData = $this->prepareAttendanceData($dayData);
-
                     // Eski davomatni topish (coin farqini hisoblash uchun)
                     $oldAttendance = Attendance::where('lesson_id', $lesson->id)
                         ->where('student_id', $dayData['student_id'])
                         ->first();
 
                     $oldCoins = $oldAttendance ? $this->calculateDailyCoins($oldAttendance) : 0;
+
+                    // ✅ YANGI: Status bo'sh yoki yo'q bo'lsa - davomatni o'chirish
+                    if (!isset($dayData['status']) || empty($dayData['status'])) {
+                        if ($oldAttendance) {
+                            $oldAttendance->delete();
+
+                            // Coinlarni ayirish
+                            if (!isset($studentCoinsToAdd[$dayData['student_id']])) {
+                                $studentCoinsToAdd[$dayData['student_id']] = 0;
+                            }
+                            $studentCoinsToAdd[$dayData['student_id']] -= $oldCoins;
+                        }
+                        continue;
+                    }
+
+                    // Ma'lumotlarni tayyorlash
+                    $attendanceData = $this->prepareAttendanceData($dayData);
 
                     // Davomatni saqlash
                     Attendance::updateOrCreate(

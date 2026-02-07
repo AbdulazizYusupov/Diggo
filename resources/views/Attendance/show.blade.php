@@ -197,7 +197,7 @@
                                                 </span>
                                                 <span
                                                     class="text-[9px] md:text-[10px] {{ $day->isSameDay($today) ? 'text-black font-black' : 'text-blue-200' }}">
-                                                   {{ get_day_name($day->format('l')) }}
+                                                    {{ get_day_name($day->format('l')) }}
                                                 </span>
                                             </div>
                                         </th>
@@ -455,14 +455,34 @@
                         const allRadiosInGroup = document.querySelectorAll(
                             `input[name="${this.name}"]`
                         );
+                        const cell = this.closest('td');
 
                         if (wasChecked) {
+                            // ✅ YANGI: Unchecked holatda hidden input orqali bo'sh qiymat yuborish
                             this.checked = false;
                             this.dataset.checked = 'false';
+
+                            // Hidden input qo'shish yoki yangilash
+                            let hiddenInput = cell.querySelector('.hidden-status-input');
+                            if (!hiddenInput) {
+                                hiddenInput = document.createElement('input');
+                                hiddenInput.type = 'hidden';
+                                hiddenInput.name = this.name;
+                                hiddenInput.className = 'hidden-status-input';
+                                cell.appendChild(hiddenInput);
+                            }
+                            hiddenInput.value = '';
+
                             handleStatusChange(this, null);
                         } else {
                             allRadiosInGroup.forEach(r => r.dataset.checked = 'false');
                             this.dataset.checked = 'true';
+
+                            // Hidden input'ni o'chirish (agar bor bo'lsa)
+                            const hiddenInput = cell.querySelector('.hidden-status-input');
+                            if (hiddenInput) {
+                                hiddenInput.remove();
+                            }
 
                             if (this.dataset.type === 'late') {
                                 openLateModal(this);
