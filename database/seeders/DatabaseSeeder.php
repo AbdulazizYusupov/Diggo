@@ -19,6 +19,7 @@ use App\Models\User;
 use Database\Seeders\Activity\ActivitySeeder;
 use Database\Seeders\Course\CourseSeeder;
 use Database\Seeders\Director\DirectorSeeder;
+use Database\Seeders\Group\GroupSeeder;
 use Database\Seeders\School\SchoolSeeder;
 use Database\Seeders\Staff\StaffSeeder;
 use Database\Seeders\Student\StudentSeeder;
@@ -54,7 +55,8 @@ class DatabaseSeeder extends Seeder
             StudentSeeder::class,
             StaffSeeder::class,
             CourseSeeder::class,
-            ActivitySeeder::class
+            ActivitySeeder::class,
+            GroupSeeder::class
         ]);
     }
 }
