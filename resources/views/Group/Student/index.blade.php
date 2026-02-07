@@ -102,7 +102,7 @@
                                         </div>
                                         <div>
                                             <p class="text-sm font-bold text-gray-900 dark:text-white student-name">
-                                                {{ $student->user->name ?? 'Noma\'lum' }}</p>
+                                                {{ $student->user->full_name ?? 'Noma\'lum' }}</p>
                                             <p class="text-xs text-gray-500 dark:text-gray-400">
                                                 {{ $student->user->email ?? '' }}</p>
                                         </div>
@@ -224,7 +224,7 @@
                                     class="w-5 h-5 text-purple-600 bg-white dark:bg-slate-900 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500">
                                 <div class="flex-1">
                                     <p class="text-sm font-bold text-gray-900 dark:text-white student-item-name">
-                                        {{ $student->user->name ?? 'Noma\'lum' }}</p>
+                                        {{ $student->user->full_name ?? 'Noma\'lum' }}</p>
                                     <p class="text-xs text-gray-500 dark:text-gray-400">
                                         {{ $student->user->phone ?? 'Telefon yo\'q' }}</p>
                                 </div>

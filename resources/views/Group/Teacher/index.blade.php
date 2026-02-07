@@ -63,7 +63,7 @@
                             </div>
                             <div>
                                 <h3 class="text-lg font-black text-gray-900 dark:text-white">
-                                    {{ $teacher->user->name ?? 'Noma\'lum' }}</h3>
+                                    {{ $teacher->user->full_name ?? 'Noma\'lum' }}</h3>
                                 @if ($teacher->pivot->is_primary)
                                     <span
                                         class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400">
@@ -188,7 +188,7 @@
                                     class="w-5 h-5 text-blue-600 bg-white dark:bg-slate-900 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500">
                                 <div class="flex-1">
                                     <p class="text-sm font-bold text-gray-900 dark:text-white teacher-item-name">
-                                        {{ $teacher->user->name ?? 'Noma\'lum' }}</p>
+                                        {{ $teacher->user->full_name ?? 'Noma\'lum' }}</p>
                                     <p class="text-xs text-gray-500 dark:text-gray-400">
                                         {{ $teacher->user->email ?? 'Email yo\'q' }}</p>
                                 </div>
