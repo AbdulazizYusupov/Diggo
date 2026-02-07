@@ -305,13 +305,13 @@
                                         <div
                                             class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-sm">
                                             <span class="text-white font-bold text-sm">
-                                                {{ substr($student->user->name, 0, 2) }}
+                                                {{ substr($student->user->full_name, 0, 2) }}
                                             </span>
                                         </div>
                                         <div>
                                             <p
                                                 class="text-sm font-bold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                                                {{ $student->user->name }}
+                                                {{ $student->user->full_name }}
                                             </p>
                                             <p class="text-xs text-gray-500 dark:text-gray-400">
                                                 {{ $student->user->phone ?? 'Telefon yo\'q' }}

@@ -71,7 +71,7 @@ class StudentSeeder extends Seeder
                 'school_id' => !empty($schoolIds) ? $schoolIds[array_rand($schoolIds)] : null,
                 'director_id' => !empty($directorIds) ? $directorIds[array_rand($directorIds)] : null,
                 'enrollment_date' => $now->format('Y-m-d'),
-                'coins' => rand(10, 50),
+                'coins' => 0,
                 'balance' => rand(100000, 1000000),
                 'parent_name' => $data['parent'],
                 'parent_phone' => '+9989' . rand(10000000, 99999999),
