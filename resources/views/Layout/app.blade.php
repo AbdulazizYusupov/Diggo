@@ -519,30 +519,54 @@
                             <span class="ml-3 sidebar-text">Attendance</span>
                             <span class="nav-tooltip">Attendance</span>
                         </a>
+                        <div class="space-y-1">
+                            <button id="finance-dropdown-btn"
+                                onclick="const dropdown = this.nextElementSibling; dropdown.classList.toggle('open'); this.querySelector('.arrow-icon').classList.toggle('rotate-180');"
+                                class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->is('payments*', 'transactions*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 
-                        <a href="{{ route('payments.index') }}"
-                            class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group transition-all {{ request()->routeIs('payments.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                            <svg class="h-5 w-5 text-gray-400 group-hover:text-green-500 flex-shrink-0 transition-colors {{ request()->routeIs('payments.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-green-500' }}"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span class="ml-3 sidebar-text">Moliya/To'lovlar</span>
-                            <span class="nav-tooltip">Moliya/To'lovlar</span>
-                        </a>
-                        <a href="{{ route('transactions.index') }}"
-                            class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group transition-all {{ request()->routeIs('transactions.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                <svg class="h-5 w-5 flex-shrink-0 {{ request()->is('payments*', 'transactions*') ? 'text-indigo-600' : 'text-gray-400' }}"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
 
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor"
-                                class="h-5 w-5 text-gray-400 group-hover:text-green-500 flex-shrink-0 transition-colors {{ request()->routeIs('transactions.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-green-500' }}">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
-                            </svg>
+                                <span class="ml-3 sidebar-text">Moliya</span>
 
-                            <span class="ml-3 sidebar-text">Transactions</span>
-                            <span class="nav-tooltip">Transactions</span>
-                        </a>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="2" stroke="currentColor"
+                                    class="arrow-icon ml-auto h-4 w-4 text-gray-400 sidebar-text transition-transform duration-300 {{ request()->is('payments*', 'transactions*') ? 'rotate-180' : '' }}">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                </svg>
+                                <span class="nav-tooltip">Moliya</span>
+                            </button>
+
+                            <div id="finance-dropdown"
+                                class="dropdown-content {{ request()->is('payments*', 'transactions*') ? 'open' : '' }}">
+
+                                <div class="ml-8 space-y-1 py-2">
+                                    <a href="{{ route('payments.index') }}"
+                                        class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('payments.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
+                                        <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                        <span class="sidebar-text">To'lovlar</span>
+                                    </a>
+
+                                    <a href="{{ route('transactions.index') }}"
+                                        class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('transactions.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
+                                        <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                        </svg>
+                                        <span class="sidebar-text">Transactions</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                         <a href="#"
                             class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group transition-all">
                             <svg class="h-5 w-5 text-gray-400 group-hover:text-orange-500 flex-shrink-0 transition-colors"
