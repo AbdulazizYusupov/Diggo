@@ -55,17 +55,17 @@ class PaymentController extends Controller
         $payments = $query->latest('paid_at')->paginate(15);
 
         // Statistics
-        $totalPayments = Payment::where('status', 'paid')->sum('net_amount');
-        
+        $totalPayments = Payment::where('status', 'paid')->sum('amount');
+
         $totalCommissions = Transaction::whereIn('type', ['director_commission', 'teacher_commission'])
             ->where('status', 'paid')
             ->sum('amount');
-        
+
         $pendingPayments = Payment::where('status', 'pending')->count();
-        
+
         $monthlyPayments = Payment::where('status', 'paid')
             ->whereMonth('paid_at', Carbon::now()->month)
-            ->sum('net_amount');
+            ->sum('amount');
 
         return view('Payment.index', compact(
             'payments',
@@ -95,6 +95,9 @@ class PaymentController extends Controller
         return view('Payment.create', compact('students', 'selectedStudent'));
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -112,7 +115,7 @@ class PaymentController extends Controller
         DB::beginTransaction();
 
         try {
-            // Load student with all necessary relationships
+            // Load student with relationships
             $student = Student::with([
                 'director',
                 'activeGroups.teachers' => function ($query) {
@@ -126,25 +129,22 @@ class PaymentController extends Controller
                 $validated['discount'] ?? 0
             );
 
-            // Create payment record (polymorphic)
+            // 1. Create payment record
             $payment = $this->createPayment($validated, $student, $amounts);
 
-            // Update student balance
-            $oldBalance = $student->balance;
-            $newStudentBalance = $this->updateStudentBalance($student, $amounts['net']);
+            // 2. Create student transaction (student balance update)
+            $studentTransaction = $this->createStudentTransaction($student, $payment, $amounts['amount_to_balance']);
 
-            // Create student transaction
-            $this->createStudentTransaction($student, $payment, $amounts['net'], $oldBalance, $newStudentBalance);
+            // 3. Process director commission
+            $directorCommission = $this->processDirectorCommission($student, $payment, $amounts['amount_to_balance']);
 
-            // Process director commission
-            $directorCommission = $this->processDirectorCommission($student, $payment, $amounts['net']);
-
-            // Process teacher commissions
-            $teacherCommissions = $this->processTeacherCommissions($student, $payment, $amounts['net']);
+            // 4. Process teacher commissions
+            $teacherCommissions = $this->processTeacherCommissions($student, $payment, $amounts['amount_to_balance']);
 
             DB::commit();
 
-            return $this->successResponse($amounts['net'], $directorCommission, $teacherCommissions);
+            return $this->successResponse($amounts, $directorCommission, $teacherCommissions);
+            
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Payment creation failed', [
@@ -171,15 +171,16 @@ class PaymentController extends Controller
         $netAmount = $amount - $discountAmount;
 
         return [
-            'gross' => $amount,
-            'discount' => $discountAmount,
-            'discount_percent' => $discountPercent,
-            'net' => $netAmount,
+            'gross_amount' => $amount,              // To'langan asl summa
+            'discount_percent' => $discountPercent,  // Chegirma foizi
+            'discount_amount' => $discountAmount,    // Chegirma summasi
+            'net_amount' => $netAmount,              // Chegirmadan keyingi summa
+            'amount_to_balance' => $amount,          // Student balansiga tushadigan summa (to'langan summa)
         ];
     }
 
     /**
-     * Create payment record (POLYMORPHIC)
+     * Create payment record
      */
     private function createPayment(array $validated, Student $student, array $amounts): Payment
     {
@@ -187,11 +188,9 @@ class PaymentController extends Controller
             'payable_type' => Student::class,
             'payable_id' => $student->id,
             'user_id' => Auth::id(),
-            'director_id' => $student->director_id,
-            'amount' => $amounts['gross'],
+            'amount' => $amounts['gross_amount'],
             'discount' => $amounts['discount_percent'],
-            'net_amount' => $amounts['net'],
-            'director_commission' => 0, // Will be updated later
+            'net_amount' => $amounts['net_amount'],
             'payment_type' => $validated['payment_type'],
             'status' => 'paid',
             'payment_month' => $validated['payment_month'],
@@ -204,32 +203,24 @@ class PaymentController extends Controller
     }
 
     /**
-     * Update student balance
+     * Create student transaction (update student balance with FULL AMOUNT)
      */
-    private function updateStudentBalance(Student $student, float $amount): float
+    private function createStudentTransaction(Student $student, Payment $payment, float $amount): Transaction
     {
+        $oldBalance = $student->balance;
+        
+        // Student balansiga TO'LANGAN SUMMA tushadi (chegirmasiz)
         $student->increment('balance', $amount);
-        return $student->fresh()->balance;
-    }
+        $newBalance = $student->fresh()->balance;
 
-    /**
-     * Create student transaction record (POLYMORPHIC)
-     */
-    private function createStudentTransaction(
-        Student $student, 
-        Payment $payment, 
-        float $amount, 
-        float $balanceBefore,
-        float $balanceAfter
-    ): Transaction {
         return Transaction::create([
             'transactionable_type' => Student::class,
             'transactionable_id' => $student->id,
             'source_type' => Payment::class,
             'source_id' => $payment->id,
             'amount' => $amount,
-            'balance_before' => $balanceBefore,
-            'balance_after' => $balanceAfter,
+            'balance_before' => $oldBalance,
+            'balance_after' => $newBalance,
             'type' => 'payment',
             'description' => "To'lov qabul qilindi ({$payment->payment_type})",
             'status' => 'paid',
@@ -240,9 +231,9 @@ class PaymentController extends Controller
     }
 
     /**
-     * Process director commission (POLYMORPHIC via Transaction)
+     * Process director commission
      */
-    private function processDirectorCommission(Student $student, Payment $payment, float $netAmount): ?array
+    private function processDirectorCommission(Student $student, Payment $payment, float $baseAmount): ?array
     {
         if (!$student->director) {
             return null;
@@ -255,35 +246,32 @@ class PaymentController extends Controller
             return null;
         }
 
-        // Calculate commission
-        $commissionAmount = ($netAmount * $commissionPercent) / 100;
+        // Calculate commission from student's PAID amount
+        $commissionAmount = ($baseAmount * $commissionPercent) / 100;
 
         // Update director balance
-        $oldBalance = $director->balance ?? 0;
+        $oldBalance = $director->balance;
         $director->increment('balance', $commissionAmount);
-        $newDirectorBalance = $director->fresh()->balance;
+        $newBalance = $director->fresh()->balance;
 
-        // Create director commission transaction (POLYMORPHIC)
+        // Create director commission transaction
         Transaction::create([
-            'transactionable_type' => get_class($director), // Director model
+            'transactionable_type' => get_class($director),
             'transactionable_id' => $director->id,
             'source_type' => Payment::class,
             'source_id' => $payment->id,
             'amount' => $commissionAmount,
             'balance_before' => $oldBalance,
-            'balance_after' => $newDirectorBalance,
+            'balance_after' => $newBalance,
             'type' => 'director_commission',
             'percentage' => $commissionPercent,
-            'base_amount' => $netAmount,
+            'base_amount' => $baseAmount,
             'description' => "Direktor komissiyasi ({$commissionPercent}%) - {$student->user->full_name}",
             'status' => 'paid',
             'created_by' => Auth::id(),
             'transaction_date' => Carbon::now(),
             'paid_at' => Carbon::now(),
         ]);
-
-        // Update payment record
-        $payment->update(['director_commission' => $commissionAmount]);
 
         return [
             'director_id' => $director->id,
@@ -294,9 +282,9 @@ class PaymentController extends Controller
     }
 
     /**
-     * Process teacher commissions for all student's active groups (POLYMORPHIC)
+     * Process teacher commissions for student's active groups
      */
-    private function processTeacherCommissions(Student $student, Payment $payment, float $netAmount): array
+    private function processTeacherCommissions(Student $student, Payment $payment, float $baseAmount): array
     {
         $commissions = [];
 
@@ -317,20 +305,20 @@ class PaymentController extends Controller
 
             $teacher = $primaryTeacher->teacher;
 
-            // Check if teacher uses percent salary type
+            // Only for teachers with PERCENT salary type
             if (!$teacher->hasPercentSalary() || !$teacher->percent_per_student) {
                 continue;
             }
 
             // Calculate teacher commission
             $teacherPercent = $teacher->percent_per_student;
-            $teacherCommission = ($netAmount * $teacherPercent) / 100;
+            $teacherCommission = ($baseAmount * $teacherPercent) / 100;
 
             if ($teacherCommission <= 0) {
                 continue;
             }
 
-            // Create teacher commission transaction (POLYMORPHIC)
+            // Create teacher commission transaction
             $this->createTeacherCommissionTransaction(
                 $teacher,
                 $payment,
@@ -338,7 +326,7 @@ class PaymentController extends Controller
                 $group,
                 $teacherCommission,
                 $teacherPercent,
-                $netAmount
+                $baseAmount
             );
 
             $commissions[] = [
@@ -354,36 +342,34 @@ class PaymentController extends Controller
     }
 
     /**
-     * Create teacher commission transaction (POLYMORPHIC)
+     * Create teacher commission transaction
      */
     private function createTeacherCommissionTransaction(
-        $teacher, 
-        Payment $payment, 
-        Student $student, 
-        $group, 
-        float $amount, 
+        $teacher,
+        Payment $payment,
+        Student $student,
+        $group,
+        float $amount,
         float $percent,
         float $baseAmount
     ): Transaction {
-        // Update teacher balance (agar teacher modelda balance bo'lsa)
+        // Teacher uchun balance ni hozircha update qilmaymiz
+        // Chunki fixed salary teacherlar uchun oylik hisoblab to'laymiz
         $oldBalance = $teacher->balance ?? 0;
-        // $teacher->increment('balance', $amount);
-        // $newBalance = $teacher->fresh()->balance;
 
-        // Create teacher commission transaction
         return Transaction::create([
-            'transactionable_type' => get_class($teacher), // Teacher model
+            'transactionable_type' => get_class($teacher),
             'transactionable_id' => $teacher->id,
             'source_type' => Payment::class,
             'source_id' => $payment->id,
             'amount' => $amount,
             'balance_before' => $oldBalance,
-            'balance_after' => $oldBalance, // Agar teacher balance yangilanmasa
+            'balance_after' => $oldBalance, // Balance hali yangilanmagan
             'type' => 'teacher_commission',
             'percentage' => $percent,
             'base_amount' => $baseAmount,
             'description' => "O'qituvchi komissiyasi - {$group->name} ({$percent}%) - {$student->user->full_name}",
-            'status' => 'pending', // yoki 'paid'
+            'status' => 'pending', // Oylik to'lashda 'paid' qilamiz
             'created_by' => Auth::id(),
             'transaction_date' => Carbon::now(),
             'paid_at' => null,
@@ -393,17 +379,28 @@ class PaymentController extends Controller
     /**
      * Return success response with commission details
      */
-    private function successResponse(float $netAmount, ?array $directorCommission, array $teacherCommissions)
+    private function successResponse(array $amounts, ?array $directorCommission, array $teacherCommissions)
     {
-        $message = "To'lov muvaffaqiyatli qabul qilindi! Summa: " . number_format($netAmount, 0, '.', ' ') . " so'm";
+        $message = "To'lov muvaffaqiyatli qabul qilindi!\n";
+        $message .= "To'langan: " . number_format($amounts['gross_amount'], 0, '.', ' ') . " so'm";
+        
+        if ($amounts['discount_amount'] > 0) {
+            $message .= "\nChegirma ({$amounts['discount_percent']}%): " . number_format($amounts['discount_amount'], 0, '.', ' ') . " so'm";
+            $message .= "\nJami: " . number_format($amounts['net_amount'], 0, '.', ' ') . " so'm";
+        }
+        
+        $message .= "\n\nStudent balansi: +" . number_format($amounts['amount_to_balance'], 0, '.', ' ') . " so'm";
 
         if ($directorCommission) {
-            $message .= "\n\nDirektor komissiyasi: " . number_format($directorCommission['amount'], 0, '.', ' ') . " so'm ({$directorCommission['percentage']}%)";
+            $message .= "\n\nDirektor komissiyasi: " . 
+                number_format($directorCommission['amount'], 0, '.', ' ') . 
+                " so'm ({$directorCommission['percentage']}%)";
         }
 
         if (!empty($teacherCommissions)) {
             $totalTeacherCommission = array_sum(array_column($teacherCommissions, 'amount'));
-            $message .= "\n\nO'qituvchilar komissiyasi: " . number_format($totalTeacherCommission, 0, '.', ' ') . " so'm";
+            $message .= "\n\nO'qituvchilar komissiyasi (pending): " . 
+                number_format($totalTeacherCommission, 0, '.', ' ') . " so'm";
 
             foreach ($teacherCommissions as $tc) {
                 $message .= "\n  • {$tc['teacher_name']} ({$tc['group_name']}): " .
@@ -423,7 +420,8 @@ class PaymentController extends Controller
             'payable.user',
             'user',
             'transactions' => function ($query) {
-                $query->whereIn('type', ['payment', 'director_commission', 'teacher_commission']);
+                $query->whereIn('type', ['payment', 'director_commission', 'teacher_commission'])
+                    ->with('transactionable');
             }
         ])->findOrFail($id);
 
@@ -504,9 +502,12 @@ class PaymentController extends Controller
             ->with('success', "To'lov o'chirildi!");
     }
 
+    /**
+     * Get student info for payment form
+     */
     public function getStudentInfo(Request $request)
     {
-        $student = Student::with(['user', 'director', 'groups.course'])
+        $student = Student::with(['user', 'director', 'activeGroups.course'])
             ->findOrFail($request->student_id);
 
         return response()->json([

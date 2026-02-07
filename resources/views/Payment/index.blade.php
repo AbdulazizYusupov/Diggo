@@ -164,8 +164,8 @@
                         <select name="status"
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white text-sm outline-none transition-all cursor-pointer">
                             <option value="">Status (Barchasi)</option>
-                            <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>
-                                Tasdiqlangan</option>
+                            <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>
+                                To'langan</option>
                             <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Kutilmoqda
                             </option>
                             <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Bekor
@@ -183,6 +183,8 @@
                             </option>
                             <option value="transfer" {{ request('payment_type') === 'transfer' ? 'selected' : '' }}>
                                 O'tkazma</option>
+                            <option value="other" {{ request('payment_type') === 'other' ? 'selected' : '' }}>Boshqa
+                            </option>
                         </select>
                     </div>
 
@@ -232,13 +234,13 @@
                                 O'quvchi</th>
                             <th
                                 class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                Summa</th>
+                                To'langan summa</th>
+                            <th
+                                class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                Jami summa</th>
                             <th
                                 class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                 To'lov turi</th>
-                            <th
-                                class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                Komissiya</th>
                             <th
                                 class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                 Sana</th>
@@ -258,15 +260,15 @@
                                         <div class="flex-shrink-0 h-10 w-10">
                                             <div
                                                 class="h-10 w-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-bold text-sm">
-                                                {{ substr($payment->student->user->name, 0, 1) }}{{ substr($payment->student->user->surname, 0, 1) }}
+                                                {{ substr($payment->payable->user->name, 0, 1) }}{{ substr($payment->payable->user->surname, 0, 1) }}
                                             </div>
                                         </div>
                                         <div class="ml-3">
                                             <div class="text-sm font-bold text-gray-900 dark:text-white">
-                                                {{ $payment->student->user->full_name }}
+                                                {{ $payment->payable->user->full_name }}
                                             </div>
                                             <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                {{ $payment->student->user->phone }}
+                                                {{ $payment->payable->user->phone }}
                                             </div>
                                         </div>
                                     </div>
@@ -274,13 +276,26 @@
                                 <td class="px-4 lg:px-6 py-4">
                                     <div class="space-y-1">
                                         <div class="text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                                            {{ number_format($payment->net_amount, 0, '.', ' ') }} so'm
+                                            {{ number_format($payment->amount, 0, '.', ' ') }} so'm
                                         </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                                            Balansga tushdi
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 lg:px-6 py-4">
+                                    <div class="space-y-1">
                                         @if ($payment->discount > 0)
+                                            <div class="text-sm font-bold text-gray-900 dark:text-white">
+                                                {{ number_format($payment->net_amount, 0, '.', ' ') }} so'm
+                                            </div>
                                             <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                <span
-                                                    class="line-through">{{ number_format($payment->amount, 0, '.', ' ') }}</span>
-                                                <span class="ml-1 text-rose-500">-{{ $payment->discount }}%</span>
+                                                <span class="line-through">{{ number_format($payment->amount, 0, '.', ' ') }}</span>
+                                                <span class="ml-1 text-rose-500 font-semibold">-{{ $payment->discount }}%</span>
+                                            </div>
+                                        @else
+                                            <div class="text-sm font-bold text-gray-900 dark:text-white">
+                                                {{ number_format($payment->net_amount, 0, '.', ' ') }} so'm
                                             </div>
                                         @endif
                                     </div>
@@ -288,12 +303,9 @@
                                 <td class="px-4 lg:px-6 py-4">
                                     @php
                                         $typeColors = [
-                                            'cash' =>
-                                                'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-                                            'card' =>
-                                                'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-                                            'transfer' =>
-                                                'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+                                            'cash' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+                                            'card' => 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+                                            'transfer' => 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
                                             'other' => 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400',
                                         ];
                                         $typeNames = [
@@ -308,16 +320,6 @@
                                         {{ $typeNames[$payment->payment_type] ?? $payment->payment_type }}
                                     </span>
                                 </td>
-                                <td class="px-4 lg:px-6 py-4">
-                                    <div class="text-sm font-bold text-purple-600 dark:text-purple-400">
-                                        {{ number_format($payment->director_commission, 0, '.', ' ') }} so'm
-                                    </div>
-                                    @if ($payment->director)
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">
-                                            {{ $payment->director->user->full_name }}
-                                        </div>
-                                    @endif
-                                </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900 dark:text-white">
                                         {{ $payment->paid_at?->format('d.m.Y') }}
@@ -329,16 +331,15 @@
                                 <td class="px-4 lg:px-6 py-4">
                                     @php
                                         $statusColors = [
-                                            'completed' =>
-                                                'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-                                            'pending' =>
-                                                'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-                                            'cancelled' =>
-                                                'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
+                                            'paid' => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+                                            'pending' => 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+                                            'failed' => 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
+                                            'cancelled' => 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400',
                                         ];
                                         $statusNames = [
-                                            'completed' => 'Tasdiqlangan',
+                                            'paid' => 'To\'langan',
                                             'pending' => 'Kutilmoqda',
+                                            'failed' => 'Muvaffaqiyatsiz',
                                             'cancelled' => 'Bekor qilingan',
                                         ];
                                     @endphp
@@ -364,7 +365,7 @@
                                             </svg>
                                         </a>
 
-                                        @if ($payment->status !== 'completed')
+                                        @if ($payment->status !== 'paid')
                                             <a href="{{ route('payments.edit', $payment->id) }}"
                                                 class="p-2 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-xl transition-all duration-200 group/btn"
                                                 title="Tahrirlash">

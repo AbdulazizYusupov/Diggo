@@ -55,7 +55,6 @@ return new class extends Migration
             $table->enum('status', ['pending', 'approved', 'paid', 'cancelled'])->default('pending');
             $table->timestamp('approved_at')->nullable();
             $table->timestamp('paid_at')->nullable();
-
             $table->string('description')->nullable();
             $table->foreignId('created_by')->constrained('users');
             // $table->timestamp('transaction_date')->index();
@@ -63,8 +62,6 @@ return new class extends Migration
 
             $table->timestamps();
             $table->softDeletes();
-
-            // $table->index(['transactionable_type', 'transactionable_id']);
             $table->index(['type', 'status']);
         });
     }

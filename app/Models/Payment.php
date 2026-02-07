@@ -17,11 +17,9 @@ class Payment extends Model
         'payable_type',
         'payable_id',
         'user_id',
-        'director_id',
         'amount',
         'discount',
         'net_amount',
-        'director_commission',
         'payment_type',
         'status',
         'payment_month',
@@ -49,6 +47,7 @@ class Payment extends Model
     {
         return $this->morphTo();
     }
+
 
     /**
      * Kassir (to'lovni qabul qilgan user)
@@ -82,12 +81,11 @@ class Payment extends Model
         return $this->morphMany(Transaction::class, 'source');
     }
 
-    /**
-     * Student to'lovi (backward compatibility)
-     */
-    public function student()
+   
+    public function student(): BelongsTo
     {
-        return $this->payable()->where('payable_type', Student::class);
+       
+        return $this->belongsTo(Student::class, 'payable_id');
     }
 
     /**
