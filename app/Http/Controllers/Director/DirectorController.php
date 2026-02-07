@@ -142,7 +142,7 @@ class DirectorController extends Controller
 
             // Director modeliga xos maydonlar
             // 'school_id' => 'required|exists:schools,id',
-            'school_id' => ['required','exists:schools,id',Rule::unique('directors', 'school_id')->whereNull('deleted_at')],
+            'school_id' => ['required', 'exists:schools,id', Rule::unique('directors', 'school_id')->whereNull('deleted_at')],
             'commission_percentage' => 'required|numeric|min:0|max:100',
             'balance' => 'nullable|numeric|min:0',
             'is_active' => 'nullable|boolean',
@@ -231,7 +231,7 @@ class DirectorController extends Controller
             'commission_percentage' => 'required|numeric|min:0|max:100',
             'balance' => 'nullable|numeric|min:0',
         ]);
-
+        $validated['balance'] = $validated['balance'] ?? 0;
         $director->update($validated);
 
         return redirect()->route('directors.index')
