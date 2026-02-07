@@ -133,7 +133,7 @@ class PaymentController extends Controller
             $payment = $this->createPayment($validated, $student, $amounts);
 
             // 2. Create student transaction (student balance update)
-            $studentTransaction = $this->createStudentTransaction($student, $payment, $amounts['amount_to_balance']);
+            $this->createStudentTransaction($student, $payment, $amounts['amount_to_balance']);
 
             // 3. Process director commission
             $directorCommission = $this->processDirectorCommission($student, $payment, $amounts['amount_to_balance']);
@@ -144,7 +144,6 @@ class PaymentController extends Controller
             DB::commit();
 
             return $this->successResponse($amounts, $directorCommission, $teacherCommissions);
-            
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Payment creation failed', [
@@ -160,6 +159,240 @@ class PaymentController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $payment = Payment::with([
+            'payable.user',
+            'user',
+            'transactions' => function ($query) {
+                $query->whereIn('type', ['payment', 'director_commission', 'teacher_commission'])
+                    ->with('transactionable');
+            }
+        ])->findOrFail($id);
+
+        return view('Payment.show', compact('payment'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $payment = Payment::with('payable.user')->findOrFail($id);
+
+        // Admin rolini tekshirish
+        if (!Auth::user()->hasRole('admin')) {
+            return back()->with('error', "Faqat admin to'lovni tahrirlashi mumkin!");
+        }
+
+        // Cancelled to'lovni tahrirlash mumkin emas
+        if ($payment->status === 'cancelled') {
+            return back()->with('error', "Bekor qilingan to'lovni tahrirlash mumkin emas!");
+        }
+
+        $students = Student::with('user', 'director')
+            ->whereHas('user', function ($q) {
+                $q->where('is_active', true);
+            })
+            ->get();
+
+        return view('Payment.edit', compact('payment', 'students'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $payment = Payment::with(['payable', 'transactions'])->findOrFail($id);
+
+        // Admin rolini tekshirish
+        if (!Auth::user()->hasRole('admin')) {
+            return back()->with('error', "Faqat admin to'lovni tahrirlashi mumkin!");
+        }
+
+        // Faqat paid to'lovlarni tahrirlash mumkin (cancelled emas)
+        if ($payment->status === 'cancelled') {
+            return back()->with('error', "Bekor qilingan to'lovni tahrirlash mumkin emas!");
+        }
+
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0|max:100',
+            'payment_type' => 'required|in:cash,card,transfer,other',
+            'payment_month' => 'required|date',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $student = $payment->payable;
+
+            // Eski va yangi summalarni hisoblash
+            $oldAmounts = [
+                'gross_amount' => $payment->amount,
+                'net_amount' => $payment->net_amount,
+                'discount_percent' => $payment->discount,
+            ];
+
+            $newAmounts = $this->calculatePaymentAmounts(
+                $validated['amount'],
+                $validated['discount'] ?? 0
+            );
+
+            // Summa o'zgarmagan bo'lsa, faqat ma'lumotlarni yangilash
+            if ($oldAmounts['gross_amount'] == $newAmounts['gross_amount'] 
+                && $oldAmounts['discount_percent'] == $newAmounts['discount_percent']) {
+                $payment->update([
+                    'payment_type' => $validated['payment_type'],
+                    'payment_month' => $validated['payment_month'],
+                    'notes' => $validated['notes'] ?? null,
+                ]);
+
+                DB::commit();
+
+                return redirect()->route('payments.show', $payment->id)
+                    ->with('success', "To'lov ma'lumotlari yangilandi!");
+            }
+
+            // Summa yoki chegirma o'zgardi - balanslar va komissiyalarni qayta hisoblash
+            $difference = $newAmounts['gross_amount'] - $oldAmounts['gross_amount'];
+
+            // 1. Payment ma'lumotlarini yangilash
+            $payment->update([
+                'amount' => $newAmounts['gross_amount'],
+                'discount' => $newAmounts['discount_percent'],
+                'net_amount' => $newAmounts['net_amount'],
+                'payment_type' => $validated['payment_type'],
+                'payment_month' => $validated['payment_month'],
+                'notes' => $this->buildUpdateNote(
+                    $validated['notes'] ?? '',
+                    $oldAmounts['gross_amount']
+                ),
+            ]);
+
+            // 2. Reload student with necessary relationships
+            $student = Student::with([
+                'director',
+                'activeGroups.teachers' => function ($query) {
+                    $query->where('is_primary', true);
+                }
+            ])->findOrFail($student->id);
+
+            // 3. Barcha eski transactionlarni reverse qilish
+            $this->reversePaymentTransactions($payment, $student);
+
+            // 4. Yangi transactionlarni yaratish (store logikasi)
+            $this->createStudentTransaction($student, $payment, $newAmounts['amount_to_balance']);
+            $directorCommission = $this->processDirectorCommission($student, $payment, $newAmounts['amount_to_balance']);
+            $teacherCommissions = $this->processTeacherCommissions($student, $payment, $newAmounts['amount_to_balance']);
+
+            DB::commit();
+
+            return redirect()->route('payments.show', $payment->id)
+                ->with('success', $this->buildUpdateSuccessMessage($oldAmounts, $newAmounts, $directorCommission, $teacherCommissions));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Payment update failed', [
+                'payment_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()
+                ->withInput()
+                ->with('error', "To'lovni yangilashda xatolik: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $payment = Payment::findOrFail($id);
+
+        if ($payment->status === 'paid') {
+            return back()->with('error', "To'langan to'lovni o'chirib bo'lmaydi! Bekor qilish tugmasidan foydalaning.");
+        }
+
+        if ($payment->status === 'cancelled') {
+            return back()->with('error', "Bekor qilingan to'lovni o'chirib bo'lmaydi!");
+        }
+
+        $payment->delete();
+
+        return redirect()->route('payments.index')
+            ->with('success', "To'lov o'chirildi!");
+    }
+
+    /**
+     * Cancel a payment and reverse all transactions
+     */
+    public function cancel(string $id)
+    {
+        $payment = Payment::with(['payable', 'transactions'])->findOrFail($id);
+
+        if ($payment->status === 'cancelled') {
+            return back()->with('error', "To'lov allaqachon bekor qilingan!");
+        }
+
+        // Faqat bugungi va kechagi to'lovlarni bekor qilish mumkin
+        if ($payment->paid_at && $payment->paid_at->diffInHours(Carbon::now()) > 48) {
+            return back()->with('error', "48 soatdan oshgan to'lovni bekor qilib bo'lmaydi!");
+        }
+
+        DB::beginTransaction();
+        try {
+            $student = $payment->payable;
+
+            // Barcha transactionlarni reverse qilish va cancel qilish
+            $this->reversePaymentTransactions($payment, $student, true);
+
+            // Paymentni bekor qilish
+            $payment->update([
+                'status' => 'cancelled',
+                'notes' => ($payment->notes ? $payment->notes . "\n" : '') .
+                    "[Bekor qilindi: " . Carbon::now()->format('d.m.Y H:i') . " - " . Auth::user()->name . "]"
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('payments.index')
+                ->with('success', "To'lov bekor qilindi! Student balansi va barcha komissiyalar qaytarildi.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Payment cancellation failed', [
+                'payment_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', "To'lovni bekor qilishda xatolik: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get student info for payment form
+     */
+    public function getStudentInfo(Request $request)
+    {
+        $student = Student::with(['user', 'director', 'activeGroups.course'])
+            ->findOrFail($request->student_id);
+
+        return response()->json([
+            'student' => $student,
+            'balance' => $student->balance,
+            'director_commission' => $student->director->commission_percentage ?? 0,
+        ]);
+    }
+
+    // ==================== PRIVATE HELPER METHODS ====================
+
+    /**
      * Calculate payment amounts with discount
      */
     private function calculatePaymentAmounts(float $amount, float $discountPercent): array
@@ -171,11 +404,11 @@ class PaymentController extends Controller
         $netAmount = $amount - $discountAmount;
 
         return [
-            'gross_amount' => $amount,              // To'langan asl summa
-            'discount_percent' => $discountPercent,  // Chegirma foizi
-            'discount_amount' => $discountAmount,    // Chegirma summasi
-            'net_amount' => $netAmount,              // Chegirmadan keyingi summa
-            'amount_to_balance' => $amount,          // Student balansiga tushadigan summa (to'langan summa)
+            'gross_amount' => $amount,
+            'discount_percent' => $discountPercent,
+            'discount_amount' => $discountAmount,
+            'net_amount' => $netAmount,
+            'amount_to_balance' => $amount,
         ];
     }
 
@@ -208,8 +441,6 @@ class PaymentController extends Controller
     private function createStudentTransaction(Student $student, Payment $payment, float $amount): Transaction
     {
         $oldBalance = $student->balance;
-        
-        // Student balansiga TO'LANGAN SUMMA tushadi (chegirmasiz)
         $student->increment('balance', $amount);
         $newBalance = $student->fresh()->balance;
 
@@ -246,15 +477,12 @@ class PaymentController extends Controller
             return null;
         }
 
-        // Calculate commission from student's PAID amount
         $commissionAmount = ($baseAmount * $commissionPercent) / 100;
 
-        // Update director balance
         $oldBalance = $director->balance;
         $director->increment('balance', $commissionAmount);
         $newBalance = $director->fresh()->balance;
 
-        // Create director commission transaction
         Transaction::create([
             'transactionable_type' => get_class($director),
             'transactionable_id' => $director->id,
@@ -288,7 +516,6 @@ class PaymentController extends Controller
     {
         $commissions = [];
 
-        // Get all active groups where student is enrolled
         $activeGroups = $student->activeGroups()
             ->with(['teachers' => function ($query) {
                 $query->where('is_primary', true);
@@ -296,7 +523,6 @@ class PaymentController extends Controller
             ->get();
 
         foreach ($activeGroups as $group) {
-            // Get primary teacher
             $primaryTeacher = $group->teachers->first();
 
             if (!$primaryTeacher || !$primaryTeacher->teacher) {
@@ -305,12 +531,10 @@ class PaymentController extends Controller
 
             $teacher = $primaryTeacher->teacher;
 
-            // Only for teachers with PERCENT salary type
             if (!$teacher->hasPercentSalary() || !$teacher->percent_per_student) {
                 continue;
             }
 
-            // Calculate teacher commission
             $teacherPercent = $teacher->percent_per_student;
             $teacherCommission = ($baseAmount * $teacherPercent) / 100;
 
@@ -318,7 +542,6 @@ class PaymentController extends Controller
                 continue;
             }
 
-            // Create teacher commission transaction
             $this->createTeacherCommissionTransaction(
                 $teacher,
                 $payment,
@@ -353,8 +576,6 @@ class PaymentController extends Controller
         float $percent,
         float $baseAmount
     ): Transaction {
-        // Teacher uchun balance ni hozircha update qilmaymiz
-        // Chunki fixed salary teacherlar uchun oylik hisoblab to'laymiz
         $oldBalance = $teacher->balance ?? 0;
 
         return Transaction::create([
@@ -364,16 +585,125 @@ class PaymentController extends Controller
             'source_id' => $payment->id,
             'amount' => $amount,
             'balance_before' => $oldBalance,
-            'balance_after' => $oldBalance, // Balance hali yangilanmagan
+            'balance_after' => $oldBalance,
             'type' => 'teacher_commission',
             'percentage' => $percent,
             'base_amount' => $baseAmount,
             'description' => "O'qituvchi komissiyasi - {$group->name} ({$percent}%) - {$student->user->full_name}",
-            'status' => 'pending', // Oylik to'lashda 'paid' qilamiz
+            'status' => 'pending',
             'created_by' => Auth::id(),
             'transaction_date' => Carbon::now(),
             'paid_at' => null,
         ]);
+    }
+
+    /**
+     * Reverse all transactions related to a payment
+     */
+    private function reversePaymentTransactions(Payment $payment, Student $student, bool $markAsCancelled = false)
+    {
+        // 1. Student balansini kamaytirish
+        $studentTransaction = Transaction::where('source_type', Payment::class)
+            ->where('source_id', $payment->id)
+            ->where('type', 'payment')
+            ->first();
+
+        if ($studentTransaction) {
+            $student->decrement('balance', $studentTransaction->amount);
+            
+            if ($markAsCancelled) {
+                $studentTransaction->update([
+                    'status' => 'cancelled',
+                    'description' => $studentTransaction->description . ' [BEKOR QILINDI]'
+                ]);
+            } else {
+                $studentTransaction->delete();
+            }
+        }
+
+        // 2. Director komissiyasini qaytarish
+        $directorTransaction = Transaction::where('source_type', Payment::class)
+            ->where('source_id', $payment->id)
+            ->where('type', 'director_commission')
+            ->first();
+
+        if ($directorTransaction && $directorTransaction->transactionable) {
+            if ($directorTransaction->status === 'paid') {
+                $directorTransaction->transactionable->decrement('balance', $directorTransaction->amount);
+            }
+            
+            if ($markAsCancelled) {
+                $directorTransaction->update([
+                    'status' => 'cancelled',
+                    'description' => $directorTransaction->description . ' [BEKOR QILINDI]'
+                ]);
+            } else {
+                $directorTransaction->delete();
+            }
+        }
+
+        // 3. Teacher komissiyalarini qaytarish
+        $teacherTransactions = Transaction::where('source_type', Payment::class)
+            ->where('source_id', $payment->id)
+            ->where('type', 'teacher_commission')
+            ->get();
+
+        foreach ($teacherTransactions as $transaction) {
+            if ($transaction->transactionable && $transaction->status === 'paid') {
+                $transaction->transactionable->decrement('balance', $transaction->amount);
+            }
+            
+            if ($markAsCancelled) {
+                $transaction->update([
+                    'status' => 'cancelled',
+                    'description' => $transaction->description . ' [BEKOR QILINDI]'
+                ]);
+            } else {
+                $transaction->delete();
+            }
+        }
+    }
+
+    /**
+     * Build update note with edit history
+     */
+    private function buildUpdateNote(string $existingNote, float $oldAmount): string
+    {
+        $note = $existingNote;
+        if ($note) {
+            $note .= "\n";
+        }
+        $note .= "[Tahrirlandi: " . Carbon::now()->format('d.m.Y H:i') . " - " . Auth::user()->name;
+        $note .= " | Eski summa: " . number_format($oldAmount, 0) . " so'm]";
+        
+        return $note;
+    }
+
+    /**
+     * Build success message for update
+     */
+    private function buildUpdateSuccessMessage(array $oldAmounts, array $newAmounts, ?array $directorCommission, array $teacherCommissions): string
+    {
+        $message = "To'lov muvaffaqiyatli yangilandi!\n";
+        $message .= "Eski summa: " . number_format($oldAmounts['gross_amount'], 0, '.', ' ') . " so'm\n";
+        $message .= "Yangi summa: " . number_format($newAmounts['gross_amount'], 0, '.', ' ') . " so'm\n";
+        
+        $difference = $newAmounts['gross_amount'] - $oldAmounts['gross_amount'];
+        $message .= "Farq: " . ($difference > 0 ? '+' : '') . number_format($difference, 0, '.', ' ') . " so'm";
+
+        if ($directorCommission) {
+            $message .= "\n\nDirektor komissiyasi yangilandi: " .
+                number_format($directorCommission['amount'], 0, '.', ' ') .
+                " so'm ({$directorCommission['percentage']}%)";
+        }
+
+        if (!empty($teacherCommissions)) {
+            $totalTeacherCommission = array_sum(array_column($teacherCommissions, 'amount'));
+            $message .= "\n\nO'qituvchilar komissiyasi yangilandi: " .
+                number_format($totalTeacherCommission, 0, '.', ' ') . " so'm";
+        }
+
+        return $message;
     }
 
     /**
@@ -383,23 +713,23 @@ class PaymentController extends Controller
     {
         $message = "To'lov muvaffaqiyatli qabul qilindi!\n";
         $message .= "To'langan: " . number_format($amounts['gross_amount'], 0, '.', ' ') . " so'm";
-        
+
         if ($amounts['discount_amount'] > 0) {
             $message .= "\nChegirma ({$amounts['discount_percent']}%): " . number_format($amounts['discount_amount'], 0, '.', ' ') . " so'm";
             $message .= "\nJami: " . number_format($amounts['net_amount'], 0, '.', ' ') . " so'm";
         }
-        
+
         $message .= "\n\nStudent balansi: +" . number_format($amounts['amount_to_balance'], 0, '.', ' ') . " so'm";
 
         if ($directorCommission) {
-            $message .= "\n\nDirektor komissiyasi: " . 
-                number_format($directorCommission['amount'], 0, '.', ' ') . 
+            $message .= "\n\nDirektor komissiyasi: " .
+                number_format($directorCommission['amount'], 0, '.', ' ') .
                 " so'm ({$directorCommission['percentage']}%)";
         }
 
         if (!empty($teacherCommissions)) {
             $totalTeacherCommission = array_sum(array_column($teacherCommissions, 'amount'));
-            $message .= "\n\nO'qituvchilar komissiyasi (pending): " . 
+            $message .= "\n\nO'qituvchilar komissiyasi (pending): " .
                 number_format($totalTeacherCommission, 0, '.', ' ') . " so'm";
 
             foreach ($teacherCommissions as $tc) {
@@ -409,111 +739,5 @@ class PaymentController extends Controller
         }
 
         return redirect()->route('payments.index')->with('success', $message);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        $payment = Payment::with([
-            'payable.user',
-            'user',
-            'transactions' => function ($query) {
-                $query->whereIn('type', ['payment', 'director_commission', 'teacher_commission'])
-                    ->with('transactionable');
-            }
-        ])->findOrFail($id);
-
-        return view('Payment.show', compact('payment'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        $payment = Payment::with('payable.user')->findOrFail($id);
-
-        if ($payment->status === 'paid') {
-            return back()->with('error', "Tasdiqlangan to'lovni tahrirlash mumkin emas!");
-        }
-
-        $students = Student::with('user', 'director')
-            ->whereHas('user', function ($q) {
-                $q->where('is_active', true);
-            })
-            ->get();
-
-        return view('Payment.edit', compact('payment', 'students'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $payment = Payment::findOrFail($id);
-
-        if ($payment->status === 'paid') {
-            return back()->with('error', "Tasdiqlangan to'lovni o'zgartirib bo'lmaydi!");
-        }
-
-        $validated = $request->validate([
-            'amount' => 'required|numeric|min:0',
-            'discount' => 'nullable|numeric|min:0|max:100',
-            'payment_type' => 'required|in:cash,card,transfer,other',
-            'notes' => 'nullable|string|max:1000',
-        ]);
-
-        // Recalculate amounts
-        $discountAmount = 0;
-        if (!empty($validated['discount'])) {
-            $discountAmount = ($validated['amount'] * $validated['discount']) / 100;
-        }
-        $netAmount = $validated['amount'] - $discountAmount;
-
-        $payment->update([
-            'amount' => $validated['amount'],
-            'discount' => $validated['discount'] ?? 0,
-            'net_amount' => $netAmount,
-            'payment_type' => $validated['payment_type'],
-            'notes' => $validated['notes'] ?? null,
-        ]);
-
-        return redirect()->route('payments.show', $payment->id)
-            ->with('success', "To'lov ma'lumotlari yangilandi!");
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        $payment = Payment::findOrFail($id);
-
-        if ($payment->status === 'paid') {
-            return back()->with('error', "Tasdiqlangan to'lovni o'chirib bo'lmaydi!");
-        }
-
-        $payment->delete();
-
-        return redirect()->route('payments.index')
-            ->with('success', "To'lov o'chirildi!");
-    }
-
-    /**
-     * Get student info for payment form
-     */
-    public function getStudentInfo(Request $request)
-    {
-        $student = Student::with(['user', 'director', 'activeGroups.course'])
-            ->findOrFail($request->student_id);
-
-        return response()->json([
-            'student' => $student,
-            'balance' => $student->balance,
-            'director_commission' => $student->director->commission_percentage ?? 0,
-        ]);
     }
 }

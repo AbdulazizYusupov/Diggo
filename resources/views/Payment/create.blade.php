@@ -3,7 +3,7 @@
 @section('content')
     <div class="w-full">
         <!-- Header -->
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4 mb-6">
             <a href="{{ route('payments.index') }}"
                 class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all">
                 <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -38,7 +38,7 @@
                             <div onclick="toggleStudentDropdown()"
                                 class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('student_id') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl cursor-pointer group hover:border-emerald-500 transition-all shadow-sm">
 
-                                <span id="selectedStudentLabel" class="text-sm dark:text-white">
+                                <span id="selectedStudentLabel" class="text-sm text-gray-900 dark:text-white">
                                     @php
                                         $currentStudentId = old('student_id', $selectedStudent?->id);
                                         $foundStudent = $students->firstWhere('id', $currentStudentId);
@@ -66,11 +66,19 @@
 
                                 <div class="max-h-64 overflow-y-auto custom-scrollbar">
                                     @foreach ($students as $student)
-                                        <div onclick="selectStudent('{{ $student->id }}', '{{ $student->user->full_name }}', '{{ $student->user->phone }}', '{{ $student->balance }}', '{{ $student->director->commission_percentage ?? 0 }}')"
+                                        <div onclick="selectStudent(
+                                            '{{ $student->id }}', 
+                                            '{{ $student->user->full_name }}', 
+                                            '{{ $student->user->phone }}', 
+                                            '{{ $student->balance }}', 
+                                            '{{ $student->director->commission_percentage ?? 0 }}'
+                                        )"
+                                            data-student-id="{{ $student->id }}"
+                                            data-student-name="{{ $student->user->full_name }}"
+                                            data-student-phone="{{ $student->user->phone }}"
                                             class="student-item px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 cursor-pointer border-b border-gray-50 dark:border-gray-700/50 last:border-none flex flex-col">
                                             <span class="font-bold student-name-text">{{ $student->user->full_name }}</span>
-                                            <span
-                                                class="text-xs text-gray-500 student-phone-text">{{ $student->user->phone }}</span>
+                                            <span class="text-xs text-gray-500 student-phone-text">{{ $student->user->phone }}</span>
                                         </div>
                                     @endforeach
                                 </div>
@@ -86,6 +94,7 @@
                         @enderror
                     </div>
 
+                    <!-- Student Info -->
                     <div id="studentInfo"
                         class="{{ $currentStudentId ? '' : 'hidden' }} p-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-xl">
                         <div class="grid grid-cols-2 gap-4">
@@ -223,23 +232,27 @@
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">To'lov xulosasi</h2>
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">Asosiy summa:</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">To'langan summa:</span>
                         <span class="text-sm font-bold text-gray-900 dark:text-white" id="summaryAmount">0 so'm</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">Chegirma:</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Chegirma (<span id="discountPercent">0</span>%):</span>
                         <span class="text-sm font-bold text-rose-500" id="summaryDiscount">0 so'm</span>
                     </div>
                     <div
                         class="pt-3 border-t border-emerald-300 dark:border-emerald-700 flex justify-between items-center">
-                        <span class="text-base font-bold text-gray-900 dark:text-white">Jami to'lov:</span>
-                        <span class="text-xl font-black text-emerald-600 dark:text-emerald-400" id="summaryNet">0
-                            so'm</span>
+                        <span class="text-base font-bold text-gray-900 dark:text-white">Jami (chegirmadan keyin):</span>
+                        <span class="text-xl font-black text-emerald-600 dark:text-emerald-400" id="summaryNet">0 so'm</span>
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">Direktor komissiyasi:</span>
-                        <span class="text-sm font-bold text-purple-600 dark:text-purple-400" id="summaryCommission">0
-                            so'm</span>
+                    <div class="pt-3 border-t border-emerald-300 dark:border-emerald-700">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Student balansiga tushadi:</span>
+                            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" id="summaryStudentBalance">0 so'm</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Direktor komissiyasi (<span id="commissionPercent">0</span>%):</span>
+                            <span class="text-sm font-bold text-purple-600 dark:text-purple-400" id="summaryCommission">0 so'm</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -260,7 +273,6 @@
 
     @push('scripts')
         <script>
-            const studentSelect = document.getElementById('studentSelect');
             const studentInfo = document.getElementById('studentInfo');
             const currentBalance = document.getElementById('currentBalance');
             const commissionRate = document.getElementById('commissionRate');
@@ -269,16 +281,13 @@
             const isInstallmentCheckbox = document.getElementById('isInstallment');
             const installmentFields = document.getElementById('installmentFields');
 
-            // Student selection change
+            let currentCommissionPercent = {{ $foundStudent->director->commission_percentage ?? 0 }};
+
+            // Toggle student dropdown
             function toggleStudentDropdown() {
                 const menu = document.getElementById('studentMenu');
                 const arrow = document.getElementById('studentArrow');
                 const isHidden = menu.classList.contains('hidden');
-
-                // Barcha boshqa menyularni yopish
-                document.querySelectorAll('[id$="Menu"]').forEach(m => {
-                    if (m.id !== 'studentMenu') m.classList.add('hidden');
-                });
 
                 menu.classList.toggle('hidden');
                 arrow.classList.toggle('rotate-180');
@@ -288,30 +297,34 @@
                 }
             }
 
+            // Select student
             function selectStudent(id, name, phone, balance, commission) {
-                // 1. Input va Labelni yangilash
+                // Update input and label
                 document.getElementById('student_id_input').value = id;
                 document.getElementById('selectedStudentLabel').innerText = name + " - " + phone;
 
-                // 2. Balans va Komissiya info blokini yangilash
+                // Update info block
                 const infoBlock = document.getElementById('studentInfo');
                 const balanceText = document.getElementById('currentBalance');
                 const commissionText = document.getElementById('commissionRate');
 
                 infoBlock.classList.remove('hidden');
 
-                // Raqamni formatlash (masalan: 100 000)
                 const formattedBalance = new Intl.NumberFormat('uz-UZ').format(balance) + " so'm";
                 balanceText.innerText = formattedBalance;
                 commissionText.innerText = commission + "%";
 
-                // 3. Menyuni yopish
+                // Store commission for calculations
+                currentCommissionPercent = parseFloat(commission);
+
+                // Close dropdown
                 toggleStudentDropdown();
 
-                // Agar sahifada boshqa hisob-kitob funksiyalari bo'lsa, ularni shu yerda chaqirish mumkin
-                // Masalan: calculateTotal();
+                // Update summary
+                updateSummary();
             }
 
+            // Filter students
             function filterStudents() {
                 const input = document.getElementById('studentSearchInput');
                 const filter = input.value.toLowerCase();
@@ -334,7 +347,7 @@
                 noResult.classList.toggle('hidden', found);
             }
 
-            // Tashqariga bosilganda yopish
+            // Close dropdown when clicking outside
             document.addEventListener('click', function(e) {
                 const container = document.getElementById('studentSearchContainer');
                 if (container && !container.contains(e.target)) {
@@ -342,61 +355,49 @@
                     document.getElementById('studentArrow').classList.remove('rotate-180');
                 }
             });
-            studentSelect.addEventListener('change', function() {
-                const option = this.options[this.selectedIndex];
-                if (this.value) {
-                    const balance = parseFloat(option.dataset.balance) || 0;
-                    const commission = parseFloat(option.dataset.commission) || 0;
-
-                    currentBalance.textContent = new Intl.NumberFormat('uz-UZ').format(balance) + ' so\'m';
-                    commissionRate.textContent = commission + '%';
-                    studentInfo.classList.remove('hidden');
-
-                    updateSummary();
-                } else {
-                    studentInfo.classList.add('hidden');
-                }
-            });
 
             // Amount and discount change
             amountInput.addEventListener('input', updateSummary);
             discountInput.addEventListener('input', updateSummary);
-            studentSelect.addEventListener('change', updateSummary);
 
             // Installment checkbox
             isInstallmentCheckbox.addEventListener('change', function() {
-                if (this.checked) {
-                    installmentFields.classList.remove('hidden');
-                } else {
-                    installmentFields.classList.add('hidden');
-                }
+                installmentFields.classList.toggle('hidden', !this.checked);
             });
 
+            // Update summary calculations
             function updateSummary() {
                 const amount = parseFloat(amountInput.value) || 0;
-                const discount = parseFloat(discountInput.value) || 0;
-                const option = studentSelect.options[studentSelect.selectedIndex];
-                const commission = parseFloat(option.dataset.commission) || 0;
+                const discountPercent = parseFloat(discountInput.value) || 0;
 
-                const discountAmount = (amount * discount) / 100;
+                // Calculate amounts
+                const discountAmount = (amount * discountPercent) / 100;
                 const netAmount = amount - discountAmount;
-                const commissionAmount = (netAmount * commission) / 100;
+                const commissionAmount = (amount * currentCommissionPercent) / 100; // Commission from PAID amount
 
-                document.getElementById('summaryAmount').textContent = new Intl.NumberFormat('uz-UZ').format(amount) + ' so\'m';
-                document.getElementById('summaryDiscount').textContent = new Intl.NumberFormat('uz-UZ').format(discountAmount) +
-                    ' so\'m';
-                document.getElementById('summaryNet').textContent = new Intl.NumberFormat('uz-UZ').format(netAmount) + ' so\'m';
-                document.getElementById('summaryCommission').textContent = new Intl.NumberFormat('uz-UZ').format(
-                    commissionAmount) + ' so\'m';
+                // Update display
+                document.getElementById('summaryAmount').textContent = formatNumber(amount) + ' so\'m';
+                document.getElementById('discountPercent').textContent = discountPercent.toFixed(1);
+                document.getElementById('summaryDiscount').textContent = formatNumber(discountAmount) + ' so\'m';
+                document.getElementById('summaryNet').textContent = formatNumber(netAmount) + ' so\'m';
+                document.getElementById('summaryStudentBalance').textContent = formatNumber(amount) + ' so\'m';
+                document.getElementById('commissionPercent').textContent = currentCommissionPercent.toFixed(1);
+                document.getElementById('summaryCommission').textContent = formatNumber(commissionAmount) + ' so\'m';
+            }
+
+            // Format number helper
+            function formatNumber(num) {
+                return new Intl.NumberFormat('uz-UZ').format(num);
             }
 
             // Initialize on page load
-            if (studentSelect.value) {
-                studentSelect.dispatchEvent(new Event('change'));
-            }
-
             if (isInstallmentCheckbox.checked) {
                 installmentFields.classList.remove('hidden');
+            }
+
+            // Initial calculation if student is selected
+            if (document.getElementById('student_id_input').value) {
+                updateSummary();
             }
         </script>
     @endpush

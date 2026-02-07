@@ -201,10 +201,10 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Left Column: Director & Description -->
-            <div class="lg:col-span-2 space-y-6">
+            <div class="lg:col-span-1 space-y-6">
                 {{-- Director Card --}}
                 <div
-                    class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6 lg:p-8">
+                    class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
                     <div class="flex items-center gap-3 mb-6">
                         <div
                             class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200 dark:shadow-none">
@@ -213,20 +213,20 @@
                                     d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <h2 class="text-2xl font-black text-gray-900 dark:text-white">Maktab direktori</h2>
+                        <h2 class="text-xl font-black text-gray-900 dark:text-white">Maktab direktori</h2>
                     </div>
 
                     @if ($school->director)
-                        <div class="flex items-center gap-4 lg:gap-6">
+                        <div class="space-y-4">
                             <div class="flex-shrink-0">
                                 @if ($school->director->user->photo)
                                     <img src="{{ asset('storage/' . $school->director->user->photo) }}"
                                         alt="{{ $school->director->user->full_name }}"
-                                        class="w-20 h-20 lg:w-24 lg:h-24 rounded-2xl object-cover ring-4 ring-indigo-100 dark:ring-indigo-500/20 shadow-lg">
+                                        class="w-full h-48 rounded-2xl object-cover ring-4 ring-indigo-100 dark:ring-indigo-500/20 shadow-lg">
                                 @else
                                     <div
-                                        class="w-20 h-20 lg:w-24 lg:h-24 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center ring-4 ring-indigo-100 dark:ring-indigo-500/20 shadow-lg">
-                                        <span class="text-white font-black text-3xl lg:text-4xl">
+                                        class="w-full h-48 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center ring-4 ring-indigo-100 dark:ring-indigo-500/20 shadow-lg">
+                                        <span class="text-white font-black text-5xl">
                                             {{ substr($school->director->user->name, 0, 1) }}{{ substr($school->director->user->surname, 0, 1) }}
                                         </span>
                                     </div>
@@ -234,26 +234,26 @@
                             </div>
 
                             <div class="flex-1 min-w-0">
-                                <h3 class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3">
                                     {{ $school->director->user->full_name }}
                                 </h3>
-                                <div class="space-y-1.5">
+                                <div class="space-y-2">
                                     @if ($school->director->user->email)
                                         <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor"
+                                            <svg class="w-4 h-4 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                             </svg>
                                             <a href="mailto:{{ $school->director->user->email }}"
-                                                class="font-medium hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                                                class="font-medium hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate">
                                                 {{ $school->director->user->email }}
                                             </a>
                                         </div>
                                     @endif
                                     @if ($school->director->user->phone)
                                         <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor"
+                                            <svg class="w-4 h-4 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -277,8 +277,8 @@
                                         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                 </svg>
                             </div>
-                            <p class="text-lg font-bold text-gray-900 dark:text-white mb-1">Direktor tayinlanmagan</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Bu maktabga direktor tayinlanmagan</p>
+                            <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">Direktor tayinlanmagan</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Bu maktabga direktor tayinlanmagan</p>
                         </div>
                     @endif
                 </div>
@@ -286,7 +286,7 @@
                 {{-- Description Card --}}
                 @if ($school->description)
                     <div
-                        class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6 lg:p-8">
+                        class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
                         <div class="flex items-center gap-3 mb-4">
                             <div
                                 class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200 dark:shadow-none">
@@ -295,19 +295,20 @@
                                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <h2 class="text-2xl font-black text-gray-900 dark:text-white">Maktab haqida</h2>
+                            <h2 class="text-xl font-black text-gray-900 dark:text-white">Maktab haqida</h2>
                         </div>
-                        <p class="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+                        <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
                             {{ $school->description }}
                         </p>
                     </div>
                 @endif
             </div>
 
-            <!-- Right Column: Recent Students -->
-            <div class="lg:col-span-1">
+            <!-- Right Column: Students List -->
+            <div class="lg:col-span-2">
                 <div
-                    class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6 lg:p-8 sticky top-6">
+                    class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
+                    <!-- Students Header -->
                     <div class="flex items-center justify-between mb-6">
                         <div class="flex items-center gap-3">
                             <div
@@ -317,25 +318,96 @@
                                         d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                 </svg>
                             </div>
-                            <h2 class="text-xl font-black text-gray-900 dark:text-white">So'nggi talabalar</h2>
+                            <div>
+                                <h2 class="text-2xl font-black text-gray-900 dark:text-white">Talabalar</h2>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    {{ $students->total() }} ta talaba topildi
+                                </p>
+                            </div>
                         </div>
                     </div>
 
-                    @if ($recentStudents->count() > 0)
-                        <div class="space-y-3">
-                            @foreach ($recentStudents as $student)
+                    <!-- Filters -->
+                    <div
+                        class="bg-gray-50 dark:bg-slate-800 rounded-xl p-4 mb-6 border border-gray-200 dark:border-gray-700">
+                        <form method="GET" class="space-y-3">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                                <!-- Search -->
+                                <div class="relative md:col-span-2">
+                                    <input type="text" name="search" value="{{ request('search') }}"
+                                        placeholder="Ism, familiya yoki telefon..."
+                                        class="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 text-sm outline-none">
+                                    <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+
+                                <!-- Status -->
+                                <select name="status"
+                                    class="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:ring-2 focus:ring-purple-500/20">
+                                    <option value="">Barcha status</option>
+                                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Faol
+                                    </option>
+                                    <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>
+                                        Nofaol</option>
+                                </select>
+
+                                <!-- Gender -->
+                                <select name="gender"
+                                    class="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:ring-2 focus:ring-purple-500/20">
+                                    <option value="">Barcha jins</option>
+                                    <option value="male" {{ request('gender') === 'male' ? 'selected' : '' }}>Erkak
+                                    </option>
+                                    <option value="female" {{ request('gender') === 'female' ? 'selected' : '' }}>Ayol
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <!-- Sort -->
+                                <select name="sort_by"
+                                    class="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:ring-2 focus:ring-purple-500/20">
+                                    <option value="latest" {{ request('sort_by') === 'latest' ? 'selected' : '' }}>
+                                        Yangilari</option>
+                                    <option value="oldest" {{ request('sort_by') === 'oldest' ? 'selected' : '' }}>
+                                        Eskilari</option>
+                                    <option value="name" {{ request('sort_by') === 'name' ? 'selected' : '' }}>Ism
+                                        bo'yicha</option>
+                                </select>
+
+                                <!-- Buttons -->
+                                <div class="flex gap-2">
+                                    <button type="submit"
+                                        class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-semibold transition-all active:scale-95">
+                                        Qidirish
+                                    </button>
+                                    <a href="{{ route('schools.show', $school->id) }}"
+                                        class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-semibold transition-all active:scale-95">
+                                        Tozalash
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Students Grid -->
+                    @if ($students->count() > 0)
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                            @foreach ($students as $student)
                                 <div
-                                    class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 transition-all group">
+                                    class="flex items-center gap-3 p-4 rounded-xl bg-gray-50 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-200 dark:border-gray-700 transition-all group">
                                     <div class="flex-shrink-0">
-                                        @if ($student->photo)
-                                            <img src="{{ asset('storage/' . $student->photo) }}"
-                                                alt="{{ $student->full_name }}"
-                                                class="w-12 h-12 rounded-xl object-cover ring-2 ring-purple-100 dark:ring-purple-500/20">
+                                        @if ($student->user->photo)
+                                            <img src="{{ asset('storage/' . $student->user->photo) }}"
+                                                alt="{{ $student->user->full_name }}"
+                                                class="w-14 h-14 rounded-xl object-cover ring-2 ring-purple-100 dark:ring-purple-500/20">
                                         @else
                                             <div
-                                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center ring-2 ring-purple-100 dark:ring-purple-500/20">
-                                                <span class="text-white font-bold text-sm">
-                                                    {{ substr($student->name, 0, 1) }}{{ substr($student->surname, 0, 1) }}
+                                                class="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center ring-2 ring-purple-100 dark:ring-purple-500/20">
+                                                <span class="text-white font-bold">
+                                                    {{ substr($student->user->name, 0, 1) }}{{ substr($student->user->surname, 0, 1) }}
                                                 </span>
                                             </div>
                                         @endif
@@ -343,22 +415,50 @@
                                     <div class="flex-1 min-w-0">
                                         <p
                                             class="text-sm font-bold text-gray-900 dark:text-white truncate group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                                            {{ $student->full_name }}
+                                            {{ $student->user->full_name }}
                                         </p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">
-                                            {{ $student->created_at->diffForHumans() }}
-                                        </p>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                {{ $student->user->phone }}
+                                            </span>
+                                            @if ($student->user->is_active)
+                                                <span
+                                                    class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400">
+                                                    <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8">
+                                                        <circle cx="4" cy="4" r="3" />
+                                                    </svg>
+                                                    Faol
+                                                </span>
+                                            @else
+                                                <span
+                                                    class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold rounded-md bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+                                                    <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8">
+                                                        <circle cx="4" cy="4" r="3" />
+                                                    </svg>
+                                                    Nofaol
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
+                                    <a href="{{ route('students.show', $student->id) }}"
+                                        class="flex-shrink-0 p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-500/20 rounded-lg transition-all">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </a>
                                 </div>
                             @endforeach
                         </div>
 
-                        <a href="{{ route('students.index', ['school_id' => $school->id]) }}"
-                            class="mt-4 block text-center px-4 py-2.5 bg-purple-50 dark:bg-purple-500/10 hover:bg-purple-100 dark:hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 font-bold rounded-xl transition-all">
-                            Barcha talabalarni ko'rish
-                        </a>
+                        <!-- Pagination -->
+                        @if ($students->hasPages())
+                            <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                                {{ $students->links() }}
+                            </div>
+                        @endif
                     @else
-                        <div class="text-center py-8">
+                        <div class="text-center py-12">
                             <div
                                 class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
                                 <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -366,8 +466,9 @@
                                         d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                 </svg>
                             </div>
-                            <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">Talabalar yo'q</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Hali talabalar qo'shilmagan</p>
+                            <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">Talabalar topilmadi</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Filtrlarni o'zgartiring yoki yangi talaba
+                                qo'shing</p>
                         </div>
                     @endif
                 </div>

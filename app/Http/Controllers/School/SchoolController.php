@@ -124,36 +124,75 @@ class SchoolController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
-    {
-        $school = School::with(['director.user', 'students'])
-            ->withCount('students')
-            ->findOrFail($id);
+{
+    $school = School::with(['director.user'])
+        ->withCount('students')
+        ->findOrFail($id);
 
-        // Statistika ma'lumotlari
-        $stats = [
-            'total_students' => $school->students_count,
-            'active_students' => $school->students()->whereHas('user', function ($query) {
-                $query->where('is_active', true);
-            })->count(),
-            // 2. Erkak talabalar (User modeli orqali)
-            'male_students' => $school->students()->whereHas('user', function ($query) {
-                $query->where('gender', 'male');
-            })->count(),
+    // Statistika ma'lumotlari
+   $stats = [
+    'total_students'  => $school->students_count,
+    
+    'active_students' => $school->students()->whereHas('user', fn($q) => 
+        $q->where('is_active', true)
+    )->count(),
+    
+    'male_students'   => $school->students()->whereHas('user', fn($q) => 
+        $q->where('gender', 'male')
+    )->count(),
+    
+    'female_students' => $school->students()->whereHas('user', fn($q) => 
+        $q->where('gender', 'female')
+    )->count(),
+]; // Mana bu yerda kvadrat qavs bo'lishi shart!
+    // Students with filtering and pagination
+    $studentsQuery = $school->students()->with('user');
 
-            // 3. Ayol talabalar (User modeli orqali)
-            'female_students' => $school->students()->whereHas('user', function ($query) {
-                $query->where('gender', 'female');
-            })->count(),
-        ];
-
-        // So'nggi qo'shilgan talabalar (5 ta)
-        $recentStudents = $school->students()
-            ->latest()
-            ->limit(5)
-            ->get();
-
-        return view('School.show', compact('school', 'stats', 'recentStudents'));
+    // Search filter
+    if (request()->filled('search')) {
+        $search = request('search');
+        $studentsQuery->whereHas('user', function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+                ->orWhere('surname', 'like', "%{$search}%")
+                ->orWhere('phone', 'like', "%{$search}%");
+        });
     }
+
+    // Status filter
+    if (request()->filled('status')) {
+        $status = request('status') === 'active';
+        $studentsQuery->whereHas('user', function ($q) use ($status) {
+            $q->where('is_active', $status);
+        });
+    }
+
+    // Gender filter
+    if (request()->filled('gender')) {
+        $studentsQuery->whereHas('user', function ($q) {
+            $q->where('gender', request('gender'));
+        });
+    }
+
+    // Sorting
+    $sortBy = request('sort_by', 'latest');
+    switch ($sortBy) {
+        case 'name':
+            $studentsQuery->join('users', 'students.user_id', '=', 'users.id')
+                ->orderBy('users.name', 'asc')
+                ->select('students.*');
+            break;
+        case 'oldest':
+            $studentsQuery->oldest();
+            break;
+        default: // latest
+            $studentsQuery->latest();
+            break;
+    }
+
+    $students = $studentsQuery->paginate(12)->appends(request()->query());
+
+    return view('School.show', compact('school', 'stats', 'students'));
+}
 
     /**
      * Show the form for editing the specified resource.

@@ -290,8 +290,10 @@
                                                 {{ number_format($payment->net_amount, 0, '.', ' ') }} so'm
                                             </div>
                                             <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                <span class="line-through">{{ number_format($payment->amount, 0, '.', ' ') }}</span>
-                                                <span class="ml-1 text-rose-500 font-semibold">-{{ $payment->discount }}%</span>
+                                                <span
+                                                    class="line-through">{{ number_format($payment->amount, 0, '.', ' ') }}</span>
+                                                <span
+                                                    class="ml-1 text-rose-500 font-semibold">-{{ $payment->discount }}%</span>
                                             </div>
                                         @else
                                             <div class="text-sm font-bold text-gray-900 dark:text-white">
@@ -303,9 +305,12 @@
                                 <td class="px-4 lg:px-6 py-4">
                                     @php
                                         $typeColors = [
-                                            'cash' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-                                            'card' => 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-                                            'transfer' => 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+                                            'cash' =>
+                                                'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+                                            'card' =>
+                                                'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+                                            'transfer' =>
+                                                'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
                                             'other' => 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400',
                                         ];
                                         $typeNames = [
@@ -331,10 +336,14 @@
                                 <td class="px-4 lg:px-6 py-4">
                                     @php
                                         $statusColors = [
-                                            'paid' => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-                                            'pending' => 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-                                            'failed' => 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
-                                            'cancelled' => 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400',
+                                            'paid' =>
+                                                'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+                                            'pending' =>
+                                                'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+                                            'failed' =>
+                                                'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
+                                            'cancelled' =>
+                                                'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400',
                                         ];
                                         $statusNames = [
                                             'paid' => 'To\'langan',
@@ -353,6 +362,7 @@
                                 </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-right">
                                     <div class="flex items-center justify-end gap-1.5">
+                                        <!-- Ko'rish tugmasi -->
                                         <a href="{{ route('payments.show', $payment->id) }}"
                                             class="p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-all duration-200 group/btn"
                                             title="Ko'rish">
@@ -365,7 +375,23 @@
                                             </svg>
                                         </a>
 
-                                        @if ($payment->status !== 'paid')
+                                        <!-- Paid to'lovlar uchun CANCEL tugmasi -->
+                                        @if ($payment->status === 'paid')
+                                            <button type="button"
+                                                onclick="document.getElementById('cancel-modal-{{ $payment->id }}').classList.remove('hidden')"
+                                                class="p-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-all duration-200 group/btn"
+                                                title="Bekor qilish">
+                                                <svg class="w-5 h-5 transition-transform group-hover/btn:scale-110"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        @endif
+
+                                        <!-- Pending to'lovlar uchun EDIT va DELETE -->
+                                        @if (Auth::user()->hasRole('admin') && $payment->status !== 'cancelled')
+                                            
                                             <a href="{{ route('payments.edit', $payment->id) }}"
                                                 class="p-2 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-xl transition-all duration-200 group/btn"
                                                 title="Tahrirlash">
@@ -378,7 +404,7 @@
 
                                             <button type="button"
                                                 onclick="document.getElementById('delete-modal-{{ $payment->id }}').classList.remove('hidden')"
-                                                class="p-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-all duration-200 group/btn"
+                                                class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900/20 rounded-xl transition-all duration-200 group/btn"
                                                 title="O'chirish">
                                                 <svg class="w-5 h-5 transition-transform group-hover/btn:scale-110"
                                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -386,52 +412,56 @@
                                                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
                                             </button>
-
-                                            <!-- Delete Modal -->
-                                            <div id="delete-modal-{{ $payment->id }}"
-                                                class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all">
-                                                <div
-                                                    class="relative w-full max-w-sm p-8 bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-white/5 transform transition-all">
-                                                    <div class="text-center">
-                                                        <div
-                                                            class="mx-auto flex items-center justify-center h-20 w-20 rounded-3xl bg-rose-50 dark:bg-rose-500/10 mb-6 rotate-3">
-                                                            <svg class="h-10 w-10 text-rose-500" fill="none"
-                                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="2"
-                                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                                            </svg>
-                                                        </div>
-                                                        <h3
-                                                            class="text-2xl font-black text-slate-900 dark:text-white mb-2">
-                                                            O'chirishni tasdiqlang</h3>
-                                                        <p
-                                                            class="text-sm text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
-                                                            Rostdan ham bu to'lovni o'chirmoqchimisiz?
-                                                        </p>
-                                                        <div class="grid grid-cols-2 gap-3">
-                                                            <button type="button"
-                                                                onclick="document.getElementById('delete-modal-{{ $payment->id }}').classList.add('hidden')"
-                                                                class="px-5 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-2xl transition-all active:scale-95">
-                                                                Bekor qilish
-                                                            </button>
-                                                            <form action="{{ route('payments.destroy', $payment->id) }}"
-                                                                method="POST" class="m-0">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit"
-                                                                    class="w-full px-5 py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-2xl shadow-lg shadow-rose-200 dark:shadow-none transition-all transform active:scale-95">
-                                                                    O'chirilsin
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         @endif
                                     </div>
                                 </td>
                             </tr>
+                            <!-- Cancel Modal -->
+                            @if ($payment->status === 'paid')
+                                <div id="cancel-modal-{{ $payment->id }}"
+                                    class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all">
+                                    <div
+                                        class="relative w-full max-w-md p-8 bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-white/5 transform transition-all">
+                                        <div class="text-center">
+                                            <div
+                                                class="mx-auto flex items-center justify-center h-20 w-20 rounded-3xl bg-rose-50 dark:bg-rose-500/10 mb-6 rotate-3">
+                                                <svg class="h-10 w-10 text-rose-500" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                </svg>
+                                            </div>
+                                            <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-2">
+                                                To'lovni bekor qilish
+                                            </h3>
+                                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-2 leading-relaxed">
+                                                Rostdan ham bu to'lovni bekor qilmoqchimisiz?
+                                            </p>
+                                            <div
+                                                class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-2xl p-4 mb-6">
+                                                <p class="text-xs text-amber-800 dark:text-amber-300 font-semibold">
+                                                    ⚠️ Student balansi va barcha komissiyalar qaytariladi!
+                                                </p>
+                                            </div>
+                                            <div class="grid grid-cols-2 gap-3">
+                                                <button type="button"
+                                                    onclick="document.getElementById('cancel-modal-{{ $payment->id }}').classList.add('hidden')"
+                                                    class="px-5 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-2xl transition-all active:scale-95">
+                                                    Yo'q
+                                                </button>
+                                                <form action="{{ route('payments.cancel', $payment->id) }}"
+                                                    method="POST" class="m-0">
+                                                    @csrf
+                                                    <button type="submit"
+                                                        class="w-full px-5 py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-2xl shadow-lg shadow-rose-200 dark:shadow-none transition-all transform active:scale-95">
+                                                        Ha, bekor qilsin
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         @empty
                             <tr>
                                 <td colspan="7" class="px-6 py-12 text-center">
