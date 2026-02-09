@@ -7,7 +7,7 @@
         <!-- Header -->
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-4">
-                <a href="{{ route('activity-results.index') }}"
+                <a href="{{ route('activityresults.index') }}"
                     class="w-12 h-12 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-xl flex items-center justify-center transition-all active:scale-95 shadow-sm">
                     <svg class="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
@@ -31,7 +31,7 @@
         </div>
 
         <!-- Form Card -->
-        <form action="{{ route('activity-results.store') }}" method="POST">
+        <form action="{{ route('activityresults.store') }}" method="POST">
             @csrf
 
             <div
@@ -217,7 +217,7 @@
 
                 <!-- Action Buttons -->
                 <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
-                    <a href="{{ route('activity-results.index') }}"
+                    <a href="{{ route('activityresults.index') }}"
                         class="px-6 py-3 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300 font-bold rounded-xl transition-all active:scale-95">
                         Bekor qilish
                     </a>

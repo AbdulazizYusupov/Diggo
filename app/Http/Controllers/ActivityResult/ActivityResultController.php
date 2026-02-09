@@ -70,8 +70,9 @@ class ActivityResultController extends Controller
 
         $activities = Activity::orderBy('date', 'desc')->get();
         $students = Student::join('users', 'students.user_id', '=', 'users.id')
+            ->where('users.is_active', true)
             ->orderBy('users.name', 'asc')
-            ->select('students.*') // Faqat student ustunlarini olish uchun
+            ->select('students.*') // Faqat student obyektlarini olish uchun
             ->get();
 
         return view('ActivityResult.index', compact(
@@ -107,46 +108,74 @@ class ActivityResultController extends Controller
         return view('ActivityResult.create', compact('activities', 'students', 'selectedActivity'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'activity_id' => 'required|exists:activities,id',
-            'student_id' => 'required|exists:students,id',
+            'student_ids' => 'required|array|min:1',
+            'student_ids.*' => 'required|exists:students,id',
             'earned_coins' => 'required|integer|min:0',
-            'rank' => 'nullable|integer|min:1',
+            'start_rank' => 'nullable|integer|min:1',
             'note' => 'nullable|string|max:1000',
         ]);
 
         DB::beginTransaction();
         try {
-            // Check if max_coins is exceeded
             $activity = Activity::findOrFail($validated['activity_id']);
+
+            // Maksimal tangalar sonini tekshirish
             if ($validated['earned_coins'] > $activity->max_coins) {
                 return redirect()->back()
                     ->with('error', "Kiritilgan tangalar soni maksimal tangalar sonidan oshib ketdi! Maksimal: {$activity->max_coins}")
                     ->withInput();
             }
 
-            // Check for duplicate result
-            $exists = ActivityResult::where('activity_id', $validated['activity_id'])
-                ->where('student_id', $validated['student_id'])
-                ->exists();
+            $createdCount = 0;
+            $skippedCount = 0;
+            $currentRank = $validated['start_rank'] ?? null;
 
-            if ($exists) {
-                return redirect()->back()
-                    ->with('error', 'Bu talaba uchun ushbu faoliyat natijasi allaqachon mavjud!')
-                    ->withInput();
+            foreach ($validated['student_ids'] as $studentId) {
+                // Avval ushbu talaba bu faoliyatda qatnashganini tekshirish
+                $exists = ActivityResult::where('activity_id', $validated['activity_id'])
+                    ->where('student_id', $studentId)
+                    ->exists();
+
+                if ($exists) {
+                    $skippedCount++;
+                    continue;
+                }
+
+                // 1. Natijani saqlash
+                ActivityResult::create([
+                    'activity_id' => $validated['activity_id'],
+                    'student_id' => $studentId,
+                    'earned_coins' => $validated['earned_coins'],
+                    'rank' => $currentRank,
+                    'note' => $validated['note'],
+                ]);
+
+                // 2. Talabaning umumiy balansiga tangalarni qo'shish
+                // increment() - bazada to'g'ridan-to'g'ri qiymatni oshiradi
+                Student::where('id', $studentId)->increment('coins', $validated['earned_coins']);
+
+                $createdCount++;
+
+                // Agar rank (o'rin) berilgan bo'lsa, uni oshirib borish
+                if ($currentRank !== null) {
+                    $currentRank++;
+                }
             }
-
-            ActivityResult::create($validated);
 
             DB::commit();
 
-            return redirect()->route('activity-results.index')
-                ->with('success', 'Natija muvaffaqiyatli yaratildi!');
+            $message = "{$createdCount} ta natija muvaffaqiyatli yaratildi va talabalar hisobiga tangalar qo'shildi!";
+            if ($skippedCount > 0) {
+                $message .= " ({$skippedCount} ta takroriy natija o'tkazib yuborildi)";
+            }
+
+            return redirect()->route('activityresults.index')
+                ->with('success', $message);
+
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
@@ -188,16 +217,15 @@ class ActivityResultController extends Controller
             ->orderBy('date', 'desc')
             ->get();
 
-        $students = Student::where('is_active', true)
-            ->orderBy('first_name')
+        $students = Student::join('users', 'students.user_id', '=', 'users.id')
+            ->where('users.is_active', true)
+            ->orderBy('users.name', 'asc')
+            ->select('students.*') // Faqat student obyektlarini olish uchun
             ->get();
 
         return view('ActivityResult.edit', compact('result', 'activities', 'students'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $result = ActivityResult::findOrFail($id);
@@ -212,7 +240,6 @@ class ActivityResultController extends Controller
 
         DB::beginTransaction();
         try {
-            // Check if max_coins is exceeded
             $activity = Activity::findOrFail($validated['activity_id']);
             if ($validated['earned_coins'] > $activity->max_coins) {
                 return redirect()->back()
@@ -220,7 +247,6 @@ class ActivityResultController extends Controller
                     ->withInput();
             }
 
-            // Check for duplicate result (excluding current record)
             $exists = ActivityResult::where('activity_id', $validated['activity_id'])
                 ->where('student_id', $validated['student_id'])
                 ->where('id', '!=', $id)
@@ -232,12 +258,25 @@ class ActivityResultController extends Controller
                     ->withInput();
             }
 
+            // --- TANGALARNI YANGILASH LOGIKASI ---
+
+            // 1. Avvalgi talabani topamiz (student_id o'zgargan bo'lishi ham mumkin)
+            $oldStudent = Student::findOrFail($result->student_id);
+            // 2. Eski tangani uning balansidan ayiramiz
+            $oldStudent->decrement('coins', $result->earned_coins);
+
+            // 3. Natijani bazada yangilaymiz
             $result->update($validated);
+
+            // 4. Yangi talabani topamiz (agar student_id o'zgargan bo'lsa yangisini, o'zgarmagan bo'lsa o'shani)
+            $newStudent = Student::findOrFail($validated['student_id']);
+            // 5. Yangi tangani qo'shamiz
+            $newStudent->increment('coins', $validated['earned_coins']);
 
             DB::commit();
 
-            return redirect()->route('activity-results.index')
-                ->with('success', 'Natija muvaffaqiyatli yangilandi!');
+            return redirect()->route('activityresults.index')
+                ->with('success', 'Natija muvaffaqiyatli yangilandi va talaba balansi qayta hisoblandi!');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
@@ -245,10 +284,7 @@ class ActivityResultController extends Controller
                 ->withInput();
         }
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
+    
     public function destroy(string $id)
     {
         $result = ActivityResult::findOrFail($id);
@@ -259,64 +295,12 @@ class ActivityResultController extends Controller
 
             DB::commit();
 
-            return redirect()->route('activity-results.index')
+            return redirect()->route('activityresults.index')
                 ->with('success', 'Natija muvaffaqiyatli o\'chirildi!');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
                 ->with('error', 'Xatolik yuz berdi: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * Bulk create results for multiple students
-     */
-    public function bulkCreate(Request $request)
-    {
-        $validated = $request->validate([
-            'activity_id' => 'required|exists:activities,id',
-            'results' => 'required|array|min:1',
-            'results.*.student_id' => 'required|exists:students,id',
-            'results.*.earned_coins' => 'required|integer|min:0',
-            'results.*.rank' => 'nullable|integer|min:1',
-            'results.*.note' => 'nullable|string|max:1000',
-        ]);
-
-        DB::beginTransaction();
-        try {
-            $activity = Activity::findOrFail($validated['activity_id']);
-
-            foreach ($validated['results'] as $resultData) {
-                // Validate max_coins
-                if ($resultData['earned_coins'] > $activity->max_coins) {
-                    throw new \Exception("Talaba ID {$resultData['student_id']} uchun kiritilgan tangalar maksimal qiymatdan oshib ketdi!");
-                }
-
-                // Check for duplicates
-                $exists = ActivityResult::where('activity_id', $validated['activity_id'])
-                    ->where('student_id', $resultData['student_id'])
-                    ->exists();
-
-                if (!$exists) {
-                    ActivityResult::create([
-                        'activity_id' => $validated['activity_id'],
-                        'student_id' => $resultData['student_id'],
-                        'earned_coins' => $resultData['earned_coins'],
-                        'rank' => $resultData['rank'] ?? null,
-                        'note' => $resultData['note'] ?? null,
-                    ]);
-                }
-            }
-
-            DB::commit();
-
-            return redirect()->route('activity-results.index')
-                ->with('success', 'Natijalar muvaffaqiyatli yaratildi!');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()
-                ->with('error', 'Xatolik yuz berdi: ' . $e->getMessage())
-                ->withInput();
         }
     }
 }

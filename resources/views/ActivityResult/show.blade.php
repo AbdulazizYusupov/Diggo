@@ -71,7 +71,7 @@
 
             <!-- Right: Action Buttons -->
             <div class="flex items-center gap-2 lg:gap-3">
-                <a href="{{ route('activity-results.index') }}"
+                <a href="{{ route('activityresults.index') }}"
                     class="inline-flex items-center gap-2 px-4 lg:px-5 py-2.5 lg:py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300 font-bold rounded-xl transition-all active:scale-95 shadow-sm">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -80,7 +80,7 @@
                     <span class="hidden sm:inline">Orqaga</span>
                 </a>
 
-                <a href="{{ route('activity-results.edit', $result->id) }}"
+                <a href="{{ route('activityresults.edit', $result->id) }}"
                     class="inline-flex items-center gap-2 px-4 lg:px-5 py-2.5 lg:py-3 bg-amber-500 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700 text-white font-bold rounded-xl transition-all active:scale-95 shadow-sm shadow-amber-200 dark:shadow-none">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -221,7 +221,7 @@
 
                         <div class="space-y-3">
                             @foreach ($relatedResults as $related)
-                                <a href="{{ route('activity-results.show', $related->id) }}"
+                                <a href="{{ route('activityresults.show', $related->id) }}"
                                     class="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 transition-all group">
                                     <div class="flex items-center gap-3 flex-1 min-w-0">
                                         <div
@@ -306,7 +306,7 @@
                     <div class="pt-6 border-t border-gray-200 dark:border-gray-700">
                         <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-3">Tezkor amallar</h4>
                         <div class="space-y-2">
-                            <a href="{{ route('activity-results.edit', $result->id) }}"
+                            <a href="{{ route('activityresults.edit', $result->id) }}"
                                 class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-xl transition-all group">
                                 <div
                                     class="w-10 h-10 bg-amber-100 dark:bg-amber-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -373,7 +373,7 @@
                         class="px-5 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-2xl transition-all active:scale-95">
                         Bekor qilish
                     </button>
-                    <form action="{{ route('activity-results.destroy', $result->id) }}" method="POST" class="m-0">
+                    <form action="{{ route('activityresults.destroy', $result->id) }}" method="POST" class="m-0">
                         @csrf
                         @method('DELETE')
                         <button type="submit"
