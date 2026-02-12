@@ -190,7 +190,7 @@ class DirectorDashboardController extends Controller
             })
             ->with(['groupStudents' => function ($query) {
                 $query->where('status', 'active')
-                    ->with('group.cours');
+                    ->with('group.course');
             }])
             ->get()
             ->flatMap(function ($student) {
@@ -236,7 +236,7 @@ class DirectorDashboardController extends Controller
                 $query->where('school_id', $director->school_id)
                     ->where('director_id', $director->id);
             })
-            ->with(['group.cours'])
+            ->with(['group.course'])
             ->select('group_id', DB::raw('COUNT(*) as student_count'))
             ->groupBy('group_id')
             ->orderBy('student_count', 'desc')
@@ -287,7 +287,7 @@ class DirectorDashboardController extends Controller
 
         $director = Director::where('user_id', $user->id)->firstOrFail();
 
-        $query = Student::with(['user', 'groupStudents.group.cours'])
+        $query = Student::with(['user', 'groupStudents.group.course'])
             ->where('school_id', $director->school_id)
             ->where('director_id', $director->id);
 

@@ -166,7 +166,7 @@
                                                 {{ $gs->group->name }}
                                             </p>
                                             <p class="text-xs text-gray-500 dark:text-gray-400">
-                                                {{ $gs->group->cours->name }}
+                                                {{ $gs->group->course->name }}
                                             </p>
                                         </div>
                                         <span

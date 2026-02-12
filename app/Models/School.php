@@ -14,9 +14,10 @@ class School extends Model
     protected $fillable = ['name', 'code', 'address', 'city', 'region', 'phone', 'description', 'is_active'];
     protected $casts = ['is_active' => 'boolean'];
 
+    
     public function director(): HasOne
     {
-        return $this->hasOne(Director::class);
+        return $this->hasOne(Director::class, 'school_id');
     }
     public function students()
     {

@@ -20,8 +20,7 @@
             @csrf
 
             <!-- Student Selection -->
-            <div
-                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -39,20 +38,14 @@
                                 class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('student_id') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl cursor-pointer group hover:border-emerald-500 transition-all shadow-sm">
 
                                 <span id="selectedStudentLabel" class="text-sm text-gray-900 dark:text-white">
-                                    @php
-                                        $currentStudentId = old('student_id', $selectedStudent?->id);
-                                        $foundStudent = $students->firstWhere('id', $currentStudentId);
-                                    @endphp
-                                    {{ $foundStudent ? $foundStudent->user->full_name . ' - ' . $foundStudent->user->phone : '-- O\'quvchini tanlang --' }}
+                                    -- O'quvchini tanlang --
                                 </span>
 
-                                <input type="hidden" name="student_id" id="student_id_input"
-                                    value="{{ $currentStudentId }}" required>
+                                <input type="hidden" name="student_id" id="student_id_input" value="{{ old('student_id', $selectedStudent->id ?? '') }}" required>
 
                                 <svg class="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-transform"
                                     id="studentArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 9l-7 7-7-7" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </div>
 
@@ -60,27 +53,25 @@
                                 class="hidden absolute z-[200] w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden">
                                 <div class="p-2 border-b dark:border-gray-700 bg-gray-50/30 dark:bg-slate-900/30">
                                     <input type="text" id="studentSearchInput" oninput="filterStudents()"
-                                        placeholder="Ism yoki telefon orqali qidirish..."
+                                        placeholder="Ism, familiya, sharif yoki telefon orqali qidirish..."
                                         class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
                                 </div>
 
-                                <div class="max-h-64 overflow-y-auto custom-scrollbar">
+                                <div class="max-h-64 overflow-y-auto custom-scrollbar" id="studentListContainer">
                                     @foreach ($students as $student)
-                                        <div onclick="selectStudent(
-                                            '{{ $student->id }}', 
-                                            '{{ $student->user->full_name }}', 
-                                            '{{ $student->user->phone }}', 
-                                            '{{ $student->balance }}', 
-                                            '{{ $student->director->commission_percentage ?? 0 }}'
-                                        )"
+                                        <div onclick="selectStudent({{ $student->id }})"
                                             data-student-id="{{ $student->id }}"
-                                            data-student-name="{{ $student->user->full_name }}"
-                                            data-student-phone="{{ $student->user->phone }}"
+                                            data-student-surname="{{ $student->user->surname ?? '' }}"
+                                            data-student-name="{{ $student->user->name ?? '' }}"
+                                            data-student-middle="{{ $student->user->middle_name ?? '' }}"
+                                            data-student-phone="{{ $student->user->phone ?? '' }}"
+                                            data-student-balance="{{ $student->balance }}"
+                                            data-student-commission="{{ $student->director->commission_percentage ?? 0 }}"
                                             class="student-item px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 cursor-pointer border-b border-gray-50 dark:border-gray-700/50 last:border-none flex flex-col">
-                                            <span
-                                                class="font-bold student-name-text">{{ $student->user->full_name }}</span>
-                                            <span
-                                                class="text-xs text-gray-500 student-phone-text">{{ $student->user->phone }}</span>
+                                            <span class="font-bold student-fullname">
+                                                {{ trim(($student->user->surname ?? '') . ' ' . ($student->user->name ?? '') . ' ' . ($student->user->middle_name ?? '')) }}
+                                            </span>
+                                            <span class="text-xs text-gray-500 student-phone">{{ $student->user->phone ?? '' }}</span>
                                         </div>
                                     @endforeach
                                 </div>
@@ -97,20 +88,15 @@
                     </div>
 
                     <!-- Student Info -->
-                    <div id="studentInfo"
-                        class="{{ $currentStudentId ? '' : 'hidden' }} p-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-xl">
+                    <div id="studentInfo" class="hidden p-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-xl">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">Joriy balans</p>
-                                <p class="text-lg font-bold text-emerald-600 dark:text-emerald-400" id="currentBalance">
-                                    {{ number_format($foundStudent->balance ?? 0, 0, '.', ' ') }} so'm
-                                </p>
+                                <p class="text-lg font-bold text-emerald-600 dark:text-emerald-400" id="currentBalance">0 so'm</p>
                             </div>
                             <div>
                                 <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">Direktor komissiyasi</p>
-                                <p class="text-lg font-bold text-purple-600 dark:text-purple-400" id="commissionRate">
-                                    {{ $foundStudent->director->commission_percentage ?? 0 }}%
-                                </p>
+                                <p class="text-lg font-bold text-purple-600 dark:text-purple-400" id="commissionRate">0%</p>
                             </div>
                         </div>
                     </div>
@@ -118,8 +104,7 @@
             </div>
 
             <!-- Group Selection -->
-            <div
-                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -136,19 +121,14 @@
                             class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('group_id') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl cursor-pointer group hover:border-emerald-500 transition-all shadow-sm">
 
                             <span id="selectedGroupLabel" class="text-sm text-gray-900 dark:text-white">
-                                @php
-                                    $currentGroupId = old('group_id');
-                                    $foundGroup = $groups->firstWhere('id', $currentGroupId);
-                                @endphp
-                                {{ $foundGroup ? $foundGroup->name . ' - ' . ($foundGroup->subject->name ?? '') : '-- Guruhni tanlang --' }}
+                                -- Guruhni tanlang --
                             </span>
 
-                            <input type="hidden" name="group_id" id="group_id_input" value="{{ $currentGroupId }}">
+                            <input type="hidden" name="group_id" id="group_id_input" value="{{ old('group_id') }}">
 
                             <svg class="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-transform"
                                 id="groupArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </div>
 
@@ -162,15 +142,17 @@
 
                             <div class="max-h-64 overflow-y-auto custom-scrollbar">
                                 @foreach ($groups as $group)
-                                    <div onclick="selectGroup('{{ $group->id }}', '{{ $group->name }}', '{{ $group->subject->name ?? '' }}')"
-                                        data-group-id="{{ $group->id }}" data-group-name="{{ $group->name }}"
+                                    <div onclick="selectGroup({{ $group->id }})"
+                                        data-group-id="{{ $group->id }}"
+                                        data-group-name="{{ $group->name }}"
                                         data-group-subject="{{ $group->subject->name ?? '' }}"
+                                        data-group-teacher="{{ $group->teacher->user->surname ?? '' }} {{ $group->teacher->user->name ?? '' }}"
                                         class="group-item px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 cursor-pointer border-b border-gray-50 dark:border-gray-700/50 last:border-none flex flex-col">
                                         <span class="font-bold group-name-text">{{ $group->name }}</span>
                                         <span class="text-xs text-gray-500 group-subject-text">
                                             {{ $group->subject->name ?? 'Fan ko\'rsatilmagan' }}
                                             @if ($group->teacher)
-                                                • {{ $group->teacher->user->full_name }}
+                                                • {{ trim(($group->teacher->user->surname ?? '') . ' ' . ($group->teacher->user->name ?? '')) }}
                                             @endif
                                         </span>
                                     </div>
@@ -190,8 +172,7 @@
             </div>
 
             <!-- Payment Details -->
-            <div
-                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -236,8 +217,7 @@
                             <option value="">-- Tanlang --</option>
                             <option value="cash" {{ old('payment_type') == 'cash' ? 'selected' : '' }}>Naqd</option>
                             <option value="card" {{ old('payment_type') == 'card' ? 'selected' : '' }}>Karta</option>
-                            <option value="transfer" {{ old('payment_type') == 'transfer' ? 'selected' : '' }}>O'tkazma
-                            </option>
+                            <option value="transfer" {{ old('payment_type') == 'transfer' ? 'selected' : '' }}>O'tkazma</option>
                             <option value="other" {{ old('payment_type') == 'other' ? 'selected' : '' }}>Boshqa</option>
                         </select>
                         @error('payment_type')
@@ -301,8 +281,7 @@
             </div>
 
             <!-- Payment Summary -->
-            <div
-                class="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-2xl shadow-sm border border-emerald-200 dark:border-emerald-500/20 p-6">
+            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-2xl shadow-sm border border-emerald-200 dark:border-emerald-500/20 p-6">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">To'lov xulosasi</h2>
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
@@ -310,27 +289,21 @@
                         <span class="text-sm font-bold text-gray-900 dark:text-white" id="summaryAmount">0 so'm</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">Chegirma (<span
-                                id="discountPercent">0</span>%):</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Chegirma (<span id="discountPercent">0</span>%):</span>
                         <span class="text-sm font-bold text-rose-500" id="summaryDiscount">0 so'm</span>
                     </div>
-                    <div
-                        class="pt-3 border-t border-emerald-300 dark:border-emerald-700 flex justify-between items-center">
+                    <div class="pt-3 border-t border-emerald-300 dark:border-emerald-700 flex justify-between items-center">
                         <span class="text-base font-bold text-gray-900 dark:text-white">Jami (chegirmadan keyin):</span>
-                        <span class="text-xl font-black text-emerald-600 dark:text-emerald-400" id="summaryNet">0
-                            so'm</span>
+                        <span class="text-xl font-black text-emerald-600 dark:text-emerald-400" id="summaryNet">0 so'm</span>
                     </div>
                     <div class="pt-3 border-t border-emerald-300 dark:border-emerald-700">
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-sm text-gray-600 dark:text-gray-400">Student balansiga tushadi:</span>
-                            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" id="summaryStudentBalance">0
-                                so'm</span>
+                            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" id="summaryStudentBalance">0 so'm</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Direktor komissiyasi (<span
-                                    id="commissionPercent">0</span>%):</span>
-                            <span class="text-sm font-bold text-purple-600 dark:text-purple-400" id="summaryCommission">0
-                                so'm</span>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Direktor komissiyasi (<span id="commissionPercent">0</span>%):</span>
+                            <span class="text-sm font-bold text-purple-600 dark:text-purple-400" id="summaryCommission">0 so'm</span>
                         </div>
                     </div>
                 </div>
@@ -352,6 +325,12 @@
 
     @push('scripts')
         <script>
+            // Global variables
+            let currentCommissionPercent = 0;
+            let studentsData = [];
+            let groupsData = [];
+
+            // DOM Elements
             const studentInfo = document.getElementById('studentInfo');
             const currentBalance = document.getElementById('currentBalance');
             const commissionRate = document.getElementById('commissionRate');
@@ -360,7 +339,134 @@
             const isInstallmentCheckbox = document.getElementById('isInstallment');
             const installmentFields = document.getElementById('installmentFields');
 
-            let currentCommissionPercent = {{ $foundStudent->director->commission_percentage ?? 0 }};
+            // Initialize students data from DOM
+            function initializeStudentsData() {
+                const studentItems = document.querySelectorAll('.student-item');
+                studentsData = Array.from(studentItems).map(item => ({
+                    id: item.dataset.studentId,
+                    surname: item.dataset.studentSurname || '',
+                    name: item.dataset.studentName || '',
+                    middle_name: item.dataset.studentMiddle || '',
+                    phone: item.dataset.studentPhone || '',
+                    balance: parseFloat(item.dataset.studentBalance) || 0,
+                    commission: parseFloat(item.dataset.studentCommission) || 0,
+                    fullName: `${item.dataset.studentSurname || ''} ${item.dataset.studentName || ''} ${item.dataset.studentMiddle || ''}`.trim(),
+                    searchText: ''
+                }));
+
+                // Create comprehensive search text for each student
+                studentsData.forEach(student => {
+                    student.searchText = [
+                        student.surname,
+                        student.name,
+                        student.middle_name,
+                        student.fullName,
+                        student.phone,
+                        // Add variations without spaces
+                        student.surname + student.name,
+                        student.surname + student.name + student.middle_name,
+                        // Phone without special characters
+                        student.phone.replace(/[\s\-\+\(\)]/g, '')
+                    ].join(' ').toLowerCase();
+                });
+            }
+
+            // Initialize groups data from DOM
+            function initializeGroupsData() {
+                const groupItems = document.querySelectorAll('.group-item');
+                groupsData = Array.from(groupItems).map(item => ({
+                    id: item.dataset.groupId,
+                    name: item.dataset.groupName || '',
+                    subject: item.dataset.groupSubject || '',
+                    teacher: item.dataset.groupTeacher || '',
+                    searchText: ''
+                }));
+
+                // Create search text for each group
+                groupsData.forEach(group => {
+                    group.searchText = [
+                        group.name,
+                        group.subject,
+                        group.teacher
+                    ].join(' ').toLowerCase();
+                });
+            }
+
+            // Normalize search query (remove extra spaces, convert to lowercase)
+            function normalizeQuery(query) {
+                return query.toLowerCase().trim().replace(/\s+/g, ' ');
+            }
+
+            // Advanced search function for students
+            function searchStudents(query) {
+                const normalized = normalizeQuery(query);
+                
+                if (!normalized) {
+                    return studentsData;
+                }
+
+                // Split query into words for multi-word search
+                const queryWords = normalized.split(' ');
+
+                return studentsData.filter(student => {
+                    // Check if all query words are present in search text
+                    return queryWords.every(word => student.searchText.includes(word));
+                });
+            }
+
+            // Filter students display
+            function filterStudents() {
+                const input = document.getElementById('studentSearchInput');
+                const query = input.value;
+                const studentItems = document.querySelectorAll('.student-item');
+                const noResult = document.getElementById('noStudentFound');
+                
+                const results = searchStudents(query);
+                const resultIds = new Set(results.map(s => s.id));
+                
+                let hasVisible = false;
+                studentItems.forEach(item => {
+                    const studentId = item.dataset.studentId;
+                    const shouldShow = resultIds.has(studentId);
+                    item.style.display = shouldShow ? '' : 'none';
+                    if (shouldShow) hasVisible = true;
+                });
+
+                noResult.classList.toggle('hidden', hasVisible);
+            }
+
+            // Filter groups display
+            function filterGroups() {
+                const input = document.getElementById('groupSearchInput');
+                const filter = normalizeQuery(input.value);
+                const groupItems = document.querySelectorAll('.group-item');
+                const noResult = document.getElementById('noGroupFound');
+                
+                let found = false;
+
+                if (!filter) {
+                    groupItems.forEach(item => {
+                        item.style.display = '';
+                        found = true;
+                    });
+                } else {
+                    const filterWords = filter.split(' ');
+                    
+                    groupItems.forEach(item => {
+                        const groupId = item.dataset.groupId;
+                        const group = groupsData.find(g => g.id === groupId);
+                        
+                        if (group && filterWords.every(word => group.searchText.includes(word))) {
+                            item.style.display = '';
+                            found = true;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                }
+
+                noResult.classList.toggle('hidden', found);
+            }
 
             // Toggle student dropdown
             function toggleStudentDropdown() {
@@ -403,92 +509,41 @@
             }
 
             // Select student
-            function selectStudent(id, name, phone, balance, commission) {
+            function selectStudent(id) {
+                const student = studentsData.find(s => s.id == id);
+                if (!student) return;
+
                 // Update input and label
                 document.getElementById('student_id_input').value = id;
-                document.getElementById('selectedStudentLabel').innerText = name + " - " + phone;
+                document.getElementById('selectedStudentLabel').innerText = `${student.fullName} - ${student.phone}`;
 
                 // Update info block
-                const infoBlock = document.getElementById('studentInfo');
-                const balanceText = document.getElementById('currentBalance');
-                const commissionText = document.getElementById('commissionRate');
-
-                infoBlock.classList.remove('hidden');
-
-                const formattedBalance = new Intl.NumberFormat('uz-UZ').format(balance) + " so'm";
-                balanceText.innerText = formattedBalance;
-                commissionText.innerText = commission + "%";
+                studentInfo.classList.remove('hidden');
+                currentBalance.innerText = formatNumber(student.balance) + " so'm";
+                commissionRate.innerText = student.commission + "%";
 
                 // Store commission for calculations
-                currentCommissionPercent = parseFloat(commission);
+                currentCommissionPercent = student.commission;
 
                 // Close dropdown
                 toggleStudentDropdown();
 
                 // Update summary
                 updateSummary();
-
-                // Reload page to update groups based on selected student
-                const currentUrl = new URL(window.location.href);
-                currentUrl.searchParams.set('student_id', id);
-                window.location.href = currentUrl.toString();
             }
 
             // Select group
-            function selectGroup(id, name, subject) {
+            function selectGroup(id) {
+                const group = groupsData.find(g => g.id == id);
+                if (!group) return;
+
                 // Update input and label
                 document.getElementById('group_id_input').value = id;
-                const label = name + (subject ? ' - ' + subject : '');
+                const label = group.name + (group.subject ? ' - ' + group.subject : '');
                 document.getElementById('selectedGroupLabel').innerText = label;
 
                 // Close dropdown
                 toggleGroupDropdown();
-            }
-
-            // Filter students
-            function filterStudents() {
-                const input = document.getElementById('studentSearchInput');
-                const filter = input.value.toLowerCase();
-                const items = document.querySelectorAll('.student-item');
-                const noResult = document.getElementById('noStudentFound');
-                let found = false;
-
-                items.forEach(item => {
-                    const name = item.querySelector('.student-name-text').innerText.toLowerCase();
-                    const phone = item.querySelector('.student-phone-text').innerText.toLowerCase();
-
-                    if (name.includes(filter) || phone.includes(filter)) {
-                        item.style.display = "";
-                        found = true;
-                    } else {
-                        item.style.display = "none";
-                    }
-                });
-
-                noResult.classList.toggle('hidden', found);
-            }
-
-            // Filter groups
-            function filterGroups() {
-                const input = document.getElementById('groupSearchInput');
-                const filter = input.value.toLowerCase();
-                const items = document.querySelectorAll('.group-item');
-                const noResult = document.getElementById('noGroupFound');
-                let found = false;
-
-                items.forEach(item => {
-                    const name = item.querySelector('.group-name-text').innerText.toLowerCase();
-                    const subject = item.querySelector('.group-subject-text').innerText.toLowerCase();
-
-                    if (name.includes(filter) || subject.includes(filter)) {
-                        item.style.display = "";
-                        found = true;
-                    } else {
-                        item.style.display = "none";
-                    }
-                });
-
-                noResult.classList.toggle('hidden', found);
             }
 
             // Close dropdowns when clicking outside
@@ -541,15 +596,45 @@
                 return new Intl.NumberFormat('uz-UZ').format(num);
             }
 
-            // Initialize on page load
-            if (isInstallmentCheckbox.checked) {
-                installmentFields.classList.remove('hidden');
+            // Restore selected student on page load
+            function restoreSelectedStudent() {
+                const selectedId = document.getElementById('student_id_input').value;
+                if (selectedId) {
+                    const student = studentsData.find(s => s.id == selectedId);
+                    if (student) {
+                        document.getElementById('selectedStudentLabel').innerText = `${student.fullName} - ${student.phone}`;
+                        studentInfo.classList.remove('hidden');
+                        currentBalance.innerText = formatNumber(student.balance) + " so'm";
+                        commissionRate.innerText = student.commission + "%";
+                        currentCommissionPercent = student.commission;
+                        updateSummary();
+                    }
+                }
             }
 
-            // Initial calculation if student is selected
-            if (document.getElementById('student_id_input').value) {
-                updateSummary();
+            // Restore selected group on page load
+            function restoreSelectedGroup() {
+                const selectedId = document.getElementById('group_id_input').value;
+                if (selectedId) {
+                    const group = groupsData.find(g => g.id == selectedId);
+                    if (group) {
+                        const label = group.name + (group.subject ? ' - ' + group.subject : '');
+                        document.getElementById('selectedGroupLabel').innerText = label;
+                    }
+                }
             }
+
+            // Initialize on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                initializeStudentsData();
+                initializeGroupsData();
+                restoreSelectedStudent();
+                restoreSelectedGroup();
+
+                if (isInstallmentCheckbox.checked) {
+                    installmentFields.classList.remove('hidden');
+                }
+            });
         </script>
     @endpush
 @endsection

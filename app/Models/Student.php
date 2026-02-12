@@ -40,7 +40,7 @@ class Student extends Model
     }
     public function director()
     {
-        return $this->belongsTo(Director::class);
+        return $this->belongsTo(Director::class,'director_id');
     }
 
     public function groups()

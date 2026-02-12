@@ -281,7 +281,7 @@
                                 </div>
                                 <div>
                                     <p class="font-semibold text-gray-900 dark:text-white">{{ $group->name }}</p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $group->cours->name }}</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $group->course->name }}</p>
                                 </div>
                             </div>
                             <div class="px-3 py-1.5 bg-purple-600 text-white font-bold rounded-lg shadow-sm">
@@ -353,7 +353,7 @@
                                 <td class="py-3 px-4">
                                     <span
                                         class="inline-flex items-center px-2.5 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-sm font-semibold rounded-lg">
-                                        {{ $payment->cours->name }}
+                                        {{ $payment->course->name }}
                                     </span>
                                 </td>
                                 <td class="py-3 px-4">

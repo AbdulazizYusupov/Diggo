@@ -77,24 +77,7 @@ class PaymentController extends Controller
         ));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    // public function create(Request $request)
-    // {
-    //     $students = Student::with('user', 'director')
-    //         ->whereHas('user', function ($q) {
-    //             $q->where('is_active', true);
-    //         })
-    //         ->get();
-
-    //     $selectedStudent = null;
-    //     if ($request->filled('student_id')) {
-    //         $selectedStudent = Student::with('user', 'director')->find($request->student_id);
-    //     }
-
-    //     return view('Payment.create', compact('students', 'selectedStudent'));
-    // }
+   
     public function create(Request $request)
     {
         // Fetch all active students with relationships
@@ -154,7 +137,6 @@ class PaymentController extends Controller
         try {
             // Load student with director relationship only
             $student = Student::with('director')->findOrFail($validated['student_id']);
-
             // Calculate amounts
             $amounts = $this->calculatePaymentAmounts(
                 $validated['amount'],
@@ -414,7 +396,6 @@ class PaymentController extends Controller
     {
         $student = Student::with(['user', 'director', 'activeGroups.course'])
             ->findOrFail($request->student_id);
-
         return response()->json([
             'student' => $student,
             'balance' => $student->balance,

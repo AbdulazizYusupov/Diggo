@@ -18,7 +18,6 @@ class Director extends Model
     {
         return $this->belongsTo(User::class);
     }
-
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class, 'school_id');
@@ -28,12 +27,7 @@ class Director extends Model
     {
         return $this->hasMany(Student::class);
     }
-    // public function commissions()
-    // {
-    //     return $this->hasMany(DirectorCommission::class);
-    // }
 
-    // Director.php ichida
     public function transactions()
     {
         return $this->morphMany(Transaction::class, 'transactionable');
