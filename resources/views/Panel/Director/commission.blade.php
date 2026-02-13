@@ -170,15 +170,15 @@
                                     <div class="flex items-center gap-3">
                                         <div
                                             class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold flex-shrink-0">
-                                            {{ substr($commission->payment->student->user->name, 0, 1) }}{{ substr($commission->payment->student->user->surname ?? '', 0, 1) }}
+                                            {{ substr($commission->transactionable->user->name, 0, 1) }}{{ substr($commission->payment->student->user->surname ?? '', 0, 1) }}
                                         </div>
                                         <div>
                                             <p class="font-semibold text-gray-900 dark:text-white">
-                                                {{ $commission->payment->student->user->name }}
-                                                {{ $commission->payment->student->user->surname }}
+                                                {{ $commission->transactionable->user->name }}
+                                                {{ $commission->transactionable->user->surname }}
                                             </p>
                                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $commission->payment->student->user->phone }}
+                                                {{ $commission->transactionable->user->phone }}
                                             </p>
                                         </div>
                                     </div>
@@ -186,12 +186,12 @@
                                 <td class="py-4 px-6">
                                     <span
                                         class="inline-flex items-center px-2.5 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-sm font-semibold rounded-lg">
-                                        {{ $commission->payment->cours->name }}
+                                        {{ $commission->source?->group?->course?->title ?? 'Noma’lum kurs' }}
                                     </span>
                                 </td>
                                 <td class="py-4 px-6">
                                     <p class="font-bold text-gray-900 dark:text-white">
-                                        {{ number_format($commission->payment->amount, 0, '.', ' ') }} so'm
+                                        {{ number_format($commission->source->amount, 0, '.', ' ') }} so'm
                                     </p>
                                 </td>
                                 <td class="py-4 px-6">

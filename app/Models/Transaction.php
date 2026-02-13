@@ -69,9 +69,14 @@ class Transaction extends Model
     /**
      * Backward compatibility: student relationship
      */
-    public function student()
+    // public function student()
+    // {
+    //     return $this->transactionable()
+    //         ->where('transactionable_type', Student::class);
+    // }
+    public function student(): BelongsTo
     {
-        return $this->transactionable()
+        return $this->belongsTo(Student::class, 'transactionable_id')
             ->where('transactionable_type', Student::class);
     }
 

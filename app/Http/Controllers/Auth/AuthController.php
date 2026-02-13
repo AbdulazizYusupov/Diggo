@@ -12,23 +12,7 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    // public function index()
-    // {
-    //     $path = storage_path('app/public/Login');
 
-    //     // Agar papka mavjud bo'lsa, fayllarni massivga olamiz
-    //     $files = File::exists($path) ? File::files($path) : [];
-
-    //     // Random bitta rasm nomini tanlash
-    //     $randomImage = 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&q=80'; // Default rasm
-
-    //     if (count($files) > 0) {
-    //         $file = $files[array_rand($files)];
-    //         // Fayl nomini olamiz (masalan: rasm1.jpg)
-    //         $randomImage = asset('storage/Login/' . $file->getFilename());
-    //     }
-    //     return view('Auth.login',compact('randomImage'));
-    // }
     public function index()
     {
         // 1. Papka manzili: public/asset/Login
@@ -61,12 +45,15 @@ class AuthController extends Controller
             'phone' => ['required', 'string', 'min:9'],
             'password' => ['required', 'string', 'min:6'],
         ]);
-
         $credentials = $request->only('phone', 'password');
         $credentials['is_active'] = 1;
 
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
+            if (Auth::user()->hasRole('director')) {
+                return redirect()->route('director.dashboard');
+            }
+
             return redirect()->route('dashboard');
         }
 

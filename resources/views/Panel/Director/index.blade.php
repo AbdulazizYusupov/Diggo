@@ -353,7 +353,7 @@
                                 <td class="py-3 px-4">
                                     <span
                                         class="inline-flex items-center px-2.5 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-sm font-semibold rounded-lg">
-                                        {{ $payment->course->name }}
+                                        {{ $payment->group?->course?->name }}
                                     </span>
                                 </td>
                                 <td class="py-3 px-4">
@@ -368,7 +368,7 @@
                                 </td>
                                 <td class="py-3 px-4">
                                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                                        {{ $payment->payment_date->format('d.m.Y') }}
+                                        {{ $payment->paid_at->format('d.m.Y') }}
                                     </p>
                                 </td>
                             </tr>
