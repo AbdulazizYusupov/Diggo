@@ -21,6 +21,7 @@ use App\Http\Controllers\School\SchoolController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\Student\StudentController;
+use App\Http\Controllers\StudentDashboard\StudentDashboardController;
 use App\Http\Controllers\Teacher\TeacherController;
 use App\Http\Controllers\Transaction\TransactionController;
 use App\Http\Middleware\CheckPermission;
@@ -115,6 +116,16 @@ Route::middleware(['auth'])->group(function () {
 
             // Commissions
             Route::get('/commissions', [DirectorDashboardController::class, 'commissions'])->name('commissions');
+        });
+
+        Route::prefix('student')->name('student.')->group(function () {
+            Route::get('/', [StudentDashboardController::class, 'index'])->name('dashboard');
+
+            // Additional student routes can be added here
+            // Route::get('/groups', [StudentGroupController::class, 'index'])->name('groups');
+            // Route::get('/payments', [StudentPaymentController::class, 'index'])->name('payments');
+            // Route::get('/coins', [StudentCoinController::class, 'index'])->name('coins');
+            // Route::get('/attendance', [StudentAttendanceController::class, 'index'])->name('attendance');
         });
 
         Route::get('transactions/export', [TransactionController::class, 'export'])->name('transactions.export');
