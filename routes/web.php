@@ -21,7 +21,13 @@ use App\Http\Controllers\School\SchoolController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\Student\StudentController;
+use App\Http\Controllers\StudentDashboard\StudentAttendanceController;
+use App\Http\Controllers\StudentDashboard\StudentCoinsController;
 use App\Http\Controllers\StudentDashboard\StudentDashboardController;
+use App\Http\Controllers\StudentDashboard\StudentGroupsController;
+use App\Http\Controllers\StudentDashboard\StudentPaymentsController;
+use App\Http\Controllers\StudentDashboard\StudentProfileController;
+use App\Http\Controllers\StudentDashboard\StudentScheduleController;
 use App\Http\Controllers\Teacher\TeacherController;
 use App\Http\Controllers\Transaction\TransactionController;
 use App\Http\Middleware\CheckPermission;
@@ -121,12 +127,33 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('student')->name('student.')->group(function () {
             Route::get('/', [StudentDashboardController::class, 'index'])->name('dashboard');
 
-            // Additional student routes can be added here
-            // Route::get('/groups', [StudentGroupController::class, 'index'])->name('groups');
-            // Route::get('/payments', [StudentPaymentController::class, 'index'])->name('payments');
-            // Route::get('/coins', [StudentCoinController::class, 'index'])->name('coins');
-            // Route::get('/attendance', [StudentAttendanceController::class, 'index'])->name('attendance');
+            Route::get('/groups', [StudentGroupsController::class, 'index'])->name('groups');
+            Route::get('/groups/{id}', [StudentGroupsController::class, 'show'])->name('groups.show');
+
+            // Payments
+            Route::get('/payments', [StudentPaymentsController::class, 'index'])->name('payments');
+            Route::get('/payments/{id}', [StudentPaymentsController::class, 'show'])->name('payments.show');
+
+            // Coins
+            Route::get('/coins', [StudentCoinsController::class, 'index'])->name('coins');
+            Route::get('/coins/{id}', [StudentCoinsController::class, 'show'])->name('coins.show');
+
+            // Attendance
+            Route::get('/attendance', [StudentAttendanceController::class, 'index'])->name('attendance');
+            Route::get('/attendance/calendar', [StudentAttendanceController::class, 'calendar'])->name('attendance.calendar');
+
+            // Schedule
+            Route::get('/schedule', [StudentScheduleController::class, 'index'])->name('schedule');
+            Route::get('/schedule/upcoming', [StudentScheduleController::class, 'upcoming'])->name('schedule.upcoming');
+
+            // Profile
+            Route::get('/profile', [StudentProfileController::class, 'index'])->name('profile');
+            Route::put('/profile', [StudentProfileController::class, 'updateProfile'])->name('profile.update');
+            Route::put('/profile/parent', [StudentProfileController::class, 'updateParentInfo'])->name('profile.parent');
+            Route::put('/profile/password', [StudentProfileController::class, 'updatePassword'])->name('profile.password');
+            Route::get('/profile/statistics', [StudentProfileController::class, 'statistics'])->name('profile.statistics');
         });
+
 
         Route::get('transactions/export', [TransactionController::class, 'export'])->name('transactions.export');
         Route::resource('transactions', TransactionController::class)->only(['index', 'show']);

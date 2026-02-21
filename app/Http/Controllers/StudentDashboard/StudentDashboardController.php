@@ -9,7 +9,6 @@ use App\Models\GroupStudent;
 use App\Models\Payment;
 use App\Models\Student;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -124,10 +123,10 @@ class StudentDashboardController extends Controller
             // O'rtacha balllar
             'avg_homework_score' => round(Attendance::where('student_id', $student->id)
                 ->whereNotNull('homework_score')
-                ->avg('homework_score'), 1),
+                ->avg('homework_score') ?? 0, 1),
             'avg_activity_score' => round(Attendance::where('student_id', $student->id)
                 ->whereNotNull('activity_score')
-                ->avg('activity_score'), 1),
+                ->avg('activity_score') ?? 0, 1),
         ];
     }
 
@@ -168,19 +167,29 @@ class StudentDashboardController extends Controller
                     })
                     ->count();
 
+                // days_of_week JSON dan string ga
+                $daysOfWeek = is_array($group->days_of_week) 
+                    ? implode(', ', $group->days_of_week) 
+                    : (is_string($group->days_of_week) ? json_decode($group->days_of_week, true) : []);
+                
+                if (is_array($daysOfWeek)) {
+                    $daysOfWeek = implode(', ', $daysOfWeek);
+                }
+
                 return [
                     'id' => $group->id,
                     'name' => $group->name,
-                    'course_name' => $group->course->name ?? 'N/A',
-                    'level' => $group->level,
+                    'course_name' => $group->cours->title ?? 'N/A',
                     'start_date' => $group->start_date,
                     'end_date' => $group->end_date,
-                    'lesson_days' => $group->lesson_days,
-                    'lesson_time' => $group->lesson_time,
+                    'lesson_days' => $daysOfWeek,
+                    'lesson_time' => $group->start_time . ($group->end_time ? ' - ' . $group->end_time : ''),
                     'joined_at' => $groupStudent->joined_at,
                     'attendance_rate' => $totalLessons > 0 ? round(($presentLessons / $totalLessons) * 100, 1) : 0,
                     'total_lessons' => $totalLessons,
                     'last_lesson' => $group->lessons->first(),
+                    'capacity' => $group->capacity,
+                    'is_active' => $group->is_active,
                 ];
             });
     }
@@ -197,7 +206,7 @@ class StudentDashboardController extends Controller
     private function getMonthlyCoinHistory(Student $student)
     {
         return CoinTransaction::where('student_id', $student->id)
-            ->where('coins', '>', 0) // Faqat olingan coinlar
+            ->where('coins', '>', 0)
             ->select(
                 DB::raw('DATE_FORMAT(transaction_date, "%Y-%m") as month'),
                 DB::raw('SUM(coins) as total'),
@@ -257,7 +266,6 @@ class StudentDashboardController extends Controller
         $now = Carbon::now();
         $endDate = $now->copy()->addDays(7);
 
-        // Student guruhlaridagi yaqin darslarni olish
         $groupIds = GroupStudent::where('student_id', $student->id)
             ->where('status', 'active')
             ->pluck('group_id');
@@ -288,26 +296,21 @@ class StudentDashboardController extends Controller
 
     private function getTeachers(Student $student)
     {
-        // Student guruhlaridagi o'qituvchilarni olish
         return DB::table('group_teachers')
             ->join('teachers', 'group_teachers.teacher_id', '=', 'teachers.id')
             ->join('users', 'teachers.user_id', '=', 'users.id')
-            // ->join('cours', 'teachers.cours_id', '=', 'cours.id')
             ->whereIn('group_teachers.group_id', function ($query) use ($student) {
                 $query->select('group_id')
                     ->from('group_students')
                     ->where('student_id', $student->id)
                     ->where('status', 'active');
             })
-            // ->whereNull('group_teachers.left_at')
             ->select(
                 'teachers.id',
                 'users.name',
                 'users.surname',
                 'users.phone',
-                'users.email',
-                // 'cours.title as course_name',
-                // 'teachers.specialization'
+                'users.email'
             )
             ->distinct()
             ->get();
