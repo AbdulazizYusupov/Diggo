@@ -34,6 +34,10 @@ use App\Http\Controllers\StudentDashboard\StudentPaymentsController;
 use App\Http\Controllers\StudentDashboard\StudentProfileController;
 use App\Http\Controllers\StudentDashboard\StudentScheduleController;
 use App\Http\Controllers\Teacher\TeacherController;
+use App\Http\Controllers\TeacherDashboard\TeacherAttendanceController;
+use App\Http\Controllers\TeacherDashboard\TeacherDashboardController;
+use App\Http\Controllers\TeacherDashboard\TeacherGroupsController;
+use App\Http\Controllers\TeacherDashboard\TeacherLessonsController;
 use App\Http\Controllers\Transaction\TransactionController;
 use App\Http\Middleware\CheckPermission;
 use Illuminate\Support\Facades\Route;
@@ -96,10 +100,8 @@ Route::middleware(['auth'])->group(function () {
         });
         Route::resource('group-teachers', GroupTeacherController::class);
         Route::resource('payments', PaymentController::class);
-        Route::get('payments/student-info', [PaymentController::class, 'getStudentInfo'])
-            ->name('payments.student-info');
-        Route::post('payments/{payment}/cancel', [PaymentController::class, 'cancel'])
-            ->name('payments.cancel');  // ← YANGI
+        Route::get('payments/student-info', [PaymentController::class, 'getStudentInfo'])->name('payments.student-info');
+        Route::post('payments/{payment}/cancel', [PaymentController::class, 'cancel'])->name('payments.cancel');  // ← YANGI
         Route::resource('activities', ActivityController::class);
         Route::resource('activityresults', ActivityResultController::class);
 
@@ -160,6 +162,29 @@ Route::middleware(['auth'])->group(function () {
             Route::put('/profile/parent', [StudentProfileController::class, 'updateParentInfo'])->name('profile.parent');
             Route::put('/profile/password', [StudentProfileController::class, 'updatePassword'])->name('profile.password');
             Route::get('/profile/statistics', [StudentProfileController::class, 'statistics'])->name('profile.statistics');
+        });
+        Route::prefix('teacher')->name('teacher.')->group(function () {
+            Route::get('/', [TeacherDashboardController::class, 'index'])->name('dashboard');
+
+            // Groups
+            Route::prefix('groups')->name('groups.')->group(function () {
+                Route::get('/',        [TeacherGroupsController::class, 'index'])->name('index');
+                Route::get('/{group}', [TeacherGroupsController::class, 'show'])->name('show');
+            });
+
+            // Lessons inside a group
+            Route::prefix('groups/{group}/lessons')->name('groups.lessons.')->group(function () {
+                Route::get('/', [TeacherLessonsController::class, 'index'])->name('index');
+                Route::get('/create', [TeacherLessonsController::class, 'create'])->name('create');
+                Route::post('/', [TeacherLessonsController::class, 'store'])->name('store');
+                Route::get('/{lesson}/edit', [TeacherLessonsController::class, 'edit'])->name('edit');
+                Route::put('/{lesson}', [TeacherLessonsController::class, 'update'])->name('update');
+                Route::delete('/{lesson}', [TeacherLessonsController::class, 'destroy'])->name('destroy');
+            });
+            Route::prefix('groups/{group}/lessons/{lesson}/attendance')->name('attendance.')->group(function () {
+                Route::get('/',  [TeacherAttendanceController::class, 'show'])->name('show');
+                Route::post('/', [TeacherAttendanceController::class, 'store'])->name('store');
+            });
         });
 
 

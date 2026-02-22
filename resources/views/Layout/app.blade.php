@@ -425,21 +425,48 @@
                             </a>
                             <a href="{{ route('director.reports') }}"
                                 class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('director.reports*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                
+
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('director.reports*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
+                                    stroke-width="1.5" stroke="currentColor"
+                                    class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('director.reports*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
                                 </svg>
 
                                 <span class="ml-3 sidebar-text">Reports</span>
 
+                                <span class="nav-tooltip">Reports</span>
+                            </a>
+                        @endrole
+                        @role('teacher')
+                            <a href="{{ route('teacher.dashboard') }}"
+                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('teacher.dashboard') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+
+                                <svg class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('teacher.dashboard') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                </svg>
+
+                                <span class="ml-3 sidebar-text">Dashboard</span>
+
                                 @if (request()->routeIs('director'))
                                     <span
                                         class="ml-auto bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 py-0.5 px-2 text-xs font-bold rounded-full sidebar-text">4</span>
                                 @endif
 
-                                <span class="nav-tooltip">Reports</span>
+                                <span class="nav-tooltip">Dashboard</span>
+                            </a>
+                            <a href="{{ route('teacher.groups.index') }}"
+                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs(['teacher.groups*','teacher.attendance.*']) ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor"
+                                    class="h-5 w-5 flex-shrink-0 {{ request()->routeIs(['teacher.groups*','teacher.attendance.*']) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+                                </svg>
+                                <span class="ml-3 sidebar-text">Guruhlar</span>
+                                <span class="nav-tooltip">Guruhlar</span>
                             </a>
                         @endrole
                         @role('admin|staff')
