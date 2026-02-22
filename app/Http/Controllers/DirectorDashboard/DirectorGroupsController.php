@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\StudentDashboard;
+namespace App\Http\Controllers\DirectorDashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Group;
