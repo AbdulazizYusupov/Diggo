@@ -21,6 +21,10 @@ use App\Http\Controllers\School\SchoolController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\Student\StudentController;
+use App\Http\Controllers\StudentDashboard\DirectorCommissionsController;
+use App\Http\Controllers\StudentDashboard\DirectorGroupsController;
+use App\Http\Controllers\StudentDashboard\DirectorReportsController;
+use App\Http\Controllers\StudentDashboard\DirectorStudentsController;
 use App\Http\Controllers\StudentDashboard\StudentAttendanceController;
 use App\Http\Controllers\StudentDashboard\StudentCoinsController;
 use App\Http\Controllers\StudentDashboard\StudentDashboardController;
@@ -71,32 +75,23 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('groups', GroupController::class);
         Route::prefix('groups/{group}')->group(function () {
             // Students
-            Route::get('students', [GroupStudentController::class, 'index'])
-                ->name('groups.students.index');
+            Route::get('students', [GroupStudentController::class, 'index'])->name('groups.students.index');
 
-            Route::get('students/create', [GroupStudentController::class, 'create'])
-                ->name('groups.students.create');
+            Route::get('students/create', [GroupStudentController::class, 'create'])->name('groups.students.create');
 
-            Route::post('students', [GroupStudentController::class, 'store'])
-                ->name('groups.students.store');
+            Route::post('students', [GroupStudentController::class, 'store'])->name('groups.students.store');
 
-            Route::delete('students/{student}', [GroupStudentController::class, 'destroy'])
-                ->name('groups.students.destroy');
+            Route::delete('students/{student}', [GroupStudentController::class, 'destroy'])->name('groups.students.destroy');
 
             // Teachers
-            Route::get('teachers', [GroupTeacherController::class, 'index'])
-                ->name('groups.teachers.index');
+            Route::get('teachers', [GroupTeacherController::class, 'index'])->name('groups.teachers.index');
 
-            Route::get('teachers/create', [GroupTeacherController::class, 'create'])
-                ->name('groups.teachers.create');
+            Route::get('teachers/create', [GroupTeacherController::class, 'create'])->name('groups.teachers.create');
 
-            Route::post('teachers', [GroupTeacherController::class, 'store'])
-                ->name('groups.teachers.store');
-            Route::patch('teachers/{teacher}/primary', [GroupTeacherController::class, 'makePrimaryTeacher'])
-                ->name('groups.teachers.primary');
+            Route::post('teachers', [GroupTeacherController::class, 'store'])->name('groups.teachers.store');
+            Route::patch('teachers/{teacher}/primary', [GroupTeacherController::class, 'makePrimaryTeacher'])->name('groups.teachers.primary');
 
-            Route::delete('teachers/{teacher}', [GroupTeacherController::class, 'destroy'])
-                ->name('groups.teachers.destroy');
+            Route::delete('teachers/{teacher}', [GroupTeacherController::class, 'destroy'])->name('groups.teachers.destroy');
         });
         Route::resource('group-teachers', GroupTeacherController::class);
         Route::resource('payments', PaymentController::class);
@@ -118,10 +113,22 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/', [DirectorDashboardController::class, 'index'])->name('dashboard');
 
             // Students
-            Route::get('/students', [DirectorDashboardController::class, 'students'])->name('students');
-
+            // Route::get('/students', [DirectorDashboardController::class, 'students'])->name('students');
             // Commissions
-            Route::get('/commissions', [DirectorDashboardController::class, 'commissions'])->name('commissions');
+            // Route::get('/commissions', [DirectorDashboardController::class, 'commissions'])->name('commissions');
+            Route::get('/students', [DirectorStudentsController::class, 'index'])->name('students');
+            Route::get('/students/{id}', [DirectorStudentsController::class, 'show'])->name('students.show');
+            // // Commissions
+            Route::get('/commissions', [DirectorCommissionsController::class, 'index'])->name('commissions');
+            Route::get('/commissions/history', [DirectorCommissionsController::class, 'history'])->name('commissions.history');
+
+            // // Groups
+            Route::get('/groups', [DirectorGroupsController::class, 'index'])->name('groups');
+            Route::get('/groups/{id}', [DirectorGroupsController::class, 'show'])->name('groups.show');
+
+            // Reports
+            Route::get('/reports', [DirectorReportsController::class, 'index'])->name('reports');
+            Route::get('/reports/export', [DirectorReportsController::class, 'export'])->name('reports.export');
         });
 
         Route::prefix('student')->name('student.')->group(function () {
