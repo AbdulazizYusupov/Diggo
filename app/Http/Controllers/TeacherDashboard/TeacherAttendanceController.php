@@ -4,8 +4,10 @@ namespace App\Http\Controllers\TeacherDashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Models\CoinTransaction;
 use App\Models\Lesson;
 use App\Models\LessonChange;
+use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,9 +20,7 @@ class TeacherAttendanceController extends Controller
         $user    = Auth::user();
         $teacher = $user->teacher;
 
-        if (!$teacher) {
-            abort(403, 'O\'qituvchi profili topilmadi');
-        }
+        if (!$teacher) abort(403, 'O\'qituvchi profili topilmadi');
 
         $group = $teacher->groups()
             ->with('course', 'activeStudents.user')
@@ -31,31 +31,26 @@ class TeacherAttendanceController extends Controller
             ->whereNull('deleted_at')
             ->findOrFail($lessonId);
 
-        // Mavjud davomatlar (student_id => Attendance)
         $existingMap = Attendance::where('lesson_id', $lesson->id)
             ->whereNull('deleted_at')
             ->get()
             ->keyBy('student_id');
 
-        // Har bir o'quvchi uchun mavjud davomat ma'lumotlarini tayyorlash
-        // (blade da @php ishlatmaslik uchun)
         $students = $group->activeStudents->map(function ($student) use ($existingMap) {
             $att = $existingMap->get($student->id);
 
-            $student->existing_status   = $att ? $att->status         : null;
-            $student->existing_hw       = $att ? $att->homework_score  : null;
-            $student->existing_act      = $att ? $att->activity_score  : null;
-            $student->existing_late     = $att ? $att->late_minutes    : null;
-            $student->existing_notes    = $att ? $att->notes           : null;
-            $student->existing_coins    = $att ? $this->calculateDailyCoins($att) : 0;
+            $student->existing_status = $att?->status;
+            $student->existing_hw     = $att?->homework_score;
+            $student->existing_act    = $att?->activity_score;
+            $student->existing_late   = $att?->late_minutes;
+            $student->existing_notes  = $att?->notes;
+            $student->existing_coins  = $att ? $this->calculateDailyCoins($att) : 0;
 
             return $student;
         });
 
-        // Dars status badge ma'lumotlari (blade @php siz)
         $lessonStatusBadge = $this->getLessonStatusBadge($lesson->status);
 
-        // Status tanlov opsiyalari
         $statusOptions = [
             ['value' => 'present', 'label' => 'Keldi',    'checked_class' => 'bg-emerald-500 text-white ring-2 ring-emerald-300', 'hover_class' => 'hover:bg-emerald-50 dark:hover:bg-emerald-900/20'],
             ['value' => 'late',    'label' => 'Kechikdi', 'checked_class' => 'bg-amber-500 text-white ring-2 ring-amber-300',    'hover_class' => 'hover:bg-amber-50 dark:hover:bg-amber-900/20'],
@@ -64,26 +59,16 @@ class TeacherAttendanceController extends Controller
         ];
 
         return view('Panel.Teacher.attendance', compact(
-            'teacher',
-            'group',
-            'lesson',
-            'students',
-            'lessonStatusBadge',
-            'statusOptions'
+            'teacher', 'group', 'lesson', 'students', 'lessonStatusBadge', 'statusOptions'
         ));
     }
 
-    /**
-     * Yuqlamani saqlash + coinlarni avtomatik berish
-     */
     public function store(Request $request, $groupId, $lessonId)
     {
         $user    = Auth::user();
         $teacher = $user->teacher;
 
-        if (!$teacher) {
-            abort(403, 'O\'qituvchi profili topilmadi');
-        }
+        if (!$teacher) abort(403, 'O\'qituvchi profili topilmadi');
 
         $group = $teacher->groups()->findOrFail($groupId);
 
@@ -102,17 +87,17 @@ class TeacherAttendanceController extends Controller
             'attendances.*.notes'            => 'nullable|string|max:500',
         ]);
 
-        DB::transaction(function () use ($request, $lesson, $user, $group) {
+        DB::transaction(function () use ($request, $lesson, $user) {
             $markedAt = Carbon::now();
 
-            // Coin farqlarini yig'ish uchun
-            $coinChanges = [];
+            // 1-QADAM: Davomatlarni saqlash + coin farqlarini yig'ish
+            // [ studentId => ['diff' => int, 'description' => string] ]
+            $coinPlan = [];
 
             foreach ($request->attendances as $data) {
                 $studentId = (int) $data['student_id'];
                 $status    = $data['status'] ?? null;
 
-                // Eski davomatni olish (coin farqini hisoblash uchun)
                 $oldAttendance = Attendance::where('lesson_id', $lesson->id)
                     ->where('student_id', $studentId)
                     ->whereNull('deleted_at')
@@ -120,34 +105,28 @@ class TeacherAttendanceController extends Controller
 
                 $oldCoins = $oldAttendance ? $this->calculateDailyCoins($oldAttendance) : 0;
 
-                // Status yo'q — mavjud davomatni o'chirish va coinlarni qaytarish
+                // Status yo'q — davomatni o'chirish, coinlarni qaytarish
                 if (empty($status)) {
                     if ($oldAttendance) {
                         $oldAttendance->delete();
-                        $coinChanges[$studentId] = ($coinChanges[$studentId] ?? 0) - $oldCoins;
 
-                        if ($oldCoins > 0) {
-                            CoinTransaction::create([
-                                'student_id'       => $studentId,
-                                'coins'            => -$oldCoins,
-                                'type'             => 'participation',
-                                'description'      => 'Davomat o\'chirilganligi sababli coin qaytarildi',
-                                'transaction_date' => $lesson->lesson_date,
-                                'user_id'          => $user->id,
-                            ]);
+                        if ($oldCoins !== 0) {
+                            $coinPlan[$studentId] = [
+                                'diff'        => -$oldCoins,
+                                'description' => "Davomat bekor qilindi: {$lesson->topic} ({$lesson->lesson_date->format('d.m.Y')})",
+                            ];
                         }
                     }
                     continue;
                 }
 
-                // Kechikish 30+ daqiqa bo'lsa kelmagan hisoblanadi
+                // Kechikish 30+ daqiqa => kelmagan
                 $lateMinutes = (int)($data['late_minutes'] ?? 0);
                 if ($status === 'late' && $lateMinutes >= 30) {
                     $status      = 'absent';
                     $lateMinutes = 0;
                 }
 
-                // Uy ishi va faollik faqat kelgan/kechikkan bo'lsa
                 if (in_array($status, ['present', 'late'])) {
                     $homeworkScore = min(3, max(0, (int)($data['homework_score'] ?? 0)));
                     $activityScore = min(3, max(0, (int)($data['activity_score'] ?? 0)));
@@ -157,15 +136,11 @@ class TeacherAttendanceController extends Controller
                     $lateMinutes   = null;
                 }
 
-                // Davomat coinlarini hisoblash
                 $attendanceCoins = $this->calculateAttendanceCoins($status, (int)($lateMinutes ?? 0));
                 $newCoins        = $attendanceCoins + ($homeworkScore ?? 0) + ($activityScore ?? 0);
 
                 Attendance::withoutTrashed()->updateOrCreate(
-                    [
-                        'lesson_id'  => $lesson->id,
-                        'student_id' => $studentId,
-                    ],
+                    ['lesson_id' => $lesson->id, 'student_id' => $studentId],
                     [
                         'marked_by'      => $user->id,
                         'status'         => $status,
@@ -178,33 +153,45 @@ class TeacherAttendanceController extends Controller
                     ]
                 );
 
-                // Coin farqi
-                $coinDiff = $newCoins - $oldCoins;
-                $coinChanges[$studentId] = ($coinChanges[$studentId] ?? 0) + $coinDiff;
+                $diff = $newCoins - $oldCoins;
+                if ($diff !== 0) {
+                    $coinPlan[$studentId] = [
+                        'diff'        => $diff,
+                        'description' => "Dars davomati: {$lesson->topic} ({$lesson->lesson_date->format('d.m.Y')})",
+                    ];
+                }
+            }
 
-                // Coin transaction yozish (farq bo'lsa)
-                if ($coinDiff !== 0) {
+            // 2-QADAM: Coin o'zgarishi bo'lgan studentlar balansini bir so'rovda olish
+            if (!empty($coinPlan)) {
+                $studentIds   = array_keys($coinPlan);
+                $currentCoins = Student::whereIn('id', $studentIds)
+                    ->pluck('coins', 'id'); // [ id => coins ]
+
+                foreach ($coinPlan as $studentId => $plan) {
+                    $diff         = $plan['diff'];
+                    $currentBal   = (int)($currentCoins->get($studentId) ?? 0);
+                    $balanceAfter = $currentBal + $diff;
+
+                    // Student coinini yangilash
+                    DB::table('students')
+                        ->where('id', $studentId)
+                        ->increment('coins', $diff);
+
+                    // CoinTransaction — balance_after to'g'ri yoziladi
                     CoinTransaction::create([
                         'student_id'       => $studentId,
-                        'coins'            => $coinDiff,
-                        'type'             => 'participation',
-                        'description'      => "Dars davomati: {$lesson->topic} ({$lesson->lesson_date->format('d.m.Y')})",
-                        'transaction_date' => $lesson->lesson_date,
                         'user_id'          => $user->id,
+                        'coins'            => $diff,
+                        'type'             => 'participation',
+                        'description'      => $plan['description'],
+                        'balance_after'    => $balanceAfter,
+                        'transaction_date' => $lesson->lesson_date,
                     ]);
                 }
             }
 
-            // Studentlar coin balansini yangilash
-            foreach ($coinChanges as $studentId => $diff) {
-                if ($diff !== 0) {
-                    DB::table('students')
-                        ->where('id', $studentId)
-                        ->increment('coins', $diff);
-                }
-            }
-
-            // Darsni "completed" ga o'tkazish
+            // 3-QADAM: Darsni "completed" ga o'tkazish
             if ($lesson->status === 'scheduled') {
                 $lesson->update(['status' => 'completed']);
             }
@@ -215,9 +202,9 @@ class TeacherAttendanceController extends Controller
             ->with('success', 'Yuqlama saqlandi va coinlar avtomatik yangilandi!');
     }
 
-    // ─────────────────────────────────────────────
+    // ─────────────────────────────────────────────────
     // Private helpers
-    // ─────────────────────────────────────────────
+    // ─────────────────────────────────────────────────
 
     private function calculateDailyCoins(Attendance $attendance): int
     {
@@ -225,23 +212,19 @@ class TeacherAttendanceController extends Controller
             $attendance->status,
             (int)($attendance->late_minutes ?? 0)
         );
-
         if (in_array($attendance->status, ['present', 'late'])) {
             $coins += min(3, max(0, (int)($attendance->homework_score ?? 0)));
             $coins += min(3, max(0, (int)($attendance->activity_score ?? 0)));
         }
-
         return $coins;
     }
 
     private function calculateAttendanceCoins(string $status, int $lateMinutes): int
     {
-        if ($status === 'present') {
-            return 2;
-        }
+        if ($status === 'present') return 2;
         if ($status === 'late') {
-            if ($lateMinutes < 15)  return 2;
-            if ($lateMinutes < 30)  return 1;
+            if ($lateMinutes < 15) return 2;
+            if ($lateMinutes < 30) return 1;
         }
         return 0;
     }
@@ -254,7 +237,6 @@ class TeacherAttendanceController extends Controller
             'cancelled'   => ['label' => 'Bekor qilindi',   'class' => 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'],
             'rescheduled' => ['label' => 'Siljitildi',       'class' => 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'],
         ];
-
         return $map[$status] ?? ['label' => $status, 'class' => 'bg-gray-100 text-gray-600'];
     }
 }
