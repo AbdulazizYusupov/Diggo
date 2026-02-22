@@ -26,7 +26,7 @@ class StudentCoinsController extends Controller
         $year = $request->get('year', Carbon::now()->year);
 
         // Query
-        $query = CoinTransaction::with(['activity', 'user'])
+        $query = CoinTransaction::with(['activity', 'student'])
             ->where('student_id', $student->id);
 
         // Type filter

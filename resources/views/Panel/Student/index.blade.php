@@ -564,10 +564,10 @@
                                 <p class="font-bold text-gray-900 dark:text-white">
                                     {{ $teacher->name }} {{ $teacher->surname }}
                                 </p>
-                                <p class="text-sm text-purple-600 dark:text-purple-400">{{ $teacher->course_name }}</p>
-                                @if($teacher->specialization)
+                                <p class="text-sm text-purple-600 dark:text-purple-400">{{ $teacher->course_name ?? '-' }}</p>
+                                {{-- @if($teacher?->specialization)
                                     <p class="text-xs text-gray-500 dark:text-gray-400">{{ $teacher->specialization }}</p>
-                                @endif
+                                @endif --}}
                             </div>
                         </div>
                     </div>

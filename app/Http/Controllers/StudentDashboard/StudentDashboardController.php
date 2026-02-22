@@ -196,7 +196,7 @@ class StudentDashboardController extends Controller
 
     private function getRecentCoinTransactions(Student $student)
     {
-        return CoinTransaction::with(['activity', 'user'])
+        return CoinTransaction::with(['activity', 'student'])
             ->where('student_id', $student->id)
             ->latest('transaction_date')
             ->take(10)
