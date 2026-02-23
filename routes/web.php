@@ -115,10 +115,7 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('director')->name('director.')->group(function () {
             Route::get('/', [DirectorDashboardController::class, 'index'])->name('dashboard');
             Route::get('/school/{id}', [DirectorDashboardController::class, 'show'])->name('school.show');
-            // Students
-            // Route::get('/students', [DirectorDashboardController::class, 'students'])->name('students');
-            // Commissions
-            // Route::get('/commissions', [DirectorDashboardController::class, 'commissions'])->name('commissions');
+            
             Route::get('/students', [DirectorStudentsController::class, 'index'])->name('students');
             Route::get('/students/{id}', [DirectorStudentsController::class, 'show'])->name('students.show');
             // // Commissions
