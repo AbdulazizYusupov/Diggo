@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\DirectorDashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\Director;
 use App\Models\Payment;
+use App\Models\Student;
+use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,111 +16,104 @@ class DirectorCommissionsController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $director = $user->director;
-
-        if (!$director) {
-            abort(403, 'Director profili topilmadi');
-        }
+        $director = Director::where('user_id', $user->id)->firstOrFail();
 
         // Filters
         $status = $request->get('status', 'all');
-        $month = $request->get('month');
-        $year = $request->get('year', Carbon::now()->year);
+        $month  = $request->get('month');
+        $year   = $request->get('year', Carbon::now()->year);
 
-        // Query - Director commission lari payments orqali
-        $query = Payment::with(['group.course', 'user'])
-            ->whereHas('group.students', function ($q) use ($director) {
-                $q->where('director_id', $director->id);
+        // Query - payable_type = Student, payable orqali director va school filter
+        $query = Payment::with(['payable.user'])
+            ->where('payable_type', Student::class)
+            ->whereHasMorph('payable', [Student::class], function ($q) use ($director) {
+                $q->where('school_id', $director->school_id)
+                  ->where('director_id', $director->id);
             })
             ->where('status', 'paid')
             ->whereNotNull('paid_at');
 
         // Month filter
         if ($month) {
-            $query->whereMonth('payment_month', $month);
+            $query->whereMonth('paid_at', $month);
         }
 
         // Year filter
-        $query->whereYear('payment_month', $year);
+        $query->whereYear('paid_at', $year);
 
-        $payments = $query->orderBy('paid_at', 'desc')
-            ->paginate(20);
+        // Status filter
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
 
-        // Calculate commissions for each payment
+        $payments = $query->orderBy('paid_at', 'desc')->paginate(20);
+
+        // Har bir payment uchun komissiya hisoblash
         $payments->getCollection()->transform(function ($payment) use ($director) {
-            $payment->commission_amount = ($payment->net_amount * $director->commission_percentage) / 100;
+            $payment->commission_amount = ($payment->amount * $director->commission_percentage) / 100;
             return $payment;
         });
 
         // Statistics
         $stats = $this->getCommissionStats($director, $year);
 
-        // Months
         $months = [
-            1 => 'Yanvar',
-            2 => 'Fevral',
-            3 => 'Mart',
-            4 => 'Aprel',
-            5 => 'May',
-            6 => 'Iyun',
-            7 => 'Iyul',
-            8 => 'Avgust',
-            9 => 'Sentabr',
-            10 => 'Oktabr',
-            11 => 'Noyabr',
-            12 => 'Dekabr'
+            1  => 'Yanvar',  2  => 'Fevral', 3  => 'Mart',
+            4  => 'Aprel',   5  => 'May',     6  => 'Iyun',
+            7  => 'Iyul',    8  => 'Avgust',  9  => 'Sentabr',
+            10 => 'Oktabr',  11 => 'Noyabr',  12 => 'Dekabr',
         ];
 
-        // Years
         $currentYear = Carbon::now()->year;
         $years = range($currentYear, $currentYear - 4);
 
         return view('Panel.Director.commissions', compact(
-            'director',
-            'payments',
-            'stats',
-            'status',
-            'month',
-            'year',
-            'months',
-            'years'
+            'director', 'payments', 'stats',
+            'status', 'month', 'year', 'months', 'years'
         ));
     }
 
     private function getCommissionStats($director, $year)
     {
-        $allPayments = Payment::whereHas('group.students', function ($q) use ($director) {
-            $q->where('director_id', $director->id);
-        })
+        // Yillik barcha to'lovlar
+        $baseQuery = Payment::where('payable_type', Student::class)
+            ->whereHasMorph('payable', [Student::class], function ($q) use ($director) {
+                $q->where('school_id', $director->school_id)
+                  ->where('director_id', $director->id);
+            })
             ->where('status', 'paid')
-            ->whereYear('payment_month', $year)
-            ->get();
+            ->whereYear('paid_at', $year);
+
+        $allPayments = $baseQuery->get();
 
         $totalCommission = $allPayments->sum(function ($payment) use ($director) {
-            return ($payment->net_amount * $director->commission_percentage) / 100;
+            return ($payment->amount * $director->commission_percentage) / 100;
         });
 
+        // Shu oylik
         $thisMonth = Carbon::now();
-        $thisMonthPayments = Payment::whereHas('group.students', function ($q) use ($director) {
-            $q->where('director_id', $director->id);
-        })
+        $thisMonthPayments = Payment::where('payable_type', Student::class)
+            ->whereHasMorph('payable', [Student::class], function ($q) use ($director) {
+                $q->where('school_id', $director->school_id)
+                  ->where('director_id', $director->id);
+            })
             ->where('status', 'paid')
-            ->whereMonth('payment_month', $thisMonth->month)
-            ->whereYear('payment_month', $thisMonth->year)
+            ->whereMonth('paid_at', $thisMonth->month)
+            ->whereYear('paid_at', $thisMonth->year)
             ->get();
 
         $thisMonthCommission = $thisMonthPayments->sum(function ($payment) use ($director) {
-            return ($payment->net_amount * $director->commission_percentage) / 100;
+            return ($payment->amount * $director->commission_percentage) / 100;
         });
 
         return [
-            'current_balance' => $director->balance,
-            'commission_percentage' => $director->commission_percentage,
-            'total_commission' => $totalCommission,
-            'this_month_commission' => $thisMonthCommission,
-            'total_payments' => $allPayments->count(),
-            'this_month_payments' => $thisMonthPayments->count(),
-            'monthly_breakdown' => $this->getMonthlyBreakdown($director, $year),
+            'current_balance'        => $director->balance,
+            'commission_percentage'  => $director->commission_percentage,
+            'total_commission'       => $totalCommission,
+            'this_month_commission'  => $thisMonthCommission,
+            'total_payments'         => $allPayments->count(),
+            'this_month_payments'    => $thisMonthPayments->count(),
+            'monthly_breakdown'      => $this->getMonthlyBreakdown($director, $year),
         ];
     }
 
@@ -126,16 +122,18 @@ class DirectorCommissionsController extends Controller
         $result = [];
 
         for ($month = 1; $month <= 12; $month++) {
-            $payments = Payment::whereHas('group.students', function ($q) use ($director) {
-                $q->where('director_id', $director->id);
-            })
+            $payments = Payment::where('payable_type', Student::class)
+                ->whereHasMorph('payable', [Student::class], function ($q) use ($director) {
+                    $q->where('school_id', $director->school_id)
+                      ->where('director_id', $director->id);
+                })
                 ->where('status', 'paid')
-                ->whereMonth('payment_month', $month)
-                ->whereYear('payment_month', $year)
+                ->whereMonth('paid_at', $month)
+                ->whereYear('paid_at', $year)
                 ->get();
 
             $commission = $payments->sum(function ($payment) use ($director) {
-                return ($payment->net_amount * $director->commission_percentage) / 100;
+                return ($payment->amount * $director->commission_percentage) / 100;
             });
 
             $result[$month] = [
@@ -149,41 +147,36 @@ class DirectorCommissionsController extends Controller
 
     public function history()
     {
-        $user = Auth::user();
-        $director = $user->director;
+        $user     = Auth::user();
+        $director = Director::where('user_id', $user->id)->firstOrFail();
 
-        if (!$director) {
-            abort(403, 'Director profili topilmadi');
-        }
-
-        // Yearly statistics
         $currentYear = Carbon::now()->year;
-        $years = range($currentYear, max($currentYear - 5, 2020));
+        $years       = range($currentYear, max($currentYear - 5, 2020));
 
         $yearlyStats = [];
         foreach ($years as $year) {
-            $payments = Payment::whereHas('group.students', function ($q) use ($director) {
-                $q->where('director_id', $director->id);
-            })
+            $payments = Payment::where('payable_type', Student::class)
+                ->whereHasMorph('payable', [Student::class], function ($q) use ($director) {
+                    $q->where('school_id', $director->school_id)
+                      ->where('director_id', $director->id);
+                })
                 ->where('status', 'paid')
-                ->whereYear('payment_month', $year)
+                ->whereYear('paid_at', $year)
                 ->get();
 
             $commission = $payments->sum(function ($payment) use ($director) {
-                return ($payment->net_amount * $director->commission_percentage) / 100;
+                return ($payment->amount * $director->commission_percentage) / 100;
             });
 
             $yearlyStats[$year] = [
                 'total_commission' => $commission,
-                'total_payments' => $payments->count(),
-                'avg_per_month' => $commission / 12,
+                'total_payments'   => $payments->count(),
+                'avg_per_month'    => $commission / 12,
             ];
         }
 
         return view('Panel.Director.commission-history', compact(
-            'director',
-            'yearlyStats',
-            'years'
+            'director', 'yearlyStats', 'years'
         ));
     }
 }

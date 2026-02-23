@@ -431,7 +431,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('schools.show', $director->school_id) }}"
+            <a href="{{ route('director.school.show', $director->school_id) }}"
                 class="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg hover:border-purple-400 dark:hover:border-purple-500 transition-all">
                 <div class="flex items-center gap-4">
                     <div

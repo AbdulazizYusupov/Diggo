@@ -114,7 +114,7 @@ Route::middleware(['auth'])->group(function () {
         });
         Route::prefix('director')->name('director.')->group(function () {
             Route::get('/', [DirectorDashboardController::class, 'index'])->name('dashboard');
-
+            Route::get('/school/{id}', [DirectorDashboardController::class, 'show'])->name('school.show');
             // Students
             // Route::get('/students', [DirectorDashboardController::class, 'students'])->name('students');
             // Commissions
