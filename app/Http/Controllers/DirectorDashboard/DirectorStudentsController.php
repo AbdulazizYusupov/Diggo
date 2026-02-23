@@ -17,6 +17,7 @@ class DirectorStudentsController extends Controller
     {
         $user = Auth::user();
         $director = $user->director;
+        $schoolId = $director->school_id;
 
         if (!$director) {
             abort(403, 'Director profili topilmadi');
@@ -29,7 +30,8 @@ class DirectorStudentsController extends Controller
 
         // Query
         $query = Student::with(['user', 'school'])
-            ->where('director_id', $director->id);
+            ->where('director_id', $director->id)
+            ->where('director_id', $director->id);;
 
         // Search filter
         if ($search) {

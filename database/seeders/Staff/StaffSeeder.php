@@ -41,7 +41,7 @@ class StaffSeeder extends Seeder
                 'name' => $data['name'],
                 'surname' => $data['surname'],
                 'middle_name' => $data['m_name'],
-                'phone' => '+9989' . rand(10000000, 99999999),
+                'phone' => '9' . rand(10000000, 99999999),
                 'birth_date' => Carbon::now()->subYears(rand(20, 45))->format('Y-m-d'), // 20-45 yosh oralig'i
                 'gender' => (rand(0, 1) ? 'male' : 'female'),
                 'city' => 'Toshkent',
