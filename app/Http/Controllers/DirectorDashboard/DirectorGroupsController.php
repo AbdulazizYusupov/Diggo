@@ -107,7 +107,7 @@ class DirectorGroupsController extends Controller
             abort(403, 'Director profili topilmadi');
         }
 
-        $group = Group::with(['cours', 'teachers.user'])
+        $group = Group::with(['course', 'teachers.user'])
             ->whereHas('students', function ($q) use ($director) {
                 $q->where('director_id', $director->id);
             })

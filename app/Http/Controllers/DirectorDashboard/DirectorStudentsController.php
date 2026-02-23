@@ -129,7 +129,7 @@ class DirectorStudentsController extends Controller
         ];
 
         // Recent payments
-        $recentPayments = Payment::with(['group.course', 'user'])
+        $recentPayments = Payment::with(['group.course', 'student'])
             ->where('payable_type', 'App\Models\Student')
             ->where('payable_id', $student->id)
             ->latest('paid_at')
@@ -137,7 +137,7 @@ class DirectorStudentsController extends Controller
             ->get();
 
         // Recent coin transactions
-        $recentCoins = CoinTransaction::with(['activity', 'user'])
+        $recentCoins = CoinTransaction::with(['activity', 'student'])
             ->where('student_id', $student->id)
             ->latest('transaction_date')
             ->take(10)
