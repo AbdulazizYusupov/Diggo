@@ -353,9 +353,9 @@
                         @endrole
                         @role('director')
                             <a href="{{ route('director.dashboard') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs(['director.dashboard','director.school.show']) ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs(['director.dashboard', 'director.school.show']) ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 
-                                <svg class="h-5 w-5 flex-shrink-0 {{ request()->routeIs(['director.dashboard','director.school.show']) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}"
+                                <svg class="h-5 w-5 flex-shrink-0 {{ request()->routeIs(['director.dashboard', 'director.school.show']) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -436,10 +436,10 @@
                                 <span class="nav-tooltip">Dashboard</span>
                             </a>
                             <a href="{{ route('teacher.groups.index') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs(['teacher.groups*','teacher.attendance.*']) ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs(['teacher.groups*', 'teacher.attendance.*']) ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 {{ request()->routeIs(['teacher.groups*','teacher.attendance.*']) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
+                                    class="h-5 w-5 flex-shrink-0 {{ request()->routeIs(['teacher.groups*', 'teacher.attendance.*']) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
                                 </svg>
@@ -763,6 +763,50 @@
 
         <!-- Main Content -->
         <div class="flex flex-col flex-1 overflow-hidden w-full">
+            @if (session('impersonate.active'))
+                <div class="flex-shrink-0 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 shadow-sm z-40">
+                    <div class="px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div
+                                class="flex-shrink-0 w-7 h-7 bg-white/20 rounded-full flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </div>
+                            <p class="text-white text-xs font-medium truncate">
+                                <span class="font-bold">{{ session('impersonate.target_name') }}</span>
+                                nomidan kirgansiiz
+                                <span
+                                    class="ml-1 px-1.5 py-0.5 bg-white/20 text-[10px] font-bold rounded-full uppercase">
+                                    {{ session('impersonate.target_role') }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <a href="{{ route('impersonate.index') }}"
+                                class="hidden sm:flex items-center gap-1 px-2.5 py-1 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg transition-colors border border-white/20">
+                                Foydalanuvchilar
+                            </a>
+                            <form method="POST" action="{{ route('impersonate.leave') }}">
+                                @csrf
+                                <button type="submit"
+                                    class="flex items-center gap-1.5 px-3 py-1 bg-white text-orange-600 hover:bg-orange-50 text-xs font-bold rounded-lg transition-colors">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    Chiqish
+                                    <span class="hidden sm:inline">({{ session('impersonate.original_name') }})</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @endif
             <header
                 class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-700/50 transition-colors duration-200 z-30 sticky top-0">
                 <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">

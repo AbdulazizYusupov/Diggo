@@ -55,3 +55,47 @@ if (!function_exists('get_attendance_years')) {
         return range($currentYear - 1, $currentYear + 1);
     }
 }
+
+if (!function_exists('roleInfo')) {
+    /**
+     * Rol nomi bo'yicha badge ma'lumotlarini qaytarish
+     *
+     * @param string $role
+     * @return array{label: string, icon: string, class: string}
+     */
+    function roleInfo(string $role): array
+    {
+        return match ($role) {
+            'admin'    => [
+                'label' => 'Admin',
+                'icon'  => '🛡️',
+                'class' => 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+            ],
+            'teacher'  => [
+                'label' => "O'qituvchi",
+                'icon'  => '👨‍🏫',
+                'class' => 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+            ],
+            'student'  => [
+                'label' => "O'quvchi",
+                'icon'  => '🎓',
+                'class' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+            ],
+            'director' => [
+                'label' => 'Direktor',
+                'icon'  => '🏢',
+                'class' => 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+            ],
+            'staff'    => [
+                'label' => 'Xodim',
+                'icon'  => '👤',
+                'class' => 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+            ],
+            default    => [
+                'label' => ucfirst($role),
+                'icon'  => '👤',
+                'class' => 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
+            ],
+        };
+    }
+}

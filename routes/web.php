@@ -15,6 +15,7 @@ use App\Http\Controllers\DirectorDashboard\DirectorStudentsController;
 use App\Http\Controllers\Group\GroupController;
 use App\Http\Controllers\GroupStudent\GroupStudentController;
 use App\Http\Controllers\GroupTeacher\GroupTeacherController;
+use App\Http\Controllers\Impersonate\ImpersonateController;
 use App\Http\Controllers\Lesson\LessonController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Permission\PermissionController;
@@ -115,7 +116,7 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('director')->name('director.')->group(function () {
             Route::get('/', [DirectorDashboardController::class, 'index'])->name('dashboard');
             Route::get('/school/{id}', [DirectorDashboardController::class, 'show'])->name('school.show');
-            
+
             Route::get('/students', [DirectorStudentsController::class, 'index'])->name('students');
             Route::get('/students/{id}', [DirectorStudentsController::class, 'show'])->name('students.show');
             // // Commissions
@@ -182,6 +183,14 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/',  [TeacherAttendanceController::class, 'show'])->name('show');
                 Route::post('/', [TeacherAttendanceController::class, 'store'])->name('store');
             });
+        });
+        Route::prefix('admin/impersonate')->name('impersonate.')->group(function () {
+            Route::get('/', [ImpersonateController::class, 'index'])->name('index');
+            // Impersonation boshlash
+            Route::post('/{user}/start', [ImpersonateController::class, 'start'])->name('start');
+
+            // Impersonation tugatish (istalgan yerdan)
+            Route::post('/leave', [ImpersonateController::class, 'leave'])->name('leave');
         });
 
 
