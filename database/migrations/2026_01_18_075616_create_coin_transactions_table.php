@@ -26,6 +26,7 @@ return new class extends Migration
                 'penalty',
                 'bonus',
                 'purchase',
+                'refund',
                 'other'
             ])->index();
             $table->text('description')->nullable();

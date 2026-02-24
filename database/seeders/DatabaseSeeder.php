@@ -21,6 +21,9 @@ use Database\Seeders\Course\CourseSeeder;
 use Database\Seeders\Director\DirectorSeeder;
 use Database\Seeders\Group\GroupSeeder;
 use Database\Seeders\School\SchoolSeeder;
+use Database\Seeders\Shop\ShopCategorySeeder;
+use Database\Seeders\Shop\ShopOrderSeeder;
+use Database\Seeders\Shop\ShopProductSeeder;
 use Database\Seeders\Staff\StaffSeeder;
 use Database\Seeders\Student\StudentSeeder;
 use Database\Seeders\Teacher\TeacherSeeder;
@@ -56,7 +59,10 @@ class DatabaseSeeder extends Seeder
             StaffSeeder::class,
             CourseSeeder::class,
             ActivitySeeder::class,
-            GroupSeeder::class
+            GroupSeeder::class,
+            ShopCategorySeeder::class,
+            ShopProductSeeder::class,
+            ShopOrderSeeder::class
         ]);
     }
 }

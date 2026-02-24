@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Activity\ActivityController;
 use App\Http\Controllers\ActivityResult\ActivityResultController;
+use App\Http\Controllers\Admin\ShopCategoryController;
+use App\Http\Controllers\Admin\ShopOrderController;
+use App\Http\Controllers\Admin\ShopProductController;
 use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Course\CourseController;
@@ -210,5 +213,24 @@ Route::middleware(['auth'])->group(function () {
         // Route::resource('attendances', AttendanceController::class);
         // Route::resource('lesson-charges', LessonChargeController::class);
         // Route::resource('coin-transactions', CoinTransactionController::class);
+
+        Route::prefix('admin/shop')->name('admin.shop.')->group(function () {
+            // ── Kategoriyalar ────────────────────────────────────
+            Route::resource('categories', ShopCategoryController::class);
+            Route::patch('categories/{category}/toggle-status', [ShopCategoryController::class, 'toggleStatus'])->name('categories.toggle-status');
+
+            // ── Mahsulotlar ──────────────────────────────────────
+            Route::resource('products', ShopProductController::class);
+            Route::patch('products/{product}/toggle-status',   [ShopProductController::class, 'toggleStatus'])->name('products.toggle-status');
+            Route::patch('products/{product}/toggle-featured', [ShopProductController::class, 'toggleFeatured'])
+                ->name('products.toggle-featured');
+
+            // // ── Buyurtmalar ──────────────────────────────────────
+            Route::get('orders',              [ShopOrderController::class, 'index'])->name('orders.index');
+            Route::get('orders/{order}',      [ShopOrderController::class, 'show'])->name('orders.show');
+            Route::patch('orders/{order}/approve', [ShopOrderController::class, 'approve'])->name('orders.approve');
+            Route::patch('orders/{order}/deliver', [ShopOrderController::class, 'deliver'])->name('orders.deliver');
+            Route::patch('orders/{order}/reject',  [ShopOrderController::class, 'reject'])->name('orders.reject');
+        });
     });
 });
