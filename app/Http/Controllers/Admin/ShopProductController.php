@@ -18,8 +18,8 @@ class ShopProductController extends Controller
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%")
-                  ->orWhere('brand', 'like', "%{$search}%");
+                    ->orWhere('sku', 'like', "%{$search}%")
+                    ->orWhere('brand', 'like', "%{$search}%");
             });
         }
 
@@ -32,11 +32,11 @@ class ShopProductController extends Controller
         }
 
         if ($request->filled('stock')) {
-            match($request->get('stock')) {
+            match ($request->get('stock')) {
                 'in'      => $query->where('stock_quantity', '>', 5)->where('is_unlimited', false),
                 'low'     => $query->whereBetween('stock_quantity', [1, 5])->where('is_unlimited', false),
                 'out'     => $query->where('stock_quantity', 0)->where('is_unlimited', false),
-                'unlimited'=> $query->where('is_unlimited', true),
+                'unlimited' => $query->where('is_unlimited', true),
                 default   => null,
             };
         }
@@ -78,6 +78,8 @@ class ShopProductController extends Controller
             'is_active'         => 'boolean',
             'is_featured'       => 'boolean',
             'image'             => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+            // 'images.*'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'images'            => 'nullable|array|max:8',        // max 8 ta rasm
             'images.*'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
             'sku'               => 'nullable|string|max:100|unique:shop_products,sku',
             'brand'             => 'nullable|string|max:100',
@@ -126,7 +128,7 @@ class ShopProductController extends Controller
             'total'     => $product->orders()->count(),
             'pending'   => $product->orders()->where('status', 'pending')->count(),
             'delivered' => $product->orders()->where('status', 'delivered')->count(),
-            'total_coins' => $product->orders()->whereIn('status', ['approved','delivered'])->sum('total_coins'),
+            'total_coins' => $product->orders()->whereIn('status', ['approved', 'delivered'])->sum('total_coins'),
         ];
 
         return view('Shop.Product.show', compact('product', 'orders', 'orderStats'));
@@ -152,7 +154,13 @@ class ShopProductController extends Controller
             'is_active'         => 'boolean',
             'is_featured'       => 'boolean',
             'image'             => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+            // 'images.*'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'images'            => 'nullable|array|max:8',
             'images.*'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'existing_images'   => 'nullable|array|max:8',
+            'existing_images.*' => 'nullable|string',
+            'existing_images'   => 'nullable|array',        // ← qo'shildi
+            'existing_images.*' => 'nullable|string',       // ← qo'shildi
             'sku'               => 'nullable|string|max:100|unique:shop_products,sku,' . $product->id,
             'brand'             => 'nullable|string|max:100',
             'max_per_student'   => 'integer|min:1|max:99',
@@ -163,21 +171,39 @@ class ShopProductController extends Controller
         $validated['is_active']    = $request->boolean('is_active', true);
         $validated['is_featured']  = $request->boolean('is_featured');
 
+        // ── Asosiy rasm ──
         if ($request->hasFile('image')) {
-            if ($product->image) Storage::disk('public')->delete($product->image);
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
             $validated['image'] = $request->file('image')->store('shop/products', 'public');
         }
 
-        if ($request->hasFile('images')) {
-            if ($product->images) {
-                foreach ($product->images as $old) Storage::disk('public')->delete($old);
+        // ── Qo'shimcha rasmlar ──
+        $keptImages = $request->input('existing_images', []); // Foydalanuvchi saqlaganlar
+
+        // Foydalanuvchi o'chirgan eski rasmlarni diskdan ham o'chirish
+        if ($product->images) {
+            foreach ($product->images as $oldImg) {
+                if (!in_array($oldImg, $keptImages)) {
+                    Storage::disk('public')->delete($oldImg);
+                }
             }
-            $extra = [];
-            foreach ($request->file('images') as $img) {
-                $extra[] = $img->store('shop/products', 'public');
-            }
-            $validated['images'] = $extra;
         }
+
+        // Yangi yuklangan rasmlarni saqlash
+        $newImages = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $img) {
+                $newImages[] = $img->store('shop/products', 'public');
+            }
+        }
+
+        // Saqlangan + yangi = yakuniy ro'yxat
+        $validated['images'] = array_merge($keptImages, $newImages);
+
+        // existing_images validated massivdan olib tashlash (DB ustunida yo'q)
+        unset($validated['existing_images']);
 
         $product->update($validated);
 

@@ -24,8 +24,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        URL::forceScheme('https');
+        // URL::forceScheme('https');
         Paginator::useTailwind();
-        Gate::policy(Group::class, AttendancePolicy::class);
+        // Gate::policy(Group::class, AttendancePolicy::class);
     }
 }
