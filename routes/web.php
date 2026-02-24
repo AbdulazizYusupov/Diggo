@@ -126,6 +126,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/bulk-store', [AttendanceController::class, 'bulkStore'])->name('bulk-store');
             Route::get('/group/{group}/statistics', [AttendanceController::class, 'statistics'])->name('statistics');
         });
+
         Route::prefix('director')->name('director.')->group(function () {
             Route::get('/', [DirectorDashboardController::class, 'index'])->name('dashboard');
             Route::get('/school/{id}', [DirectorDashboardController::class, 'show'])->name('school.show');
@@ -196,6 +197,7 @@ Route::middleware(['auth'])->group(function () {
                 Route::patch('/orders/{order}/cancel', [ShopController::class, 'cancel'])->name('cancel');
             });
         });
+
         Route::prefix('teacher')->name('teacher.')->group(function () {
             Route::get('/', [TeacherDashboardController::class, 'index'])->name('dashboard');
 
@@ -204,7 +206,6 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/',        [TeacherGroupsController::class, 'index'])->name('index');
                 Route::get('/{group}', [TeacherGroupsController::class, 'show'])->name('show');
             });
-
             // Lessons inside a group
             Route::prefix('groups/{group}/lessons')->name('groups.lessons.')->group(function () {
                 Route::get('/', [TeacherLessonsController::class, 'index'])->name('index');
