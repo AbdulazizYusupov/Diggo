@@ -31,6 +31,7 @@ use App\Http\Controllers\StudentDashboard\StudentAttendanceController;
 use App\Http\Controllers\StudentDashboard\StudentCoinsController;
 use App\Http\Controllers\StudentDashboard\StudentDashboardController;
 use App\Http\Controllers\StudentDashboard\StudentGroupsController;
+use App\Http\Controllers\StudentDashboard\StudentLeaderboardController;
 use App\Http\Controllers\StudentDashboard\StudentPaymentsController;
 use App\Http\Controllers\StudentDashboard\StudentProfileController;
 use App\Http\Controllers\StudentDashboard\StudentScheduleController;
@@ -162,6 +163,10 @@ Route::middleware(['auth'])->group(function () {
             // Schedule
             Route::get('/schedule', [StudentScheduleController::class, 'index'])->name('schedule');
             Route::get('/schedule/upcoming', [StudentScheduleController::class, 'upcoming'])->name('schedule.upcoming');
+
+            Route::get('/leaderboard', [StudentLeaderboardController::class, 'index'])->name('leaderboard');
+            // Statistics (Statistika)
+            Route::get('/statistics', [StudentLeaderboardController::class, 'statistics'])->name('statistics');
 
             // Profile
             Route::get('/profile', [StudentProfileController::class, 'index'])->name('profile');
