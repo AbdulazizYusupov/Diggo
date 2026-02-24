@@ -18,6 +18,7 @@ use App\Http\Controllers\DirectorDashboard\DirectorStudentsController;
 use App\Http\Controllers\Group\GroupController;
 use App\Http\Controllers\GroupStudent\GroupStudentController;
 use App\Http\Controllers\GroupTeacher\GroupTeacherController;
+use App\Http\Controllers\Help\HelpController;
 use App\Http\Controllers\Impersonate\ImpersonateController;
 use App\Http\Controllers\Lesson\LessonController;
 use App\Http\Controllers\Payment\PaymentController;
@@ -250,6 +251,16 @@ Route::middleware(['auth'])->group(function () {
             Route::patch('orders/{order}/approve', [ShopOrderController::class, 'approve'])->name('orders.approve');
             Route::patch('orders/{order}/deliver', [ShopOrderController::class, 'deliver'])->name('orders.deliver');
             Route::patch('orders/{order}/reject',  [ShopOrderController::class, 'reject'])->name('orders.reject');
+        });
+        Route::prefix('help')->name('help.')->group(function () {
+            // Help & Support bosh sahifasi
+            Route::get('/', [HelpController::class, 'index'])->name('index');
+
+            // Murojaat formasini yuborish
+            Route::post('/send', [HelpController::class, 'send'])->name('send');
+
+            // PDF qo'llanmani yuklab olish
+            Route::get('/download-pdf', [HelpController::class, 'downloadPdf'])->name('download-pdf');
         });
     });
 });
