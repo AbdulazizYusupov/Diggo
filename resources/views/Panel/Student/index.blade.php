@@ -418,7 +418,7 @@
                                 <p class="font-bold text-gray-900 dark:text-white">{{ $lesson->group_name }}</p>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">{{ $lesson->course_name }}</p>
                                 <p class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold mt-1">
-                                    {{ $lesson->lesson_time }}
+                                    {{ $lesson->start_time }}
                                 </p>
                             </div>
                         </div>
