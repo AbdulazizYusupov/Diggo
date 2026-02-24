@@ -62,7 +62,7 @@ class ShopOrderController extends Controller
     public function show(ShopOrder $order)
     {
         $order->load(['student.user', 'product.category', 'processedBy']);
-        return view('Panel.Admin.Shop.Orders.show', compact('order'));
+        return view('Shop.Order.show', compact('order'));
     }
 
     public function approve(Request $request, ShopOrder $order)
@@ -76,7 +76,7 @@ class ShopOrderController extends Controller
         $order->update([
             'status'       => 'approved',
             'admin_note'   => $request->get('admin_note'),
-            'processed_by' => auth()->id(),
+            'processed_by' => Auth::id(),
             'processed_at' => now(),
         ]);
 
@@ -98,7 +98,7 @@ class ShopOrderController extends Controller
             'status'        => 'delivered',
             'delivery_info' => $request->get('delivery_info'),
             'admin_note'    => $request->get('admin_note'),
-            'processed_by'  => auth()->id(),
+            'processed_by'  => Auth::id(),
             'delivered_at'  => now(),
         ]);
 
@@ -118,7 +118,7 @@ class ShopOrderController extends Controller
             $this->refundCoins(
                 order: $order,
                 description: "Do'kon buyurtmasi rad etildi: #{$order->order_number}",
-                actorUserId: auth()->id(),
+                actorUserId: Auth::id(),
             );
 
             // Zaxirani qaytarish
@@ -129,7 +129,7 @@ class ShopOrderController extends Controller
             $order->update([
                 'status'       => 'rejected',
                 'admin_note'   => $request->get('admin_note'),
-                'processed_by' => auth()->id(),
+                'processed_by' => Auth::id(),
                 'processed_at' => now(),
             ]);
         });
@@ -152,7 +152,7 @@ class ShopOrderController extends Controller
             $this->refundCoins(
                 order: $order,
                 description: "Do'kon buyurtmasi bekor qilindi: #{$order->order_number}",
-                actorUserId: auth()->id(),
+                actorUserId: Auth::id(),
             );
 
             if (!$order->product->is_unlimited) {

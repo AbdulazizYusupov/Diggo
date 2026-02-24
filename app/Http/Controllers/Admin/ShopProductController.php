@@ -129,7 +129,7 @@ class ShopProductController extends Controller
             'total_coins' => $product->orders()->whereIn('status', ['approved','delivered'])->sum('total_coins'),
         ];
 
-        return view('Panel.Admin.Shop.Products.show', compact('product', 'orders', 'orderStats'));
+        return view('Shop.Product.show', compact('product', 'orders', 'orderStats'));
     }
 
     public function edit(ShopProduct $product)

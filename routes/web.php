@@ -29,7 +29,7 @@ use App\Http\Controllers\School\SchoolController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\Student\StudentController;
-
+use App\Http\Controllers\StudentDashboard\ShopController;
 use App\Http\Controllers\StudentDashboard\StudentAttendanceController;
 use App\Http\Controllers\StudentDashboard\StudentCoinsController;
 use App\Http\Controllers\StudentDashboard\StudentDashboardController;
@@ -177,6 +177,24 @@ Route::middleware(['auth'])->group(function () {
             Route::put('/profile/parent', [StudentProfileController::class, 'updateParentInfo'])->name('profile.parent');
             Route::put('/profile/password', [StudentProfileController::class, 'updatePassword'])->name('profile.password');
             Route::get('/profile/statistics', [StudentProfileController::class, 'statistics'])->name('profile.statistics');
+
+            Route::prefix('shop')->name('shop.')->group(function () {
+
+                // Do'kon bosh sahifasi — mahsulotlar ro'yxati
+                Route::get('/', [ShopController::class, 'index'])->name('index');
+
+                // Mahsulot detail
+                Route::get('/{product:slug}', [ShopController::class, 'show'])->name('show');
+
+                // Buyurtma berish
+                Route::post('/{product:slug}/order', [ShopController::class, 'order'])->name('order');
+
+                // Buyurtmalar ro'yxati
+                Route::get('/my/orders', [ShopController::class, 'orders'])->name('orders');
+
+                // Buyurtmani bekor qilish
+                Route::patch('/orders/{order}/cancel', [ShopController::class, 'cancel'])->name('cancel');
+            });
         });
         Route::prefix('teacher')->name('teacher.')->group(function () {
             Route::get('/', [TeacherDashboardController::class, 'index'])->name('dashboard');
