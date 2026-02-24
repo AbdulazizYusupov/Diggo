@@ -80,7 +80,7 @@ class ShopCategoryController extends Controller
     {
         $category->loadCount('products');
         $products = $category->products()->with('orders')->paginate(10);
-        return view('Panel.Admin.Shop.Categories.show', compact('category', 'products'));
+        return view('Shop.Category.show', compact('category', 'products'));
     }
 
     public function edit(ShopCategory $category)
