@@ -29,6 +29,7 @@ use App\Http\Controllers\RolePermission\RolePermissionController;
 use App\Http\Controllers\School\SchoolController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Staff\StaffController;
+use App\Http\Controllers\Statitics\StatisticsController;
 use App\Http\Controllers\Student\StudentController;
 use App\Http\Controllers\StudentDashboard\ShopController;
 use App\Http\Controllers\StudentDashboard\StudentAttendanceController;
@@ -55,6 +56,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
