@@ -23,6 +23,7 @@ class StudentLeaderboardController extends Controller
             abort(403, 'Student profili topilmadi');
         }
 
+
         $groupId = $request->get('group_id');
         $type    = $request->get('type', 'coins');
         $perPage = in_array((int) $request->get('per_page', 20), [20, 50, 100])
@@ -32,9 +33,9 @@ class StudentLeaderboardController extends Controller
         $fromDate = $request->get('from_date', Carbon::now()->startOfMonth()->format('Y-m-d'));
         $toDate   = $request->get('to_date', Carbon::now()->format('Y-m-d'));
 
-        $startDate = Carbon::parse($fromDate)->startOfDay();
-        $endDate   = Carbon::parse($toDate)->endOfDay();
-
+        $startDate = Carbon::parse($fromDate)->startOfDay()->utc();;
+        $endDate   = Carbon::parse($toDate)->endOfDay()->utc();;
+//    
         $myGroups = GroupStudent::with('group.course')
             ->where('student_id', $student->id)
             ->where('status', 'active')
@@ -62,9 +63,17 @@ class StudentLeaderboardController extends Controller
         );
 
         return view('Panel.Student.leaderboard', compact(
-            'student', 'rankings', 'myPosition', 'myStats',
-            'topThree', 'myGroups', 'groupId', 'type',
-            'fromDate', 'toDate', 'perPage'
+            'student',
+            'rankings',
+            'myPosition',
+            'myStats',
+            'topThree',
+            'myGroups',
+            'groupId',
+            'type',
+            'fromDate',
+            'toDate',
+            'perPage'
         ));
     }
 
@@ -81,7 +90,7 @@ class StudentLeaderboardController extends Controller
         $query = Student::with('user')
             ->whereHas('groups', function ($q) use ($myGroupIds, $groupId) {
                 $q->whereIn('group_id', $myGroupIds)
-                  ->where('status', 'active');
+                    ->where('status', 'active');
 
                 if ($groupId) {
                     $q->where('group_id', $groupId);
@@ -93,9 +102,10 @@ class StudentLeaderboardController extends Controller
 
             case 'coins':
                 $query->withSum(
-                    ['coinTransactions as score' => fn($q) => $q
-                        ->where('coins', '>', 0)
-                        ->whereBetween('transaction_date', [$startDate, $endDate])
+                    [
+                        'coinTransactions as score' => fn($q) => $q
+                            ->where('coins', '>', 0)
+                            ->whereBetween('transaction_date', [$startDate, $endDate])
                     ],
                     'coins'
                 );
@@ -103,24 +113,30 @@ class StudentLeaderboardController extends Controller
 
             case 'attendance':
                 $query->withCount(
-                    ['attendances as score' => fn($q) => $q
-                        ->where('status', 'present')
-                        ->whereHas('lesson', fn($l) => $l
-                            ->whereBetween('lesson_date', [$startDate, $endDate])
-                            ->when($groupId, fn($l) => $l->where('group_id', $groupId))
-                        )
+                    [
+                        'attendances as score' => fn($q) => $q
+                            ->where('status', 'present')
+                            ->whereHas(
+                                'lesson',
+                                fn($l) => $l
+                                    ->whereBetween('lesson_date', [$startDate, $endDate])
+                                    ->when($groupId, fn($l) => $l->where('group_id', $groupId))
+                            )
                     ]
                 );
                 break;
 
             case 'homework':
                 $query->withAvg(
-                    ['attendances as score' => fn($q) => $q
-                        ->whereNotNull('homework_score')
-                        ->whereHas('lesson', fn($l) => $l
-                            ->whereBetween('lesson_date', [$startDate, $endDate])
-                            ->when($groupId, fn($l) => $l->where('group_id', $groupId))
-                        )
+                    [
+                        'attendances as score' => fn($q) => $q
+                            ->whereNotNull('homework_score')
+                            ->whereHas(
+                                'lesson',
+                                fn($l) => $l
+                                    ->whereBetween('lesson_date', [$startDate, $endDate])
+                                    ->when($groupId, fn($l) => $l->where('group_id', $groupId))
+                            )
                     ],
                     'homework_score'
                 );
@@ -128,12 +144,15 @@ class StudentLeaderboardController extends Controller
 
             case 'activity':
                 $query->withAvg(
-                    ['attendances as score' => fn($q) => $q
-                        ->whereNotNull('activity_score')
-                        ->whereHas('lesson', fn($l) => $l
-                            ->whereBetween('lesson_date', [$startDate, $endDate])
-                            ->when($groupId, fn($l) => $l->where('group_id', $groupId))
-                        )
+                    [
+                        'attendances as score' => fn($q) => $q
+                            ->whereNotNull('activity_score')
+                            ->whereHas(
+                                'lesson',
+                                fn($l) => $l
+                                    ->whereBetween('lesson_date', [$startDate, $endDate])
+                                    ->when($groupId, fn($l) => $l->where('group_id', $groupId))
+                            )
                     ],
                     'activity_score'
                 );

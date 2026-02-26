@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Attendance;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Models\CoinTransaction;
 use App\Models\Group;
 use App\Models\Lesson;
 use Carbon\Carbon;
@@ -13,38 +14,35 @@ use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends Controller
 {
+
     /**
      * Davomat guruhlarini ko'rsatish
      */
+
     public function index(Request $request)
     {
         $user = Auth::user();
         $search = $request->input('search');
 
-        // ❌ XATO: use function Symfony\Component\Clock\now;
-        // ✅ TO'G'RI: Carbon yoki now() helper
         $today = Carbon::today()->format('Y-m-d');
         $todayDayName = strtolower(Carbon::today()->format('l'));
-
-        /** -----------------------------
-         * 1️⃣ BASE QUERY
-         * ----------------------------- */
+        // dd($todayDayName);
         $query = Group::query()
             ->with(['course', 'activeStudents'])
             ->where('is_active', true);
 
-        /** -----------------------------
-         * 2️⃣ ROLE FILTER
-         * ----------------------------- */
-        if ($user->hasRole('teacher')) {
-            $query->whereHas(
-                'teachers',
-                fn($q) => $q->where('teacher_id', $user->teacher->id)
-            );
-        } elseif (!$user->hasRole('admin')) {
-            // hech kim ko'rmasin
-            $query->whereRaw('1 = 0');
-        }
+        // /** -----------------------------
+        //  * 2️⃣ ROLE FILTER
+        //  * ----------------------------- */
+        // if ($user->hasRole('teacher')) {
+        //     $query->whereHas(
+        //         'teachers',
+        //         fn($q) => $q->where('teacher_id', $user->teacher->id)
+        //     );
+        // } elseif (!$user->hasRole('admin')) {
+        //     // hech kim ko'rmasin
+        //     $query->whereRaw('1 = 0');
+        // }
 
         /** -----------------------------
          * 3️⃣ SEARCH
@@ -128,7 +126,7 @@ class AttendanceController extends Controller
         $lessons = Lesson::where('group_id', $groupId)
             ->whereYear('lesson_date', $year)
             ->whereMonth('lesson_date', $month)
-            ->whereIn('status', ['scheduled', 'completed'])
+            ->whereIn('status', ['scheduled', 'completed','rescheduled'])
             ->orderBy('lesson_date')
             ->get();
 
@@ -200,13 +198,15 @@ class AttendanceController extends Controller
         try {
             $groupId = $validated['group_id'];
             $studentCoinsToAdd = [];
+            // Track per-student description lines for the transaction log
+            $studentCoinDescriptions = [];
 
             foreach ($validated['attendances'] as $studentData) {
                 foreach ($studentData as $dayData) {
                     if (!isset($dayData['student_id']) || !isset($dayData['date'])) {
                         continue;
                     }
- 
+
                     // Darsni topish
                     $lesson = Lesson::where('group_id', $groupId)
                         ->whereDate('lesson_date', $dayData['date'])
@@ -216,9 +216,11 @@ class AttendanceController extends Controller
                         continue;
                     }
 
+                    $studentId = $dayData['student_id'];
+
                     // Eski davomatni topish (coin farqini hisoblash uchun)
                     $oldAttendance = Attendance::where('lesson_id', $lesson->id)
-                        ->where('student_id', $dayData['student_id'])
+                        ->where('student_id', $studentId)
                         ->first();
 
                     $oldCoins = $oldAttendance ? $this->calculateDailyCoins($oldAttendance) : 0;
@@ -228,11 +230,20 @@ class AttendanceController extends Controller
                         if ($oldAttendance) {
                             $oldAttendance->delete();
 
-                            // Coinlarni ayirish
-                            if (!isset($studentCoinsToAdd[$dayData['student_id']])) {
-                                $studentCoinsToAdd[$dayData['student_id']] = 0;
+                            if (!isset($studentCoinsToAdd[$studentId])) {
+                                $studentCoinsToAdd[$studentId] = 0;
                             }
-                            $studentCoinsToAdd[$dayData['student_id']] -= $oldCoins;
+                            $studentCoinsToAdd[$studentId] -= $oldCoins;
+
+                            // 🪙 Track the deletion as a penalty/refund transaction
+                            if ($oldCoins > 0) {
+                                $studentCoinDescriptions[$studentId][] = [
+                                    'coins'       => -$oldCoins,
+                                    'type'        => 'refund',
+                                    'description' => "Davomat o'chirildi: {$dayData['date']}",
+                                    'date'        => $dayData['date'],
+                                ];
+                            }
                         }
                         continue;
                     }
@@ -243,30 +254,83 @@ class AttendanceController extends Controller
                     // Davomatni saqlash
                     Attendance::updateOrCreate(
                         [
-                            'lesson_id' => $lesson->id,
-                            'student_id' => $dayData['student_id'],
+                            'lesson_id'  => $lesson->id,
+                            'student_id' => $studentId,
                         ],
                         $attendanceData
                     );
 
                     // Yangi coinlarni hisoblash
-                    $newCoins = $attendanceData['daily_coins'];
+                    $newCoins     = $attendanceData['daily_coins'];
                     $coinDifference = $newCoins - $oldCoins;
 
-                    // Coin farqini yig'ish
-                    if (!isset($studentCoinsToAdd[$dayData['student_id']])) {
-                        $studentCoinsToAdd[$dayData['student_id']] = 0;
+                    if (!isset($studentCoinsToAdd[$studentId])) {
+                        $studentCoinsToAdd[$studentId] = 0;
                     }
-                    $studentCoinsToAdd[$dayData['student_id']] += $coinDifference;
+                    $studentCoinsToAdd[$studentId] += $coinDifference;
+
+                    // 🪙 Only record a transaction when coins actually change
+                    if ($coinDifference !== 0) {
+                        $type = $coinDifference > 0 ? 'participation' : 'penalty';
+
+                        $parts = [];
+                        if ($attendanceData['attendance_coins'] !== ($oldAttendance?->attendance_coins ?? 0)) {
+                            $parts[] = "Davomat ({$attendanceData['status']})";
+                        }
+                        if (isset($attendanceData['homework_score']) && $attendanceData['homework_score'] > 0) {
+                            $parts[] = "Uy vazifasi: {$attendanceData['homework_score']}";
+                        }
+                        if (isset($attendanceData['activity_score']) && $attendanceData['activity_score'] > 0) {
+                            $parts[] = "Faollik: {$attendanceData['activity_score']}";
+                        }
+
+                        $description = implode(', ', $parts) ?: "Davomat yangilandi: {$dayData['date']}";
+
+                        $studentCoinDescriptions[$studentId][] = [
+                            'coins'       => $coinDifference,
+                            'type'        => $type,
+                            'description' => $description . " ({$dayData['date']})",
+                            'date'        => $dayData['date'],
+                        ];
+                    }
                 }
             }
 
-            // Studentlarning coinlarini yangilash
+            // Studentlarning coinlarini yangilash va CoinTransaction yozish
             foreach ($studentCoinsToAdd as $studentId => $coinsToAdd) {
                 if ($coinsToAdd != 0) {
                     DB::table('students')
                         ->where('id', $studentId)
                         ->increment('coins', $coinsToAdd);
+                }
+            }
+
+            // 🪙 CoinTransaction yozuvlarini saqlash
+            foreach ($studentCoinDescriptions as $studentId => $transactions) {
+                // Current balance after all coin changes
+                $currentBalance = DB::table('students')
+                    ->where('id', $studentId)
+                    ->value('coins');
+
+                // Write one transaction per attendance day change
+                foreach (array_reverse($transactions) as $index => $txn) {
+                    // balance_after for each entry walks backward from current balance
+                    // so the last transaction reflects the final balance
+                    $balanceAfter = $currentBalance - array_sum(
+                        array_column(array_slice($transactions, 0, count($transactions) - $index - 1), 'coins')
+                    );
+
+                    CoinTransaction::create([
+                        'student_id'       => $studentId,
+                        'user_id'          => Auth::id(),
+                        'activity_id'      => null,
+                        'coins'            => $txn['coins'],
+                        'type'             => $txn['type'],
+                        'description'      => $txn['description'],
+                        'balance_after'    => $balanceAfter,
+                        'transaction_date' => $txn['date'],
+                        'expiry_date'      => null,
+                    ]);
                 }
             }
 
