@@ -4,11 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Edu Center</title>
+    {{-- <title>Dashboard - Edu Center</title> --}}
+    <meta name="description" content="@yield('meta_description', 'Diggo Edu Center — zamonaviy ta\'lim boshqaruv tizimi')">
+    <meta name="keywords" content="@yield('meta_keywords', 'edu center, ta\'lim, kurslar, o\'quvchilar')">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="{{ url()->current() }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') - Edu Center</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('Icon/graduation.png') }}">
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@@type": "EducationalOrganization",
+        "name": "Diggo Edu Center",
+        "url": "{{ config('app.url') }}",
+        "logo": "@yield('schema_logo', asset('img/logo.png'))",
+        "description": "Zamonaviy ta'lim boshqaruv tizimi",
+        "address": { 
+            "@@type": "PostalAddress", 
+            "addressCountry": "UZ" 
+    }
+    }
+    </script>
+    <title>@yield('title', 'Dashboard')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
+
     <style>
         /* Flag icons */
         .flag-icon {
@@ -154,6 +174,7 @@
             margin-right: 0;
         }
     </style>
+
     {{-- <script>
         (function() {
             try {
@@ -187,6 +208,7 @@
             }
         })();
     </script>
+
 </head>
 
 <body
@@ -256,619 +278,8 @@
                             </svg>
                         </button>
                     </div>
-
                     <!-- Navigation -->
-                    <nav class="flex-1 px-3 space-y-1">
-                        {{-- <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 sidebar-text">
-                            Asosiy</p> --}}
-
-                        @role('student')
-                            <a href="{{ route('student.dashboard') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('student.dashboard') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                <svg class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('student.dashboard') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}"
-                                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Dashboard</span>
-
-                                @if (request()->routeIs('student'))
-                                    <span
-                                        class="ml-auto bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 py-0.5 px-2 text-xs font-bold rounded-full sidebar-text">4</span>
-                                @endif
-
-                                <span class="nav-tooltip">Dashboard</span>
-                            </a>
-                            <a href="{{ route('student.groups') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('student.groups*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('student.groups*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Gruhlarim</span>
-
-                                <span class="nav-tooltip">Guruhlarim</span>
-                            </a>
-                            <a href="{{ route('student.payments') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('student.payments*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('student.payments*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
-                                </svg>
-                                <span class="ml-3 sidebar-text">To'lovlarim</span>
-
-                                <span class="nav-tooltip">To'lovlarim</span>
-                            </a>
-                            <a href="{{ route('student.attendance') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('student.attendance*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('student.attendance*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
-                                </svg>
-                                <span class="ml-3 sidebar-text">Ko'rsatgichlarim</span>
-
-                                <span class="nav-tooltip">Ko'rsatgichlarim</span>
-                            </a>
-                            <a href="{{ route('student.coins') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('student.coins') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('student.coins') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Coinlarim</span>
-
-                                <span class="nav-tooltip">Coinlarim</span>
-                            </a>
-                            <a href="{{ route('student.schedule') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('student.schedule') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('student.schedule') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Dars jadvali</span>
-
-                                <span class="nav-tooltip">Dars jadvali</span>
-                            </a>
-                            <a href="{{ route('student.leaderboard') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('student.leaderboard') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('student.leaderboard') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Reyting</span>
-
-                                <span class="nav-tooltip">Reyting</span>
-                            </a>
-                            <a href="{{ route('student.shop.index') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('student.shop.index') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('student.shop.index') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                                </svg>
-
-
-                                <span class="ml-3 sidebar-text">Dukon</span>
-
-                                <span class="nav-tooltip">Dukon</span>
-                            </a>
-                        @endrole
-                        @role('director')
-                            <a href="{{ route('director.dashboard') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs(['director.dashboard', 'director.school.show']) ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                <svg class="h-5 w-5 flex-shrink-0 {{ request()->routeIs(['director.dashboard', 'director.school.show']) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}"
-                                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Dashboard</span>
-
-                                @if (request()->routeIs('director'))
-                                    <span
-                                        class="ml-auto bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 py-0.5 px-2 text-xs font-bold rounded-full sidebar-text">4</span>
-                                @endif
-
-                                <span class="nav-tooltip">Dashboard</span>
-                            </a>
-                            <a href="{{ route('director.students') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('director.students*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('director.students*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Students</span>
-
-                                <span class="nav-tooltip">Students</span>
-                            </a>
-                            <a href="{{ route('director.commissions') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('director.commissions') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('director.commissions') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="m8.99 14.993 6-6m6 3.001c0 1.268-.63 2.39-1.593 3.069a3.746 3.746 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043 3.745 3.745 0 0 1-3.068 1.593c-1.268 0-2.39-.63-3.068-1.593a3.745 3.745 0 0 1-3.296-1.043 3.746 3.746 0 0 1-1.043-3.297 3.746 3.746 0 0 1-1.593-3.068c0-1.268.63-2.39 1.593-3.068a3.746 3.746 0 0 1 1.043-3.297 3.745 3.745 0 0 1 3.296-1.042 3.745 3.745 0 0 1 3.068-1.594c1.268 0 2.39.63 3.068 1.593a3.745 3.745 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.297 3.746 3.746 0 0 1 1.593 3.068ZM9.74 9.743h.008v.007H9.74v-.007Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.125 4.5h.008v.008h-.008v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Komissiyalar</span>
-
-                                <span class="nav-tooltip">Komissiyalar</span>
-                            </a>
-                            <a href="{{ route('director.groups') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('director.groups*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('director.groups*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
-                                </svg>
-                                <span class="ml-3 sidebar-text">Guruhlar</span>
-                                <span class="nav-tooltip">Guruhlar</span>
-                            </a>
-                            <a href="{{ route('director.reports') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('director.reports*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('director.reports*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Reports</span>
-
-                                <span class="nav-tooltip">Reports</span>
-                            </a>
-                        @endrole
-                        @role('teacher')
-                            <a href="{{ route('teacher.dashboard') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('teacher.dashboard') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                <svg class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('teacher.dashboard') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}"
-                                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Dashboard</span>
-                                <span class="nav-tooltip">Dashboard</span>
-                            </a>
-                            <a href="{{ route('teacher.groups.index') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs(['teacher.groups*', 'teacher.attendance.*']) ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 {{ request()->routeIs(['teacher.groups*', 'teacher.attendance.*']) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
-                                </svg>
-                                <span class="ml-3 sidebar-text">Guruhlar</span>
-                                <span class="nav-tooltip">Guruhlar</span>
-                            </a>
-                        @endrole
-                        @role('admin|staff')
-                            <a href="{{ route('dashboard') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('dashboard') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <svg class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('dashboard') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-500' }}"
-                                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                </svg>
-                                <span class="ml-3 sidebar-text">Boshqaruv paneli</span>
-                                <span class="nav-tooltip">Boshqaruv paneli</span>
-                            </a>
-                            <a href="{{ route('statistics.index') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('statistics.index') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('statistics.index') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-                                </svg>
-                                <span class="ml-3 sidebar-text">Statistics</span>
-                                <span class="nav-tooltip">Statistics</span>
-                            </a>
-                        @endrole
-                        @role('admin')
-                            <div class="space-y-1">
-                                <button id="roles-dropdown-btn"
-                                    onclick="const dropdown = this.nextElementSibling; dropdown.classList.toggle('open'); this.querySelector('.arrow-icon').classList.toggle('rotate-180');"
-                                    class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->is('roles*', 'permissions*', 'role-permissions*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor"
-                                        class="h-5 w-5 flex-shrink-0 {{ request()->is('roles*', 'permissions*', 'role-permissions*') ? 'text-indigo-600' : 'text-gray-400' }}">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.744c0 5.621 3.401 10.449 8.243 12.446a11.95 11.95 0 008.157-12.446c0-1.302-.207-2.557-.598-3.744A11.959 11.959 0 0112 2.714z" />
-                                    </svg>
-
-                                    <span class="ml-3 sidebar-text">Ruxsatnomalar</span>
-
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="2" stroke="currentColor"
-                                        class="arrow-icon ml-auto h-4 w-4 text-gray-400 sidebar-text transition-transform duration-300 {{ request()->is('roles*', 'permissions*', 'role-permissions*') ? 'rotate-180' : '' }}">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                    </svg>
-                                    <span class="nav-tooltip">Ruxsatnomalar</span>
-                                </button>
-
-                                <div id="roles-dropdown"
-                                    class="dropdown-content {{ request()->is('roles*', 'permissions*', 'role-permissions*') ? 'open' : '' }}">
-
-                                    <div class="ml-8 space-y-1 py-2">
-                                        <a href="{{ route('roles.index') }}"
-                                            class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('roles.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor"
-                                                class="w-4 h-4 mr-2 flex-shrink-0">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-                                            </svg>
-                                            <span class="sidebar-text">Rollar (Roles)</span>
-                                        </a>
-
-                                        <a href="{{ route('permissions.index') }}"
-                                            class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->is('permissions*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor"
-                                                class="w-4 h-4 mr-2 flex-shrink-0">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
-                                            </svg>
-                                            <span class="sidebar-text">Huquqlar (Permissions)</span>
-                                        </a>
-
-                                        <a href="{{ route('role-permissions.index') }}"
-                                            class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->is('role-permissions*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
-
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor"
-                                                class="w-4 h-4 mr-2 flex-shrink-0">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-                                            </svg>
-                                            <span class="sidebar-text">Rolga biriktirish</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="{{ route('impersonate.index') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('impersonate.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('impersonate.index') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Nomidan kirish</span>
-                                <span class="nav-tooltip">Nomidan kirish</span>
-                            </a>
-                        @endrole
-                        @role('admin|staff')
-                            <div class="space-y-1">
-                                <button id="users-dropdown-btn"
-                                    class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->is('staffs*', 'directors*', 'teachers*', 'students*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor"
-                                        class="h-5 w-5 flex-shrink-0 {{ request()->is('staffs*', 'directors*', 'teachers*', 'students*') ? 'text-indigo-600' : 'text-gray-400' }}">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-                                    </svg>
-
-                                    <span class="ml-3 sidebar-text">Foydalanuvchilar</span>
-
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="2" stroke="currentColor"
-                                        class="arrow-icon ml-auto h-4 w-4 text-gray-400 sidebar-text transition-transform duration-300 {{ request()->is('staffs*', 'directors*', 'teachers*', 'students*') ? 'rotate-180' : '' }}">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                    </svg>
-                                    <span class="nav-tooltip">Foydalanuvchilar</span>
-                                </button>
-
-                                <div id="users-dropdown"
-                                    class="dropdown-content {{ request()->is('staffs*', 'directors*', 'teachers*', 'students*') ? 'open' : '' }}">
-
-                                    <div class="ml-8 space-y-1 py-2">
-                                        <a href="{{ route('staffs.index') }}"
-                                            class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('staffs.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
-
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor"
-                                                class="w-4 h-4 mr-2 flex-shrink-0">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
-                                            </svg>
-
-                                            <span class="sidebar-text">Staff</span>
-                                        </a>
-
-                                        <a href="{{ route('directors.index') }}"
-                                            class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('directors.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor"
-                                                class="w-4 h-4 mr-2 flex-shrink-0">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6.75h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" />
-                                            </svg>
-                                            <span class="sidebar-text">Directors</span>
-                                        </a>
-
-                                        <a href="{{ route('teachers.index') }}"
-                                            class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('teachers.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
-
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor"
-                                                class="w-4 h-4 mr-2 flex-shrink-0">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
-                                            </svg>
-
-                                            <span class="sidebar-text">Teachers</span>
-                                        </a>
-
-                                        <a href="{{ route('students.index') }}"
-                                            class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('students.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor"
-                                                class="w-4 h-4 mr-2 flex-shrink-0">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-                                            </svg>
-                                            <span class="sidebar-text">Students</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="{{ route('schools.index') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('schools.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('schools.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Schools</span>
-                                <span class="nav-tooltip">Schools</span>
-                            </a>
-                            <a href="{{ route('courses.index') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('courses.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="2" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('courses.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-blue-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Kurslar</span>
-                                <span class="nav-tooltip">Kurslar</span>
-                            </a>
-                            <a href="{{ route('groups.index') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('groups.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('groups.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0 L21.75 12l-4.179 2.25m0 0 4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0 -5.571 3-5.571-3" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Guruhlar</span>
-                                <span class="nav-tooltip">Guruhlar</span>
-                            </a>
-
-                            <a href="{{ route('lessons.index') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('lessons.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('lessons.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Lessons</span>
-                                <span class="nav-tooltip">Lessons</span>
-                            </a>
-
-                            <a href="{{ route('activities.index') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('activities.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('activities.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}"
-                                    fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 0 1-.657.643 48.39 48.39 0 0 1-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 0 1-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 0 0-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 0 1-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 0 0 .657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 0 1-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 0 0 5.427-.63 48.05 48.05 0 0 0 .582-4.717.532.532 0 0 0-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.96.401v0a.656.656 0 0 0 .658-.663 48.422 48.422 0 0 0-.37-5.36c-1.886.342-3.81.574-5.766.689a.578.578 0 0 1-.61-.58v0Z" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Activities</span>
-                                <span class="nav-tooltip">Activities</span>
-                            </a>
-                            <a href="{{ route('activityresults.index') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('activityresults.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('activityresults.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75" />
-                                </svg>
-
-
-                                <span class="ml-3 sidebar-text">Activityresults</span>
-                                <span class="nav-tooltip">Activityresults</span>
-                            </a>
-                            <a href="{{ route('attendance.index') }}"
-                                class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('attendance.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor"
-                                    class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('attendance.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
-                                </svg>
-
-                                <span class="ml-3 sidebar-text">Attendance</span>
-                                <span class="nav-tooltip">Attendance</span>
-                            </a>
-                            <div class="space-y-1">
-                                <button id="finance-dropdown-btn"
-                                    onclick="const dropdown = this.nextElementSibling; dropdown.classList.toggle('open'); this.querySelector('.arrow-icon').classList.toggle('rotate-180');"
-                                    class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->is('payments*', 'transactions*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                    <svg class="h-5 w-5 flex-shrink-0 {{ request()->is('payments*', 'transactions*') ? 'text-indigo-600' : 'text-gray-400' }}"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-
-                                    <span class="ml-3 sidebar-text">Moliya</span>
-
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="2" stroke="currentColor"
-                                        class="arrow-icon ml-auto h-4 w-4 text-gray-400 sidebar-text transition-transform duration-300 {{ request()->is('payments*', 'transactions*') ? 'rotate-180' : '' }}">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                    </svg>
-                                    <span class="nav-tooltip">Moliya</span>
-                                </button>
-
-                                <div id="finance-dropdown"
-                                    class="dropdown-content {{ request()->is('payments*', 'transactions*') ? 'open' : '' }}">
-
-                                    <div class="ml-8 space-y-1 py-2">
-                                        <a href="{{ route('payments.index') }}"
-                                            class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('payments.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
-                                            <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24"
-                                                stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                                            </svg>
-                                            <span class="sidebar-text">To'lovlar</span>
-                                        </a>
-
-                                        <a href="{{ route('transactions.index') }}"
-                                            class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('transactions.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
-                                            <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24"
-                                                stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                                            </svg>
-                                            <span class="sidebar-text">Transactions</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="space-y-1">
-                                <button id="shop-dropdown-btn"
-                                    onclick="const dropdown = this.nextElementSibling; dropdown.classList.toggle('open'); this.querySelector('.arrow-icon').classList.toggle('rotate-180');"
-                                    class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('admin.shop*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor"
-                                        class="h-5 w-5 flex-shrink-0 {{ request()->routeIs('admin.shop*') ? 'text-indigo-600' : 'text-gray-400' }}">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                                    </svg>
-
-
-                                    <span class="ml-3 sidebar-text">Shop Management</span>
-
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="2" stroke="currentColor"
-                                        class="arrow-icon ml-auto h-4 w-4 text-gray-400 sidebar-text transition-transform duration-300 {{ request()->routeIs('admin.shop*') ? 'rotate-180' : '' }}">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                    </svg>
-
-                                    <span class="nav-tooltip">Shop Management</span>
-                                </button>
-
-                                <div id="shop-dropdown"
-                                    class="dropdown-content {{ request()->routeIs('admin.shop*') ? 'open' : '' }}">
-
-                                    <div class="ml-8 space-y-1 py-2">
-                                        <a href="{{ route('admin.shop.categories.index') }}"
-                                            class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('admin.shop.categories.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
-
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor"
-                                                class="w-4 h-4 mr-2 flex-shrink-0">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M6 6h.008v.008H6V6Z" />
-                                            </svg>
-
-                                            <span class="sidebar-text">Categories</span>
-                                        </a>
-
-                                        <a href="{{ route('admin.shop.products.index') }}"
-                                            class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('admin.shop.products.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
-
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor"
-                                                class="w-4 h-4 mr-2 flex-shrink-0">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-                                            </svg>
-
-                                            <span class="sidebar-text">Products</span>
-                                        </a>
-                                        <a href="{{ route('admin.shop.orders.index') }}"
-                                            class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('admin.shop.orders.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
-
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor"
-                                                class="w-4 h-4 mr-2 flex-shrink-0">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
-                                            </svg>
-
-
-
-                                            <span class="sidebar-text">Orders</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        @endrole
-                    </nav>
+                    @include('Layout.navigation')
                 </div>
             </div>
         </aside>
@@ -876,313 +287,14 @@
         <!-- Main Content -->
         <div class="flex flex-col flex-1 overflow-hidden w-full">
             @if (session('impersonate.active'))
-                <div class="flex-shrink-0 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 shadow-sm z-40">
-                    <div class="px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-4">
-                        <div class="flex items-center gap-2.5 min-w-0">
-                            <div
-                                class="flex-shrink-0 w-7 h-7 bg-white/20 rounded-full flex items-center justify-center">
-                                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                            </div>
-                            <p class="text-white text-xs font-medium truncate">
-                                <span class="font-bold">{{ session('impersonate.target_name') }}</span>
-                                nomidan kirgansiz
-                                <span
-                                    class="ml-1 px-1.5 py-0.5 bg-white/20 text-[10px] font-bold rounded-full uppercase">
-                                    {{ session('impersonate.target_role') }}
-                                </span>
-                            </p>
-                        </div>
-                        <div class="flex items-center gap-2 flex-shrink-0">
-                            <a href="{{ route('impersonate.index') }}"
-                                class="hidden sm:flex items-center gap-1 px-2.5 py-1 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg transition-colors border border-white/20">
-                                Foydalanuvchilar
-                            </a>
-                            <form method="POST" action="{{ route('impersonate.leave') }}">
-                                @csrf
-                                <button type="submit"
-                                    class="flex items-center gap-1.5 px-3 py-1 bg-white text-orange-600 hover:bg-orange-50 text-xs font-bold rounded-lg transition-colors">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                    </svg>
-                                    Chiqish
-                                    <span
-                                        class="hidden sm:inline">({{ session('impersonate.original_name') }})</span>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+                @include('Layout.impersonate')
             @endif
-            <header
-                class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-700/50 transition-colors duration-200 z-30 sticky top-0">
-                <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
-                    <div class="flex items-center">
-                        <button type="button" id="mobile-menu-button"
-                            class="lg:hidden -ml-2 mr-3 p-2 rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none transition-all">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                        </button>
-
-                        <div class="flex items-center lg:hidden">
-                            <div
-                                class="w-9 h-9 bg-indigo-500 dark:bg-indigo-600 rounded-xl flex items-center justify-center shadow-sm border border-indigo-400/30">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                </svg>
-                            </div>
-
-                            <span class="ml-3 text-gray-900 dark:text-white text-xl font-black tracking-tight">
-                                Diggo<span class="text-indigo-500">.</span>
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center space-x-2 sm:space-x-3">
-                        <!-- Theme Switcher -->
-                        <div class="relative">
-                            <button id="theme-toggle"
-                                class="p-2.5 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all hover:scale-105">
-                                <svg id="theme-icon-light" class="hidden w-5 h-5" fill="currentColor"
-                                    viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                <svg id="theme-icon-dark" class="hidden w-5 h-5" fill="currentColor"
-                                    viewBox="0 0 20 20">
-                                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-                                </svg>
-                                <svg id="theme-icon-system" class="hidden w-5 h-5" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                            </button>
-
-                            <!-- Theme Menu Dropdown -->
-                            <div id="theme-menu"
-                                class="hidden absolute right-0 mt-2 w-44 rounded-xl shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 border border-gray-100 dark:border-gray-700 z-50 overflow-hidden">
-                                <div class="py-1">
-                                    <button data-theme="light"
-                                        class="theme-option w-full flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 transition-colors">
-                                        <span class="theme-indicator"></span>
-                                        <svg class="w-4 h-4 mr-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                        Light
-                                    </button>
-                                    <button data-theme="dark"
-                                        class="theme-option w-full flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 transition-colors">
-                                        <span class="theme-indicator"></span>
-                                        <svg class="w-4 h-4 mr-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z">
-                                            </path>
-                                        </svg>
-                                        Dark
-                                    </button>
-                                    <button data-theme="system"
-                                        class="theme-option w-full flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 transition-colors">
-                                        <span class="theme-indicator"></span>
-                                        <svg class="w-4 h-4 mr-3 ml-1" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
-                                            </path>
-                                        </svg>
-                                        System
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Notification Button -->
-                        <button
-                            class="p-2.5 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl relative transition-all hover:scale-105">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                            </svg>
-                            <span class="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
-                                <span
-                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
-                            </span>
-                        </button>
-
-                        <!-- User Menu Dropdown -->
-                        <div class="relative ml-1">
-                            <button type="button" id="user-menu-button"
-                                class="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-all">
-                                @if (Auth::user()->photo)
-                                    <img class="h-10 w-10 rounded-lg object-cover ring-2 ring-indigo-100 dark:ring-indigo-900"
-                                        src="{{ asset('storage/' . Auth::user()->photo) }}"
-                                        alt="{{ Auth::user()->full_name }}">
-                                @else
-                                    <img class="h-10 w-10 rounded-lg object-cover ring-2 ring-indigo-100 dark:ring-indigo-900"
-                                        src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->full_name) }}&background=6366f1&color=fff"
-                                        alt="User">
-                                @endif
-                                <svg class="hidden sm:block h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-
-                            <div id="user-menu"
-                                class="hidden absolute right-0 mt-2 w-64 rounded-xl shadow-xl bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 border border-gray-100 dark:border-gray-700 z-50 overflow-hidden">
-
-                                <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-                                    <div class="flex items-center space-x-3">
-                                        @if (Auth::user()->photo)
-                                            <img class="h-10 w-10 rounded-lg object-cover ring-2 ring-indigo-100 dark:ring-indigo-900"
-                                                src="{{ asset('storage/' . Auth::user()->photo) }}"
-                                                alt="{{ Auth::user()->full_name }}">
-                                        @else
-                                            <img class="h-10 w-10 rounded-lg object-cover ring-2 ring-indigo-100 dark:ring-indigo-900"
-                                                src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->full_name) }}&background=6366f1&color=fff"
-                                                alt="User">
-                                        @endif
-
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                                                {{ Auth::user()->full_name }}
-                                            </p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                                {{ Auth::user()->phone }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="py-1">
-                                    <a href="{{ route('profile.show') }}"
-                                        class="flex items-center px-4 py-2.5 text-sm transition-colors group {{ request()->routeIs('profile.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50' }}">
-                                        <svg class="mr-3 h-4 w-4 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 {{ request()->routeIs('profile.*') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400' }}"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                        </svg>
-                                        Your Profile
-                                    </a>
-                                    @role('admin')
-                                        <a href="{{ route('settings.index') }}"
-                                            class="flex items-center px-4 py-2.5 text-sm transition-colors group {{ request()->routeIs('settings.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50' }}">
-                                            <svg class="mr-3 h-4 w-4 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 {{ request()->routeIs('settings.*') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400' }}"
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            </svg>
-                                            Settings
-                                        </a>
-                                    @endrole
-                                    <a href="{{ route('help.index') }}"
-                                        class="flex items-center px-4 py-2.5 text-sm transition-colors group {{ request()->routeIs('help.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50' }}">
-                                        <svg class="mr-3 h-4 w-4 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 {{ request()->routeIs('help.*') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400' }}"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        Help & Support
-                                    </a>
-                                </div>
-
-                                <div class="py-1 border-t border-gray-100 dark:border-gray-700">
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit"
-                                            class="flex items-center w-full px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group">
-                                            <svg class="mr-3 h-4 w-4 text-red-500 group-hover:text-red-600"
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                            </svg>
-                                            Sign Out
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Main Content Area -->
+            @include('Layout.header')
             <main
                 class="flex-1 relative overflow-y-auto focus:outline-none bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
                 <div class="py-8">
                     <div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
-
-                        @if (session('success'))
-                            <div id="alert-success"
-                                class="mb-6 flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-l-4 border-green-500 rounded-xl shadow-lg text-green-800 dark:text-green-200 backdrop-blur-sm transition-all duration-300">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0">
-                                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                    </div>
-                                    <span class="ml-3 text-sm font-medium">{{ session('success') }}</span>
-                                </div>
-                                <button onclick="document.getElementById('alert-success').remove()"
-                                    class="ml-auto p-1.5 hover:bg-green-100 dark:hover:bg-green-800/50 rounded-lg transition-colors">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        @endif
-                        @if (session('error') || $errors->any())
-                            <div id="alert-error"
-                                class="mb-6 flex items-start justify-between p-4 bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/30 dark:to-rose-900/30 border-l-4 border-red-500 rounded-xl shadow-lg text-red-800 dark:text-red-200 backdrop-blur-sm transition-all duration-300">
-                                <div class="flex items-start">
-                                    <div class="flex-shrink-0">
-                                        <svg class="h-5 w-5 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="ml-3">
-                                        <span class="text-sm font-bold">Xatolik yuz berdi:</span>
-                                        <ul class="mt-2 list-disc list-inside text-xs space-y-1">
-                                            @if (session('error'))
-                                                <li>{{ session('error') }}</li>
-                                            @endif
-                                            @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                </div>
-                                <button onclick="document.getElementById('alert-error').remove()"
-                                    class="ml-auto p-1.5 hover:bg-red-100 dark:hover:bg-red-800/50 rounded-lg transition-colors">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        @endif
+                        @include('Layout.alerts')
                         @yield('content')
                     </div>
                 </div>
@@ -1193,6 +305,7 @@
     <script>
         /**
          * Elementlarni tanlab olish
+         * successAlert va errorAlert bu yerdan OLIB TASHLANDI (pastda alohida)
          */
         const elements = {
             themeToggle: document.getElementById('theme-toggle'),
@@ -1212,8 +325,6 @@
             usersDropdown: document.getElementById('users-dropdown'),
             userMenuButton: document.getElementById('user-menu-button'),
             userMenu: document.getElementById('user-menu'),
-            successAlert: document.getElementById('alert-success'),
-            errorAlert: document.getElementById('alert-error')
         };
 
         /**
@@ -1225,19 +336,15 @@
             currentTheme = theme;
             localStorage.setItem('theme', theme);
 
-            // Ikonkalarni yangilash
             Object.keys(elements.themeIcons).forEach(key => {
                 elements.themeIcons[key]?.classList.toggle('hidden', key !== theme);
             });
 
-            // Active klassini yangilash
             elements.themeOptions.forEach(opt => {
                 opt.classList.toggle('active', opt.dataset.theme === theme);
             });
 
-            // HTML klassini o'zgartirish
             let isDark = false;
-
             if (theme === 'dark') {
                 isDark = true;
             } else if (theme === 'light') {
@@ -1253,7 +360,6 @@
             }
         }
 
-        // Tizim mavzusi o'zgarganda kuzatish
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
             if (currentTheme === 'system') applyTheme('system');
         });
@@ -1269,7 +375,11 @@
                 elements.sidebar.classList.toggle('collapsed', sidebarCollapsed);
                 elements.sidebar.classList.toggle('expanded', !sidebarCollapsed);
                 elements.sidebar.classList.remove('-translate-x-full');
-                elements.sidebarOverlay.classList.add('hidden');
+                // ✅ FIX: faqat desktop ga o'tganda overlay yashirilsin
+                // mobile da sidebar ochiq tursa overlay saqlansin
+                if (!elements.sidebarOverlay.classList.contains('hidden')) {
+                    elements.sidebarOverlay.classList.add('hidden');
+                }
             } else {
                 elements.sidebar.classList.add('expanded');
                 elements.sidebar.classList.remove('collapsed');
@@ -1277,7 +387,7 @@
         }
 
         /**
-         * 3. DROPDOWNS & UTILS (Menyular va yordamchi funksiyalar)
+         * 3. DROPDOWNS & UTILS
          */
         function closeAllDropdowns() {
             elements.themeMenu?.classList.add('hidden');
@@ -1291,10 +401,8 @@
         }
 
         /**
-         * 4. EVENT LISTENERS (Hodisalar)
+         * 4. EVENT LISTENERS
          */
-
-        // Theme events
         elements.themeToggle?.addEventListener('click', (e) => {
             e.stopPropagation();
             toggleDropdown(elements.themeMenu);
@@ -1307,7 +415,6 @@
             });
         });
 
-        // Sidebar events
         elements.sidebarToggle?.addEventListener('click', () => {
             sidebarCollapsed = !sidebarCollapsed;
             localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
@@ -1326,25 +433,21 @@
             });
         });
 
-        // Users dropdown (sidebar ichidagi)
         elements.usersDropdownBtn?.addEventListener('click', (e) => {
             e.preventDefault();
             elements.usersDropdown.classList.toggle('open');
             elements.usersDropdownBtn.querySelector('.arrow-icon')?.classList.toggle('rotated');
         });
 
-        // User profile menu
         elements.userMenuButton?.addEventListener('click', (e) => {
             e.stopPropagation();
             toggleDropdown(elements.userMenu);
         });
 
         document.addEventListener('click', (e) => {
-            // Check if click is outside theme menu and user menu
             if (!elements.themeToggle?.contains(e.target) && !elements.themeMenu?.contains(e.target)) {
                 elements.themeMenu?.classList.add('hidden');
             }
-
             if (!elements.userMenuButton?.contains(e.target) && !elements.userMenu?.contains(e.target)) {
                 elements.userMenu?.classList.add('hidden');
             }
@@ -1352,23 +455,28 @@
 
         window.addEventListener('resize', updateSidebarView);
 
-        if (elements.successAlert) {
-            setTimeout(() => {
-                elements.successAlert.style.transition = "opacity 0.5s ease";
-                elements.successAlert.style.opacity = "0";
-                setTimeout(() => elements.successAlert.remove(), 500);
-            }, 5000);
-        }
-        if (elements.errorAlert) {
-            setTimeout(() => {
-                elements.errorAlert.style.transition = "opacity 0.5s ease";
-                elements.errorAlert.style.opacity = "0";
-                setTimeout(() => elements.errorAlert.remove(), 500);
-            }, 5000);
-        }
+        /**
+         * ✅ FIX: Alert auto-hide — elements dan ALOHIDA, null xavfsiz
+         */
+        (function () {
+            const alerts = [
+                document.getElementById('alert-success'),
+                document.getElementById('alert-error'),
+            ];
+            alerts.forEach(function (alert) {
+                if (!alert) return; // session bo'sh bo'lsa — skip
+                setTimeout(function () {
+                    alert.style.transition = 'opacity 0.5s ease';
+                    alert.style.opacity = '0';
+                    setTimeout(function () {
+                        alert.remove();
+                    }, 500);
+                }, 5000);
+            });
+        })();
 
         /**
-         * INITIALIZE (Ishga tushirish)
+         * INITIALIZE
          */
         applyTheme(currentTheme);
         updateSidebarView();
