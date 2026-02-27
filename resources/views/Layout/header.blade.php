@@ -1,9 +1,10 @@
 <header
     class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-700/50 transition-colors duration-200 z-30 sticky top-0">
     <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center">
+        <div class="flex items-center flex-1 min-w-0">
             <button type="button" id="mobile-menu-button"
-                class="lg:hidden -ml-2 mr-3 p-2 rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none transition-all">
+                class="lg:hidden flex-shrink-0 -ml-1 mr-2 w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none transition-all">
+
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
@@ -24,9 +25,10 @@
             </div>
         </div>
 
-        <div class="flex items-center space-x-2 sm:space-x-3">
+        {{-- <div class="flex items-center space-x-2 sm:space-x-3"> --}}
+        <div class="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
             <!-- Theme Switcher -->
-            <div class="relative">
+            <div class="relative flex-shrink-0">
                 <button id="theme-toggle"
                     class="p-2.5 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all hover:scale-105">
                     <svg id="theme-icon-light" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -95,6 +97,51 @@
                     <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
                 </span>
             </button>
+            @php $lang = app()->getLocale(); @endphp
+
+            <div class="relative" id="lang-switcher-wrapper">
+                <button id="lang-toggle"
+                    class="flex items-center space-x-1.5 p-2 sm:px-3 sm:py-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all hover:scale-105"
+                    aria-haspopup="true" aria-expanded="false">
+
+                    <span class="flex-shrink-0 w-5 h-4 rounded-sm overflow-hidden shadow-sm">
+                        @include('components.flags.' . $current_lang)
+                    </span>
+
+                    <span
+                        class="hidden sm:block text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300">
+                        {{ $locales[$current_lang]['flag'] ?? 'EN' }}
+                    </span>
+
+                    <svg class="hidden sm:block w-3 h-3 text-gray-400 transition-transform duration-200" id="lang-arrow"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <div id="lang-menu"
+                    class="hidden absolute right-0 mt-2 w-44 rounded-xl shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 border border-gray-100 dark:border-gray-700 z-50 overflow-hidden">
+                    <div class="py-1">
+                        @foreach (LABELS as $code => $label)
+                            <form method="POST" action="{{ route('locale.set') }}">
+                                @csrf
+                                <input type="hidden" name="lang" value="{{ $code }}">
+                                <button type="submit"
+                                    class="w-full flex items-center px-4 py-2.5 text-sm transition-colors {{ $current_lang === $code ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50' }}">
+
+                                    <span
+                                        class="w-1.5 h-1.5 rounded-full bg-indigo-500 mr-2 flex-shrink-0 {{ $current_lang === $code ? 'opacity-100' : 'opacity-0' }}"></span>
+
+                                    <span class="w-5 h-4 rounded-sm overflow-hidden shadow-sm mr-3 flex-shrink-0">
+                                        @include('components.flags.' . $code)
+                                    </span>
+                                    {{ $label }}
+                                </button>
+                            </form>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
 
             <!-- User Menu Dropdown -->
             <div class="relative ml-1">

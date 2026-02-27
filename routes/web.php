@@ -21,6 +21,7 @@ use App\Http\Controllers\GroupTeacher\GroupTeacherController;
 use App\Http\Controllers\Help\HelpController;
 use App\Http\Controllers\Impersonate\ImpersonateController;
 use App\Http\Controllers\Lesson\LessonController;
+use App\Http\Controllers\Locale\LocaleController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Profile\ProfileController;
@@ -264,5 +265,6 @@ Route::middleware(['auth'])->group(function () {
             // PDF qo'llanmani yuklab olish
             Route::get('/download-pdf', [HelpController::class, 'downloadPdf'])->name('download-pdf');
         });
+        Route::post('/locale/set', [LocaleController::class, 'set'])->name('locale.set');
     });
 });

@@ -325,6 +325,10 @@
             usersDropdown: document.getElementById('users-dropdown'),
             userMenuButton: document.getElementById('user-menu-button'),
             userMenu: document.getElementById('user-menu'),
+
+            langToggle: document.getElementById('lang-toggle'),
+            langMenu: document.getElementById('lang-menu'),
+            langArrow: document.getElementById('lang-arrow'),
         };
 
         /**
@@ -386,12 +390,15 @@
             }
         }
 
+
         /**
          * 3. DROPDOWNS & UTILS
          */
         function closeAllDropdowns() {
             elements.themeMenu?.classList.add('hidden');
             elements.userMenu?.classList.add('hidden');
+            elements.langMenu?.classList.add('hidden');
+            elements.langArrow?.classList.remove('rotate-180');
         }
 
         function toggleDropdown(menu) {
@@ -414,6 +421,17 @@
                 elements.themeMenu.classList.add('hidden');
             });
         });
+
+        elements.langToggle?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isHidden = elements.langMenu.classList.contains('hidden');
+            toggleDropdown(elements.langMenu);
+            // Rotate arrow when open
+            if (isHidden) {
+                elements.langArrow?.classList.add('rotate-180');
+            }
+        });
+
 
         elements.sidebarToggle?.addEventListener('click', () => {
             sidebarCollapsed = !sidebarCollapsed;
@@ -451,6 +469,10 @@
             if (!elements.userMenuButton?.contains(e.target) && !elements.userMenu?.contains(e.target)) {
                 elements.userMenu?.classList.add('hidden');
             }
+            if (!elements.langToggle?.contains(e.target) && !elements.langMenu?.contains(e.target)) {
+                elements.langMenu?.classList.add('hidden');
+                elements.langArrow?.classList.remove('rotate-180');
+            }
         });
 
         window.addEventListener('resize', updateSidebarView);
@@ -458,17 +480,17 @@
         /**
          * ✅ FIX: Alert auto-hide — elements dan ALOHIDA, null xavfsiz
          */
-        (function () {
+        (function() {
             const alerts = [
                 document.getElementById('alert-success'),
                 document.getElementById('alert-error'),
             ];
-            alerts.forEach(function (alert) {
+            alerts.forEach(function(alert) {
                 if (!alert) return; // session bo'sh bo'lsa — skip
-                setTimeout(function () {
+                setTimeout(function() {
                     alert.style.transition = 'opacity 0.5s ease';
                     alert.style.opacity = '0';
-                    setTimeout(function () {
+                    setTimeout(function() {
                         alert.remove();
                     }, 500);
                 }, 5000);

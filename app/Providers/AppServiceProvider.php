@@ -7,6 +7,7 @@ use App\Policies\AttendancePolicy;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,5 +28,9 @@ class AppServiceProvider extends ServiceProvider
         // URL::forceScheme('https');
         Paginator::useTailwind();
         // Gate::policy(Group::class, AttendancePolicy::class);
+        View::composer('Layout.header', function ($view) {
+            $view->with('current_lang', app()->getLocale());
+            $view->with('locales', config('locales.supported'));
+        });
     }
 }

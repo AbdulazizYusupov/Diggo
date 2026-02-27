@@ -1,6 +1,4 @@
 <nav class="flex-1 px-3 space-y-1">
-    {{-- <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 sidebar-text">
-                            Asosiy</p> --}}
     @role('student')
         <a href="{{ route('student.dashboard') }}"
             class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('student.dashboard') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
@@ -11,14 +9,14 @@
                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
 
-            <span class="ml-3 sidebar-text">Dashboard</span>
+            <span class="ml-3 sidebar-text">{{ __('navigation.dashboard') }}</span>
 
             @if (request()->routeIs('student'))
                 <span
                     class="ml-auto bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 py-0.5 px-2 text-xs font-bold rounded-full sidebar-text">4</span>
             @endif
 
-            <span class="nav-tooltip">Dashboard</span>
+            <span class="nav-tooltip">{{ __('navigation.dashboard') }}</span>
         </a>
         <a href="{{ route('student.groups') }}"
             class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->routeIs('student.groups*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
@@ -222,8 +220,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round"
                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
-            <span class="ml-3 sidebar-text">Boshqaruv paneli</span>
-            <span class="nav-tooltip">Boshqaruv paneli</span>
+            <span class="ml-3 sidebar-text">{{ __('navigation.dashboard') }}</span>
+            <span class="nav-tooltip">{{ __('navigation.dashboard') }}</span>
         </a>
         <a href="{{ route('statistics.index') }}"
             class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('statistics.index') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">

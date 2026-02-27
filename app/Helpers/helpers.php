@@ -1,4 +1,14 @@
 <?php
+const FLAGS = [
+    'uz' => 'UZ',
+    'ru' => 'RU',
+    'en' => 'EN',
+];
+const LABELS = [
+    'uz' => 'Uzbek',
+    'ru' => 'Russian',
+    'en' => 'English',
+];
 const DAY_NAMES = [
     'monday'    => 'Du',
     'tuesday'   => 'Se',
