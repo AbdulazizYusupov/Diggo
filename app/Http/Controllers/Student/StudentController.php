@@ -189,30 +189,30 @@ class StudentController extends Controller
     /**
      * Display the specified resource.
      */
-    
+
     public function show(string $id)
     {
         $student = Student::findOrFail($id);
         $student->load(['user', 'school', 'director', 'groups', 'groups.teachers']);
-        
+
         // Get recent transactions
         $recentTransactions = $student->transactions()
             ->latest()
             ->take(5)
             ->get();
-        
+
         // Get recent payments
         $recentPayments = $student->payments()
             ->latest()
             ->take(5)
             ->get();
-        
+
         // Get coin transactions
         $recentCoinTransactions = $student->coinTransactions()
             ->latest()
             ->take(5)
             ->get();
-        
+
         return view('Student.show', compact(
             'student',
             'recentTransactions',
@@ -234,7 +234,7 @@ class StudentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    
+
     public function update(Request $request, string $id)
     {
         $student = Student::findOrFail($id);
@@ -342,6 +342,31 @@ class StudentController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $student = Student::findOrFail($id);
+        $user = $student->user;
+
+        DB::beginTransaction();
+        try {
+            // Studentni guruhlardan chiqarish
+            $student->groups()->detach();
+
+            // Studentni o'chirish
+            $student->delete();
+
+            // Rasmni o'chirish
+            if ($user->photo && Storage::disk('public')->exists($user->photo)) {
+                Storage::disk('public')->delete($user->photo);
+            }
+
+            // Userni o'chirish
+            $user->delete();
+
+            DB::commit();
+
+            return redirect()->route('students.index')->with('success', 'O\'quvchi muvaffaqiyatli o\'chirildi!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Xatolik: ' . $e->getMessage());
+        }
     }
 }
