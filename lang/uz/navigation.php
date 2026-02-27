@@ -2,6 +2,18 @@
 
 return [
     'dashboard' => 'Boshqaruv paneli',
+    'my_groups' => 'Guruhlarim',
+    'my_payments' => "To'lovlarim",
+    'my_indicators' => 'Ko\'rsatkichlarim', // yoki 'Davomat va natijalar'
+    'my_coins' => 'Coinlarim',
+    'schedule' => 'Dars jadvali',
+    'leaderboard' => 'Reyting',
+    'shop' => 'Do\'kon',
+    'commissions' => 'Komissiyalar',
+    'reports' => 'Hisobotlar',
+    'shop_management' => 'Do\'kon boshqaruvi',
+    'categories' => 'Kategoriyalar',
+    'orders' => 'Buyurtmalar',
     'statistics' => 'Statistika',
     
     // Ruxsatnomalar
@@ -38,4 +50,5 @@ return [
     'categories' => 'Kategoriyalar',
     'products' => 'Mahsulotlar',
     'orders' => 'Buyurtmalar',
+
 ];

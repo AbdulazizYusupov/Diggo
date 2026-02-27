@@ -2,6 +2,18 @@
 
 return [
     'dashboard' => 'Dashboard',
+    'my_groups' => 'My Groups',
+    'my_payments' => 'My Payments',
+    'my_indicators' => 'My Indicators',
+    'my_coins' => 'My Coins',
+    'schedule' => 'Schedule',
+    'leaderboard' => 'Leaderboard',
+    'shop' => 'Shop',
+    'commissions' => 'Commissions',
+    'reports' => 'Reports',
+    'shop_management' => 'Shop Management',
+    'categories' => 'Categories',
+    'orders' => 'Orders',
     'statistics' => 'Statistics',
     
     'permissions_group' => 'Permissions',

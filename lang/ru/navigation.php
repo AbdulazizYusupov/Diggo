@@ -2,6 +2,18 @@
 
 return [
     'dashboard' => 'Панель управления',
+    'my_groups' => 'Мои группы',
+    'my_payments' => 'Мои платежи',
+    'my_indicators' => 'Мои показатели',
+    'my_coins' => 'Мои коины',
+    'schedule' => 'Расписание',
+    'leaderboard' => 'Рейтинг',
+    'shop' => 'Магазин',
+    'commissions' => 'Комиссии',
+    'reports' => 'Отчеты',
+    'shop_management' => 'Управление магазином',
+    'categories' => 'Категории',
+    'orders' => 'Заказы',
     'statistics' => 'Статистика',
     
     'permissions_group' => 'Разрешения',
