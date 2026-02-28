@@ -7,6 +7,8 @@ use App\Models\Attendance;
 use App\Models\CoinTransaction;
 use App\Models\Group;
 use App\Models\Lesson;
+use App\Models\User;
+use App\Notifications\AttendanceMarked\AttendanceMarkedNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,9 +41,10 @@ class AttendanceController extends Controller
             ->where('is_active', true);
 
         if ($search) {
-            $query->where(fn($q) =>
+            $query->where(
+                fn($q) =>
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhereHas('course', fn($c) => $c->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('course', fn($c) => $c->where('name', 'like', "%{$search}%"))
             );
         }
 
@@ -167,7 +170,7 @@ class AttendanceController extends Controller
     // =========================================================================
     // STORE — Davomatni saqlash
     // =========================================================================
-   public function store(Request $request)
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'group_id'        => 'required|exists:groups,id',
@@ -208,10 +211,15 @@ class AttendanceController extends Controller
             // ─────────────────────────────────────────────────────────────────
             // 2-QADAM: Lessons — 1 query (+ group_id xavfsizlik tekshiruvi)
             // ─────────────────────────────────────────────────────────────────
-            $lessonsMap = Lesson::whereIn('id', $allLessonIds)
+            // $lessonsMap = Lesson::whereIn('id', $allLessonIds)
+            //     ->where('group_id', $groupId)
+            //     ->get()
+            //     ->keyBy('id'); // [lesson_id => Lesson]
+            $lessonsMap = Lesson::with('group')
+                ->whereIn('id', $allLessonIds)
                 ->where('group_id', $groupId)
                 ->get()
-                ->keyBy('id'); // [lesson_id => Lesson]
+                ->keyBy('id');
 
             // ─────────────────────────────────────────────────────────────────
             // 3-QADAM: Mavjud attendancelar — 1 query
@@ -348,9 +356,48 @@ class AttendanceController extends Controller
                 CoinTransaction::insert($coinRows);
             }
 
+            $allNotifyStudentIds = array_unique(array_column($toUpsert, 'student_id'));
+
+            // To'g'ri: [student_id => user_id]
+            $studentUserMap = DB::table('students')
+                ->join('users', 'users.id', '=', 'students.user_id')
+                ->whereIn('students.id', $allNotifyStudentIds)
+                ->pluck('students.user_id', 'students.id');
+            // key: student_id, value: user_id
+            // dd($allNotifyStudentIds,$studentUserMap);
+
+           
+            foreach ($toUpsert as $item) {
+                $studentId = $item['student_id'];
+                $data      = $item['data'];
+                $lesson    = $lessonsMap->get($item['lesson_id']);
+
+                if (!$lesson || ($data['daily_coins'] <= 0 && $data['status'] === 'absent')) {
+                    continue;
+                }
+
+                // Endi to'g'ri: student_id orqali user_id ni to'g'ridan olamiz
+                $userId = $studentUserMap->get($studentId);
+                if (!$userId) continue;
+
+                $user = User::find($userId);
+                if (!$user) continue;
+
+                $user->notify(new AttendanceMarkedNotification(
+                    status: $data['status'],
+                    dailyCoins: $data['daily_coins'],
+                    homeworkScore: $data['homework_score'],
+                    activityScore: $data['activity_score'],
+                    lessonDate: $lesson->lesson_date->format('d.m.Y'),
+                    lessonTime: substr($lesson->start_time ?? '', 0, 5),
+                    groupName: $lessonsMap->get($item['lesson_id'])?->group?->name
+                        ?? Group::find($lesson->group_id)?->name ?? '',
+                ));
+            }
             // ─────────────────────────────────────────────────────────────────
             // 9-QADAM: Scheduled → completed — 1 query
             // ─────────────────────────────────────────────────────────────────
+
             Lesson::where('group_id', $groupId)
                 ->where('status', 'scheduled')
                 ->whereDate('lesson_date', '<=', Carbon::today())
@@ -361,7 +408,6 @@ class AttendanceController extends Controller
             return redirect()
                 ->route('attendance.show', $groupId)
                 ->with('success', 'Davomat muvaffaqiyatli saqlandi!');
-
         } catch (\Throwable $e) {
             DB::rollBack();
             return back()
@@ -454,7 +500,12 @@ class AttendanceController extends Controller
         usort($studentStats, fn($a, $b) => $b['total_coins'] <=> $a['total_coins']);
 
         return view('Attendance.statistics', compact(
-            'group', 'studentStats', 'month', 'year', 'totalLessons', 'totalDays'
+            'group',
+            'studentStats',
+            'month',
+            'year',
+            'totalLessons',
+            'totalDays'
         ));
     }
 
@@ -527,7 +578,7 @@ class AttendanceController extends Controller
      */
     private function calcAttendanceCoins(string $status, int $lateMinutes): int
     {
-        return match(true) {
+        return match (true) {
             $status === 'present'                                              => self::COINS_PRESENT,
             $status === 'late' && $lateMinutes < 15                           => self::COINS_LATE_UNDER_15,
             $status === 'late' && $lateMinutes < self::LATE_ABSENT_THRESHOLD  => self::COINS_LATE_UNDER_30,
@@ -549,7 +600,7 @@ class AttendanceController extends Controller
             : 0;
 
         if ($data['attendance_coins'] !== $oldAttCoins) {
-            $parts[] = match($data['status']) {
+            $parts[] = match ($data['status']) {
                 'present' => 'Keldi',
                 'late'    => "Kechikdi ({$data['late_minutes']} min)",
                 'absent'  => 'Kelmadi',
