@@ -14,6 +14,7 @@ return [
     'shop_management' => 'Do\'kon boshqaruvi',
     'categories' => 'Kategoriyalar',
     'orders' => 'Buyurtmalar',
+    'coin_transactions' => 'Tanga amallari',
     'statistics' => 'Statistika',
     
     // Ruxsatnomalar

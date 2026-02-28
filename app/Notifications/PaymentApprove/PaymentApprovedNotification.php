@@ -7,8 +7,8 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-
-class PaymentApprovedNotification extends Notification implements ShouldQueue
+//  implements ShouldQueue
+class PaymentApprovedNotification extends Notification
 {
     use Queueable;
 

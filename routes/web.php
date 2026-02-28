@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ShopOrderController;
 use App\Http\Controllers\Admin\ShopProductController;
 use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\CoinTransaction\CoinTransactionController;
 use App\Http\Controllers\Course\CourseController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Director\DirectorController;
@@ -236,6 +237,10 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('transactions/export', [TransactionController::class, 'export'])->name('transactions.export');
         Route::resource('transactions', TransactionController::class)->only(['index', 'show']);
+
+        // Coin Transactions
+        Route::get('/coin-transactions', [CoinTransactionController::class, 'index'])->name('coin-transactions.index');
+        Route::get('/coin-transactions/{id}', [CoinTransactionController::class, 'show'])->name('coin-transactions.show');
 
         Route::resource('lessons', LessonController::class);
         Route::patch('lessons/{lesson}/complete', [LessonController::class, 'complete'])->name('lessons.complete');

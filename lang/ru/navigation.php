@@ -14,6 +14,7 @@ return [
     'shop_management' => 'Управление магазином',
     'categories' => 'Категории',
     'orders' => 'Заказы',
+    'coin_transactions' => 'Транзакции монет',
     'statistics' => 'Статистика',
     
     'permissions_group' => 'Разрешения',

@@ -14,6 +14,7 @@ return [
     'shop_management' => 'Shop Management',
     'categories' => 'Categories',
     'orders' => 'Orders',
+    'coin_transactions' => 'Coin Transactions',
     'statistics' => 'Statistics',
     
     'permissions_group' => 'Permissions',
