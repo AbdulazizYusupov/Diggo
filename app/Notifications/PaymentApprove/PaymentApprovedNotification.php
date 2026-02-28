@@ -52,7 +52,8 @@ class PaymentApprovedNotification extends Notification implements ShouldQueue
             'payment_id'  => $this->payment->id,
             'amount'      => $this->payment->amount,
             'paid_at'     => $this->payment->created_at->toDateTimeString(),
-            'action_url'  => route('student.payments.show', $this->payment->id),
+            // 'action_url'  => route('student.payments.show', $this->payment->id),
+            'action_url' => route('student.payments.show', $this->payment->id),
         ];
     }
 }

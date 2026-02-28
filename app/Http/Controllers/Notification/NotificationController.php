@@ -37,6 +37,7 @@ class NotificationController extends Controller
      */
     public function markRead(string $id)
     {
+        // dd($id);
         $notification = Auth::user()
             ->notifications()
             ->findOrFail($id);

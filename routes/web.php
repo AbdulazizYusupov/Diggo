@@ -70,6 +70,12 @@ Route::middleware(['auth'])->group(function () {
         // Impersonation tugatish (istalgan yerdan)
         Route::post('/leave', [ImpersonateController::class, 'leave'])->name('leave');
     });
+    Route::post('/locale/set', [LocaleController::class, 'set'])->name('locale.set');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
 
     Route::middleware([CheckPermission::class])->group(function () {
         Route::resource('staffs', StaffController::class);
@@ -266,11 +272,5 @@ Route::middleware(['auth'])->group(function () {
             // PDF qo'llanmani yuklab olish
             Route::get('/download-pdf', [HelpController::class, 'downloadPdf'])->name('download-pdf');
         });
-        Route::post('/locale/set', [LocaleController::class, 'set'])->name('locale.set');
-        Route::get('/notifications',[NotificationController::class, 'index'])->name('notifications.index');
-
-        Route::post('/notifications/{id}/read',[NotificationController::class, 'markRead'])->name('notifications.read');
-
-        Route::post('/notifications/read-all',[NotificationController::class, 'markAllRead'])->name('notifications.readAll');
     });
 });

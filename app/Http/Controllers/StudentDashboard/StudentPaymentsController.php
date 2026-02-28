@@ -129,10 +129,11 @@ class StudentPaymentsController extends Controller
             abort(403, 'Student profili topilmadi');
         }
 
-        $payment = Payment::with(['group.cours', 'user'])
+        $payment = Payment::with(['group.course', 'user'])
             ->where('payable_type', 'App\Models\Student')
             ->where('payable_id', $student->id)
             ->findOrFail($id);
+        // dd($payment);
 
         return view('Panel.Student.payment-detail', compact('student', 'payment'));
     }

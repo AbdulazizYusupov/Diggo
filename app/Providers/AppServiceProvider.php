@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Group;
 use App\Policies\AttendancePolicy;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
@@ -31,6 +32,12 @@ class AppServiceProvider extends ServiceProvider
         View::composer('Layout.header', function ($view) {
             $view->with('current_lang', app()->getLocale());
             $view->with('locales', config('locales.supported'));
+            if (Auth::check()) {
+                $view->with([
+                    'unreadCount'   => Auth::user()->unreadNotifications()->count(),
+                    'notifications' => Auth::user()->notifications()->latest()->limit(15)->get(),
+                ]);
+            }
         });
     }
 }
