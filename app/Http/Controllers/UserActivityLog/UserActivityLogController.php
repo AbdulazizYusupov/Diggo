@@ -58,7 +58,7 @@ class UserActivityLogController extends Controller
             'logins_today'  => UserActivityLog::whereDate('logged_at', $today)->where('action', 'login')->count(),
             'logouts_today' => UserActivityLog::whereDate('logged_at', $today)->where('action', 'logout')->count(),
             'unique_users'  => UserActivityLog::whereDate('logged_at', $today)->distinct('user_id')->count('user_id'),
-            'online_now'    => $this->getOnlineUsers()->count(),
+            'online_now'    => $this->getOnlineUserIds()->count(),
         ];
 
         $roles = ['admin', 'director', 'teacher', 'student', 'staff'];
@@ -110,60 +110,60 @@ class UserActivityLogController extends Controller
         return back()->with('success', "{$count} ta eski log o'chirildi");
     }
 
-    // Hozir online (so'nggi 15 daqiqada login qilgan, logout qilmagan)
-    private function getOnlineUsers()
-    {
-        $recentLogins = UserActivityLog::where('action', 'login')
-            ->where('logged_at', '>=', now()->subMinutes(15))
-            ->distinct('user_id')
-            ->pluck('user_id');
-
-        $recentLogouts = UserActivityLog::where('action', 'logout')
-            ->where('logged_at', '>=', now()->subMinutes(15))
-            ->distinct('user_id')
-            ->pluck('user_id');
-
-        return $recentLogins->diff($recentLogouts);
-    }
-    public function online()
+    public function online(Request $request)
     {
         $onlineUserIds = $this->getOnlineUserIds();
 
-        $users = User::with([
-            'roles',
-            'latestLogin' => fn($q) => $q->where('action', 'login')->latest('logged_at')
-        ])
+        // Pagination — 50 ta, relation minimal
+        $users = User::with('roles')
             ->whereIn('id', $onlineUserIds)
-            ->get();
+            ->orderBy('id')
+            ->paginate(50)
+            ->withQueryString();
 
-        // Har bir user ning so'nggi login ma'lumotlari
+        // Faqat joriy sahifadagi userlar uchun log query
+        $currentPageUserIds = $users->pluck('id');
+
         $lastLogs = UserActivityLog::where('action', 'login')
-            ->whereIn('user_id', $onlineUserIds)
-            ->whereIn('id', function ($q) use ($onlineUserIds) {
+            ->whereIn('user_id', $currentPageUserIds)
+            ->whereIn('id', function ($q) use ($currentPageUserIds) {
                 $q->selectRaw('MAX(id)')
                     ->from('user_activity_logs')
                     ->where('action', 'login')
-                    ->whereIn('user_id', $onlineUserIds)
+                    ->whereIn('user_id', $currentPageUserIds)
                     ->groupBy('user_id');
             })
             ->get()
             ->keyBy('user_id');
 
-        return view('UserActivityLogs.online', compact('users', 'lastLogs'));
+        $totalOnline = $onlineUserIds->count();
+
+        return view('UserActivityLogs.online', compact('users', 'lastLogs', 'totalOnline'));
     }
 
+    /**
+     * Hozir online bo'lgan userlarni aniqlaydi.
+     *
+     * Mantiq:
+     *  1. Har bir user uchun eng oxirgi activity logini olamiz.
+     *  2. Agar oxirgi action = 'login' bo'lsa VA logged_at session timeout ichida bo'lsa — online.
+     *  3. Agar oxirgi action = 'logout' bo'lsa yoki session timeout o'tib ketgan bo'lsa — offline.
+     *
+     * Session lifetime config/session.php dan olinadi (daqiqada).
+     */
     private function getOnlineUserIds(): Collection
     {
-        $recentLogins = UserActivityLog::where('action', 'login')
-            ->where('logged_at', '>=', now()->subMinutes(15))
-            ->distinct('user_id')
-            ->pluck('user_id');
+        $sessionMinutes = config('session.lifetime', 120);
 
-        $recentLogouts = UserActivityLog::where('action', 'logout')
-            ->where('logged_at', '>=', now()->subMinutes(15))
-            ->distinct('user_id')
+        // Har bir user uchun eng oxirgi log yozuvi
+        $lastLogs = UserActivityLog::whereIn('id', function ($q) {
+                $q->selectRaw('MAX(id)')
+                    ->from('user_activity_logs')
+                    ->groupBy('user_id');
+            })
+            ->where('action', 'login')
+            ->where('logged_at', '>=', now()->subMinutes($sessionMinutes))
             ->pluck('user_id');
-
-        return $recentLogins->diff($recentLogouts);
+        return $lastLogs;
     }
 }

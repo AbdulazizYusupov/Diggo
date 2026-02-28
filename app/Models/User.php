@@ -94,4 +94,13 @@ class User extends Authenticatable
         return $this->belongsToMany(Group::class, 'group_teacher', 'teacher_id', 'group_id')
             ->withPivot('is_primary', 'assigned_at')->withTimestamps();
     }
+    public function activityLogs()
+    {
+        return $this->hasMany(UserActivityLog::class);
+    }
+
+    public function latestLogin()
+    {
+        return $this->hasOne(UserActivityLog::class)->latestOfMany('logged_at');
+    }
 }

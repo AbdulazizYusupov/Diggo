@@ -22,7 +22,8 @@
                 <a href="{{ route('activity-logs.online') }}"
                     class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-sm font-semibold rounded-xl transition-colors border border-emerald-200 dark:border-emerald-700">
                     <span class="relative flex h-2.5 w-2.5">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                     </span>
                     Online: {{ $stats['online_now'] }} ta
@@ -52,17 +53,23 @@
                 <p class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase">Bugun jami</p>
                 <p class="text-2xl font-extrabold text-blue-700 dark:text-blue-300 mt-1">{{ $stats['total_today'] }}</p>
             </div>
-            <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-4 border border-emerald-200 dark:border-emerald-700/50">
+            <div
+                class="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-4 border border-emerald-200 dark:border-emerald-700/50">
                 <p class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">Login</p>
-                <p class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-300 mt-1">{{ $stats['logins_today'] }}</p>
+                <p class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-300 mt-1">{{ $stats['logins_today'] }}
+                </p>
             </div>
-            <div class="bg-orange-50 dark:bg-orange-900/20 rounded-2xl p-4 border border-orange-200 dark:border-orange-700/50">
+            <div
+                class="bg-orange-50 dark:bg-orange-900/20 rounded-2xl p-4 border border-orange-200 dark:border-orange-700/50">
                 <p class="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase">Logout</p>
-                <p class="text-2xl font-extrabold text-orange-700 dark:text-orange-300 mt-1">{{ $stats['logouts_today'] }}</p>
+                <p class="text-2xl font-extrabold text-orange-700 dark:text-orange-300 mt-1">{{ $stats['logouts_today'] }}
+                </p>
             </div>
-            <div class="bg-purple-50 dark:bg-purple-900/20 rounded-2xl p-4 border border-purple-200 dark:border-purple-700/50">
+            <div
+                class="bg-purple-50 dark:bg-purple-900/20 rounded-2xl p-4 border border-purple-200 dark:border-purple-700/50">
                 <p class="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase">Unique foydalanuvchi</p>
-                <p class="text-2xl font-extrabold text-purple-700 dark:text-purple-300 mt-1">{{ $stats['unique_users'] }}</p>
+                <p class="text-2xl font-extrabold text-purple-700 dark:text-purple-300 mt-1">{{ $stats['unique_users'] }}
+                </p>
             </div>
             <div class="bg-teal-50 dark:bg-teal-900/20 rounded-2xl p-4 border border-teal-200 dark:border-teal-700/50">
                 <p class="text-xs font-bold text-teal-600 dark:text-teal-400 uppercase">Hozir online</p>
@@ -144,7 +151,8 @@
         </div>
 
         {{-- Table --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div
+            class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead class="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
@@ -197,7 +205,8 @@
                                     @if ($log->action === 'login')
                                         <span
                                             class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                                     d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                                             </svg>
@@ -206,7 +215,8 @@
                                     @else
                                         <span
                                             class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                                     d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                             </svg>
@@ -219,17 +229,20 @@
                                 <td class="px-5 py-3.5">
                                     <div class="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
                                         @if ($log->device === 'Mobile')
-                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                             </svg>
                                         @elseif($log->device === 'Tablet')
-                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                             </svg>
                                         @else
-                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                             </svg>
@@ -267,7 +280,8 @@
                                         {{-- Show button --}}
                                         <a href="{{ route('activity-logs.show', $log->user_id) }}"
                                             class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/20 dark:hover:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 text-xs font-semibold rounded-lg transition-colors">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -282,7 +296,8 @@
                                             @csrf @method('DELETE')
                                             <button type="submit"
                                                 class="inline-flex items-center justify-center p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
@@ -298,7 +313,8 @@
                                 <td colspan="9" class="px-5 py-14 text-center">
                                     <div class="flex flex-col items-center gap-3">
                                         <div class="p-3 bg-gray-100 dark:bg-gray-700 rounded-full">
-                                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                                     d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                             </svg>
@@ -311,11 +327,13 @@
                     </tbody>
                 </table>
             </div>
-            @if ($logs->hasPages())
-                <div class="px-5 py-4 border-t border-gray-100 dark:border-gray-700">
-                    {{ $logs->links() }}
-                </div>
-            @endif
         </div>
+       
+        @if ($logs->hasPages())
+            <div
+                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-4">
+                {{ $logs->links() }}
+            </div>
+        @endif
     </div>
 @endsection
