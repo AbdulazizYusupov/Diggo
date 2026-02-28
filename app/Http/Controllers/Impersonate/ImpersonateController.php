@@ -158,7 +158,7 @@ class ImpersonateController extends Controller
             'teacher'  => route('teacher.dashboard'),
             'student'  => route('student.dashboard'),
             'director' => route('director.dashboard'),
-            'staff'    => route('staff.dashboard'),
+            'staff'    => route('dashboard'),
             default    => route('dashboard'),
         };
     }
