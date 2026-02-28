@@ -311,15 +311,35 @@
         <a href="{{ route('activity-logs.index') }}"
             class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('activity-logs.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 
-            
+
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="size-6">
+                stroke="currentColor"
+                class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('activity-logs.index') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
                 <path stroke-linecap="round" stroke-linejoin="round"
                     d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
             </svg>
 
             <span class="ml-3 sidebar-text">ActiveLogs</span>
             <span class="nav-tooltip">ActiveLogs</span>
+        </a>
+        <a href="{{ route('login-attempts.index') }}"
+            class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('login-attempts.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+
+            {{-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor"
+                class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('login-attempts.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+            </svg> --}}
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('login-attempts.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m3 3 8.735 8.735m0 0a.374.374 0 1 1 .53.53m-.53-.53.53.53m0 0L21 21M14.652 9.348a3.75 3.75 0 0 1 0 5.304m2.121-7.425a6.75 6.75 0 0 1 0 9.546m2.121-11.667c3.808 3.807 3.808 9.98 0 13.788m-9.546-4.242a3.733 3.733 0 0 1-1.06-2.122m-1.061 4.243a6.75 6.75 0 0 1-1.625-6.929m-.496 9.05c-3.068-3.067-3.664-7.67-1.79-11.334M12 12h.008v.008H12V12Z" />
+            </svg>
+
+
+            <span class="ml-3 sidebar-text">Login Attempts</span>
+            <span class="nav-tooltip">Login Attempts</span>
         </a>
     @endrole
     @role('admin|staff')

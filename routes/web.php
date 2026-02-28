@@ -23,6 +23,7 @@ use App\Http\Controllers\Help\HelpController;
 use App\Http\Controllers\Impersonate\ImpersonateController;
 use App\Http\Controllers\Lesson\LessonController;
 use App\Http\Controllers\Locale\LocaleController;
+use App\Http\Controllers\LoginAttempt\LoginAttemptController;
 use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Permission\PermissionController;
@@ -285,6 +286,13 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/user/{userId}', [UserActivityLogController::class, 'show'])->name('show');
             Route::delete('/{id}', [UserActivityLogController::class, 'destroy'])->name('destroy');
             Route::delete('/clear/old', [UserActivityLogController::class, 'destroyAll'])->name('clear');
+        });
+        Route::prefix('admin/login-attempts')->name('login-attempts.')->group(function () {
+            Route::get('/',                    [LoginAttemptController::class, 'index'])->name('index');
+            Route::get('/ip/{ip}',             [LoginAttemptController::class, 'showIp'])->name('show-ip');
+            Route::get('/phone/{phone}',       [LoginAttemptController::class, 'showPhone'])->name('show-phone');
+            Route::delete('/{id}',             [LoginAttemptController::class, 'destroy'])->name('destroy');
+            Route::delete('/bulk/old',         [LoginAttemptController::class, 'destroyOld'])->name('destroy-old');
         });
     });
 });
