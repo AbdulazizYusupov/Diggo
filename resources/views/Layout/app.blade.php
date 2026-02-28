@@ -329,6 +329,10 @@
             langToggle: document.getElementById('lang-toggle'),
             langMenu: document.getElementById('lang-menu'),
             langArrow: document.getElementById('lang-arrow'),
+
+            notificationToggle: document.getElementById('notification-toggle'),
+            notificationDropdown: document.getElementById('notification-dropdown'),
+            // notificationWrapper: document.getElementById('notification-wrapper'),
         };
 
         /**
@@ -373,20 +377,35 @@
          */
         let sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
 
+        // function updateSidebarView() {
+        //     const isDesktop = window.innerWidth >= 1024;
+        //     if (isDesktop) {
+        //         elements.sidebar.classList.toggle('collapsed', sidebarCollapsed);
+        //         elements.sidebar.classList.toggle('expanded', !sidebarCollapsed);
+        //         elements.sidebar.classList.remove('-translate-x-full');
+        //         // ✅ FIX: faqat desktop ga o'tganda overlay yashirilsin
+        //         // mobile da sidebar ochiq tursa overlay saqlansin
+        //         if (!elements.sidebarOverlay.classList.contains('hidden')) {
+        //             elements.sidebarOverlay.classList.add('hidden');
+        //         }
+        //     } else {
+        //         elements.sidebar.classList.add('expanded');
+        //         elements.sidebar.classList.remove('collapsed');
+        //     }
+        // }
         function updateSidebarView() {
             const isDesktop = window.innerWidth >= 1024;
             if (isDesktop) {
                 elements.sidebar.classList.toggle('collapsed', sidebarCollapsed);
                 elements.sidebar.classList.toggle('expanded', !sidebarCollapsed);
                 elements.sidebar.classList.remove('-translate-x-full');
-                // ✅ FIX: faqat desktop ga o'tganda overlay yashirilsin
-                // mobile da sidebar ochiq tursa overlay saqlansin
-                if (!elements.sidebarOverlay.classList.contains('hidden')) {
-                    elements.sidebarOverlay.classList.add('hidden');
-                }
+                elements.sidebarOverlay.classList.add('hidden');
             } else {
                 elements.sidebar.classList.add('expanded');
                 elements.sidebar.classList.remove('collapsed');
+                // Hide sidebar off-screen when switching back to mobile
+                elements.sidebar.classList.add('-translate-x-full');
+                elements.sidebarOverlay.classList.add('hidden');
             }
         }
 
@@ -394,11 +413,23 @@
         /**
          * 3. DROPDOWNS & UTILS
          */
+        // function closeAllDropdowns() {
+        //     elements.themeMenu?.classList.add('hidden');
+        //     elements.userMenu?.classList.add('hidden');
+        //     elements.langMenu?.classList.add('hidden');
+        //     elements.langArrow?.classList.remove('rotate-180');
+        //     elements.notificationDropdown?.classList.add('hidden');
+        //     elements.notificationToggle?.setAttribute('aria-expanded', 'false');
+        // }
         function closeAllDropdowns() {
             elements.themeMenu?.classList.add('hidden');
             elements.userMenu?.classList.add('hidden');
             elements.langMenu?.classList.add('hidden');
             elements.langArrow?.classList.remove('rotate-180');
+            elements.notificationDropdown?.classList.add('hidden');
+            elements.notificationToggle?.setAttribute('aria-expanded', 'false');
+            elements.usersDropdown?.classList.remove('open');
+            elements.usersDropdownBtn?.querySelector('.arrow-icon')?.classList.remove('rotated');
         }
 
         function toggleDropdown(menu) {
@@ -451,10 +482,28 @@
             });
         });
 
+        // elements.usersDropdownBtn?.addEventListener('click', (e) => {
+        //     e.preventDefault();
+        //     elements.usersDropdown.classList.toggle('open');
+        //     elements.usersDropdownBtn.querySelector('.arrow-icon')?.classList.toggle('rotated');
+        // });
         elements.usersDropdownBtn?.addEventListener('click', (e) => {
             e.preventDefault();
-            elements.usersDropdown.classList.toggle('open');
-            elements.usersDropdownBtn.querySelector('.arrow-icon')?.classList.toggle('rotated');
+            e.stopPropagation();
+            const isOpen = elements.usersDropdown.classList.contains('open');
+            closeAllDropdowns();
+            if (!isOpen) {
+                elements.usersDropdown.classList.add('open');
+                elements.usersDropdownBtn.querySelector('.arrow-icon')?.classList.add('rotated');
+            }
+        });
+
+        elements.notificationToggle?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleDropdown(elements.notificationDropdown);
+
+            const isHidden = elements.notificationDropdown.classList.contains('hidden');
+            elements.notificationToggle?.setAttribute('aria-expanded', String(!isHidden));
         });
 
         elements.userMenuButton?.addEventListener('click', (e) => {
@@ -462,17 +511,25 @@
             toggleDropdown(elements.userMenu);
         });
 
-        document.addEventListener('click', (e) => {
-            if (!elements.themeToggle?.contains(e.target) && !elements.themeMenu?.contains(e.target)) {
-                elements.themeMenu?.classList.add('hidden');
-            }
-            if (!elements.userMenuButton?.contains(e.target) && !elements.userMenu?.contains(e.target)) {
-                elements.userMenu?.classList.add('hidden');
-            }
-            if (!elements.langToggle?.contains(e.target) && !elements.langMenu?.contains(e.target)) {
-                elements.langMenu?.classList.add('hidden');
-                elements.langArrow?.classList.remove('rotate-180');
-            }
+        // document.addEventListener('click', (e) => {
+        //     if (!elements.themeToggle?.contains(e.target) && !elements.themeMenu?.contains(e.target)) {
+        //         elements.themeMenu?.classList.add('hidden');
+        //     }
+        //     if (!elements.userMenuButton?.contains(e.target) && !elements.userMenu?.contains(e.target)) {
+        //         elements.userMenu?.classList.add('hidden');
+        //     }
+        //     if (!elements.langToggle?.contains(e.target) && !elements.langMenu?.contains(e.target)) {
+        //         elements.langMenu?.classList.add('hidden');
+        //         elements.langArrow?.classList.remove('rotate-180');
+        //     }
+        //     if (!elements.notificationToggle?.contains(e.target) &&
+        //         !elements.notificationDropdown?.contains(e.target)) {
+        //         elements.notificationDropdown?.classList.add('hidden');
+        //         elements.notificationToggle?.setAttribute('aria-expanded', 'false');
+        //     }
+        // });
+        document.addEventListener('click', () => {
+            closeAllDropdowns();
         });
 
         window.addEventListener('resize', updateSidebarView);
@@ -503,6 +560,38 @@
         applyTheme(currentTheme);
         updateSidebarView();
     </script>
+    {{-- <script>
+        // ── Notification Bell ────────────────────────────────────────
+        (function() {
+            const toggle = document.getElementById('notification-toggle');
+            const dropdown = document.getElementById('notification-dropdown');
+            const wrapper = document.getElementById('notification-wrapper');
+
+            if (!toggle || !dropdown || !wrapper) return;
+
+            toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isHidden = dropdown.classList.contains('hidden');
+                dropdown.classList.toggle('hidden', !isHidden);
+                toggle.setAttribute('aria-expanded', String(isHidden));
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!wrapper.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    dropdown.classList.add('hidden');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
+        // ── End Notification Bell ────────────────────────────────────
+    </script> --}}
     @stack('scripts')
 </body>
 

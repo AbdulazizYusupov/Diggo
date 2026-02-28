@@ -7,6 +7,7 @@ use App\Models\Group;
 use App\Models\Payment;
 use App\Models\Student;
 use App\Models\Transaction;
+use App\Notifications\PaymentApprove\PaymentApprovedNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -77,7 +78,7 @@ class PaymentController extends Controller
         ));
     }
 
-   
+
     public function create(Request $request)
     {
         // Fetch all active students with relationships
@@ -153,7 +154,9 @@ class PaymentController extends Controller
             $directorCommission = $this->processDirectorCommission($student, $payment, $amounts['amount_to_balance']);
 
             DB::commit();
-
+            if ($student->user) {
+                $student->user->notify(new PaymentApprovedNotification($payment));
+            }
             return $this->successResponse($amounts, $directorCommission);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -215,7 +218,7 @@ class PaymentController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('Payment.edit', compact('payment', 'students','groups'));
+        return view('Payment.edit', compact('payment', 'students', 'groups'));
     }
 
     /**

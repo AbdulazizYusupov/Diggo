@@ -83,21 +83,118 @@
                     </div>
                 </div>
             </div>
+            @php
+                $unreadCount = Auth::user()->unreadNotifications()->count();
+                $notifications = Auth::user()->notifications()->latest()->limit(15)->get();
+            @endphp
 
-            <!-- Notification Button -->
-            <button
-                class="p-2.5 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl relative transition-all hover:scale-105">
-                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-                <span class="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
-                    <span
-                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
-                </span>
-            </button>
-            @php $lang = app()->getLocale(); @endphp
+            <div class="relative flex-shrink-0" id="notification-wrapper">
+
+                <!-- Bell Button -->
+                <button type="button" id="notification-toggle"
+                    class="p-2.5 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl relative transition-all hover:scale-105"
+                    aria-haspopup="true" aria-expanded="false">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+
+                    @if ($unreadCount > 0)
+                        <span class="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                        </span>
+                    @endif
+                </button>
+
+                <!-- Dropdown Panel -->
+                <div id="notification-dropdown"
+                    class="hidden absolute right-0 mt-2 w-80 rounded-xl shadow-xl bg-white dark:bg-gray-800
+                           ring-1 ring-black ring-opacity-5 border border-gray-100 dark:border-gray-700 z-50"
+                    role="menu">
+                    <!-- Dropdown Header -->
+                    <div
+                        class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-semibold text-gray-900 dark:text-white">Notifications</span>
+                            @if ($unreadCount > 0)
+                                <span
+                                    class="inline-flex items-center justify-center h-5 min-w-[20px] px-1.5
+                                             rounded-full bg-red-500 text-white text-[10px] font-bold">
+                                    {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                                </span>
+                            @endif
+                        </div>
+
+                        @if ($unreadCount > 0)
+                            <form method="POST" action="{{ route('notifications.readAll') }}">
+                                @csrf
+                                <button type="submit"
+                                    class="text-xs text-indigo-500 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium transition-colors">
+                                    Mark all read
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+
+                    <!-- Scrollable List (fixed height) -->
+                    <div class="overflow-y-auto" style="max-height: 360px;">
+
+                        @forelse ($notifications as $notification)
+                            <form method="POST" action="{{ route('notifications.read', $notification->id) }}"
+                                class="block">
+                                @csrf
+                                <button type="submit"
+                                    class="w-full text-left px-4 py-3 border-b border-gray-50 dark:border-gray-700/50
+                                           transition-colors last:border-0
+                                           {{ is_null($notification->read_at)
+                                               ? 'bg-indigo-50/70 dark:bg-indigo-900/20 hover:bg-indigo-100/80 dark:hover:bg-indigo-900/30'
+                                               : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/40' }}">
+                                    <div class="flex items-start gap-3">
+                                        <!-- Unread dot -->
+                                        <div
+                                            class="mt-2 flex-shrink-0 w-2 h-2 rounded-full
+                                            {{ is_null($notification->read_at) ? 'bg-indigo-500' : 'bg-transparent' }}">
+                                        </div>
+
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                                {{ $notification->data['title'] }}
+                                            </p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">
+                                                {{ $notification->data['message'] }}
+                                            </p>
+                                            <p class="text-[10px] text-gray-400 dark:text-gray-500 mt-1.5">
+                                                {{ $notification->created_at->diffForHumans() }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </button>
+                            </form>
+                        @empty
+                            <div class="flex flex-col items-center justify-center py-10 px-4 text-center">
+                                <svg class="h-10 w-10 text-gray-300 dark:text-gray-600 mb-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">No notifications yet.</p>
+                            </div>
+                        @endforelse
+
+                    </div>
+
+                    <!-- Dropdown Footer -->
+                    <div class="px-4 py-2.5 border-t border-gray-100 dark:border-gray-700 text-center">
+                        <a href="{{ route('notifications.index') }}"
+                            class="text-xs text-indigo-500 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium transition-colors">
+                            View all notifications →
+                        </a>
+                    </div>
+                </div>
+
+            </div>
 
             <div class="relative" id="lang-switcher-wrapper">
                 <button id="lang-toggle"
@@ -113,8 +210,8 @@
                         {{ $locales[$current_lang]['flag'] ?? 'EN' }}
                     </span>
 
-                    <svg class="hidden sm:block w-3 h-3 text-gray-400 transition-transform duration-200" id="lang-arrow"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="hidden sm:block w-3 h-3 text-gray-400 transition-transform duration-200"
+                        id="lang-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
