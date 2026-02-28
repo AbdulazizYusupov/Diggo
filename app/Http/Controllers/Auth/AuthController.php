@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\LoginAttempt;
+use App\Models\UserActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -50,6 +51,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
+            $this->logActivity($request, 'login');
             if (Auth::user()->hasRole('director')) {
                 return redirect()->route('director.dashboard');
             } elseif (Auth::user()->hasRole('student')) {
@@ -131,10 +133,29 @@ class AuthController extends Controller
     }
     public function logout(Request $request)
     {
+        if (Auth::check()) {
+            $this->logActivity($request, 'logout');
+        }
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+    protected function logActivity(Request $request, string $action): void
+    {
+        $ua      = $request->userAgent() ?? '';
+        $parsed  = UserActivityLog::parseUserAgent($ua);
+
+        UserActivityLog::create([
+            'user_id'    => Auth::id(),
+            'action'     => $action,
+            'ip_address' => $request->ip(),
+            'user_agent' => $ua,
+            'browser'    => $parsed['browser'],
+            'platform'   => $parsed['platform'],
+            'device'     => $parsed['device'],
+            'logged_at'  => now(),
+        ]);
     }
 }

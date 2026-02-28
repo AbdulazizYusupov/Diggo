@@ -49,6 +49,7 @@ use App\Http\Controllers\TeacherDashboard\TeacherDashboardController;
 use App\Http\Controllers\TeacherDashboard\TeacherGroupsController;
 use App\Http\Controllers\TeacherDashboard\TeacherLessonsController;
 use App\Http\Controllers\Transaction\TransactionController;
+use App\Http\Controllers\UserActivityLog\UserActivityLogController;
 use App\Http\Middleware\CheckPermission;
 use Illuminate\Support\Facades\Route;
 
@@ -276,6 +277,14 @@ Route::middleware(['auth'])->group(function () {
 
             // PDF qo'llanmani yuklab olish
             Route::get('/download-pdf', [HelpController::class, 'downloadPdf'])->name('download-pdf');
+        });
+        // User Activity Logs
+        Route::prefix('activity-logs')->name('activity-logs.')->group(function () {
+            Route::get('/', [UserActivityLogController::class, 'index'])->name('index');
+            Route::get('/online', [UserActivityLogController::class, 'online'])->name('online');
+            Route::get('/user/{userId}', [UserActivityLogController::class, 'show'])->name('show');
+            Route::delete('/{id}', [UserActivityLogController::class, 'destroy'])->name('destroy');
+            Route::delete('/clear/old', [UserActivityLogController::class, 'destroyAll'])->name('clear');
         });
     });
 });
