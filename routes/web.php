@@ -36,6 +36,7 @@ use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\Statitics\StatisticsController;
 use App\Http\Controllers\Student\StudentController;
 use App\Http\Controllers\StudentDashboard\ShopController;
+use App\Http\Controllers\StudentDashboard\StudentActivityController;
 use App\Http\Controllers\StudentDashboard\StudentAttendanceController;
 use App\Http\Controllers\StudentDashboard\StudentCoinsController;
 use App\Http\Controllers\StudentDashboard\StudentDashboardController;
@@ -210,6 +211,8 @@ Route::middleware(['auth'])->group(function () {
                 // Buyurtmani bekor qilish
                 Route::patch('/orders/{order}/cancel', [ShopController::class, 'cancel'])->name('cancel');
             });
+            Route::get('/activities', [StudentActivityController::class, 'index'])->name('activities.index');
+            Route::get('/activities/{activity}', [StudentActivityController::class, 'show'])->name('activities.show');
         });
 
         Route::prefix('teacher')->name('teacher.')->group(function () {
