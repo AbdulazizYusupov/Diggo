@@ -18,57 +18,99 @@
                         {{ $ip }}
                     </h1>
                 </div>
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Bu IP manzildan barcha login urinishlari
-                </p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Bu IP manzildan barcha login urinishlari</p>
             </div>
 
-            {{-- Block badge --}}
-            @if($ipStats['is_blocked_now'])
-                <div class="inline-flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-xl text-red-700 dark:text-red-400 text-sm font-bold">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"/>
-                    </svg>
-                    Hozir BLOKLANGAN
-                </div>
-            @else
-                <div class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-xl text-emerald-700 dark:text-emerald-400 text-sm font-semibold">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                    </svg>
-                    Faol (bloklangan emas)
-                </div>
-            @endif
+            <div class="flex items-center gap-3">
+                @if($ipStats['is_blocked_now'])
+                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-xl text-red-700 dark:text-red-400 text-sm font-bold">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"/>
+                        </svg>
+                        Hozir BLOKLANGAN
+                    </div>
+                    {{-- UNBLOCK TUGMASI --}}
+                    <form method="POST" action="{{ route('login-attempts.unblock-ip', $ip) }}"
+                        onsubmit="return confirm('{{ $ip }} IP manzilini blokdan ochishni tasdiqlaysizmi?\nBarcha failed yozuvlar o\'chiriladi va cache tozalanadi.')">
+                        @csrf
+                        <button type="submit"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                            </svg>
+                            Blokdan ochish
+                        </button>
+                    </form>
+                @else
+                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-xl text-emerald-700 dark:text-emerald-400 text-sm font-semibold">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        Faol (bloklangan emas)
+                    </div>
+                @endif
+            </div>
         </div>
 
-        {{-- Stats grid --}}
+        @if(session('success'))
+            <div class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-xl px-4 py-3 text-emerald-700 dark:text-emerald-400 text-sm font-medium">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        {{-- Stats --}}
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            @php
-                $cards = [
-                    ['label' => 'Jami urinish',   'value' => $ipStats['total'],         'color' => 'blue'],
-                    ['label' => 'Xato',            'value' => $ipStats['failed'],        'color' => 'red'],
-                    ['label' => 'Muvaffaqiyatli',  'value' => $ipStats['successful'],    'color' => 'emerald'],
-                    ['label' => 'Bloklangan',      'value' => $ipStats['blocked'],       'color' => 'orange'],
-                    ['label' => 'Unique phonlar',  'value' => $ipStats['unique_phones'], 'color' => 'violet'],
-                    ['label' => 'Max risk',        'value' => $ipStats['max_risk'],      'color' => $ipStats['max_risk'] >= 80 ? 'rose' : 'yellow'],
-                ];
-                $colorMap = [
-                    'blue'    => 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700/50 text-blue-700 dark:text-blue-300',
-                    'red'     => 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-700 dark:text-red-300',
-                    'emerald' => 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700/50 text-emerald-700 dark:text-emerald-300',
-                    'orange'  => 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-700/50 text-orange-700 dark:text-orange-300',
-                    'violet'  => 'bg-violet-50 dark:bg-violet-900/20 border-violet-200 dark:border-violet-700/50 text-violet-700 dark:text-violet-300',
-                    'rose'    => 'bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-700/50 text-rose-700 dark:text-rose-300',
-                    'yellow'  => 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700/50 text-yellow-700 dark:text-yellow-300',
-                ];
-            @endphp
-            @foreach($cards as $card)
-                <div class="border rounded-2xl px-4 py-3 {{ $colorMap[$card['color']] }}">
-                    <p class="text-xs font-semibold uppercase opacity-75">{{ $card['label'] }}</p>
-                    <p class="text-2xl font-extrabold mt-0.5">{{ $card['value'] ?? 0 }}</p>
-                </div>
-            @endforeach
+            <div class="border rounded-2xl px-4 py-3 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700/50 text-blue-700 dark:text-blue-300">
+                <p class="text-xs font-semibold uppercase opacity-75">Jami urinish</p>
+                <p class="text-2xl font-extrabold mt-0.5">{{ $ipStats['total'] }}</p>
+            </div>
+            <div class="border rounded-2xl px-4 py-3 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/50 text-red-700 dark:text-red-300">
+                <p class="text-xs font-semibold uppercase opacity-75">Xato</p>
+                <p class="text-2xl font-extrabold mt-0.5">{{ $ipStats['failed'] }}</p>
+            </div>
+            <div class="border rounded-2xl px-4 py-3 bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700/50 text-emerald-700 dark:text-emerald-300">
+                <p class="text-xs font-semibold uppercase opacity-75">Muvaffaqiyatli</p>
+                <p class="text-2xl font-extrabold mt-0.5">{{ $ipStats['successful'] }}</p>
+            </div>
+            <div class="border rounded-2xl px-4 py-3 bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-700/50 text-orange-700 dark:text-orange-300">
+                <p class="text-xs font-semibold uppercase opacity-75">Bloklangan</p>
+                <p class="text-2xl font-extrabold mt-0.5">{{ $ipStats['blocked'] }}</p>
+            </div>
+            <div class="border rounded-2xl px-4 py-3 bg-violet-50 dark:bg-violet-900/20 border-violet-200 dark:border-violet-700/50 text-violet-700 dark:text-violet-300">
+                <p class="text-xs font-semibold uppercase opacity-75">Unique phonlar</p>
+                <p class="text-2xl font-extrabold mt-0.5">{{ $ipStats['unique_phones'] }}</p>
+            </div>
+            <div class="border rounded-2xl px-4 py-3 {{ $ipStats['max_risk'] >= 80 ? 'bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-700/50 text-rose-700 dark:text-rose-300' : 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700/50 text-yellow-700 dark:text-yellow-300' }}">
+                <p class="text-xs font-semibold uppercase opacity-75">Max risk</p>
+                <p class="text-2xl font-extrabold mt-0.5">{{ $ipStats['max_risk'] }}</p>
+            </div>
         </div>
+
+        {{-- Bog'liq phonlar va tezkor unblock --}}
+        @if($relatedPhones->isNotEmpty())
+            <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5">
+                <h3 class="font-bold text-gray-700 dark:text-gray-300 text-sm mb-3">
+                    Bu IP dan urinilgan raqamlar (har birini alohida blokdan ochish mumkin)
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                    @foreach($relatedPhones as $relPhone)
+                        <form method="POST" action="{{ route('login-attempts.unblock-phone', $relPhone) }}"
+                            onsubmit="return confirm('{{ $relPhone }} raqamini blokdan ochishni tasdiqlaysizmi?')">
+                            @csrf
+                            <button type="submit"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 hover:bg-emerald-100 dark:bg-gray-700 dark:hover:bg-emerald-900/30 text-gray-700 hover:text-emerald-700 dark:text-gray-300 dark:hover:text-emerald-400 transition-colors border border-gray-200 dark:border-gray-600">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                                </svg>
+                                {{ $relPhone }}
+                            </button>
+                        </form>
+                    @endforeach
+                </div>
+            </div>
+        @endif
 
         {{-- First / Last seen --}}
         <div class="flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400">
@@ -126,26 +168,26 @@
                                         <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">Xato</span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-3 whitespace-nowrap text-xs">
-                                    @php
-                                        $reasons = ['wrong_password'=>"Noto'g'ri parol",'user_not_found'=>'Foydalanuvchi yo\'q','user_inactive'=>"Hisob o'chirilgan",'rate_limited'=>'Rate limit'];
-                                    @endphp
-                                    {{ $reasons[$attempt->failure_reason] ?? '—' }}
+                                <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                                    @if($attempt->failure_reason === 'wrong_password') Noto'g'ri parol
+                                    @elseif($attempt->failure_reason === 'user_not_found') Foydalanuvchi yo'q
+                                    @elseif($attempt->failure_reason === 'user_inactive') Hisob o'chirilgan
+                                    @elseif($attempt->failure_reason === 'rate_limited') Rate limit
+                                    @else —
+                                    @endif
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                                     {{ $attempt->device ?? '—' }} / {{ $attempt->browser ?? '—' }}
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap">
-                                    @if($attempt->risk_score > 0)
-                                        @php
-                                            $rc = match(true) {
-                                                $attempt->risk_score >= 80 => 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-                                                $attempt->risk_score >= 60 => 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-                                                $attempt->risk_score >= 30 => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-                                                default => 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400',
-                                            };
-                                        @endphp
-                                        <span class="px-2 py-0.5 rounded-md text-[11px] font-bold {{ $rc }}">{{ $attempt->risk_score }}</span>
+                                    @if($attempt->risk_score >= 80)
+                                        <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">{{ $attempt->risk_score }}</span>
+                                    @elseif($attempt->risk_score >= 60)
+                                        <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">{{ $attempt->risk_score }}</span>
+                                    @elseif($attempt->risk_score >= 30)
+                                        <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">{{ $attempt->risk_score }}</span>
+                                    @elseif($attempt->risk_score > 0)
+                                        <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400">{{ $attempt->risk_score }}</span>
                                     @else
                                         <span class="text-gray-300 dark:text-gray-600">—</span>
                                     @endif

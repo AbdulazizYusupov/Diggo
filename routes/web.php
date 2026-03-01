@@ -287,12 +287,25 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/{id}', [UserActivityLogController::class, 'destroy'])->name('destroy');
             Route::delete('/clear/old', [UserActivityLogController::class, 'destroyAll'])->name('clear');
         });
+        // Route::prefix('admin/login-attempts')->name('login-attempts.')->group(function () {
+        //     Route::get('/',                    [LoginAttemptController::class, 'index'])->name('index');
+        //     Route::get('/ip/{ip}',             [LoginAttemptController::class, 'showIp'])->name('show-ip');
+        //     Route::get('/phone/{phone}',       [LoginAttemptController::class, 'showPhone'])->name('show-phone');
+        //     Route::delete('/{id}',             [LoginAttemptController::class, 'destroy'])->name('destroy');
+        //     Route::delete('/bulk/old',         [LoginAttemptController::class, 'destroyOld'])->name('destroy-old');
+        // });
         Route::prefix('admin/login-attempts')->name('login-attempts.')->group(function () {
-            Route::get('/',                    [LoginAttemptController::class, 'index'])->name('index');
-            Route::get('/ip/{ip}',             [LoginAttemptController::class, 'showIp'])->name('show-ip');
-            Route::get('/phone/{phone}',       [LoginAttemptController::class, 'showPhone'])->name('show-phone');
-            Route::delete('/{id}',             [LoginAttemptController::class, 'destroy'])->name('destroy');
-            Route::delete('/bulk/old',         [LoginAttemptController::class, 'destroyOld'])->name('destroy-old');
+
+            Route::get('/',                          [LoginAttemptController::class, 'index'])->name('index');
+            Route::get('/ip/{ip}',                   [LoginAttemptController::class, 'showIp'])->name('show-ip');
+            Route::get('/phone/{phone}',             [LoginAttemptController::class, 'showPhone'])->name('show-phone');
+
+            // Unblock — DB + RateLimiter cache ni birga tozalaydi
+            Route::post('/unblock/ip/{ip}',          [LoginAttemptController::class, 'unblockIp'])->name('unblock-ip');
+            Route::post('/unblock/phone/{phone}',    [LoginAttemptController::class, 'unblockPhone'])->name('unblock-phone');
+
+            Route::delete('/{id}',                   [LoginAttemptController::class, 'destroy'])->name('destroy');
+            Route::delete('/bulk/old',               [LoginAttemptController::class, 'destroyOld'])->name('destroy-old');
         });
     });
 });

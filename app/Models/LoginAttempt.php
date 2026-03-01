@@ -15,15 +15,13 @@ class LoginAttempt extends Model
         'user_agent',
         'successful',
         'attempted_at',
-        // Yangi ustunlar
-        'user_id',          // Muvaffaqiyatli bo'lsa qaysi user
-        'blocked',          // Bu urinish bloklangan paytda bo'ldimi
-        'failure_reason',   // 'wrong_password' | 'user_not_found' | 'user_inactive' | 'rate_limited'
+        'user_id',
+        'blocked',
+        'failure_reason',
         'browser',
         'platform',
         'device',
-        'country',          // IP geo (ixtiyoriy, keyinchalik qo'shilishi mumkin)
-        'risk_score',       // 0-100: qanchalik shubhali
+        'risk_score',
     ];
 
     protected $casts = [
@@ -85,72 +83,121 @@ class LoginAttempt extends Model
     // ─── Static helpers ───────────────────────────────────────────────────────
 
     /**
-     * So'nggi X daqiqada berilgan phone + IP uchun xato urinishlar soni
+     * Phone uchun oxirgi muvaffaqiyatli login vaqtini qaytaradi.
+     * Ichki yordamchi — takrorlanishni oldini oladi.
      */
-    public static function getRecentFailedAttempts(string $phone, string $ip, int $minutes = 15): int
+    private static function lastSuccessTimeForPhone(string $phone): ?string
     {
-        return static::failed()
-            ->where(function ($q) use ($phone, $ip) {
-                $q->forPhone($phone)->orWhere('ip_address', $ip);
-            })
-            ->recent($minutes)
+        return static::where('phone', $phone)
+            ->where('successful', true)
+            ->latest('attempted_at')
+            ->value('attempted_at');
+    }
+
+    /**
+     * IP uchun oxirgi muvaffaqiyatli login vaqtini qaytaradi.
+     */
+    private static function lastSuccessTimeForIp(string $ip): ?string
+    {
+        return static::where('ip_address', $ip)
+            ->where('successful', true)
+            ->latest('attempted_at')
+            ->value('attempted_at');
+    }
+
+    /**
+     * Phone bo'yicha xato urinishlar soni — oxirgi muvaffaqiyatli logindan KEYIN.
+     *
+     * Misol:
+     *   3 xato → login ✅ → logout → 7 xato
+     *   DB da jami 10 xato, lekin natija = 7  (blok bo'lmaydi)
+     *
+     * Agar hech qachon muvaffaqiyatli login bo'lmagan bo'lsa — barcha xatolar sanaladi.
+     */
+    public static function getFailedAttemptsForPhone(string $phone, int $minutes = 60): int
+    {
+        $lastSuccess = static::lastSuccessTimeForPhone($phone);
+
+        return static::where('phone', $phone)
+            ->where('successful', false)
+            ->where('attempted_at', '>=', now()->subMinutes($minutes))
+            ->when($lastSuccess, fn($q) => $q->where('attempted_at', '>', $lastSuccess))
             ->count();
     }
 
     /**
-     * Berilgan IP oxirgi 1 soatda nechta xato qilgan
+     * IP bo'yicha xato urinishlar soni — shu IPdan oxirgi muvaffaqiyatli logindan KEYIN.
      */
     public static function getFailedAttemptsForIp(string $ip, int $minutes = 60): int
     {
-        return static::failed()->forIp($ip)->recent($minutes)->count();
+        $lastSuccess = static::lastSuccessTimeForIp($ip);
+
+        return static::where('ip_address', $ip)
+            ->where('successful', false)
+            ->where('attempted_at', '>=', now()->subMinutes($minutes))
+            ->when($lastSuccess, fn($q) => $q->where('attempted_at', '>', $lastSuccess))
+            ->count();
     }
 
     /**
-     * Berilgan phone oxirgi 1 soatda nechta xato qilgan
+     * Berilgan phone bloklanishi kerakmi?
      */
-    public static function getFailedAttemptsForPhone(string $phone, int $minutes = 60): int
+    public static function shouldBlockPhone(string $phone, int $maxAttempts = 10, int $minutes = 60): bool
     {
-        return static::failed()->forPhone($phone)->recent($minutes)->count();
+        return static::getFailedAttemptsForPhone($phone, $minutes) >= $maxAttempts;
     }
 
     /**
-     * Risk score hisoblash (0–100)
-     * Qanchalik ko'p xato → qanchalik yuqori risk
+     * Berilgan IP bloklanishi kerakmi?
      */
-    // public static function calculateRiskScore(string $phone, string $ip): int
-    // {
-    //     $score = 0;
+    public static function shouldBlockIp(string $ip, int $maxAttempts = 20, int $minutes = 60): bool
+    {
+        return static::getFailedAttemptsForIp($ip, $minutes) >= $maxAttempts;
+    }
 
-    //     // So'nggi 5 daqiqada xatolar
-    //     $recent5  = static::failed()->where(fn($q) => $q->forPhone($phone)->orWhere('ip_address', $ip))->recent(5)->count();
-    //     // So'nggi 1 soatda xatolar
-    //     $recent60 = static::failed()->where(fn($q) => $q->forPhone($phone)->orWhere('ip_address', $ip))->recent(60)->count();
-    //     // Bir xil IP dan turli phonelarga urinishlar (credential stuffing belgisi)
-    //     $ipVariety = static::failed()->forIp($ip)->recent(60)->distinct('phone')->count('phone');
-
-    //     $score += min($recent5  * 15, 45);  // Max 45 ball (5 daqiqa ichida)
-    //     $score += min($recent60 * 5,  30);  // Max 30 ball (1 soat ichida)
-    //     $score += min($ipVariety * 10, 25); // Max 25 ball (IP diversity)
-
-    //     return min($score, 100);
-    // }
+    /**
+     * Risk score hisoblash (0–100).
+     *
+     * Bitta query, PHP da hisoblash.
+     * Oxirgi muvaffaqiyatli logindan keyingi xatolar hisobga olinadi.
+     *
+     * Ball taqsimoti:
+     *   5 daqiqa ichida xatolar  → max 45 ball
+     *   1 soat ichida xatolar    → max 30 ball
+     *   IP diversity (stuffing)  → max 25 ball
+     */
     public static function calculateRiskScore(string $phone, string $ip): int
     {
-        $score = 0;
+        $lastSuccess = static::lastSuccessTimeForPhone($phone);
 
-        // 3 ta query o'rniga 1 ta query — PHP da hisoblash
-        $attempts = static::failed()
-            ->where(fn($q) => $q->forPhone($phone)->orWhere('ip_address', $ip))
-            ->recent(60)
+        $attempts = static::where('successful', false)
+            ->where(fn($q) => $q->where('phone', $phone)->orWhere('ip_address', $ip))
+            ->where('attempted_at', '>=', now()->subMinutes(60))
+            ->when($lastSuccess, fn($q) => $q->where('attempted_at', '>', $lastSuccess))
             ->select(['attempted_at', 'ip_address', 'phone'])
             ->get();
+
         $recent5   = $attempts->where('attempted_at', '>=', now()->subMinutes(5))->count();
         $recent60  = $attempts->count();
         $ipVariety = $attempts->where('ip_address', $ip)->pluck('phone')->unique()->count();
-        $score += min($recent5   * 15, 45);  // Max 45 ball (5 daqiqa ichida)
-        $score += min($recent60  * 5,  30);  // Max 30 ball (1 soat ichida)
-        $score += min($ipVariety * 10, 25);  // Max 25 ball (IP diversity)
+
+        $score  = min($recent5   * 15, 45);
+        $score += min($recent60  * 5,  30);
+        $score += min($ipVariety * 10, 25);
+
         return min($score, 100);
+    }
+
+    /**
+     * So'nggi X daqiqada phone yoki IP bo'yicha umumiy xato urinishlar
+     * (blok tekshiruvisiz, tezkor nazorat uchun)
+     */
+    public static function getRecentFailedAttempts(string $phone, string $ip, int $minutes = 15): int
+    {
+        return static::where('successful', false)
+            ->where(fn($q) => $q->where('phone', $phone)->orWhere('ip_address', $ip))
+            ->where('attempted_at', '>=', now()->subMinutes($minutes))
+            ->count();
     }
 
     /**
@@ -161,27 +208,8 @@ class LoginAttempt extends Model
         return static::where('attempted_at', '<', now()->subDays($days))->delete();
     }
 
-    /**
-     * Berilgan IP bloklanishi kerakmi? (1 soatda 20+ xato)
-     */
-    public static function shouldBlockIp(string $ip, int $maxAttempts = 20, int $minutes = 60): bool
-    {
-        return static::getFailedAttemptsForIp($ip, $minutes) >= $maxAttempts;
-    }
-
-    /**
-     * Berilgan phone bloklanishi kerakmi? (1 soatda 10+ xato)
-     */
-    public static function shouldBlockPhone(string $phone, int $maxAttempts = 10, int $minutes = 60): bool
-    {
-        return static::getFailedAttemptsForPhone($phone, $minutes) >= $maxAttempts;
-    }
-
     // ─── Accessors ────────────────────────────────────────────────────────────
 
-    /**
-     * Risk darajasi: low / medium / high / critical
-     */
     public function getRiskLevelAttribute(): string
     {
         return match (true) {
