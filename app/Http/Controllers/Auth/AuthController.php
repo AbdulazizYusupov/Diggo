@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\UserActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
@@ -21,7 +22,7 @@ class AuthController extends Controller
     private const RATE_LIMIT_DECAY       = 300; // 5 daqiqa (sekund)
     private const BLOCK_WINDOW_MINUTES   = 60;
 
-    public function index()
+    public function index1()
     {
         // 1. Papka manzili: public/asset/Login
         $path = public_path('asset/Login');
@@ -45,7 +46,34 @@ class AuthController extends Controller
                 $randomImage = asset('asset/Login/' . $fileName);
             }
         }
-        return view('Auth.login', compact('randomImage'));
+        return view('Auth.Login.login', compact('randomImage'));
+    }
+    public function index()
+    {
+        $randomImage = Cache::remember('login_bg_images', now()->addHours(6), function () {
+            $path = public_path('asset/Login');
+            $allowed = ['jpg', 'jpeg', 'png', 'webp'];
+            $default = 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&q=80';
+
+            if (!File::isDirectory($path)) {
+                return [$default];
+            }
+
+            $files = collect(File::glob($path . '/*.{jpg,jpeg,png,gif,webp,svg}', GLOB_BRACE))
+                ->filter(fn($file) => in_array(
+                    strtolower(pathinfo($file, PATHINFO_EXTENSION)),
+                    $allowed
+                ))
+                ->map(fn($file) => asset('asset/Login/' . basename($file)))
+                ->values()
+                ->toArray();
+
+            return empty($files) ? [$default] : $files;
+        });
+
+        return view('Auth.Login.login', [
+            'randomImage' => $randomImage[array_rand($randomImage)],
+        ]);
     }
     //bu ishlaydigan asli edi
     // public function login(Request $request)
