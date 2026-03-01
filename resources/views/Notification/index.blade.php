@@ -30,7 +30,7 @@
                 </div>
             </div>
 
-            @if (Auth::user()->unreadNotifications()->count() > 0)
+            @if ($unread > 0)
                 <form method="POST" action="{{ route('notifications.readAll') }}">
                     @csrf
                     <button type="submit"
@@ -129,9 +129,9 @@
             <div class="flex flex-col sm:flex-row items-center gap-3">
 
                 {{-- Filter Tabs --}}
-                <div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-700/50 rounded-xl p-1 w-full sm:w-auto">
+                <div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-700/50 rounded-xl p-1 w-full sm:w-auto min-w-0 overflow-x-auto">
                     <a href="{{ route('notifications.index') }}"
-                        class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all
+                        class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all
                                {{ !request('filter') || request('filter') === 'all'
                                     ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm'
                                     : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' }}">
@@ -142,7 +142,7 @@
                         Barchasi
                     </a>
                     <a href="{{ route('notifications.index', ['filter' => 'unread']) }}"
-                        class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all
+                        class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all
                                {{ request('filter') === 'unread'
                                     ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm'
                                     : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' }}">
@@ -159,7 +159,7 @@
                         @endif
                     </a>
                     <a href="{{ route('notifications.index', ['filter' => 'read']) }}"
-                        class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all
+                        class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all
                                {{ request('filter') === 'read'
                                     ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm'
                                     : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' }}">
