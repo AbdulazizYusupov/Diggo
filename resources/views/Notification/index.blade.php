@@ -48,14 +48,6 @@
             @endif
         </div>
 
-        {{-- Statistics Cards --}}
-        @php
-            $total    = Auth::user()->notifications()->count();
-            $unread   = Auth::user()->unreadNotifications()->count();
-            $read     = $total - $unread;
-            $todayCount = Auth::user()->notifications()->whereDate('created_at', today())->count();
-        @endphp
-
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
             <div class="bg-gradient-to-br from-indigo-100 to-indigo-200/60 dark:from-indigo-900/30 dark:to-indigo-800/30

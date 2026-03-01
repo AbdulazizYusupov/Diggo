@@ -28,8 +28,12 @@ class NotificationController extends Controller
         }
 
         $notifications = $query->paginate(15);
+        $total    = Auth::user()->notifications()->count();
+        $unread   = Auth::user()->unreadNotifications()->count();
+        $read     = $total - $unread;
+        $todayCount = Auth::user()->notifications()->whereDate('created_at', today())->count();
 
-        return view('Notification.index', compact('notifications'));
+        return view('Notification.index', compact('notifications','total','unread','read','todayCount'));
     }
 
     /**

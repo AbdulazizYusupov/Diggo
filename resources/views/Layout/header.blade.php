@@ -111,8 +111,7 @@
 
                 <!-- Dropdown Panel -->
                 <div id="notification-dropdown"
-                    class="hidden absolute right-0 mt-2 w-80 rounded-xl shadow-xl bg-white dark:bg-gray-800
-                           ring-1 ring-black ring-opacity-5 border border-gray-100 dark:border-gray-700 z-50"
+                    class="hidden fixed sm:absolute inset-x-2 sm:inset-x-auto top-16 sm:top-auto sm:right-0 sm:mt-2 w-auto sm:w-80 rounded-xl shadow-xl bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 border border-gray-100 dark:border-gray-700 z-50"
                     role="menu">
                     <!-- Dropdown Header -->
                     <div
