@@ -334,8 +334,8 @@
                     d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
             </svg>
 
-            <span class="ml-3 sidebar-text">ActiveLogs</span>
-            <span class="nav-tooltip">ActiveLogs</span>
+            <span class="ml-3 sidebar-text">{{ __('navigation.active_logs') }}</span>
+            <span class="nav-tooltip">{{ __('navigation.active_logs') }}</span>
         </a>
         <a href="{{ route('login-attempts.index') }}"
             class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('login-attempts.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
@@ -354,8 +354,8 @@
             </svg>
 
 
-            <span class="ml-3 sidebar-text">Login Attempts</span>
-            <span class="nav-tooltip">Login Attempts</span>
+            <span class="ml-3 sidebar-text">{{ __('navigation.login_attempts') }}</span>
+            <span class="nav-tooltip">{{ __('navigation.login_attempts') }}</span>
         </a>
     @endrole
     @role('admin|staff')

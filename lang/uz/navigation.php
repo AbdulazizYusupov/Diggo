@@ -15,6 +15,8 @@ return [
     'categories' => 'Kategoriyalar',
     'orders' => 'Buyurtmalar',
     'coin_transactions' => 'Tanga amallari',
+    'active_logs' => 'Faoliyat jurnallari',
+    'login_attempts' => 'Kirish urinishlari',
     'statistics' => 'Statistika',
     
     // Ruxsatnomalar

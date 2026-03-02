@@ -15,6 +15,8 @@ return [
     'categories' => 'Категории',
     'orders' => 'Заказы',
     'coin_transactions' => 'Транзакции монет',
+    'active_logs' => 'Журналы активности',
+    'login_attempts' => 'Попытки входа',
     'statistics' => 'Статистика',
     
     'permissions_group' => 'Разрешения',

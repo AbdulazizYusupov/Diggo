@@ -37,9 +37,7 @@ class DashboardController extends Controller
             ->whereYear('paid_at', now()->subMonth()->year)
             ->sum('net_amount');
 
-        $revenueGrowth = $prevMonthRevenue > 0
-            ? round((($monthlyRevenue - $prevMonthRevenue) / $prevMonthRevenue) * 100, 1)
-            : null;
+        $revenueGrowth = $prevMonthRevenue > 0 ? round((($monthlyRevenue - $prevMonthRevenue) / $prevMonthRevenue) * 100, 1) : null;
 
         // Unpaid / pending payments — financial risk indicator
         $pendingPaymentsCount  = Payment::pending()->count();

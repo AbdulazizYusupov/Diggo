@@ -15,6 +15,8 @@ return [
     'categories' => 'Categories',
     'orders' => 'Orders',
     'coin_transactions' => 'Coin Transactions',
+    'active_logs' => 'Active Logs',
+    'login_attempts' => 'Login Attempts',
     'statistics' => 'Statistics',
     
     'permissions_group' => 'Permissions',
