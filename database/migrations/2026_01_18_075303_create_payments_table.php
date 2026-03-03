@@ -54,6 +54,7 @@ return new class extends Migration
             $table->boolean('is_installment')->default(false);
             $table->integer('installment_number')->nullable();
             $table->integer('total_installments')->nullable();
+            $table->decimal('remaining_debt', 15, 2)->default(0);
             $table->text('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();

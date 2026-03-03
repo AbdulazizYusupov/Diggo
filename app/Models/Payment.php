@@ -27,6 +27,7 @@ class Payment extends Model
         'is_installment',
         'installment_number',
         'total_installments',
+        'remaining_debt',
         'notes',
         'paid_at'
     ];

@@ -72,7 +72,7 @@ class StudentSeeder extends Seeder
                 'school_id'       => $randomDirector->school_id,
                 'enrollment_date' => $now->format('Y-m-d'),
                 'coins'           => 0,
-                'balance'         => rand(100000, 1000000),
+                'balance'         => 0,
                 'parent_name'     => $data['parent'],
                 'parent_phone'    => '+9989' . rand(10000000, 99999999),
                 'created_at'      => $now,

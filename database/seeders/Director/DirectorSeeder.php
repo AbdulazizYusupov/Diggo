@@ -128,7 +128,7 @@ class DirectorSeeder extends Seeder
                     'user_id' => $user->id,
                     'school_id' => $schoolIds[$index],
                     'commission_percentage' => $data['commission'],
-                    'balance' => rand(100000, 5000000),
+                    'balance' =>0,
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]);
