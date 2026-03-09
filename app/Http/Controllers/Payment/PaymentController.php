@@ -89,7 +89,7 @@ class PaymentController extends Controller
             'student_id'         => 'required|exists:students,id',
             'group_id'           => 'required|exists:groups,id',
             'amount'             => 'required|numeric|min:1',
-            'discount'           => 'nullable|numeric|min:0|max:100',
+            'discount'           =>  'required|numeric|min:0|max:100',
             'payment_type'       => 'required|in:cash,card,transfer,other',
             'payment_month'      => 'required|date',
             'is_installment'     => 'boolean',
@@ -97,6 +97,25 @@ class PaymentController extends Controller
             'total_installments' => 'nullable|integer|min:1',
             'notes'              => 'nullable|string|max:1000',
         ]);
+
+        $month = Carbon::parse($validated['payment_month']);
+
+        $payment = Payment::where('payable_type', Student::class)
+            ->where('payable_id', $validated['student_id'])
+            ->where('group_id', $validated['group_id'])
+            ->whereYear('payment_month', $month->year)
+            ->whereMonth('payment_month', $month->month)
+            ->where('status', 'paid')
+            ->first();
+
+        if ($payment) {
+            return back()->withInput()->with(
+                'error',
+                "Bu student uchun ushbu oyga to'lov allaqachon qabul qilingan. 
+        Sana: " . $payment->created_at->format('d.m.Y') .
+                    " | Summa: " . number_format($payment->amount, 0, '.', ' ') . " so'm"
+            );
+        }
 
         $student = Student::with('director')->findOrFail($validated['student_id']);
         $group   = Group::with('course')->findOrFail($validated['group_id']);

@@ -27,7 +27,8 @@
                 <div>
                     <h3 class="text-sm font-bold text-amber-900 dark:text-amber-300">Diqqat!</h3>
                     <p class="text-sm text-amber-700 dark:text-amber-400 mt-1">
-                        To'lov summasi, guruh, chegirma va to'lov turini o'zgartirish mumkin. O'quvchi va to'lov oyi o'zgartirilmaydi.
+                        To'lov summasi, guruh, chegirma va to'lov turini o'zgartirish mumkin. O'quvchi va to'lov oyi
+                        o'zgartirilmaydi.
                     </p>
                 </div>
             </div>
@@ -113,13 +114,12 @@
                                 {{ $foundGroup ? $foundGroup->name . ' - ' . ($foundGroup->subject->name ?? '') : '-- Guruhni tanlang --' }}
                             </span>
 
-                            <input type="hidden" name="group_id" id="group_id_input"
-                                value="{{ $currentGroupId }}" required>
+                            <input type="hidden" name="group_id" id="group_id_input" value="{{ $currentGroupId }}"
+                                required>
 
                             <svg class="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-transform"
                                 id="groupArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </div>
 
@@ -134,14 +134,13 @@
                             <div class="max-h-64 overflow-y-auto custom-scrollbar">
                                 @foreach ($groups as $group)
                                     <div onclick="selectGroup('{{ $group->id }}', '{{ $group->name }}', '{{ $group->subject->name ?? '' }}')"
-                                        data-group-id="{{ $group->id }}"
-                                        data-group-name="{{ $group->name }}"
+                                        data-group-id="{{ $group->id }}" data-group-name="{{ $group->name }}"
                                         data-group-subject="{{ $group->subject->name ?? '' }}"
                                         class="group-item px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 cursor-pointer border-b border-gray-50 dark:border-gray-700/50 last:border-none flex flex-col">
                                         <span class="font-bold group-name-text">{{ $group->name }}</span>
                                         <span class="text-xs text-gray-500 group-subject-text">
-                                            {{ $group->subject->name ?? 'Fan ko\'rsatilmagan' }} 
-                                            @if($group->teacher)
+                                            {{ $group->subject->name ?? 'Fan ko\'rsatilmagan' }}
+                                            @if ($group->teacher)
                                                 • {{ $group->teacher->user->full_name }}
                                             @endif
                                         </span>
@@ -190,8 +189,8 @@
                         <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                             Chegirma (%)
                         </label>
-                        <input type="number" name="discount" id="discount" step="0.01" min="0" max="100"
-                            value="{{ old('discount', $payment->discount) }}"
+                        <input type="number" name="discount" id="discount" step="0.01" min="0"
+                            max="100" value="{{ old('discount', $payment->discount) }}"
                             class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white outline-none transition-all"
                             placeholder="0">
                         @error('discount')
@@ -227,7 +226,8 @@
                         <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                             To'lov oyi (o'zgartirib bo'lmaydi)
                         </label>
-                        <input type="text" name="payment_month" value="{{ \Carbon\Carbon::parse($payment->payment_month)->format('F Y') }}" readonly
+                        <input type="text" name="payment_month"
+                            value="{{ \Carbon\Carbon::parse($payment->payment_month)->format('F Y') }}" readonly
                             class="w-full px-4 py-3 bg-gray-100 dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-500 dark:text-gray-400">
                     </div>
                 </div>
@@ -255,22 +255,27 @@
                         <span class="text-sm font-bold text-gray-900 dark:text-white" id="summaryAmount">0 so'm</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">Chegirma (<span id="discountPercent">0</span>%):</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Chegirma (<span
+                                id="discountPercent">0</span>%):</span>
                         <span class="text-sm font-bold text-rose-500" id="summaryDiscount">0 so'm</span>
                     </div>
                     <div
                         class="pt-3 border-t border-emerald-300 dark:border-emerald-700 flex justify-between items-center">
                         <span class="text-base font-bold text-gray-900 dark:text-white">Jami (chegirmadan keyin):</span>
-                        <span class="text-xl font-black text-emerald-600 dark:text-emerald-400" id="summaryNet">0 so'm</span>
+                        <span class="text-xl font-black text-emerald-600 dark:text-emerald-400" id="summaryNet">0
+                            so'm</span>
                     </div>
                     <div class="pt-3 border-t border-emerald-300 dark:border-emerald-700">
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-sm text-gray-600 dark:text-gray-400">Student balansiga tushadi:</span>
-                            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" id="summaryStudentBalance">0 so'm</span>
+                            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" id="summaryStudentBalance">0
+                                so'm</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Direktor komissiyasi (<span id="commissionPercent">0</span>%):</span>
-                            <span class="text-sm font-bold text-purple-600 dark:text-purple-400" id="summaryCommission">0 so'm</span>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Direktor komissiyasi (<span
+                                    id="commissionPercent">0</span>%):</span>
+                            <span class="text-sm font-bold text-purple-600 dark:text-purple-400" id="summaryCommission">0
+                                so'm</span>
                         </div>
                     </div>
                 </div>
@@ -347,7 +352,7 @@
             // Close dropdown when clicking outside
             document.addEventListener('click', function(e) {
                 const groupContainer = document.getElementById('groupSearchContainer');
-                
+
                 if (groupContainer && !groupContainer.contains(e.target)) {
                     document.getElementById('groupMenu').classList.add('hidden');
                     document.getElementById('groupArrow').classList.remove('rotate-180');
@@ -363,17 +368,17 @@
                 const amount = parseFloat(amountInput.value) || 0;
                 const discountPercent = parseFloat(discountInput.value) || 0;
 
-                // Calculate amounts
+                // hisoblash
                 const discountAmount = (amount * discountPercent) / 100;
                 const netAmount = amount - discountAmount;
-                const commissionAmount = (amount * currentCommissionPercent) / 100; // Commission from PAID amount
+                const commissionAmount = (netAmount * currentCommissionPercent) / 100;
 
-                // Update display
+                // display update
                 document.getElementById('summaryAmount').textContent = formatNumber(amount) + ' so\'m';
                 document.getElementById('discountPercent').textContent = discountPercent.toFixed(1);
                 document.getElementById('summaryDiscount').textContent = formatNumber(discountAmount) + ' so\'m';
                 document.getElementById('summaryNet').textContent = formatNumber(netAmount) + ' so\'m';
-                document.getElementById('summaryStudentBalance').textContent = formatNumber(amount) + ' so\'m';
+                document.getElementById('summaryStudentBalance').textContent = formatNumber(netAmount) + ' so\'m';
                 document.getElementById('commissionPercent').textContent = currentCommissionPercent.toFixed(1);
                 document.getElementById('summaryCommission').textContent = formatNumber(commissionAmount) + ' so\'m';
             }
