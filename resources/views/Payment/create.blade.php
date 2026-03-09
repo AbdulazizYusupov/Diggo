@@ -594,38 +594,17 @@
                 const amount = parseFloat(amountInput.value) || 0;
                 const discountPercent = parseFloat(discountInput.value) || 0;
 
-                // Chegirma
                 const discountAmount = (amount * discountPercent) / 100;
-
-                // Chegirmadan keyin
                 const netAmount = amount - discountAmount;
-
-                // Direktor komissiyasi (NET dan hisoblanadi)
                 const commissionAmount = (netAmount * currentCommissionPercent) / 100;
 
-                // Student balansiga tushadigan summa
-                const studentBalance = netAmount;
-
-                document.getElementById('summaryAmount').textContent =
-                    formatNumber(amount) + " so'm";
-
-                document.getElementById('discountPercent').textContent =
-                    discountPercent.toFixed(1);
-
-                document.getElementById('summaryDiscount').textContent =
-                    formatNumber(discountAmount) + " so'm";
-
-                document.getElementById('summaryNet').textContent =
-                    formatNumber(netAmount) + " so'm";
-
-                document.getElementById('summaryStudentBalance').textContent =
-                    formatNumber(studentBalance) + " so'm";
-
-                document.getElementById('commissionPercent').textContent =
-                    currentCommissionPercent.toFixed(1);
-
-                document.getElementById('summaryCommission').textContent =
-                    formatNumber(commissionAmount) + " so'm";
+                document.getElementById('summaryAmount').textContent = formatNumber(amount) + ' so\'m';
+                document.getElementById('discountPercent').textContent = discountPercent.toFixed(1);
+                document.getElementById('summaryDiscount').textContent = formatNumber(discountAmount) + ' so\'m';
+                document.getElementById('summaryNet').textContent = formatNumber(netAmount) + ' so\'m';
+                document.getElementById('summaryStudentBalance').textContent = formatNumber(netAmount) + ' so\'m';
+                document.getElementById('commissionPercent').textContent = currentCommissionPercent.toFixed(1);
+                document.getElementById('summaryCommission').textContent = formatNumber(commissionAmount) + ' so\'m';
             }
 
             // Format number helper
