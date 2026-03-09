@@ -20,7 +20,8 @@
             @csrf
 
             <!-- Student Selection -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
+            <div
+                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -41,11 +42,13 @@
                                     -- O'quvchini tanlang --
                                 </span>
 
-                                <input type="hidden" name="student_id" id="student_id_input" value="{{ old('student_id', $selectedStudent->id ?? '') }}" required>
+                                <input type="hidden" name="student_id" id="student_id_input"
+                                    value="{{ old('student_id', $selectedStudent->id ?? '') }}" required>
 
                                 <svg class="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-transform"
                                     id="studentArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
                                 </svg>
                             </div>
 
@@ -71,7 +74,8 @@
                                             <span class="font-bold student-fullname">
                                                 {{ trim(($student->user->surname ?? '') . ' ' . ($student->user->name ?? '') . ' ' . ($student->user->middle_name ?? '')) }}
                                             </span>
-                                            <span class="text-xs text-gray-500 student-phone">{{ $student->user->phone ?? '' }}</span>
+                                            <span
+                                                class="text-xs text-gray-500 student-phone">{{ $student->user->phone ?? '' }}</span>
                                         </div>
                                     @endforeach
                                 </div>
@@ -88,11 +92,13 @@
                     </div>
 
                     <!-- Student Info -->
-                    <div id="studentInfo" class="hidden p-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-xl">
+                    <div id="studentInfo"
+                        class="hidden p-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-xl">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">Joriy balans</p>
-                                <p class="text-lg font-bold text-emerald-600 dark:text-emerald-400" id="currentBalance">0 so'm</p>
+                                <p class="text-lg font-bold text-emerald-600 dark:text-emerald-400" id="currentBalance">0
+                                    so'm</p>
                             </div>
                             <div>
                                 <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">Direktor komissiyasi</p>
@@ -104,7 +110,8 @@
             </div>
 
             <!-- Group Selection -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
+            <div
+                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -128,7 +135,8 @@
 
                             <svg class="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-transform"
                                 id="groupArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
                             </svg>
                         </div>
 
@@ -142,8 +150,7 @@
 
                             <div class="max-h-64 overflow-y-auto custom-scrollbar">
                                 @foreach ($groups as $group)
-                                    <div onclick="selectGroup({{ $group->id }})"
-                                        data-group-id="{{ $group->id }}"
+                                    <div onclick="selectGroup({{ $group->id }})" data-group-id="{{ $group->id }}"
                                         data-group-name="{{ $group->name }}"
                                         data-group-subject="{{ $group->subject->name ?? '' }}"
                                         data-group-teacher="{{ $group->teacher->user->surname ?? '' }} {{ $group->teacher->user->name ?? '' }}"
@@ -152,7 +159,8 @@
                                         <span class="text-xs text-gray-500 group-subject-text">
                                             {{ $group->subject->name ?? 'Fan ko\'rsatilmagan' }}
                                             @if ($group->teacher)
-                                                • {{ trim(($group->teacher->user->surname ?? '') . ' ' . ($group->teacher->user->name ?? '')) }}
+                                                •
+                                                {{ trim(($group->teacher->user->surname ?? '') . ' ' . ($group->teacher->user->name ?? '')) }}
                                             @endif
                                         </span>
                                     </div>
@@ -172,7 +180,8 @@
             </div>
 
             <!-- Payment Details -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
+            <div
+                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -217,7 +226,8 @@
                             <option value="">-- Tanlang --</option>
                             <option value="cash" {{ old('payment_type') == 'cash' ? 'selected' : '' }}>Naqd</option>
                             <option value="card" {{ old('payment_type') == 'card' ? 'selected' : '' }}>Karta</option>
-                            <option value="transfer" {{ old('payment_type') == 'transfer' ? 'selected' : '' }}>O'tkazma</option>
+                            <option value="transfer" {{ old('payment_type') == 'transfer' ? 'selected' : '' }}>O'tkazma
+                            </option>
                             <option value="other" {{ old('payment_type') == 'other' ? 'selected' : '' }}>Boshqa</option>
                         </select>
                         @error('payment_type')
@@ -281,7 +291,8 @@
             </div>
 
             <!-- Payment Summary -->
-            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-2xl shadow-sm border border-emerald-200 dark:border-emerald-500/20 p-6">
+            <div
+                class="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-2xl shadow-sm border border-emerald-200 dark:border-emerald-500/20 p-6">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">To'lov xulosasi</h2>
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
@@ -289,21 +300,27 @@
                         <span class="text-sm font-bold text-gray-900 dark:text-white" id="summaryAmount">0 so'm</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">Chegirma (<span id="discountPercent">0</span>%):</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Chegirma (<span
+                                id="discountPercent">0</span>%):</span>
                         <span class="text-sm font-bold text-rose-500" id="summaryDiscount">0 so'm</span>
                     </div>
-                    <div class="pt-3 border-t border-emerald-300 dark:border-emerald-700 flex justify-between items-center">
+                    <div
+                        class="pt-3 border-t border-emerald-300 dark:border-emerald-700 flex justify-between items-center">
                         <span class="text-base font-bold text-gray-900 dark:text-white">Jami (chegirmadan keyin):</span>
-                        <span class="text-xl font-black text-emerald-600 dark:text-emerald-400" id="summaryNet">0 so'm</span>
+                        <span class="text-xl font-black text-emerald-600 dark:text-emerald-400" id="summaryNet">0
+                            so'm</span>
                     </div>
                     <div class="pt-3 border-t border-emerald-300 dark:border-emerald-700">
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-sm text-gray-600 dark:text-gray-400">Student balansiga tushadi:</span>
-                            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" id="summaryStudentBalance">0 so'm</span>
+                            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" id="summaryStudentBalance">0
+                                so'm</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Direktor komissiyasi (<span id="commissionPercent">0</span>%):</span>
-                            <span class="text-sm font-bold text-purple-600 dark:text-purple-400" id="summaryCommission">0 so'm</span>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Direktor komissiyasi (<span
+                                    id="commissionPercent">0</span>%):</span>
+                            <span class="text-sm font-bold text-purple-600 dark:text-purple-400" id="summaryCommission">0
+                                so'm</span>
                         </div>
                     </div>
                 </div>
@@ -350,7 +367,8 @@
                     phone: item.dataset.studentPhone || '',
                     balance: parseFloat(item.dataset.studentBalance) || 0,
                     commission: parseFloat(item.dataset.studentCommission) || 0,
-                    fullName: `${item.dataset.studentSurname || ''} ${item.dataset.studentName || ''} ${item.dataset.studentMiddle || ''}`.trim(),
+                    fullName: `${item.dataset.studentSurname || ''} ${item.dataset.studentName || ''} ${item.dataset.studentMiddle || ''}`
+                        .trim(),
                     searchText: ''
                 }));
 
@@ -400,7 +418,7 @@
             // Advanced search function for students
             function searchStudents(query) {
                 const normalized = normalizeQuery(query);
-                
+
                 if (!normalized) {
                     return studentsData;
                 }
@@ -420,10 +438,10 @@
                 const query = input.value;
                 const studentItems = document.querySelectorAll('.student-item');
                 const noResult = document.getElementById('noStudentFound');
-                
+
                 const results = searchStudents(query);
                 const resultIds = new Set(results.map(s => s.id));
-                
+
                 let hasVisible = false;
                 studentItems.forEach(item => {
                     const studentId = item.dataset.studentId;
@@ -441,7 +459,7 @@
                 const filter = normalizeQuery(input.value);
                 const groupItems = document.querySelectorAll('.group-item');
                 const noResult = document.getElementById('noGroupFound');
-                
+
                 let found = false;
 
                 if (!filter) {
@@ -451,11 +469,11 @@
                     });
                 } else {
                     const filterWords = filter.split(' ');
-                    
+
                     groupItems.forEach(item => {
                         const groupId = item.dataset.groupId;
                         const group = groupsData.find(g => g.id === groupId);
-                        
+
                         if (group && filterWords.every(word => group.searchText.includes(word))) {
                             item.style.display = '';
                             found = true;
@@ -576,19 +594,38 @@
                 const amount = parseFloat(amountInput.value) || 0;
                 const discountPercent = parseFloat(discountInput.value) || 0;
 
-                // Calculate amounts
+                // Chegirma
                 const discountAmount = (amount * discountPercent) / 100;
-                const netAmount = amount - discountAmount;
-                const commissionAmount = (amount * currentCommissionPercent) / 100;
 
-                // Update display
-                document.getElementById('summaryAmount').textContent = formatNumber(amount) + ' so\'m';
-                document.getElementById('discountPercent').textContent = discountPercent.toFixed(1);
-                document.getElementById('summaryDiscount').textContent = formatNumber(discountAmount) + ' so\'m';
-                document.getElementById('summaryNet').textContent = formatNumber(netAmount) + ' so\'m';
-                document.getElementById('summaryStudentBalance').textContent = formatNumber(netAmount) + ' so\'m';
-                document.getElementById('commissionPercent').textContent = currentCommissionPercent.toFixed(1);
-                document.getElementById('summaryCommission').textContent = formatNumber(commissionAmount) + ' so\'m';
+                // Chegirmadan keyin
+                const netAmount = amount - discountAmount;
+
+                // Direktor komissiyasi (NET dan hisoblanadi)
+                const commissionAmount = (netAmount * currentCommissionPercent) / 100;
+
+                // Student balansiga tushadigan summa
+                const studentBalance = netAmount;
+
+                document.getElementById('summaryAmount').textContent =
+                    formatNumber(amount) + " so'm";
+
+                document.getElementById('discountPercent').textContent =
+                    discountPercent.toFixed(1);
+
+                document.getElementById('summaryDiscount').textContent =
+                    formatNumber(discountAmount) + " so'm";
+
+                document.getElementById('summaryNet').textContent =
+                    formatNumber(netAmount) + " so'm";
+
+                document.getElementById('summaryStudentBalance').textContent =
+                    formatNumber(studentBalance) + " so'm";
+
+                document.getElementById('commissionPercent').textContent =
+                    currentCommissionPercent.toFixed(1);
+
+                document.getElementById('summaryCommission').textContent =
+                    formatNumber(commissionAmount) + " so'm";
             }
 
             // Format number helper

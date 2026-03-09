@@ -141,7 +141,7 @@ class PaymentController extends Controller
             $amounts            = $this->calculatePaymentAmounts((float) $validated['amount'], (float) ($validated['discount'] ?? 0));
             $payment            = $this->createPayment($validated, $student, $amounts);
             $this->createStudentTransaction($student, $payment, $amounts['amount_to_balance']);
-            $directorCommission = $this->processDirectorCommission($student, $payment, $amounts['amount_to_balance']);
+            $directorCommission = $this->processDirectorCommission($student, $payment, $amounts['net_amount']);
             DB::commit();
 
             if ($student->user) {

@@ -48,7 +48,7 @@ class PaymentApprovedNotification extends Notification
     {
         return [
             'title'       => 'Payment Approved',
-            'message'     => 'Your payment of ' . number_format($this->payment->amount, 2) . ' has been approved.',
+            'message'     => 'Your payment of ' . number_format($this->payment->net_amount, 2) . ' has been approved.',
             'payment_id'  => $this->payment->id,
             'amount'      => $this->payment->amount,
             'paid_at'     => $this->payment->created_at->toDateTimeString(),
