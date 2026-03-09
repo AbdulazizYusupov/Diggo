@@ -47,7 +47,11 @@ class PaymentController extends Controller
             ->whereMonth('paid_at', Carbon::now()->month)->sum('amount');
 
         return view('Payment.index', compact(
-            'payments', 'totalPayments', 'totalCommissions', 'pendingPayments', 'monthlyPayments'
+            'payments',
+            'totalPayments',
+            'totalCommissions',
+            'pendingPayments',
+            'monthlyPayments'
         ));
     }
 
@@ -97,43 +101,45 @@ class PaymentController extends Controller
         $student = Student::with('director')->findOrFail($validated['student_id']);
         $group   = Group::with('course')->findOrFail($validated['group_id']);
         $course  = $group->course;
-
+        // dd($course);
         if (!$course) {
             return back()->withInput()->with('error', "Ushbu guruhga biriktirilgan kurs topilmadi.");
         }
 
         $coursePrice       = (float) $course->price;
-        $isInstallment     = !empty($validated['is_installment']);
-        $installmentNumber = $isInstallment ? (int) ($validated['installment_number'] ?? 1) : null;
-        $totalInstallments = $isInstallment ? (int) ($validated['total_installments'] ?? 1) : null;
+        // $isInstallment     = !empty($validated['is_installment']);
+        // $installmentNumber = $isInstallment ? (int) ($validated['installment_number'] ?? 1) : null;
+        // $totalInstallments = $isInstallment ? (int) ($validated['total_installments'] ?? 1) : null;
 
-        if ($isInstallment) {
-            if ($error = $this->validateInstallmentSequence(
-                (int) $validated['student_id'], (int) $validated['group_id'],
-                $validated['payment_month'], $installmentNumber
-            )) {
-                return back()->withInput()->with('error', $error);
-            }
+        // if ($isInstallment) {
+        //     if ($error = $this->validateInstallmentSequence(
+        //         (int) $validated['student_id'], (int) $validated['group_id'],
+        //         $validated['payment_month'], $installmentNumber
+        //     )) {
+        //         return back()->withInput()->with('error', $error);
+        //     }
 
-            if ($error = $this->validateInstallmentAmount(
-                (int) $validated['student_id'], (int) $validated['group_id'],
-                $validated['payment_month'], $installmentNumber,
-                (float) $validated['amount'], $coursePrice
-            )) {
-                return back()->withInput()->with('error', $error);
-            }
-        } else {
-            if ((float) $validated['amount'] > $coursePrice) {
-                return back()->withInput()->with('error',
-                    "To'lov summasi kurs narxidan ({$this->formatMoney($coursePrice)} so'm) oshib ketdi."
-                );
-            }
+        //     if ($error = $this->validateInstallmentAmount(
+        //         (int) $validated['student_id'], (int) $validated['group_id'],
+        //         $validated['payment_month'], $installmentNumber,
+        //         (float) $validated['amount'], $coursePrice
+        //     )) {
+        //         return back()->withInput()->with('error', $error);
+        //     }
+        // } else {
+        if ((float) $validated['amount'] > $coursePrice) {
+            return back()->withInput()->with(
+                'error',
+                "To'lov summasi kurs narxidan ({$this->formatMoney($coursePrice)} so'm) oshib ketdi."
+            );
         }
-
+        //     }
+        // }
+        // dd($validated['amount']);
         DB::beginTransaction();
         try {
-            $amounts            = $this->calculatePaymentAmounts((float) $validated['amount'], (float) ($validated['discount'] ?? 0), $coursePrice);
-            $payment            = $this->createPayment($validated, $student, $amounts, $installmentNumber, $totalInstallments);
+            $amounts            = $this->calculatePaymentAmounts((float) $validated['amount'], (float) ($validated['discount'] ?? 0));
+            $payment            = $this->createPayment($validated, $student, $amounts);
             $this->createStudentTransaction($student, $payment, $amounts['amount_to_balance']);
             $directorCommission = $this->processDirectorCommission($student, $payment, $amounts['amount_to_balance']);
             DB::commit();
@@ -150,10 +156,25 @@ class PaymentController extends Controller
         }
     }
 
+    private function calculatePaymentAmounts(float $amount, float $discountPercent): array
+    {
+        // $amount  = min($amount, $coursePrice);
+        $discountAmount = $discountPercent > 0 ? ($amount * $discountPercent) / 100 : 0;
+
+        return [
+            'gross_amount'      => $amount,
+            'discount_percent'  => $discountPercent,
+            'discount_amount'   => $discountAmount,
+            'net_amount'        => $amount - $discountAmount,
+            'amount_to_balance' => $amount - $discountAmount,
+        ];
+    }
+
     public function show(string $id)
     {
         $payment = Payment::with([
-            'payable.user', 'user',
+            'payable.user',
+            'user',
             'transactions' => fn($q) => $q->whereIn('type', ['payment', 'director_commission'])->with('transactionable'),
         ])->findOrFail($id);
 
@@ -210,7 +231,8 @@ class PaymentController extends Controller
         $coursePrice = (float) $course->price;
 
         if ((float) $validated['amount'] > $coursePrice) {
-            return back()->withInput()->with('error',
+            return back()->withInput()->with(
+                'error',
                 "To'lov summasi kurs narxidan ({$this->formatMoney($coursePrice)} so'm) oshib ketdi."
             );
         }
@@ -227,12 +249,13 @@ class PaymentController extends Controller
             $newAmounts = $this->calculatePaymentAmounts(
                 (float) $validated['amount'],
                 (float) ($validated['discount'] ?? 0),
-                $coursePrice
             );
 
             // Only meta changed — skip financial recalculation
-            if ($oldAmounts['gross_amount'] == $newAmounts['gross_amount']
-                && $oldAmounts['discount_percent'] == $newAmounts['discount_percent']) {
+            if (
+                $oldAmounts['gross_amount'] == $newAmounts['gross_amount']
+                && $oldAmounts['discount_percent'] == $newAmounts['discount_percent']
+            ) {
 
                 $payment->update([
                     'group_id'      => $validated['group_id'],
@@ -455,7 +478,6 @@ class PaymentController extends Controller
                 . "(Kurs narxi: {$this->formatMoney($coursePrice)} so'm, "
                 . "Allaqachon to'langan: {$this->formatMoney($alreadyPaidTotal)} so'm).";
         }
-
         return null;
     }
 
@@ -465,27 +487,10 @@ class PaymentController extends Controller
      * Calculate gross, discounted net, and balance amounts.
      * The amount is clamped to coursePrice as a safety net.
      */
-    private function calculatePaymentAmounts(float $amount, float $discountPercent, float $coursePrice): array
+
+
+    private function createPayment(array   $validated, Student $student, array   $amounts,): Payment
     {
-        $amount         = min($amount, $coursePrice);
-        $discountAmount = $discountPercent > 0 ? ($amount * $discountPercent) / 100 : 0;
-
-        return [
-            'gross_amount'      => $amount,
-            'discount_percent'  => $discountPercent,
-            'discount_amount'   => $discountAmount,
-            'net_amount'        => $amount - $discountAmount,
-            'amount_to_balance' => $amount, // full pre-discount amount credited to student
-        ];
-    }
-
-    private function createPayment(
-        array   $validated,
-        Student $student,
-        array   $amounts,
-        ?int    $installmentNumber,
-        ?int    $totalInstallments
-    ): Payment {
         return Payment::create([
             'payable_type'       => Student::class,
             'payable_id'         => $student->id,
@@ -497,9 +502,6 @@ class PaymentController extends Controller
             'payment_type'       => $validated['payment_type'],
             'status'             => 'paid',
             'payment_month'      => $validated['payment_month'],
-            'is_installment'     => !empty($validated['is_installment']),
-            'installment_number' => $installmentNumber,
-            'total_installments' => $totalInstallments,
             'notes'              => $validated['notes'] ?? null,
             'paid_at'            => Carbon::now(),
         ]);

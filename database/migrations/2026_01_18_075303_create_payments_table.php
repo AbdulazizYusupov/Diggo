@@ -48,13 +48,13 @@ return new class extends Migration
             $table->decimal('discount', 15, 2)->default(0);
             $table->decimal('net_amount', 15, 2);
             $table->enum('payment_type', ['cash', 'card', 'transfer', 'other'])->default('cash');
-            $table->enum('status', ['pending', 'paid', 'failed', 'cancelled'])->default('paid');
+            $table->enum('status', ['pending', 'paid', 'failed', 'cancelled','partial'])->default('paid');
             $table->date('payment_month')->index();
             $table->timestamp('paid_at')->nullable();
             $table->boolean('is_installment')->default(false);
             $table->integer('installment_number')->nullable();
             $table->integer('total_installments')->nullable();
-            $table->decimal('remaining_debt', 15, 2)->default(0);
+            $table->decimal('remaining_debt', 15, 2)->default(0.00)->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();

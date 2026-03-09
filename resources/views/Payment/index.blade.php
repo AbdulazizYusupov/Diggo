@@ -260,15 +260,16 @@
                                         <div class="flex-shrink-0 h-10 w-10">
                                             <div
                                                 class="h-10 w-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-bold text-sm">
-                                                {{ substr($payment->payable->user->name, 0, 1) }}{{ substr($payment->payable->user->surname, 0, 1) }}
+                                                {{ substr($payment->payable->user?->name ?? '', 0, 1) }}
+                                                {{ substr($payment->payable->user?->surname ?? '', 0, 1) }}
                                             </div>
                                         </div>
                                         <div class="ml-3">
                                             <div class="text-sm font-bold text-gray-900 dark:text-white">
-                                                {{ $payment->payable->user->full_name }}
+                                                {{ $payment->payable?->user?->full_name ?? 'User topilmadi' }}
                                             </div>
                                             <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                {{ $payment->payable->user->phone }}
+                                                {{ $payment->payable?->user?->phone ?? '-' }}
                                             </div>
                                         </div>
                                     </div>
@@ -391,7 +392,6 @@
 
                                         <!-- Pending to'lovlar uchun EDIT va DELETE -->
                                         @if (Auth::user()->hasRole('admin') && $payment->status !== 'cancelled')
-                                            
                                             <a href="{{ route('payments.edit', $payment->id) }}"
                                                 class="p-2 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-xl transition-all duration-200 group/btn"
                                                 title="Tahrirlash">

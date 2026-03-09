@@ -239,7 +239,7 @@
                 </div>
 
                 <!-- Installment Options -->
-                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                {{-- <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" name="is_installment" id="isInstallment" value="1"
                             {{ old('is_installment') ? 'checked' : '' }}
@@ -265,7 +265,7 @@
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white outline-none transition-all">
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="mt-4">
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -336,7 +336,7 @@
             const commissionRate = document.getElementById('commissionRate');
             const amountInput = document.getElementById('amount');
             const discountInput = document.getElementById('discount');
-            const isInstallmentCheckbox = document.getElementById('isInstallment');
+            // const isInstallmentCheckbox = document.getElementById('isInstallment');
             const installmentFields = document.getElementById('installmentFields');
 
             // Initialize students data from DOM
@@ -567,9 +567,9 @@
             discountInput.addEventListener('input', updateSummary);
 
             // Installment checkbox
-            isInstallmentCheckbox.addEventListener('change', function() {
-                installmentFields.classList.toggle('hidden', !this.checked);
-            });
+            // isInstallmentCheckbox.addEventListener('change', function() {
+            //     installmentFields.classList.toggle('hidden', !this.checked);
+            // });
 
             // Update summary calculations
             function updateSummary() {
@@ -586,7 +586,7 @@
                 document.getElementById('discountPercent').textContent = discountPercent.toFixed(1);
                 document.getElementById('summaryDiscount').textContent = formatNumber(discountAmount) + ' so\'m';
                 document.getElementById('summaryNet').textContent = formatNumber(netAmount) + ' so\'m';
-                document.getElementById('summaryStudentBalance').textContent = formatNumber(amount) + ' so\'m';
+                document.getElementById('summaryStudentBalance').textContent = formatNumber(netAmount) + ' so\'m';
                 document.getElementById('commissionPercent').textContent = currentCommissionPercent.toFixed(1);
                 document.getElementById('summaryCommission').textContent = formatNumber(commissionAmount) + ' so\'m';
             }
@@ -631,9 +631,9 @@
                 restoreSelectedStudent();
                 restoreSelectedGroup();
 
-                if (isInstallmentCheckbox.checked) {
-                    installmentFields.classList.remove('hidden');
-                }
+                // if (isInstallmentCheckbox.checked) {
+                //     installmentFields.classList.remove('hidden');
+                // }
             });
         </script>
     @endpush
