@@ -578,6 +578,7 @@
                 restoreSelectedStudent();
                 restoreSelectedGroup();
             });
+            
         </script>
     @endpush
 @endsection
