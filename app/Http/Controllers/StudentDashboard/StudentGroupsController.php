@@ -51,8 +51,8 @@ class StudentGroupsController extends Controller
                 return [
                     'id' => $group->id,
                     'name' => $group->name,
-                    'course_name' => $group->cours->title ?? 'N/A',
-                    'course_price' => $group->cours->price ?? 0,
+                    'course_name' => $group->course->title ?? 'N/A',
+                    'course_price' => $group->course->price ?? 0,
                     'start_date' => $group->start_date,
                     'end_date' => $group->end_date,
                     'lesson_days' => $daysOfWeek,
@@ -70,17 +70,14 @@ class StudentGroupsController extends Controller
             });
 
         // Statusga qarab ajratish
-        $activeGroups = $allGroups->where('status', 'active');
-        $completedGroups = $allGroups->where('status', 'completed');
-        $transferredGroups = $allGroups->where('status', 'transferred');
-        $droppedGroups = $allGroups->where('status', 'dropped');
+        $activeGroups = $allGroups->where('is_active', true);
+        $completedGroups = $allGroups->where('is_active', false);
+       
 
         return view('Panel.Student.groups', compact(
             'student',
             'activeGroups',
             'completedGroups',
-            'transferredGroups',
-            'droppedGroups'
         ));
     }
 
@@ -114,7 +111,7 @@ class StudentGroupsController extends Controller
         $daysOfWeek = is_array($group->days_of_week)
             ? $group->days_of_week
             : json_decode($group->days_of_week, true) ?? [];
-
+        // dd($daysOfWeek);
         return view('Panel.Student.group-detail', compact(
             'student',
             'group',

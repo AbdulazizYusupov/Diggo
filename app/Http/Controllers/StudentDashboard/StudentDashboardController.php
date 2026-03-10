@@ -179,7 +179,7 @@ class StudentDashboardController extends Controller
                 return [
                     'id' => $group->id,
                     'name' => $group->name,
-                    'course_name' => $group->cours->title ?? 'N/A',
+                    'course_name' => $group->course->title ?? 'N/A',
                     'start_date' => $group->start_date,
                     'end_date' => $group->end_date,
                     'lesson_days' => $daysOfWeek,

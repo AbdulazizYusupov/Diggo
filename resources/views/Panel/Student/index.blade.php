@@ -247,9 +247,9 @@
                                     {{ $group['course_name'] }}
                                 </p>
                             </div>
-                            <span
                             {{-- {{ $group['level'] }} --}}
-                                class="px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-lg"></span>
+                            {{-- <span
+                                class="px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-lg"></span> --}}
                         </div>
 
                         <div class="space-y-2">
