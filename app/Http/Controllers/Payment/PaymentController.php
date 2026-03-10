@@ -85,6 +85,12 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->has('amount')) {
+            $cleanAmount = str_replace(' ', '', $request->amount);
+            $request->merge([
+                'amount' => $cleanAmount
+            ]);
+        }
         $validated = $request->validate([
             'student_id'         => 'required|exists:students,id',
             'group_id'           => 'required|exists:groups,id',

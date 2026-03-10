@@ -443,21 +443,21 @@
                                                     ⚠️ Student balansi va barcha komissiyalar qaytariladi!
                                                 </p>
                                             </div>
-                                            <div class="grid grid-cols-2 gap-3">
-                                                <button type="button"
-                                                    onclick="document.getElementById('cancel-modal-{{ $payment->id }}').classList.add('hidden')"
-                                                    class="px-5 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-2xl transition-all active:scale-95">
-                                                    Yo'q
-                                                </button>
-                                                <form action="{{ route('payments.cancel', $payment->id) }}"
-                                                    method="POST" class="m-0">
-                                                    @csrf
+                                            <form action="{{ route('payments.cancel', $payment->id) }}" method="POST"
+                                                class="m-0">
+                                                @csrf
+                                                <div class="flex gap-3">
+                                                    <button type="button"
+                                                        onclick="document.getElementById('cancel-modal-{{ $payment->id }}').classList.add('hidden')"
+                                                        class="flex-1 px-5 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-2xl transition-all active:scale-95">
+                                                        Yo'q
+                                                    </button>
                                                     <button type="submit"
-                                                        class="w-full px-5 py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-2xl shadow-lg shadow-rose-200 dark:shadow-none transition-all transform active:scale-95">
+                                                        class="flex-1 px-5 py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-2xl shadow-lg shadow-rose-200 dark:shadow-none transition-all transform active:scale-95">
                                                         Ha, bekor qilsin
                                                     </button>
-                                                </form>
-                                            </div>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>

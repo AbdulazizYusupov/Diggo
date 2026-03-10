@@ -489,7 +489,7 @@
                         alert.style.opacity = '0';
                         alert.style.transform = 'translateY(-10px)';
                         setTimeout(() => alert.remove(), 500);
-                    }, 5000);
+                    }, 10000);
                 }
             });
         };
