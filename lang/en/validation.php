@@ -195,6 +195,67 @@ return [
     |
     */
 
-    'attributes' => [],
+    // 'attributes' => [],
+
+
+
+
+    'custom' => [
+        'student_id' => [
+            'required' => 'Student is required.',
+            'exists'   => 'The selected student does not exist.',
+        ],
+        'group_id' => [
+            'required' => 'Group is required.',
+            'exists'   => 'The selected group does not exist.',
+        ],
+        'amount' => [
+            'required' => 'Payment amount is required.',
+            'numeric'  => 'Payment amount must be a number.',
+            'min'      => 'Payment amount must be at least 1.',
+        ],
+        'discount' => [
+            'required' => 'Discount is required.',
+            'numeric'  => 'Discount must be a number.',
+            'min'      => 'Discount cannot be less than 0.',
+            'max'      => 'Discount cannot exceed 100%.',
+        ],
+        'payment_type' => [
+            'required' => 'Payment type is required.',
+            'in'       => 'Payment type must be one of: cash, card, transfer, other.',
+        ],
+        'payment_month' => [
+            'required' => 'Payment month is required.',
+            'date'     => 'Payment month must be a valid date.',
+        ],
+        'is_installment' => [
+            'boolean' => 'Installment flag must be true or false.',
+        ],
+        'installment_number' => [
+            'integer' => 'Installment number must be an integer.',
+            'min'     => 'Installment number must be at least 1.',
+        ],
+        'total_installments' => [
+            'integer' => 'Total installments must be an integer.',
+            'min'     => 'Total installments must be at least 1.',
+        ],
+        'notes' => [
+            'string' => 'Notes must be a string.',
+            'max'    => 'Notes may not be longer than 1000 characters.',
+        ],
+    ],
+
+    'attributes' => [
+        'student_id'         => 'Student',
+        'group_id'           => 'Group',
+        'amount'             => 'Amount',
+        'discount'           => 'Discount',
+        'payment_type'       => 'Payment Type',
+        'payment_month'      => 'Payment Month',
+        'is_installment'     => 'Installment',
+        'installment_number' => 'Installment Number',
+        'total_installments' => 'Total Installments',
+        'notes'              => 'Notes',
+    ],
 
 ];

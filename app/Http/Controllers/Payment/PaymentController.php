@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Payment\StorePaymentRequest;
+use App\Http\Requests\Payment\UpdatePaymentRequest;
 use App\Models\Group;
 use App\Models\Payment;
 use App\Models\Student;
@@ -57,8 +59,7 @@ class PaymentController extends Controller
 
     public function create(Request $request)
     {
-        $students        = Student::with('user', 'director')
-            ->whereHas('user', fn($q) => $q->where('is_active', true))->get();
+        $students        = Student::with('user', 'director')->whereHas('user', fn($q) => $q->where('is_active', true))->get();
         $selectedStudent = null;
         $groups          = collect();
 
@@ -79,32 +80,13 @@ class PaymentController extends Controller
      * Store a new payment.
      *
      * Business rules enforced:
-     *  1. Amount must not exceed the group's course price.
-     *  2. Installment N cannot be submitted unless installments 1..N-1 are already paid.
-     *  3. Cumulative installment total for the month must not exceed the course price.
+     *  1. Duplicate payment for same student + group + month is rejected.
+     *  2. Amount must not exceed the group's course price.
      */
-    public function store(Request $request)
+    public function store(StorePaymentRequest $request)
     {
-        if ($request->has('amount')) {
-            $cleanAmount = str_replace(' ', '', $request->amount);
-            $request->merge([
-                'amount' => $cleanAmount
-            ]);
-        }
-        $validated = $request->validate([
-            'student_id'         => 'required|exists:students,id',
-            'group_id'           => 'required|exists:groups,id',
-            'amount'             => 'required|numeric|min:1',
-            'discount'           =>  'required|numeric|min:0|max:100',
-            'payment_type'       => 'required|in:cash,card,transfer,other',
-            'payment_month'      => 'required|date',
-            'is_installment'     => 'boolean',
-            'installment_number' => 'nullable|integer|min:1',
-            'total_installments' => 'nullable|integer|min:1',
-            'notes'              => 'nullable|string|max:1000',
-        ]);
-
-        $month = Carbon::parse($validated['payment_month']);
+        $validated = $request->validated();
+        $month     = Carbon::parse($validated['payment_month']);
 
         $payment = Payment::where('payable_type', Student::class)
             ->where('payable_id', $validated['student_id'])
@@ -117,8 +99,8 @@ class PaymentController extends Controller
         if ($payment) {
             return back()->withInput()->with(
                 'error',
-                "Bu student uchun ushbu oyga to'lov allaqachon qabul qilingan. 
-        Sana: " . $payment->created_at->format('d.m.Y') .
+                "Bu student uchun ushbu oyga to'lov allaqachon qabul qilingan. " .
+                    "Sana: " . $payment->created_at->format('d.m.Y') .
                     " | Summa: " . number_format($payment->amount, 0, '.', ' ') . " so'm"
             );
         }
@@ -126,41 +108,20 @@ class PaymentController extends Controller
         $student = Student::with('director')->findOrFail($validated['student_id']);
         $group   = Group::with('course')->findOrFail($validated['group_id']);
         $course  = $group->course;
-        // dd($course);
+
         if (!$course) {
             return back()->withInput()->with('error', "Ushbu guruhga biriktirilgan kurs topilmadi.");
         }
 
-        $coursePrice       = (float) $course->price;
-        // $isInstallment     = !empty($validated['is_installment']);
-        // $installmentNumber = $isInstallment ? (int) ($validated['installment_number'] ?? 1) : null;
-        // $totalInstallments = $isInstallment ? (int) ($validated['total_installments'] ?? 1) : null;
+        $coursePrice = (float) $course->price;
 
-        // if ($isInstallment) {
-        //     if ($error = $this->validateInstallmentSequence(
-        //         (int) $validated['student_id'], (int) $validated['group_id'],
-        //         $validated['payment_month'], $installmentNumber
-        //     )) {
-        //         return back()->withInput()->with('error', $error);
-        //     }
-
-        //     if ($error = $this->validateInstallmentAmount(
-        //         (int) $validated['student_id'], (int) $validated['group_id'],
-        //         $validated['payment_month'], $installmentNumber,
-        //         (float) $validated['amount'], $coursePrice
-        //     )) {
-        //         return back()->withInput()->with('error', $error);
-        //     }
-        // } else {
         if ((float) $validated['amount'] > $coursePrice) {
             return back()->withInput()->with(
                 'error',
                 "To'lov summasi kurs narxidan ({$this->formatMoney($coursePrice)} so'm) oshib ketdi."
             );
         }
-        //     }
-        // }
-        // dd($validated['amount']);
+
         DB::beginTransaction();
         try {
             $amounts            = $this->calculatePaymentAmounts((float) $validated['amount'], (float) ($validated['discount'] ?? 0));
@@ -176,23 +137,13 @@ class PaymentController extends Controller
             return $this->successResponse($amounts, $directorCommission);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Payment creation failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString(), 'data' => $validated]);
+            Log::error('Payment creation failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'data'  => $validated,
+            ]);
             return back()->withInput()->with('error', "To'lovni saqlashda xatolik: " . $e->getMessage());
         }
-    }
-
-    private function calculatePaymentAmounts(float $amount, float $discountPercent): array
-    {
-        // $amount  = min($amount, $coursePrice);
-        $discountAmount = $discountPercent > 0 ? ($amount * $discountPercent) / 100 : 0;
-
-        return [
-            'gross_amount'      => $amount,
-            'discount_percent'  => $discountPercent,
-            'discount_amount'   => $discountAmount,
-            'net_amount'        => $amount - $discountAmount,
-            'amount_to_balance' => $amount - $discountAmount,
-        ];
     }
 
     public function show(string $id)
@@ -209,10 +160,16 @@ class PaymentController extends Controller
     public function edit(string $id)
     {
         $payment = Payment::with('payable.user')->findOrFail($id);
+        $user    = Auth::user();
 
-        if (!Auth::user()->hasRole('admin')) {
-            return back()->with('error', "Faqat admin to'lovni tahrirlashi mumkin!");
+        // Admin — har qanday to'lovni tahrirlaydi.
+        // Boshqalar — faqat 48 soat ichida tahrirlaydi.
+        if (!$user->hasRole('admin')) {
+            if ($payment->paid_at && $payment->paid_at->diffInHours(Carbon::now()) > 48) {
+                return back()->with('error', "48 soatdan oshgan to'lovni tahrirlash mumkin emas!");
+            }
         }
+
         if ($payment->status === 'cancelled') {
             return back()->with('error', "Bekor qilingan to'lovni tahrirlash mumkin emas!");
         }
@@ -226,26 +183,58 @@ class PaymentController extends Controller
         return view('Payment.edit', compact('payment', 'students', 'groups'));
     }
 
-    public function update(Request $request, string $id)
+    /**
+     * Update an existing payment.
+     *
+     * Business rules:
+     *  - Admin — har qanday to'lovni istalgan vaqtda yangilaydi.
+     *  - Boshqalar — faqat 48 soat ichida yangilaydi.
+     *  - Amount kurs narxidan oshmasligi kerak (store bilan bir xil).
+     *  - Faqat meta o'zgarganda — tranzaksiyalarga tegmaydi, notification yuboriladi.
+     *  - Moliyaviy qiymatlar o'zgarganda — eski tranzaksiyalar o'chiriladi,
+     *    yangilari yaratiladi, notification yuboriladi.
+     */
+    private function updateExistingNotification(object $user, Payment $payment): void
     {
-        $payment = Payment::with(['payable', 'transactions'])->findOrFail($id);
+        $notification = $user->notifications()
+            ->where('type', PaymentApprovedNotification::class)
+            ->where('data->payment_id', $payment->id)
+            ->first();
 
-        if (!Auth::user()->hasRole('admin')) {
-            return back()->with('error', "Faqat admin to'lovni tahrirlashi mumkin!");
+        if (!$notification) {
+            return;
         }
+
+        $data = $notification->data;
+
+        $data['message'] = number_format($payment->net_amount, 0, '.', ' ') . " so'mlik to'lovingiz qabul qilindi.";
+        $data['amount'] = $payment->amount;
+        $data['net_amount'] = $payment->net_amount;
+        $data['discount'] = $payment->discount;
+
+        $notification->update([
+            'data' => $data,
+            'read_at' => null
+        ]);
+    }
+    public function update(UpdatePaymentRequest $request, string $id)
+    {
+        $payment   = Payment::with(['payable', 'transactions'])->findOrFail($id);
+        $validated = $request->validated();
+        $user      = Auth::user();
+
+        // Admin — har qanday to'lovni yangilaydi; boshqalar — faqat 48 soat ichida
+        if (!$user->hasRole('admin')) {
+            if ($payment->paid_at && $payment->paid_at->diffInHours(Carbon::now()) > 48) {
+                return back()->with('error', "48 soatdan oshgan to'lovni tahrirlash mumkin emas!");
+            }
+        }
+
         if ($payment->status === 'cancelled') {
             return back()->with('error', "Bekor qilingan to'lovni tahrirlash mumkin emas!");
         }
 
-        $validated = $request->validate([
-            'group_id'      => 'required|exists:groups,id',
-            'amount'        => 'required|numeric|min:1',
-            'discount'      => 'nullable|numeric|min:0|max:100',
-            'payment_type'  => 'required|in:cash,card,transfer,other',
-            'payment_month' => 'required|date',
-            'notes'         => 'nullable|string|max:1000',
-        ]);
-
+        // Kurs narxi tekshiruvi (store bilan bir xil)
         $group  = Group::with('course')->findOrFail($validated['group_id']);
         $course = $group->course;
 
@@ -264,59 +253,71 @@ class PaymentController extends Controller
 
         DB::beginTransaction();
         try {
-            $student    = $payment->payable;
-            $oldAmounts = [
-                'gross_amount'     => $payment->amount,
-                'net_amount'       => $payment->net_amount,
-                'discount_percent' => $payment->discount,
-            ];
-
+            $student    = Student::with('director')->findOrFail($payment->payable_id);
             $newAmounts = $this->calculatePaymentAmounts(
                 (float) $validated['amount'],
-                (float) ($validated['discount'] ?? 0),
+                (float) $validated['discount']
             );
 
-            // Only meta changed — skip financial recalculation
-            if (
-                $oldAmounts['gross_amount'] == $newAmounts['gross_amount']
-                && $oldAmounts['discount_percent'] == $newAmounts['discount_percent']
-            ) {
+            $financialChanged = (float) $payment->amount   !== $newAmounts['gross_amount']
+                || (float) $payment->discount !== $newAmounts['discount_percent'];
 
+            if (!$financialChanged) {
+                // Faqat meta ma'lumotlar o'zgardi — tranzaksiyalarga ham, notificationga ham tegmaydi
                 $payment->update([
                     'group_id'      => $validated['group_id'],
                     'payment_type'  => $validated['payment_type'],
                     'payment_month' => $validated['payment_month'],
                     'notes'         => $validated['notes'] ?? null,
                 ]);
+
                 DB::commit();
 
                 return redirect()->route('payments.show', $payment->id)
                     ->with('success', "To'lov ma'lumotlari yangilandi!");
             }
 
-            // Financial values changed — reverse and recreate
+            // Moliyaviy qiymatlar o'zgardi — eskisini qaytarib, yangisini yoz
+            $oldAmounts = [
+                'gross_amount'     => (float) $payment->amount,
+                'discount_percent' => (float) $payment->discount,
+            ];
+
             $payment->update([
+                'group_id'      => $validated['group_id'],
                 'amount'        => $newAmounts['gross_amount'],
                 'discount'      => $newAmounts['discount_percent'],
                 'net_amount'    => $newAmounts['net_amount'],
-                'group_id'      => $validated['group_id'],
                 'payment_type'  => $validated['payment_type'],
                 'payment_month' => $validated['payment_month'],
                 'notes'         => $this->buildUpdateNote($validated['notes'] ?? '', $oldAmounts['gross_amount']),
             ]);
 
-            $student = Student::with('director')->findOrFail($student->id);
+            // Eski tranzaksiyalarni o'chiradi, balanslarni qaytaradi
             $this->reversePaymentTransactions($payment, $student);
+
+            // Yangi tranzaksiyalar yaratadi, balanslarni yangilaydi
             $this->createStudentTransaction($student, $payment, $newAmounts['amount_to_balance']);
-            $directorCommission = $this->processDirectorCommission($student, $payment, $newAmounts['amount_to_balance']);
+            $directorCommission = $this->processDirectorCommission($student, $payment, $newAmounts['net_amount']);
 
             DB::commit();
+
+            // Yangi notification YARATILMAYDI — notifications jadvalidagi
+            // mavjud yozuv yangi summa bilan update qilinadi.
+            // Shunda student eskirgan "100 000 so'm" o'rniga "120 000 so'm" ko'radi.
+            if ($student->user) {
+                $this->updateExistingNotification($student->user, $payment->fresh());
+            }
 
             return redirect()->route('payments.show', $payment->id)
                 ->with('success', $this->buildUpdateSuccessMessage($oldAmounts, $newAmounts, $directorCommission));
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Payment update failed', ['payment_id' => $id, 'error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            Log::error('Payment update failed', [
+                'payment_id' => $id,
+                'error'      => $e->getMessage(),
+                'trace'      => $e->getTraceAsString(),
+            ]);
             return back()->withInput()->with('error', "To'lovni yangilashda xatolik: " . $e->getMessage());
         }
     }
@@ -364,13 +365,17 @@ class PaymentController extends Controller
                 ->with('success', "To'lov bekor qilindi! Student balansi va direktor komissiyasi qaytarildi.");
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Payment cancellation failed', ['payment_id' => $id, 'error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            Log::error('Payment cancellation failed', [
+                'payment_id' => $id,
+                'error'      => $e->getMessage(),
+                'trace'      => $e->getTraceAsString(),
+            ]);
             return back()->with('error', "To'lovni bekor qilishda xatolik: " . $e->getMessage());
         }
     }
 
     /**
-     * AJAX: Return student balance, commission %, and course price for the form.
+     * AJAX: Student balansi, komissiya % va kurs narxini qaytaradi.
      */
     public function getStudentInfo(Request $request)
     {
@@ -395,140 +400,36 @@ class PaymentController extends Controller
         ]);
     }
 
-    /**
-     * AJAX: Return current installment status so the UI can display
-     * which installments are paid and what amount remains.
-     */
-    public function getInstallmentStatus(Request $request)
+    // ==================== PRIVATE HELPERS ====================
+
+    private function calculatePaymentAmounts(float $amount, float $discountPercent): array
     {
-        $request->validate([
-            'student_id'    => 'required|exists:students,id',
-            'group_id'      => 'required|exists:groups,id',
-            'payment_month' => 'required|date',
-        ]);
+        $discountAmount = $discountPercent > 0 ? ($amount * $discountPercent) / 100 : 0;
 
-        $group       = Group::with('course')->findOrFail($request->group_id);
-        $coursePrice = (float) ($group->course?->price ?? 0);
-        $month       = Carbon::parse($request->payment_month);
-
-        $existingPayments = Payment::where('payable_type', Student::class)
-            ->where('payable_id', $request->student_id)
-            ->where('group_id', $request->group_id)
-            ->whereYear('payment_month', $month->year)
-            ->whereMonth('payment_month', $month->month)
-            ->where('is_installment', true)
-            ->where('status', 'paid')
-            ->orderBy('installment_number')
-            ->get(['installment_number', 'amount', 'paid_at']);
-
-        $paidTotal       = $existingPayments->sum('amount');
-        $remaining       = max(0, $coursePrice - $paidTotal);
-        $nextInstallment = ($existingPayments->max('installment_number') ?? 0) + 1;
-
-        return response()->json([
-            'course_price'     => $coursePrice,
-            'paid_total'       => $paidTotal,
-            'remaining'        => $remaining,
-            'next_installment' => $nextInstallment,
-            'is_fully_paid'    => $remaining <= 0,
-            'installments'     => $existingPayments,
-        ]);
+        return [
+            'gross_amount'      => $amount,
+            'discount_percent'  => $discountPercent,
+            'discount_amount'   => $discountAmount,
+            'net_amount'        => $amount - $discountAmount,
+            'amount_to_balance' => $amount - $discountAmount,
+        ];
     }
 
-    // ==================== PRIVATE VALIDATION HELPERS ====================
-
-    /**
-     * Ensure that installment N is only accepted after installments 1..N-1 are paid.
-     * Also rejects duplicate installment numbers.
-     */
-    private function validateInstallmentSequence(
-        int    $studentId,
-        int    $groupId,
-        string $paymentMonth,
-        int    $installmentNumber
-    ): ?string {
-        $month = Carbon::parse($paymentMonth);
-
-        $paidNumbers = Payment::where('payable_type', Student::class)
-            ->where('payable_id', $studentId)
-            ->where('group_id', $groupId)
-            ->whereYear('payment_month', $month->year)
-            ->whereMonth('payment_month', $month->month)
-            ->where('is_installment', true)
-            ->where('status', 'paid')
-            ->orderBy('installment_number')
-            ->pluck('installment_number')
-            ->toArray();
-
-        if (in_array($installmentNumber, $paidNumbers)) {
-            return "{$installmentNumber}-qism to'lov allaqachon amalga oshirilgan.";
-        }
-
-        for ($i = 1; $i < $installmentNumber; $i++) {
-            if (!in_array($i, $paidNumbers)) {
-                return "{$i}-qism to'lov hali amalga oshirilmagan. "
-                    . "Iltimos avval {$i}-qism to'lovni amalga oshiring.";
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Ensure adding this installment does not push the cumulative total above the course price.
-     */
-    private function validateInstallmentAmount(
-        int    $studentId,
-        int    $groupId,
-        string $paymentMonth,
-        int    $installmentNumber,
-        float  $newAmount,
-        float  $coursePrice
-    ): ?string {
-        $month = Carbon::parse($paymentMonth);
-
-        $alreadyPaidTotal = (float) Payment::where('payable_type', Student::class)
-            ->where('payable_id', $studentId)
-            ->where('group_id', $groupId)
-            ->whereYear('payment_month', $month->year)
-            ->whereMonth('payment_month', $month->month)
-            ->where('is_installment', true)
-            ->where('status', 'paid')
-            ->sum('amount');
-
-        if ($alreadyPaidTotal + $newAmount > $coursePrice) {
-            $remaining = $coursePrice - $alreadyPaidTotal;
-            return "Qism to'lov summasi oshib ketdi. "
-                . "Qolgan to'lov miqdori: {$this->formatMoney($remaining)} so'm "
-                . "(Kurs narxi: {$this->formatMoney($coursePrice)} so'm, "
-                . "Allaqachon to'langan: {$this->formatMoney($alreadyPaidTotal)} so'm).";
-        }
-        return null;
-    }
-
-    // ==================== PRIVATE TRANSACTION HELPERS ====================
-
-    /**
-     * Calculate gross, discounted net, and balance amounts.
-     * The amount is clamped to coursePrice as a safety net.
-     */
-
-
-    private function createPayment(array   $validated, Student $student, array   $amounts,): Payment
+    private function createPayment(array $validated, Student $student, array $amounts): Payment
     {
         return Payment::create([
-            'payable_type'       => Student::class,
-            'payable_id'         => $student->id,
-            'group_id'           => $validated['group_id'],
-            'user_id'            => Auth::id(),
-            'amount'             => $amounts['gross_amount'],
-            'discount'           => $amounts['discount_percent'],
-            'net_amount'         => $amounts['net_amount'],
-            'payment_type'       => $validated['payment_type'],
-            'status'             => 'paid',
-            'payment_month'      => $validated['payment_month'],
-            'notes'              => $validated['notes'] ?? null,
-            'paid_at'            => Carbon::now(),
+            'payable_type'  => Student::class,
+            'payable_id'    => $student->id,
+            'group_id'      => $validated['group_id'],
+            'user_id'       => Auth::id(),
+            'amount'        => $amounts['gross_amount'],
+            'discount'      => $amounts['discount_percent'],
+            'net_amount'    => $amounts['net_amount'],
+            'payment_type'  => $validated['payment_type'],
+            'status'        => 'paid',
+            'payment_month' => $validated['payment_month'],
+            'notes'         => $validated['notes'] ?? null,
+            'paid_at'       => Carbon::now(),
         ]);
     }
 
@@ -538,10 +439,6 @@ class PaymentController extends Controller
         $student->increment('balance', $amount);
         $newBalance  = $student->fresh()->balance;
         $description = "To'lov qabul qilindi ({$payment->payment_type})";
-
-        if ($payment->is_installment) {
-            $description .= " — {$payment->installment_number}-qism";
-        }
 
         return Transaction::create([
             'transactionable_type' => Student::class,
@@ -603,7 +500,9 @@ class PaymentController extends Controller
     private function reversePaymentTransactions(Payment $payment, Student $student, bool $markAsCancelled = false): void
     {
         $studentTx = Transaction::where('source_type', Payment::class)
-            ->where('source_id', $payment->id)->where('type', 'payment')->first();
+            ->where('source_id', $payment->id)
+            ->where('type', 'payment')
+            ->first();
 
         if ($studentTx) {
             $student->decrement('balance', $studentTx->amount);
@@ -613,7 +512,9 @@ class PaymentController extends Controller
         }
 
         $directorTx = Transaction::where('source_type', Payment::class)
-            ->where('source_id', $payment->id)->where('type', 'director_commission')->first();
+            ->where('source_id', $payment->id)
+            ->where('type', 'director_commission')
+            ->first();
 
         if ($directorTx && $directorTx->transactionable) {
             if ($directorTx->status === 'paid') {
@@ -639,8 +540,8 @@ class PaymentController extends Controller
 
     private function buildUpdateSuccessMessage(array $oldAmounts, array $newAmounts, ?array $directorCommission): string
     {
-        $diff     = $newAmounts['gross_amount'] - $oldAmounts['gross_amount'];
-        $message  = "To'lov muvaffaqiyatli yangilandi!\n";
+        $diff    = $newAmounts['gross_amount'] - $oldAmounts['gross_amount'];
+        $message = "To'lov muvaffaqiyatli yangilandi!\n";
         $message .= "Eski summa: {$this->formatMoney($oldAmounts['gross_amount'])} so'm\n";
         $message .= "Yangi summa: {$this->formatMoney($newAmounts['gross_amount'])} so'm\n";
         $message .= "Farq: " . ($diff >= 0 ? '+' : '') . $this->formatMoney($diff) . " so'm";

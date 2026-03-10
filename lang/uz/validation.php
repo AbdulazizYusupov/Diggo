@@ -195,6 +195,64 @@ return [
     |
     */
 
-    'attributes' => [],
+    // 'attributes' => [],
+
+    'custom' => [
+        'student_id' => [
+            'required' => '"O\'quvchi" maydoni to\'ldirilishi shart.',
+            'exists'   => 'Tanlangan o\'quvchi mavjud emas.',
+        ],
+        'group_id' => [
+            'required' => '"Guruh" maydoni to\'ldirilishi shart.',
+            'exists'   => 'Tanlangan guruh mavjud emas.',
+        ],
+        'amount' => [
+            'required' => 'To\'lov miqdori kiritilishi shart.',
+            'numeric'  => 'To\'lov miqdori raqam bo\'lishi kerak.',
+            'min'      => 'To\'lov miqdori kamida 1 bo\'lishi kerak.',
+        ],
+        'discount' => [
+            'required' => '"Chegirma" maydoni to\'ldirilishi shart.',
+            'numeric'  => 'Chegirma raqam bo\'lishi kerak.',
+            'min'      => 'Chegirma 0 dan kam bo\'lmasligi kerak.',
+            'max'      => 'Chegirma 100% dan oshmasligi kerak.',
+        ],
+        'payment_type' => [
+            'required' => 'To\'lov turi kiritilishi shart.',
+            'in'       => 'To\'lov turi quyidagilardan biri bo\'lishi kerak: naqd, karta, o\'tkazma, boshqa.',
+        ],
+        'payment_month' => [
+            'required' => 'To\'lov oyi kiritilishi shart.',
+            'date'     => 'To\'lov oyi to\'g\'ri sana bo\'lishi kerak.',
+        ],
+        'is_installment' => [
+            'boolean' => 'Nasiya belgisi true yoki false bo\'lishi kerak.',
+        ],
+        'installment_number' => [
+            'integer' => 'Nasiya raqami butun son bo\'lishi kerak.',
+            'min'     => 'Nasiya raqami kamida 1 bo\'lishi kerak.',
+        ],
+        'total_installments' => [
+            'integer' => 'Jami nasiyalar soni butun son bo\'lishi kerak.',
+            'min'     => 'Jami nasiyalar soni kamida 1 bo\'lishi kerak.',
+        ],
+        'notes' => [
+            'string' => 'Izoh matn bo\'lishi kerak.',
+            'max'    => 'Izoh 1000 belgidan uzun bo\'lmasligi kerak.',
+        ],
+    ],
+
+    'attributes' => [
+        'student_id'         => 'O\'quvchi',
+        'group_id'           => 'Guruh',
+        'amount'             => 'Miqdor',
+        'discount'           => 'Chegirma',
+        'payment_type'       => 'To\'lov turi',
+        'payment_month'      => 'To\'lov oyi',
+        'is_installment'     => 'Nasiya',
+        'installment_number' => 'Nasiya raqami',
+        'total_installments' => 'Jami nasiyalar',
+        'notes'              => 'Izoh',
+    ],
 
 ];
