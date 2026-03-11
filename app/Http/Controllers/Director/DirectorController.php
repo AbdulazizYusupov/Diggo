@@ -23,14 +23,25 @@ class DirectorController extends Controller
         $query = Director::with(['user', 'school']);
 
         // Search filter
-        if ($search = $request->input('search')) {
-            $query->whereHas('user', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('surname', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%")
-                    ->orWhere('city', 'like', "%{$search}%");
-            })->orWhereHas('school', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
+        if ($search = trim($request->input('search'))) {
+            $query->where(function ($outer) use ($search) {
+                $outer->whereHas('user', function ($q) use ($search) {
+                    $q->where(function ($inner) use ($search) {
+                        $inner->where('name', 'like', "%{$search}%")
+                            ->orWhere('surname', 'like', "%{$search}%")
+                            ->orWhere('middle_name', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%")
+                            ->orWhere('city', 'like', "%{$search}%")
+                            // Familiya Ism Otasining ismi
+                            ->orWhereRaw("CONCAT(surname, ' ', name, ' ', COALESCE(middle_name, '')) LIKE ?", ["%{$search}%"])
+                            // Familiya Otasining ismi
+                            ->orWhereRaw("CONCAT(surname, ' ', COALESCE(middle_name, '')) LIKE ?", ["%{$search}%"])
+                            // Ism Otasining ismi
+                            ->orWhereRaw("CONCAT(name, ' ', COALESCE(middle_name, '')) LIKE ?", ["%{$search}%"]);
+                    });
+                })->orWhereHas('school', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                });
             });
         }
 

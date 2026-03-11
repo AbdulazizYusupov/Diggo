@@ -51,6 +51,7 @@ use App\Http\Controllers\TeacherDashboard\TeacherDashboardController;
 use App\Http\Controllers\TeacherDashboard\TeacherGroupsController;
 use App\Http\Controllers\TeacherDashboard\TeacherLessonsController;
 use App\Http\Controllers\Transaction\TransactionController;
+use App\Http\Controllers\TrashedUser\TrashedUserController;
 use App\Http\Controllers\UserActivityLog\UserActivityLogController;
 use App\Http\Middleware\CheckPermission;
 use Illuminate\Support\Facades\Route;
@@ -309,6 +310,13 @@ Route::middleware(['auth'])->group(function () {
 
             Route::delete('/{id}',                   [LoginAttemptController::class, 'destroy'])->name('destroy');
             Route::delete('/bulk/old',               [LoginAttemptController::class, 'destroyOld'])->name('destroy-old');
+        });
+
+        Route::prefix('trashed-users')->name('trashed-users.')->group(function () {
+            Route::get('/',                          [TrashedUserController::class, 'index'])->name('index');
+            Route::post('/{id}/restore',             [TrashedUserController::class, 'restore'])->name('restore');
+            Route::delete('/{id}/force-delete',      [TrashedUserController::class, 'forceDelete'])->name('force-delete');
+            Route::post('/restore-all',              [TrashedUserController::class, 'restoreAll'])->name('restore-all');
         });
     });
 });

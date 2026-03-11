@@ -23,15 +23,23 @@ class PaymentController extends Controller
     public function index(Request $request)
     {
         $query = Payment::with(['payable.user', 'user']);
-
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = trim($request->search);
             $query->where('payable_type', Student::class)
                 ->whereHasMorph('payable', [Student::class], function ($q) use ($search) {
                     $q->whereHas('user', function ($userQuery) use ($search) {
-                        $userQuery->where('name', 'like', "%{$search}%")
-                            ->orWhere('surname', 'like', "%{$search}%")
-                            ->orWhere('phone', 'like', "%{$search}%");
+                        $userQuery->where(function ($inner) use ($search) {
+                            $inner->where('name', 'like', "%{$search}%")
+                                ->orWhere('surname', 'like', "%{$search}%")
+                                ->orWhere('middle_name', 'like', "%{$search}%")
+                                ->orWhere('phone', 'like', "%{$search}%")
+                                // Familiya Ism Otasining ismi
+                                ->orWhereRaw("CONCAT(surname, ' ', name, ' ', COALESCE(middle_name, '')) LIKE ?", ["%{$search}%"])
+                                // Familiya Otasining ismi
+                                ->orWhereRaw("CONCAT(surname, ' ', COALESCE(middle_name, '')) LIKE ?", ["%{$search}%"])
+                                // Ism Otasining ismi
+                                ->orWhereRaw("CONCAT(name, ' ', COALESCE(middle_name, '')) LIKE ?", ["%{$search}%"]);
+                        });
                     });
                 });
         }

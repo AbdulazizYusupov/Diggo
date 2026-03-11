@@ -304,26 +304,9 @@
                                     </div>
                                 </td>
                                 <td class="px-4 lg:px-6 py-4">
-                                    @php
-                                        $typeColors = [
-                                            'cash' =>
-                                                'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-                                            'card' =>
-                                                'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-                                            'transfer' =>
-                                                'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
-                                            'other' => 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400',
-                                        ];
-                                        $typeNames = [
-                                            'cash' => 'Naqd',
-                                            'card' => 'Karta',
-                                            'transfer' => 'O\'tkazma',
-                                            'other' => 'Boshqa',
-                                        ];
-                                    @endphp
                                     <span
-                                        class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-lg {{ $typeColors[$payment->payment_type] ?? 'bg-gray-100 text-gray-700' }}">
-                                        {{ $typeNames[$payment->payment_type] ?? $payment->payment_type }}
+                                        class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-lg {{ typeColors[$payment->payment_type] ?? 'bg-gray-100 text-gray-700' }}">
+                                        {{ typeNames[$payment->payment_type] ?? $payment->payment_type }}
                                     </span>
                                 </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
@@ -335,30 +318,13 @@
                                     </div>
                                 </td>
                                 <td class="px-4 lg:px-6 py-4">
-                                    @php
-                                        $statusColors = [
-                                            'paid' =>
-                                                'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-                                            'pending' =>
-                                                'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-                                            'failed' =>
-                                                'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
-                                            'cancelled' =>
-                                                'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400',
-                                        ];
-                                        $statusNames = [
-                                            'paid' => 'To\'langan',
-                                            'pending' => 'Kutilmoqda',
-                                            'failed' => 'Muvaffaqiyatsiz',
-                                            'cancelled' => 'Bekor qilingan',
-                                        ];
-                                    @endphp
+                                    
                                     <span
-                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg {{ $statusColors[$payment->status] ?? 'bg-gray-100 text-gray-700' }}">
+                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg {{ statusColors[$payment->status] ?? 'bg-gray-100 text-gray-700' }}">
                                         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 8 8">
                                             <circle cx="4" cy="4" r="3" />
                                         </svg>
-                                        {{ $statusNames[$payment->status] ?? $payment->status }}
+                                        {{ statusNames[$payment->status] ?? $payment->status }}
                                     </span>
                                 </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-right">
@@ -391,7 +357,8 @@
                                         @endif
 
                                         <!-- Pending to'lovlar uchun EDIT va DELETE -->
-                                        @if (Auth::user()->hasRole('admin') && $payment->status !== 'cancelled')
+                                        @if (
+                                            (Auth::user()->hasRole('admin') && $payment->status !== 'cancelled') || (Auth::user()->hasRole('staff') && $payment->status !== 'cancelled' && $payment->paid_at && $payment->paid_at->diffInHours(now()) <= 6))
                                             <a href="{{ route('payments.edit', $payment->id) }}"
                                                 class="p-2 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-xl transition-all duration-200 group/btn"
                                                 title="Tahrirlash">
@@ -401,17 +368,6 @@
                                                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                 </svg>
                                             </a>
-
-                                            <button type="button"
-                                                onclick="document.getElementById('delete-modal-{{ $payment->id }}').classList.remove('hidden')"
-                                                class="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900/20 rounded-xl transition-all duration-200 group/btn"
-                                                title="O'chirish">
-                                                <svg class="w-5 h-5 transition-transform group-hover/btn:scale-110"
-                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </button>
                                         @endif
                                     </div>
                                 </td>

@@ -18,50 +18,53 @@ class StaffController extends Controller
      */
     public function index(Request $request)
     {
-        // Eager loading orqali 'user'ni yuklaymiz
+        // Validation
+        $request->validate([
+            'search'      => 'nullable|string|max:100',
+            'salary_type' => 'nullable|in:fixed,percentage,mixed',
+            'status'      => 'nullable|in:active,inactive',
+        ]);
+
         $query = Staff::with('user');
 
-        // 1. Qidiruv (Search)
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = trim($request->search);
             $query->whereHas('user', function ($q) use ($search) {
-                $q->where(function ($sub) use ($search) {
-                    $sub->where('name', 'like', "%{$search}%")
+                $q->where(function ($inner) use ($search) {
+                    $inner->where('name', 'like', "%{$search}%")
                         ->orWhere('surname', 'like', "%{$search}%")
                         ->orWhere('middle_name', 'like', "%{$search}%")
                         ->orWhere('phone', 'like', "%{$search}%")
                         ->orWhere('address', 'like', "%{$search}%")
-                        ->orWhere('city', 'like', "%{$search}%");
+                        ->orWhere('city', 'like', "%{$search}%")
+                        ->orWhereRaw("CONCAT(surname, ' ', name, ' ', COALESCE(middle_name, '')) LIKE ?", ["%{$search}%"])
+                        ->orWhereRaw("CONCAT(surname, ' ', COALESCE(middle_name, '')) LIKE ?", ["%{$search}%"])
+                        ->orWhereRaw("CONCAT(name, ' ', COALESCE(middle_name, '')) LIKE ?", ["%{$search}%"]);
                 });
             });
         }
 
-        // 2. Ish haqi turi bo'yicha filtr (Salary type)
         if ($request->filled('salary_type')) {
             $query->where('salary_type', $request->salary_type);
         }
 
-        // 3. Status (is_active) bo'yicha filtr - User jadvalidan qidiradi
         if ($request->filled('status')) {
             $isActive = $request->status === 'active';
-            $query->whereHas('user', function ($q) use ($isActive) {
-                $q->where('is_active', $isActive);
-            });
+            $query->whereHas('user', fn($q) => $q->where('is_active', $isActive));
         }
 
-        // Ma'lumotlarni olish
-        $staffs = $query->latest()->paginate(10);
+        // Statistika — bitta query bilan
+        $stats = Staff::selectRaw("
+        COUNT(*) as total,
+        SUM(CASE WHEN users.is_active = 1 THEN 1 ELSE 0 END) as active_count,
+        SUM(CASE WHEN users.is_active = 0 THEN 1 ELSE 0 END) as inactive_count,
+        AVG(CASE WHEN staff.salary_type = 'fixed' THEN salary_amount ELSE NULL END) as avg_salary
+    ")->join('users', 'staff.user_id', '=', 'users.id')->first();
 
-        // 4. Statistika (Bu yerda ham whereHas ishlatiladi)
-        $activeCount = Staff::whereHas('user', function ($q) {
-            $q->where('is_active', true);
-        })->count();
-
-        $inactiveCount = Staff::whereHas('user', function ($q) {
-            $q->where('is_active', false);
-        })->count();
-
-        $avgSalary = Staff::where('salary_type', 'fixed')->avg('salary_amount') ?? 0;
+        $staffs      = $query->latest()->paginate(10)->withQueryString();
+        $activeCount   = $stats->active_count ?? 0;
+        $inactiveCount = $stats->inactive_count ?? 0;
+        $avgSalary     = $stats->avg_salary ?? 0;
 
         return view('Staff.index', compact('staffs', 'activeCount', 'inactiveCount', 'avgSalary'));
     }
