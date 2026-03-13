@@ -287,34 +287,51 @@
                                     </div>
                                 </td>
                                 <td class="px-4 lg:px-6 py-4">
-                                    <div class="flex flex-wrap gap-1.5 max-w-[220px]">
-                                        @forelse ($course->groups as $group)
-                                            <span
-                                                class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800/50 whitespace-nowrap">
-                                                {{ $group->name }}
-                                            </span>
-                                        @empty
-                                            <span class="text-xs text-gray-400 dark:text-gray-500 italic">Guruhlar
-                                                yo'q</span>
-                                        @endforelse
+                                    <div class="flex flex-col gap-1">
+
+                                        {{-- Birinchi 10 ta --}}
+                                        <div class="flex flex-wrap gap-1.5 max-w-[220px]">
+                                            @forelse ($course->groups->take(5) as $group)
+                                                <span
+                                                    class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold
+                             bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300
+                             border border-indigo-100 dark:border-indigo-800/50 whitespace-nowrap">
+                                                    {{ $group->name }}
+                                                </span>
+                                            @empty
+                                                <span class="text-xs text-gray-400 dark:text-gray-500 italic">Guruhlar
+                                                    yo'q</span>
+                                            @endforelse
+                                        </div>
+
+                                        {{-- 10 dan oshsa: qolganlar (yashirin) + toggle tugma --}}
+                                        @if ($course->groups->count() > 5)
+                                            <div id="extra-groups-{{ $course->id }}"
+                                                class="hidden flex-wrap gap-1.5 max-w-[220px]">
+                                                @foreach ($course->groups->skip(5) as $group)
+                                                    <span
+                                                        class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800/50 whitespace-nowrap">
+                                                        {{ $group->name }}
+                                                    </span>
+                                                @endforeach
+                                            </div>
+
+                                            <button type="button"
+                                                onclick="toggleExtraGroups('extra-groups-{{ $course->id }}', this)"
+                                                class="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors w-fit">
+                                                <svg id="arrow-{{ $course->id }}"
+                                                    class="w-3 h-3 transition-transform duration-200" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                                <span>+{{ $course->groups->count() - 5 }} ta ko'rsat</span>
+                                            </button>
+                                        @endif
                                     </div>
                                 </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                                    @php
-                                        $levelColors = [
-                                            'beginner' =>
-                                                'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-                                            'intermediate' =>
-                                                'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-                                            'advanced' =>
-                                                'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
-                                        ];
-                                        $levelNames = [
-                                            'beginner' => 'Boshlang\'ich',
-                                            'intermediate' => 'O\'rta',
-                                            'advanced' => 'Yuqori',
-                                        ];
-                                    @endphp
+
                                     <span
                                         class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-lg {{ $levelColors[$course->level] ?? 'bg-gray-100 text-gray-700' }}">
                                         {{ $levelNames[$course->level] ?? $course->level }}
@@ -466,4 +483,22 @@
             </div>
         @endif
     </div>
+    @push('scripts')
+        <script>
+            function toggleExtraGroups(id, btn) {
+                const el = document.getElementById(id);
+                const isHidden = el.classList.contains('hidden');
+
+                el.classList.toggle('hidden', !isHidden);
+                el.classList.toggle('flex', isHidden);
+
+                const arrow = btn.querySelector('svg');
+                const label = btn.querySelector('span');
+                const total = el.children.length;
+
+                arrow.style.transform = isHidden ? 'rotate(180deg)' : '';
+                label.textContent = isHidden ? 'Yig\'ish' : `+${total} ta ko'rsat`;
+            }
+        </script>
+    @endpush
 @endsection
