@@ -240,6 +240,54 @@ return [
             'string' => 'Izoh matn bo\'lishi kerak.',
             'max'    => 'Izoh 1000 belgidan uzun bo\'lmasligi kerak.',
         ],
+        'group_id' => [
+            'required' => 'Guruh majburiy.',
+            'integer'  => 'Guruh raqami to\'g\'ri bo\'lishi kerak.',
+            'exists'   => 'Tanlangan guruh mavjud emas.',
+        ],
+
+        'attendances' => [
+            'required' => 'Davomat ma\'lumotlari majburiy.',
+            'array'    => 'Davomat ro\'yxat ko\'rinishida bo\'lishi kerak.',
+            'min'      => 'Kamida bitta davomat yozuvi kerak.',
+        ],
+
+        'student_id' => [
+            'integer' => 'Talaba ID raqami to\'g\'ri bo\'lishi kerak.',
+            'exists'  => 'Tanlangan talaba mavjud emas.',
+        ],
+
+        'lesson_id' => [
+            'integer' => 'Dars ID raqami to\'g\'ri bo\'lishi kerak.',
+            'exists'  => 'Tanlangan dars mavjud emas.',
+        ],
+
+        'status' => [
+            'in' => 'Holat quyidagilardan biri bo\'lishi kerak: keldi, kechikdi, kelmadi, sababli.',
+        ],
+
+        'late_minutes' => [
+            'integer' => 'Kechikish daqiqalari butun son bo\'lishi kerak.',
+            'min'     => 'Kechikish daqiqalari manfiy bo\'lishi mumkin emas.',
+            'max'     => 'Kechikish daqiqalari 120 dan oshmasligi kerak.',
+        ],
+
+        'homework_score' => [
+            'integer' => 'Uy vazifasi bali butun son bo\'lishi kerak.',
+            'min'     => 'Uy vazifasi bali manfiy bo\'lishi mumkin emas.',
+            'max'     => 'Uy vazifasi bali 3 dan oshmasligi kerak.',
+        ],
+
+        'activity_score' => [
+            'integer' => 'Faollik bali butun son bo\'lishi kerak.',
+            'min'     => 'Faollik bali manfiy bo\'lishi mumkin emas.',
+            'max'     => 'Faollik bali 3 dan oshmasligi kerak.',
+        ],
+
+        'notes' => [
+            'string' => 'Izoh matn ko\'rinishida bo\'lishi kerak.',
+            'max'    => 'Izoh 500 belgidan oshmasligi kerak.',
+        ],
     ],
 
     'attributes' => [
@@ -253,6 +301,15 @@ return [
         'installment_number' => 'Nasiya raqami',
         'total_installments' => 'Jami nasiyalar',
         'notes'              => 'Izoh',
+        'group_id'       => 'Guruh',
+        'attendances'    => 'Davomatlar',
+        'student_id'     => 'Talaba',
+        'lesson_id'      => 'Dars',
+        'status'         => 'Holat',
+        'late_minutes'   => 'Kechikish daqiqalari',
+        'homework_score' => 'Uy vazifasi bali',
+        'activity_score' => 'Faollik bali',
+        'notes'          => 'Izoh',
     ],
 
 ];

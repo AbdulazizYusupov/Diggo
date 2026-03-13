@@ -79,20 +79,14 @@
                         Coin tizimi (1 dars uchun max: 8)
                     </h3>
                     <div class="grid grid-cols-2 lg:grid-cols-5 gap-2">
-                        @foreach ([
-                            ['bg-emerald-50 dark:bg-emerald-500/10', 'border-emerald-100 dark:border-emerald-500/20', 'text-emerald-600 dark:text-emerald-400', 'text-emerald-700 dark:text-emerald-300', 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', 'Vaqtida', '+2'],
-                            ['bg-emerald-50 dark:bg-emerald-500/10', 'border-emerald-100 dark:border-emerald-500/20', 'text-emerald-600 dark:text-emerald-400', 'text-emerald-700 dark:text-emerald-300', 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', '0-15 min', '+2'],
-                            ['bg-amber-50 dark:bg-amber-500/10', 'border-amber-100 dark:border-amber-500/20', 'text-amber-600 dark:text-amber-400', 'text-amber-700 dark:text-amber-300', 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', '15-30 min', '+1'],
-                            ['bg-blue-50 dark:bg-blue-500/10', 'border-blue-100 dark:border-blue-500/20', 'text-blue-600 dark:text-blue-400', 'text-blue-700 dark:text-blue-300', 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', 'Uy vazifa', '0-3'],
-                            ['bg-purple-50 dark:bg-purple-500/10', 'border-purple-100 dark:border-purple-500/20', 'text-purple-600 dark:text-purple-400', 'text-purple-700 dark:text-purple-300', 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z', 'Faollik', '0-3'],
-                        ] as [$bg, $border, $textColor, $valueColor, $icon, $label, $value])
-                            <div class="flex items-center gap-2 p-2 md:p-3 {{ $bg }} rounded-lg border {{ $border }}">
-                                <svg class="w-4 h-4 md:w-5 md:h-5 {{ $textColor }} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon }}" />
+                        @foreach (attendance_coin_tiers() as $tier)
+                            <div class="flex items-center gap-2 p-2 md:p-3 {{ $tier['bg'] }} rounded-lg border {{ $tier['border'] }}">
+                                <svg class="w-4 h-4 md:w-5 md:h-5 {{ $tier['textColor'] }} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $tier['icon'] }}" />
                                 </svg>
                                 <div>
-                                    <p class="text-[10px] md:text-xs {{ $textColor }} font-medium">{{ $label }}</p>
-                                    <p class="text-xs md:text-sm font-bold {{ $valueColor }}">{{ $value }}</p>
+                                    <p class="text-[10px] md:text-xs {{ $tier['textColor'] }} font-medium">{{ $tier['label'] }}</p>
+                                    <p class="text-xs md:text-sm font-bold {{ $tier['valueColor'] }}">{{ $tier['value'] }}</p>
                                 </div>
                             </div>
                         @endforeach
@@ -132,40 +126,30 @@
                             {{-- ---- THEAD ---- --}}
                             <thead class="bg-gradient-to-r from-blue-600 to-blue-700">
                                 <tr>
-                                    {{-- O'quvchi ustuni --}}
                                     <th class="px-2 md:px-3 py-2 md:py-3 text-left text-[10px] md:text-xs font-bold text-white uppercase tracking-wider sticky left-0 bg-blue-600 z-20 min-w-[90px] md:min-w-[120px]">
                                         O'quvchi
                                     </th>
 
-                                    {{-- Har bir lesson uchun alohida ustun --}}
                                     @foreach ($lessons as $lesson)
-                                        @php
-                                            $dateKey     = $lesson->lesson_date->format('Y-m-d');
-                                            $isToday     = $lesson->lesson_date->isSameDay($today);
-                                            $multiLesson = ($lessonsPerDay[$dateKey] ?? 1) > 1;
-                                            $timeStr     = substr($lesson->start_time ?? '', 0, 5);
-                                        @endphp
                                         <th class="px-2 md:px-3 py-2 md:py-3 text-center text-[10px] md:text-xs font-bold uppercase min-w-[115px] md:min-w-[140px]
-                                            {{ $isToday ? 'bg-yellow-500 text-black ring-2 ring-inset ring-yellow-300' : 'text-white' }}">
+                                            {{ $lesson->lesson_date->isSameDay($today) ? 'bg-yellow-500 text-black ring-2 ring-inset ring-yellow-300' : 'text-white' }}">
                                             <div class="flex flex-col items-center gap-0.5">
-                                                <span class="{{ $isToday ? 'text-lg md:text-xl' : 'text-sm md:text-base' }} font-black">
+                                                <span class="{{ $lesson->lesson_date->isSameDay($today) ? 'text-lg md:text-xl' : 'text-sm md:text-base' }} font-black">
                                                     {{ $lesson->lesson_date->format('d') }}
                                                 </span>
-                                                <span class="text-[9px] md:text-[10px] {{ $isToday ? 'text-black font-black' : 'text-blue-200' }}">
+                                                <span class="text-[9px] md:text-[10px] {{ $lesson->lesson_date->isSameDay($today) ? 'text-black font-black' : 'text-blue-200' }}">
                                                     {{ get_day_name($lesson->lesson_date->format('l')) }}
                                                 </span>
-                                                {{-- Bir kunda 2+ dars bo'lsa vaqtni ko'rsatamiz --}}
-                                                @if ($multiLesson && $timeStr)
+                                                @if (($lessonsPerDay[$lesson->lesson_date->format('Y-m-d')] ?? 1) > 1 && lesson_time_label($lesson->start_time))
                                                     <span class="text-[8px] md:text-[9px] font-bold px-1 py-0.5 rounded
-                                                        {{ $isToday ? 'bg-black/20 text-black' : 'bg-white/20 text-white' }}">
-                                                        {{ $timeStr }}
+                                                        {{ $lesson->lesson_date->isSameDay($today) ? 'bg-black/20 text-black' : 'bg-white/20 text-white' }}">
+                                                        {{ lesson_time_label($lesson->start_time) }}
                                                     </span>
                                                 @endif
                                             </div>
                                         </th>
                                     @endforeach
 
-                                    {{-- Jami coin ustuni --}}
                                     <th class="px-2 md:px-3 py-2 md:py-3 text-center text-[10px] md:text-xs font-bold text-white uppercase tracking-wider bg-purple-600 sticky right-0 z-20 min-w-[60px] md:min-w-[75px]">
                                         Coin
                                     </th>
@@ -175,13 +159,13 @@
                             {{-- ---- TBODY ---- --}}
                             <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-gray-700">
                                 @foreach ($students as $studentIndex => $student)
-                                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+                                    <tr class="group hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
 
                                         {{-- O'quvchi nomi --}}
                                         <td class="px-2 md:px-3 py-2 md:py-3 sticky left-0 bg-white dark:bg-slate-800 z-10 border-r border-gray-200 dark:border-gray-700">
                                             <div class="flex items-center gap-1.5">
                                                 <div class="w-7 h-7 md:w-9 md:h-9 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-[10px] md:text-xs shadow-lg flex-shrink-0">
-                                                    {{ substr(optional($student->user)->surname ?? 'N', 0, 1) }}{{ substr(optional($student->user)->name ?? 'A', 0, 1) }}
+                                                    {{ user_initials(optional($student->user)->surname, optional($student->user)->name) }}
                                                 </div>
                                                 <div class="min-w-0 max-w-[80px] md:max-w-[120px]">
                                                     <div class="text-[10px] md:text-xs font-bold text-gray-900 dark:text-white break-words whitespace-normal uppercase">
@@ -189,6 +173,9 @@
                                                     </div>
                                                     <div class="text-[9px] md:text-[11px] font-medium text-gray-600 dark:text-gray-400 break-words whitespace-normal">
                                                         {{ optional($student->user)->name ?? '' }}
+                                                    </div>
+                                                    <div class="text-[9px] md:text-[11px] font-medium text-gray-600 dark:text-gray-400 break-words whitespace-normal">
+                                                        {{ optional($student->user)->middle_name ?? '' }}
                                                     </div>
                                                     <div class="text-[9px] md:text-xs text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-0.5 mt-0.5">
                                                         <svg class="w-2.5 h-2.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,42 +189,34 @@
 
                                         {{-- Har bir lesson uchun davomat cell --}}
                                         @foreach ($lessons as $lessonIndex => $lesson)
-                                            @php
-                                                $att     = $attendanceMap[$student->id][$lesson->id] ?? null;
-                                                $isToday = $lesson->lesson_date->isSameDay($today);
-                                                $canEdit = auth()->user()->hasAnyRole(['admin', 'staff']) || $isToday;
-                                            @endphp
-
                                             <td class="px-1.5 md:px-2 py-2 md:py-3 text-center align-top"
                                                 data-student="{{ $student->id }}"
                                                 data-day="{{ $lesson->lesson_date->format('Y-m-d') }}"
                                                 data-lesson="{{ $lesson->id }}">
 
-                                                {{-- Hidden inputlar --}}
                                                 <input type="hidden" name="attendances[{{ $studentIndex }}][{{ $lessonIndex }}][student_id]" value="{{ $student->id }}">
                                                 <input type="hidden" name="attendances[{{ $studentIndex }}][{{ $lessonIndex }}][lesson_id]"  value="{{ $lesson->id }}">
-                                                <input type="hidden" class="late-minutes-input" name="attendances[{{ $studentIndex }}][{{ $lessonIndex }}][late_minutes]" value="{{ $att['late_minutes'] ?? 0 }}">
-                                                <input type="hidden" class="late-reason-input"  name="attendances[{{ $studentIndex }}][{{ $lessonIndex }}][notes]"        value="{{ $att['notes'] ?? '' }}">
+                                                <input type="hidden" class="late-minutes-input" name="attendances[{{ $studentIndex }}][{{ $lessonIndex }}][late_minutes]" value="{{ $attendanceMap[$student->id][$lesson->id]['late_minutes'] ?? 0 }}">
+                                                <input type="hidden" class="late-reason-input"  name="attendances[{{ $studentIndex }}][{{ $lessonIndex }}][notes]"        value="{{ $attendanceMap[$student->id][$lesson->id]['notes'] ?? '' }}">
 
                                                 <div class="flex flex-col items-center gap-1.5">
 
                                                     {{-- Status: present / late / absent --}}
                                                     <div class="flex items-center justify-center gap-0.5 md:gap-1">
-                                                        @foreach (['present' => ['emerald', 'M5 13l4 4L19 7', '2.5'], 'late' => ['amber', 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', '2'], 'absent' => ['rose', 'M6 18L18 6M6 6l12 12', '2.5']] as $statusType => [$color, $iconPath, $strokeW])
-                                                            <label class="relative {{ $canEdit ? 'cursor-pointer' : 'cursor-not-allowed opacity-60' }}">
+                                                        @foreach ($statusTypes as $statusType => $statusConfig)
+                                                            <label class="relative cursor-pointer">
                                                                 <input type="radio"
                                                                     name="attendances[{{ $studentIndex }}][{{ $lessonIndex }}][status]"
                                                                     value="{{ $statusType }}"
-                                                                    @checked(($att['status'] ?? '') === $statusType)
-                                                                    @disabled(!$canEdit)
+                                                                    @checked(($attendanceMap[$student->id][$lesson->id]['status'] ?? '') === $statusType)
                                                                     class="peer sr-only attendance-status"
                                                                     data-type="{{ $statusType }}">
                                                                 <div class="w-7 h-7 md:w-8 md:h-8 rounded-md transition-all flex items-center justify-center
                                                                     bg-gray-100 dark:bg-slate-700 text-gray-400
-                                                                    peer-checked:bg-{{ $color }}-500 peer-checked:text-white peer-checked:ring-2 peer-checked:ring-{{ $color }}-300
-                                                                    {{ $canEdit ? "hover:bg-{$color}-50 dark:hover:bg-{$color}-900/30" : '' }}">
+                                                                    peer-checked:bg-{{ $statusConfig['color'] }}-500 peer-checked:text-white peer-checked:ring-2 peer-checked:ring-{{ $statusConfig['color'] }}-300
+                                                                    hover:bg-{{ $statusConfig['color'] }}-50 dark:hover:bg-{{ $statusConfig['color'] }}-900/30">
                                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="{{ $strokeW }}" d="{{ $iconPath }}" />
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="{{ $statusConfig['strokeW'] }}" d="{{ $statusConfig['icon'] }}" />
                                                                     </svg>
                                                                 </div>
                                                             </label>
@@ -245,22 +224,21 @@
                                                     </div>
 
                                                     {{-- Homework & Activity --}}
-                                                    <div class="homework-activity-container w-full {{ ($att && in_array($att['status'], ['present', 'late'])) ? '' : 'opacity-30 pointer-events-none' }}">
+                                                    <div class="homework-activity-container w-full {{ (isset($attendanceMap[$student->id][$lesson->id]) && in_array($attendanceMap[$student->id][$lesson->id]['status'], ['present', 'late'])) ? '' : 'opacity-30 pointer-events-none' }}">
 
                                                         {{-- Homework (0-3) --}}
                                                         <div class="flex items-center justify-center gap-0.5 pt-1.5 border-t border-gray-100 dark:border-gray-700 w-full">
                                                             @foreach ([0, 1, 2, 3] as $score)
-                                                                <label class="relative {{ $canEdit ? 'cursor-pointer' : 'cursor-not-allowed' }}">
+                                                                <label class="relative cursor-pointer">
                                                                     <input type="radio"
                                                                         name="attendances[{{ $studentIndex }}][{{ $lessonIndex }}][homework_score]"
                                                                         value="{{ $score }}"
-                                                                        @checked($att ? $att['homework_score'] == $score : $score == 0)
-                                                                        @disabled(!$canEdit)
+                                                                        @checked(isset($attendanceMap[$student->id][$lesson->id]) ? $attendanceMap[$student->id][$lesson->id]['homework_score'] == $score : $score == 0)
                                                                         class="peer sr-only">
                                                                     <div class="w-5 h-5 md:w-6 md:h-6 rounded text-[9px] md:text-[10px] font-bold transition-all flex items-center justify-center
                                                                         bg-gray-50 dark:bg-slate-800 text-gray-400
                                                                         peer-checked:bg-blue-600 peer-checked:text-white
-                                                                        {{ $canEdit ? 'hover:bg-blue-50 dark:hover:bg-blue-900/20' : '' }}">
+                                                                        hover:bg-blue-50 dark:hover:bg-blue-900/20">
                                                                         {{ $score }}
                                                                     </div>
                                                                 </label>
@@ -271,17 +249,16 @@
                                                         {{-- Activity (0-3) --}}
                                                         <div class="flex items-center justify-center gap-0.5 mt-1 w-full">
                                                             @foreach ([0, 1, 2, 3] as $score)
-                                                                <label class="relative {{ $canEdit ? 'cursor-pointer' : 'cursor-not-allowed' }}">
+                                                                <label class="relative cursor-pointer">
                                                                     <input type="radio"
                                                                         name="attendances[{{ $studentIndex }}][{{ $lessonIndex }}][activity_score]"
                                                                         value="{{ $score }}"
-                                                                        @checked($att ? $att['activity_score'] == $score : $score == 0)
-                                                                        @disabled(!$canEdit)
+                                                                        @checked(isset($attendanceMap[$student->id][$lesson->id]) ? $attendanceMap[$student->id][$lesson->id]['activity_score'] == $score : $score == 0)
                                                                         class="peer sr-only">
                                                                     <div class="w-5 h-5 md:w-6 md:h-6 rounded text-[9px] md:text-[10px] font-bold transition-all flex items-center justify-center
                                                                         bg-gray-50 dark:bg-slate-800 text-gray-400
                                                                         peer-checked:bg-purple-600 peer-checked:text-white
-                                                                        {{ $canEdit ? 'hover:bg-purple-50 dark:hover:bg-purple-900/20' : '' }}">
+                                                                        hover:bg-purple-50 dark:hover:bg-purple-900/20">
                                                                         {{ $score }}
                                                                     </div>
                                                                 </label>
@@ -291,9 +268,9 @@
                                                     </div>
 
                                                     {{-- Kunlik coin ko'rsatish --}}
-                                                    @if ($att && $att['daily_coins'] > 0)
+                                                    @if (isset($attendanceMap[$student->id][$lesson->id]) && $attendanceMap[$student->id][$lesson->id]['daily_coins'] > 0)
                                                         <div class="text-[10px] md:text-xs font-bold text-amber-600 dark:text-amber-400">
-                                                            +{{ $att['daily_coins'] }}
+                                                            +{{ $attendanceMap[$student->id][$lesson->id]['daily_coins'] }}
                                                         </div>
                                                     @endif
 
@@ -302,7 +279,7 @@
                                         @endforeach
 
                                         {{-- Jami coin --}}
-                                        <td class="px-2 md:px-3 py-2 md:py-3 text-center bg-purple-50 dark:bg-purple-900/10 sticky right-0 z-10 border-l border-gray-200 dark:border-gray-700">
+                                       <td class="px-2 md:px-3 py-2 md:py-3 text-center sticky right-0 z-10 border-l border-gray-200 dark:border-gray-700 bg-purple-50 dark:bg-purple-950 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/40">
                                             <div class="text-base md:text-xl font-black text-purple-600 dark:text-purple-400">
                                                 {{ $studentTotalCoins[$student->id] ?? 0 }}
                                             </div>
@@ -388,7 +365,6 @@
         // ----------------------------------------------------------------
         function initAttendance() {
             document.querySelectorAll('.attendance-status').forEach(radio => {
-                // Sahifa yuklanganda checked holatini dataset ga yozamiz
                 if (radio.checked) radio.dataset.checked = 'true';
 
                 radio.addEventListener('click', function () {
@@ -397,11 +373,8 @@
                     const allInGroup = document.querySelectorAll(`input[name="${this.name}"]`);
 
                     if (wasChecked) {
-                        // Qayta bosish = bekor qilish
                         this.checked          = false;
                         this.dataset.checked  = 'false';
-
-                        // Bo'sh hidden input — server ga status=''-ni yuborish uchun
                         getOrCreateHiddenStatus(cell, this.name).value = '';
                         updateHwActContainer(cell, null);
                     } else {
@@ -532,12 +505,10 @@
             table.scrollTo({ left: Math.max(0, pos), behavior: 'smooth' });
         }
 
-        // Modal backdrop click
         document.getElementById('lateModal').addEventListener('click', e => {
             if (e.target === document.getElementById('lateModal')) closeLateModal();
         });
 
-        // Enter tugmasi
         document.getElementById('lateMinutesInput').addEventListener('keypress', e => {
             if (e.key === 'Enter') confirmLateMinutes();
         });

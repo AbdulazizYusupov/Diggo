@@ -243,6 +243,54 @@ return [
             'string' => 'Notes must be a string.',
             'max'    => 'Notes may not be longer than 1000 characters.',
         ],
+        'group_id' => [
+            'required' => 'Group is required.',
+            'integer'  => 'Group must be a valid number.',
+            'exists'   => 'The selected group does not exist.',
+        ],
+
+        'attendances' => [
+            'required' => 'Attendance data is required.',
+            'array'    => 'Attendance must be a list.',
+            'min'      => 'At least one attendance entry is required.',
+        ],
+
+        'student_id' => [
+            'integer' => 'Student ID must be a valid number.',
+            'exists'  => 'The selected student does not exist.',
+        ],
+
+        'lesson_id' => [
+            'integer' => 'Lesson ID must be a valid number.',
+            'exists'  => 'The selected lesson does not exist.',
+        ],
+
+        'status' => [
+            'in' => 'Status must be one of: present, late, absent, excused.',
+        ],
+
+        'late_minutes' => [
+            'integer' => 'Late minutes must be a whole number.',
+            'min'     => 'Late minutes cannot be negative.',
+            'max'     => 'Late minutes cannot exceed 120.',
+        ],
+
+        'homework_score' => [
+            'integer' => 'Homework score must be a whole number.',
+            'min'     => 'Homework score cannot be negative.',
+            'max'     => 'Homework score cannot exceed 3.',
+        ],
+
+        'activity_score' => [
+            'integer' => 'Activity score must be a whole number.',
+            'min'     => 'Activity score cannot be negative.',
+            'max'     => 'Activity score cannot exceed 3.',
+        ],
+
+        'notes' => [
+            'string' => 'Notes must be text.',
+            'max'    => 'Notes cannot exceed 500 characters.',
+        ],
     ],
 
     'attributes' => [
@@ -256,6 +304,15 @@ return [
         'installment_number' => 'Installment Number',
         'total_installments' => 'Total Installments',
         'notes'              => 'Notes',
+        'group_id'       => 'Group',
+        'attendances'    => 'Attendances',
+        'student_id'     => 'Student',
+        'lesson_id'      => 'Lesson',
+        'status'         => 'Status',
+        'late_minutes'   => 'Late minutes',
+        'homework_score' => 'Homework score',
+        'activity_score' => 'Activity score',
+        'notes'          => 'Notes',
     ],
 
 ];
