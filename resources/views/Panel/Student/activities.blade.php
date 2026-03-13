@@ -250,6 +250,7 @@
                         @endif
                     </div>
 
+
                     {{-- ── CARD BODY ── --}}
                     <div class="flex flex-col flex-1 p-4 gap-3">
 
@@ -306,7 +307,24 @@
                                     {{ $activity->date->diffForHumans() }}
                                 </span>
                             </div>
-
+                            @if ($activity->start_time)
+                                <div
+                                    class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg {{ $activity->is_today ? 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20' : 'bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20' }}">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0 {{ $activity->is_today ? 'text-emerald-500' : 'text-indigo-500' }}"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span
+                                        class="text-xs font-black {{ $activity->is_today ? 'text-emerald-700 dark:text-emerald-400' : 'text-indigo-700 dark:text-indigo-400' }}">
+                                        {{ \Carbon\Carbon::parse($activity->start_time)->format('H:i') }} da boshlanadi
+                                    </span>
+                                    @if ($activity->is_today)
+                                        <span
+                                            class="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse flex-shrink-0"></span>
+                                    @endif
+                                </div>
+                            @endif
                             {{-- Due time --}}
                             @if ($activity->due_time)
                                 <div

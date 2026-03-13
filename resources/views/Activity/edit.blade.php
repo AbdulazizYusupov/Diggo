@@ -198,7 +198,10 @@
                         class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 lg:p-8 space-y-5">
                         <h2 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Vaqt va
                             ball</h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+                            {{-- 1. Sana --}}
                             <div>
                                 <label for="date"
                                     class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
@@ -211,10 +214,28 @@
                                     <p class="mt-1.5 text-sm text-rose-500">{{ $message }}</p>
                                 @enderror
                             </div>
+
+                            {{-- 2. Boshlanish vaqti (YANGI) --}}
+                            <div>
+                                <label for="start_time"
+                                    class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                    Boshlanish vaqti
+                                    <span class="text-gray-400 text-xs font-normal">(ixtiyoriy)</span>
+                                </label>
+                                <input type="time" name="start_time" id="start_time"
+                                    value="{{ old('start_time', $activity->start_time ? \Carbon\Carbon::parse($activity->start_time)->format('H:i') : '') }}"
+                                    class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('start_time') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none">
+                                @error('start_time')
+                                    <p class="mt-1.5 text-sm text-rose-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- 3. Topshirish vaqti --}}
                             <div>
                                 <label for="due_time"
                                     class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                    Topshirish vaqti <span class="text-gray-400 text-xs font-normal">(ixtiyoriy)</span>
+                                    Topshirish vaqti
+                                    <span class="text-gray-400 text-xs font-normal">(ixtiyoriy)</span>
                                 </label>
                                 <input type="time" name="due_time" id="due_time"
                                     value="{{ old('due_time', $activity->due_time ? \Carbon\Carbon::parse($activity->due_time)->format('H:i') : '') }}"
@@ -223,6 +244,8 @@
                                     <p class="mt-1.5 text-sm text-rose-500">{{ $message }}</p>
                                 @enderror
                             </div>
+
+                            {{-- 4. Maksimal coin --}}
                             <div>
                                 <label for="max_coins"
                                     class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
@@ -237,16 +260,18 @@
                                     <p class="mt-1.5 text-sm text-rose-500">{{ $message }}</p>
                                 @enderror
                             </div>
+
                         </div>
                     </div>
 
                     <!-- ══════════════════════════════════════════════════
-                             FAYLLAR — Image + Document with live preview
-                        ═══════════════════════════════════════════════════════ -->
+                                 FAYLLAR — Image + Document with live preview
+                            ═══════════════════════════════════════════════════════ -->
                     <div
                         class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 lg:p-8 space-y-6">
                         <h2 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Fayllar
-                            <span class="normal-case font-normal">(ixtiyoriy)</span></h2>
+                            <span class="normal-case font-normal">(ixtiyoriy)</span>
+                        </h2>
 
                         {{-- ── IMAGE ── --}}
                         <div>

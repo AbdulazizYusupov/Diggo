@@ -25,6 +25,7 @@ class Activity extends Model
         'image',
         'file',
         'date',
+        'start_time',
         'due_time',
         'max_coins',
         'is_required',

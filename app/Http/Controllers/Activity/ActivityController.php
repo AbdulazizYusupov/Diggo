@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ActivityController extends Controller
 {
@@ -125,7 +126,17 @@ class ActivityController extends Controller
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'file'        => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,zip,txt|max:10240',
             'date'        => 'required|date',
-            'due_time'    => 'nullable|date_format:H:i',
+            'start_time' => [
+                'date_format:H:i',
+                Rule::requiredIf(fn() => in_array($request->type, ['exam', 'competition'])),
+                'nullable',
+            ],
+            'due_time' => [
+                'date_format:H:i',
+                Rule::requiredIf(fn() => in_array($request->type, ['exam', 'competition'])),
+                'nullable',
+                'after:start_time',
+            ],
             'max_coins'   => 'required|integer|min:0|max:1000',
             'is_required' => 'boolean',
         ]);
@@ -204,7 +215,17 @@ class ActivityController extends Controller
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'file'        => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,zip,txt|max:10240',
             'date'        => 'required|date',
-            'due_time'    => 'nullable|date_format:H:i',
+            'start_time' => [
+                'date_format:H:i',
+                Rule::requiredIf(fn() => in_array($request->type, ['exam', 'competition'])),
+                'nullable',
+            ],
+            'due_time' => [
+                'date_format:H:i',
+                Rule::requiredIf(fn() => in_array($request->type, ['exam', 'competition'])),
+                'nullable',
+                'after:start_time',
+            ],
             'max_coins'   => 'required|integer|min:0|max:1000',
             'is_required' => 'boolean',
         ]);

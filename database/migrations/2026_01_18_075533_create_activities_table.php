@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->string('file')->nullable();
             $table->date('date')->index();
+            $table->time('start_time')->nullable();
             $table->time('due_time')->nullable();
             $table->integer('max_coins')->default(0);
             $table->boolean('is_required')->default(false);
