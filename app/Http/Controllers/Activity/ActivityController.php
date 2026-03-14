@@ -18,82 +18,86 @@ class ActivityController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Activity::with(['group.course', 'creator']);
+        $typeLabels = [
+            'homework'    => 'Uyga vazifa',
+            'exam'        => 'Imtihon',
+            'competition' => 'Musobaqa',
+            'project'     => 'Loyiha',
+            'other'       => 'Boshqa',
+        ];
 
-        // Search
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
+        $typeColors = [
+            'exam'        => 'red',
+            'homework'    => 'blue',
+            'competition' => 'purple',
+            'project'     => 'green',
+            'other'       => 'gray',
+        ];
 
-        // Filter by type
-        if ($request->filled('type')) {
-            $query->where('type', $request->type);
-        }
+        $statusConfig = [
+            'draft'     => ['label' => 'Qoralama',    'class' => 'bg-gray-100 text-gray-700 dark:bg-gray-700/40 dark:text-gray-300'],
+            'active'    => ['label' => 'Faol',        'class' => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400'],
+            'completed' => ['label' => 'Tugallangan', 'class' => 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400'],
+            'cancelled' => ['label' => 'Bekor',       'class' => 'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400'],
+        ];
 
-        // Filter by status
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        // Filter by group
-        if ($request->filled('group_id')) {
-            $query->where('group_id', $request->group_id);
-        }
-
-        // Filter by is_required
-        if ($request->filled('is_required')) {
-            $query->where('is_required', (bool) $request->is_required);
-        }
-
-        // Filter by date range
-        if ($request->filled('date_from')) {
-            $query->whereDate('date', '>=', $request->date_from);
-        }
-        if ($request->filled('date_to')) {
-            $query->whereDate('date', '<=', $request->date_to);
-        }
-
-        // Sort
-        $sortField = $request->get('sort', 'date');
-        $sortDirection = $request->get('direction', 'desc');
+        // ── Allowed sort fields (whitelist — prevents SQL injection) ──────────
         $allowedSorts = ['name', 'date', 'type', 'status', 'max_coins', 'created_at'];
-        if (!in_array($sortField, $allowedSorts)) {
-            $sortField = 'date';
-        }
-        $query->orderBy($sortField, $sortDirection === 'asc' ? 'asc' : 'desc');
+        $sortField     = in_array($request->get('sort'), $allowedSorts)
+            ? $request->get('sort')
+            : 'date';
+        $sortDirection = $request->get('direction') === 'asc' ? 'asc' : 'desc';
 
-        $activities = $query->paginate(15)->withQueryString();
+        // ── Filtered + sorted + paginated query ───────────────────────────────
+        $activities = Activity::with(['group.course', 'creator'])
+            ->when(
+                $request->filled('search'),
+                fn($q) => $q->where(function ($inner) use ($request) {
+                    $inner->where('name', 'like', '%' . $request->search . '%')
+                        ->orWhere('description', 'like', '%' . $request->search . '%');
+                })
+            )
+            ->when($request->filled('type'),        fn($q) => $q->where('type', $request->type))
+            ->when($request->filled('status'),      fn($q) => $q->where('status', $request->status))
+            ->when($request->filled('group_id'),    fn($q) => $q->where('group_id', $request->group_id))
+            ->when($request->filled('is_required'), fn($q) => $q->where('is_required', (bool) $request->is_required))
+            ->when($request->filled('date_from'),   fn($q) => $q->whereDate('date', '>=', $request->date_from))
+            ->when($request->filled('date_to'),     fn($q) => $q->whereDate('date', '<=', $request->date_to))
+            ->orderBy($sortField, $sortDirection)
+            ->paginate(15)
+            ->withQueryString();
 
-        // Statistics
-        $totalActivities = Activity::count();
-        $homeworkCount   = Activity::where('type', 'homework')->count();
-        $examCount       = Activity::where('type', 'exam')->count();
-        $avgCoins        = Activity::avg('max_coins');
-        $activeCount     = Activity::where('status', 'active')->count();
+        // ── Stats — ONE query instead of 5 separate count() calls ─────────────
+        $stats = Activity::selectRaw('
+        COUNT(*)                                            AS total,
+        SUM(CASE WHEN status = "active"   THEN 1 ELSE 0 END) AS active_count,
+        SUM(CASE WHEN type   = "homework" THEN 1 ELSE 0 END) AS homework_count,
+        SUM(CASE WHEN type   = "exam"     THEN 1 ELSE 0 END) AS exam_count,
+        COALESCE(AVG(max_coins), 0)                          AS avg_coins
+    ')->first();
 
+        // ── Groups for filter dropdown ─────────────────────────────────────────
         $groups = Group::where('is_active', true)
             ->with('course')
             ->orderBy('name')
             ->get();
 
-        $types    = ['homework', 'exam', 'competition', 'project', 'other'];
-        $statuses = ['draft', 'active', 'completed', 'cancelled'];
-
-        return view('Activity.index', compact(
-            'activities',
-            'groups',
-            'types',
-            'statuses',
-            'totalActivities',
-            'homeworkCount',
-            'examCount',
-            'avgCoins',
-            'activeCount'
-        ));
+        return view('Activity.index', [
+            'activities'      => $activities,
+            'groups'          => $groups,
+            'types'           => array_keys($typeLabels),
+            'statuses'        => array_keys($statusConfig),
+            'typeLabels'      => $typeLabels,
+            'typeColors'      => $typeColors,
+            'statusConfig'    => $statusConfig,
+            'totalActivities' => $stats->total,
+            'activeCount'     => $stats->active_count,
+            'homeworkCount'   => $stats->homework_count,
+            'examCount'       => $stats->exam_count,
+            'avgCoins'        => $stats->avg_coins,
+            'sortField'       => $sortField,
+            'sortDirection'   => $sortDirection,
+        ]);
     }
 
     /**
