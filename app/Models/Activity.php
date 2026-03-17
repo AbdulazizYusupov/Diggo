@@ -29,6 +29,7 @@ class Activity extends Model
         'due_time',
         'max_coins',
         'is_required',
+        'rank'
     ];
 
     /**

@@ -557,68 +557,29 @@
                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                         Faoliyat <span class="text-rose-500">*</span>
                     </label>
-                    <div class="relative" id="activitySelectContainer">
-                        <div onclick="toggleActivityDropdown()"
-                            class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer group hover:border-emerald-500 transition-all">
-                            <span id="selectedActivityLabel" class="text-sm text-gray-500 dark:text-gray-400">
-                                Faoliyatni tanlang
-                            </span>
-                            <input type="hidden" name="activity_id" id="activity_id_input" required>
-                            <svg class="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-transform"
-                                id="activityArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="relative">
+                        <select name="activity_id" id="activity_id_input" required
+                            class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-700 dark:text-gray-200 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all appearance-none">
+                            <option value="" disabled selected>Faoliyatni tanlang</option>
+                            @foreach ($activities as $activity)
+                                <option value="{{ $activity->id }}">
+                                    {{-- Barcha ma'lumotlar bitta qatorda --}}
+                                    {{ $activity->name }} |
+                                    Turi: {{ ucfirst($activity->type) }} |
+                                    Sana: {{ $activity->date ? $activity->date->format('d.m.Y') : 'Sana yo\'q' }} |
+                                    Max: {{ $activity->max_coins }}
+                                    @if ($activity->group)
+                                        | Guruh: {{ $activity->group->name }}
+                                    @endif
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 9l-7 7-7-7" />
                             </svg>
-                        </div>
-
-                        <div id="activityDropdownMenu"
-                            class="hidden absolute z-[160] w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden">
-                            <div class="p-2 border-b dark:border-gray-700">
-                                <input type="text" id="activitySearchInput" oninput="filterActivities()"
-                                    placeholder="Faoliyatni qidirish..."
-                                    class="w-full px-3 py-2 bg-gray-100 dark:bg-slate-900 dark:text-white border-none rounded-lg text-sm focus:ring-1 focus:ring-emerald-500 outline-none">
-                            </div>
-                            <div class="max-h-60 overflow-y-auto custom-scrollbar">
-                                @foreach ($activities as $activity)
-                                    {{-- selectActivity funksiyasi argumentlari o'zgarmadi --}}
-                                    <div onclick="selectActivity('{{ $activity->id }}', '{{ $activity->name }}', '{{ $activity->max_coins }}')"
-                                        class="activity-item px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 cursor-pointer border-b border-gray-50 dark:border-gray-700/50 last:border-none"
-                                        data-activity-name="{{ $activity->name }}"
-                                        data-activity-type="{{ $activity->type }}">
-
-                                        <div class="flex justify-between items-start">
-                                            <div class="flex-1">
-                                                <div class="font-bold text-emerald-600 dark:text-emerald-400">
-                                                    {{ $activity->name }}
-                                                </div>
-                                                <div class="text-[11px] text-gray-400 mt-0.5 flex items-center gap-2">
-                                                    <span
-                                                        class="bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-[10px]">
-                                                        {{ ucfirst($activity->type) }}
-                                                    </span>
-                                                    <span>Max: {{ $activity->max_coins }} coin</span>
-                                                </div>
-                                            </div>
-
-                                            {{-- Faqat vizual qo'shimcha: Sana va Guruh --}}
-                                            <div class="text-right ml-2 shrink-0">
-                                                <div class="text-[10px] font-semibold text-gray-500 dark:text-gray-400">
-                                                    {{ $activity->date ? $activity->date->format('d.m.Y') : 'Sana yo\'q' }}
-                                                </div>
-                                                @if ($activity->group)
-                                                    <div
-                                                        class="text-[9px] text-emerald-500/80 mt-1 uppercase tracking-tighter">
-                                                        {{ $activity->group->name }}
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                            <div id="noActivityFound" class="hidden p-4 text-center text-sm text-gray-500">
-                                Faoliyat topilmadi...
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -695,29 +656,40 @@
                         @foreach ($students as $student)
                             <label
                                 class="student-checkbox-item flex items-center gap-3 p-3 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 cursor-pointer border-b border-gray-100 dark:border-gray-700/50 last:border-none transition-all"
-                                data-student-name="{{ $student->user->name ?? 'N/A' }}"
-                                data-student-group="{{ $student->group_id ?? '' }}">
+                                {{-- Qidiruv uchun to'liq ism va guruhlarni qo'shamiz --}}
+                                data-student-name="{{ strtolower(($student->user->surname ?? '') . ' ' . ($student->user->name ?? '') . ' ' . ($student->user->middle_name ?? '')) }}"
+                                {{-- Many-to-many bo'lgani uchun guruh ID larini massiv ko'rinishida saqlaymiz --}}
+                                data-student-groups="{{ json_encode($student->groups->pluck('id')) }}">
+
                                 <input type="checkbox" name="student_ids[]" value="{{ $student->id }}"
                                     onchange="updateSelectedCount()"
                                     class="w-5 h-5 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+
                                 <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-2">
+                                    <div class="flex items-center gap-3">
+                                        {{-- Avatar --}}
                                         <div
-                                            class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <span class="text-white font-bold text-xs">
-                                                {{ substr($student->user->name ?? 'N', 0, 2) }}
-                                            </span>
+                                            class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm text-white font-black text-xs uppercase">
+                                            {{ Str::limit($student->user->surname ?? 'S', 1, '') }}{{ Str::limit($student->user->name ?? 'N', 1, '') }}
                                         </div>
+
+                                        {{-- Ma'lumotlar --}}
                                         <div class="flex-1 min-w-0">
-                                            <p
-                                                class="text-sm font-bold text-gray-900 dark:text-white truncate student-name-text">
-                                                {{ $student->user->name ?? 'N/A' }}
+                                            <p class="text-sm font-bold text-gray-900 dark:text-white truncate">
+                                                {{ $student->user->surname ?? '' }} {{ $student->user->name ?? '' }}
+                                                {{ $student->user->middle_name ?? '' }}
                                             </p>
-                                            @if ($student->group)
-                                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                                    {{ $student->group->name }}
-                                                </p>
-                                            @endif
+
+                                            <div class="flex flex-wrap items-center gap-1 mt-0.5">
+                                                @forelse ($student->groups as $group)
+                                                    <span
+                                                        class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-100 dark:border-blue-800">
+                                                        {{ $group->name }}
+                                                    </span>
+                                                @empty
+                                                    <span class="text-[10px] text-amber-500 italic">Guruhsiz</span>
+                                                @endforelse
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -745,15 +717,43 @@
 
                     <div>
                         <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                            Boshlanish rangi
-                            <span class="text-xs font-normal text-gray-500">(ixtiyoriy)</span>
+                            Natija darajasi (Rank)
                         </label>
-                        <input type="number" name="start_rank" min="1"
-                            class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white placeholder-gray-400 transition-all outline-none"
-                            placeholder="Masalan: 1">
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                            Ranglar avtomatik ketma-ketlikda beriladi
-                        </p>
+                        <div class="relative">
+                            <select name="start_rank"
+                                class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all appearance-none cursor-pointer">
+
+                                {{-- Default holat: O'rin berilmaydi --}}
+                                <option value="" selected>O'rin berilmasin (Oddiy ishtirokchi)</option>
+
+                                {{-- Faqat asosiy g'oliblar --}}
+                                <option value="1">🥇 1-o'rin (G'olib)</option>
+                                <option value="2">🥈 2-o'rin (Sovrindor)</option>
+                                <option value="3">🥉 3-o'rin (Sovrindor)</option>
+                            </select>
+
+                            <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div
+                            class="mt-2 flex items-start gap-2 p-2 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-100 dark:border-amber-800">
+                            <svg class="w-4 h-4 text-amber-600 mt-0.5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p class="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
+                                Agar yuqoridan o'rin tanlasangiz, tanlangan talabalarga <strong>ketma-ket</strong> o'rin
+                                beriladi.
+                                Tanlamasangiz, ular shunchaki ball (coin) olishadi.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
@@ -808,52 +808,7 @@
         <script>
             let maxCoins = 0;
 
-            // Activity dropdown functions
-            function toggleActivityDropdown() {
-                const menu = document.getElementById('activityDropdownMenu');
-                const arrow = document.getElementById('activityArrow');
-                menu.classList.toggle('hidden');
-                arrow.classList.toggle('rotate-180');
-                if (!menu.classList.contains('hidden')) {
-                    document.getElementById('activitySearchInput').focus();
-                }
-            }
 
-            function selectActivity(id, name, max) {
-                document.getElementById('activity_id_input').value = id;
-                document.getElementById('selectedActivityLabel').innerText = name;
-                document.getElementById('selectedActivityLabel').classList.remove('text-gray-500');
-                document.getElementById('selectedActivityLabel').classList.add('text-gray-900', 'dark:text-white',
-                    'font-medium');
-
-                maxCoins = max;
-                document.getElementById('maxCoinsValue').innerText = max;
-                document.getElementById('maxCoinsHint').classList.remove('hidden');
-
-                toggleActivityDropdown();
-            }
-
-            function filterActivities() {
-                const input = document.getElementById('activitySearchInput');
-                const filter = input.value.toLowerCase();
-                const items = document.querySelectorAll('.activity-item');
-                const noResult = document.getElementById('noActivityFound');
-                let hasMatch = false;
-
-                items.forEach(item => {
-                    const name = item.dataset.activityName.toLowerCase();
-                    const type = item.dataset.activityType.toLowerCase();
-
-                    if (name.includes(filter) || type.includes(filter)) {
-                        item.style.display = '';
-                        hasMatch = true;
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-
-                noResult.classList.toggle('hidden', hasMatch);
-            }
 
             // Student functions
             function filterStudentsInModal() {
@@ -880,22 +835,42 @@
             function filterStudentsByGroup() {
                 const groupId = document.getElementById('groupFilter').value;
                 const items = document.querySelectorAll('.student-checkbox-item');
+                const noResult = document.getElementById('noStudentsFound');
+                let hasVisible = false;
 
                 items.forEach(item => {
-                    if (!groupId || item.dataset.studentGroup === groupId) {
+                    // data-student-groups ichidagi JSON ni o'qiymiz (massiv holatida)
+                    let studentGroups = [];
+                    try {
+                        studentGroups = JSON.parse(item.dataset.studentGroups || '[]');
+                    } catch (e) {
+                        studentGroups = [];
+                    }
+
+                    // Agar guruh tanlanmagan bo'lsa hamma chiqadi
+                    // Agar tanlangan bo'lsa, u massiv ichida bor-yo'qligi tekshiriladi
+                    if (!groupId || studentGroups.includes(parseInt(groupId))) {
                         item.style.display = '';
+                        hasVisible = true;
                     } else {
                         item.style.display = 'none';
+                        // Agar yashirilayotgan talaba belgilangan bo'lsa, uni tanlovdan olib tashlash
+                        // ixtiyoriy: item.querySelector('input').checked = false; 
                     }
                 });
+
+                if (noResult) {
+                    noResult.classList.toggle('hidden', hasVisible);
+                }
 
                 updateSelectedCount();
             }
 
             function selectAllStudents() {
-                const checkboxes = document.querySelectorAll(
+                // Faqat display:none bo'lmagan checkboxlarni topamiz
+                const visibleCheckboxes = document.querySelectorAll(
                     '.student-checkbox-item:not([style*="display: none"]) input[type="checkbox"]');
-                checkboxes.forEach(cb => cb.checked = true);
+                visibleCheckboxes.forEach(cb => cb.checked = true);
                 updateSelectedCount();
             }
 
@@ -905,9 +880,23 @@
                 updateSelectedCount();
             }
 
+            // JavaScript qismiga qo'shish uchun:
             function updateSelectedCount() {
-                const checkedBoxes = document.querySelectorAll('input[name="student_ids[]"]:checked');
-                document.getElementById('selectedStudentsCount').innerText = checkedBoxes.length;
+                const items = document.querySelectorAll('.student-checkbox-item');
+                let count = 0;
+
+                items.forEach(item => {
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    if (checkbox.checked) {
+                        // Tanlangan bo'lsa stilni o'zgartiramiz
+                        item.classList.add('bg-emerald-50', 'border-emerald-200', 'dark:bg-emerald-500/10');
+                        count++;
+                    } else {
+                        item.classList.remove('bg-emerald-50', 'border-emerald-200', 'dark:bg-emerald-500/10');
+                    }
+                });
+
+                document.getElementById('selectedStudentsCount').innerText = count;
             }
 
             function closeCreateModal() {
@@ -925,14 +914,6 @@
                 filterStudentsInModal();
             }
 
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                const container = document.getElementById('activitySelectContainer');
-                if (container && !container.contains(e.target)) {
-                    document.getElementById('activityDropdownMenu').classList.add('hidden');
-                    document.getElementById('activityArrow').classList.remove('rotate-180');
-                }
-            });
 
             // Form validation
             document.getElementById('bulkResultForm').addEventListener('submit', function(e) {
@@ -953,13 +934,26 @@
         </script>
         <script>
             document.addEventListener("DOMContentLoaded", function() {
-                new TomSelect("#groupFilter", {
+                // Guruh filtri uchun
+                const groupSelect = new TomSelect("#groupFilter", {
                     plugins: ['dropdown_input'],
                     create: false,
                     allowEmptyOption: true,
                     placeholder: "Guruhni tanlang...",
                     onChange: function(value) {
-                        filterStudentsByGroup();
+                        filterStudentsByGroup(); // Guruh o'zgarganda qidirish
+                    }
+                });
+
+                // Faoliyat tanlash uchun
+                const activitySelect = new TomSelect("#activity_id_input", {
+                    plugins: ['dropdown_input'],
+                    create: false,
+                    allowEmptyOption: true,
+                    placeholder: "Faoliyatni tanlang...",
+                    onChange: function(value) {
+                        // Faoliyat o'zgarganda talabalarni emas, max_coins ni yangilash kerak bo'lishi mumkin
+                        // filterStudentsByGroup(); // Buni o'chirib tursangiz ham bo'ladi
                     }
                 });
             });

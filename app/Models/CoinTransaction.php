@@ -40,4 +40,8 @@ class CoinTransaction extends Model
     {
         return $this->belongsTo(Activity::class);
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

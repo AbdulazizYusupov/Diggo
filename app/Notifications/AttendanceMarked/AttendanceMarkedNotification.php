@@ -14,7 +14,6 @@ class AttendanceMarkedNotification extends Notification implements ShouldQueue
     /**
      * Create a new notification instance.
      */
-    use Queueable;
 
     public function __construct(
         private readonly string $status,

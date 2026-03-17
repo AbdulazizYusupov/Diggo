@@ -94,7 +94,7 @@ class ActivityResultNotification extends Notification
             'activity_type' => $this->activityType,
             'group'        => $this->groupName,
             'date'         => $this->activityDate,
-            'action_url'   => '/student/activity-results',
+            'action_url'   => '/student/coins',
         ];
     }
 }

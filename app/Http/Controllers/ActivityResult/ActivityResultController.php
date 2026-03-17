@@ -5,10 +5,12 @@ namespace App\Http\Controllers\ActivityResult;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\ActivityResult;
+use App\Models\CoinTransaction;
 use App\Models\Group;
 use App\Models\Student;
 use App\Notifications\ActivityResult\ActivityResultNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ActivityResultController extends Controller
@@ -113,8 +115,9 @@ class ActivityResultController extends Controller
         return view('ActivityResult.create', compact('activities', 'students', 'selectedActivity'));
     }
 
-    public function store(Request $request)
+    public function store1(Request $request)
     {
+
         $validated = $request->validate([
             'activity_id' => 'required|exists:activities,id',
             'student_ids' => 'required|array|min:1',
@@ -127,7 +130,6 @@ class ActivityResultController extends Controller
         DB::beginTransaction();
         try {
             $activity = Activity::findOrFail($validated['activity_id']);
-
             // Maksimal tangalar sonini tekshirish
             if ($validated['earned_coins'] > $activity->max_coins) {
                 return redirect()->back()
@@ -138,7 +140,6 @@ class ActivityResultController extends Controller
             $createdCount = 0;
             $skippedCount = 0;
             $currentRank = $validated['start_rank'] ?? null;
-
             foreach ($validated['student_ids'] as $studentId) {
                 // Avval ushbu talaba bu faoliyatda qatnashganini tekshirish
                 $exists = ActivityResult::where('activity_id', $validated['activity_id'])
@@ -164,6 +165,7 @@ class ActivityResultController extends Controller
                 Student::where('id', $studentId)->increment('coins', $validated['earned_coins']);
 
                 $createdCount++;
+                dd($activity);
                 $student = Student::findOrFail($studentId);
                 $student->notify(new ActivityResultNotification(
                     activityName: $activity->name,
@@ -175,7 +177,6 @@ class ActivityResultController extends Controller
                     groupName: $activity->group->name,
                     note: $validated['note'] ?? null,
                 ));
-                // Agar rank (o'rin) berilgan bo'lsa, uni oshirib borish
                 if ($currentRank !== null) {
                     $currentRank++;
                 }
@@ -196,6 +197,190 @@ class ActivityResultController extends Controller
                 ->with('error', 'Xatolik yuz berdi: ' . $e->getMessage())
                 ->withInput();
         }
+    }
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'activity_id'   => 'required|integer|exists:activities,id',
+            'student_ids'   => 'required|array|min:1',
+            'student_ids.*' => 'required|integer|exists:students,id',
+            'earned_coins'  => 'required|integer|min:0',
+            'start_rank'    => 'nullable|integer|min:1',
+            'note'          => 'nullable|string|max:1000',
+        ]);
+
+        $requestedStudentIds = array_unique($validated['student_ids']);
+
+        DB::beginTransaction();
+
+        try {
+            /** @var Activity $activity */
+            $activity = Activity::with('group')->lockForUpdate()->findOrFail($validated['activity_id']);
+
+            // ── 1. Tangalar chegarasini tekshirish ──
+            if ($validated['earned_coins'] > $activity->max_coins) {
+                DB::rollBack();
+
+                return redirect()->back()
+                    ->with('error', "Kiritilgan tangalar maksimal chegaradan oshib ketdi! Maksimal: {$activity->max_coins} tanga.")
+                    ->withInput();
+            }
+
+            // ── 2. Allaqachon natija kiritilgan talabalarni aniqlash (bitta so'rov) ──
+            $alreadyRecordedSet = array_flip(
+                ActivityResult::where('activity_id', $activity->id)
+                    ->whereIn('student_id', $requestedStudentIds)
+                    ->pluck('student_id')
+                    ->all()
+            );
+
+            // ── 3. Yangi va takroriy talabalarni ajratish ──
+            $newStudentIds     = [];
+            $skippedStudentIds = [];
+
+            foreach ($requestedStudentIds as $studentId) {
+                if (isset($alreadyRecordedSet[$studentId])) {
+                    $skippedStudentIds[] = $studentId;
+                } else {
+                    $newStudentIds[] = $studentId;
+                }
+            }
+
+            // ── 4. Barchasi takroriy bo'lsa ──
+            if (empty($newStudentIds)) {
+                DB::rollBack();
+
+                $count = count($skippedStudentIds);
+                return redirect()->back()
+                    ->with('warning', "Barcha {$count} ta talaba bu faoliyatda allaqachon qatnashgan.")
+                    ->withInput();
+            }
+
+            // ── 5. ActivityResult — bulk insert ──
+            $now         = now();
+            $currentRank = isset($validated['start_rank']) ? (int) $validated['start_rank'] : null;
+            $resultRows  = [];
+            // Notification uchun rank snapshot saqlash (insert dan keyin rank o'zgaradi)
+            $rankSnapshot = [];
+
+            foreach ($newStudentIds as $studentId) {
+                $resultRows[] = [
+                    'activity_id'  => $activity->id,
+                    'student_id'   => $studentId,
+                    'earned_coins' => $validated['earned_coins'],
+                    'rank'         => $currentRank,
+                    'note'         => $validated['note'] ?? null,
+                    'created_at'   => $now,
+                    'updated_at'   => $now,
+                ];
+
+                // Har bir talaba uchun rank ni eslab qolish
+                $rankSnapshot[$studentId] = $currentRank;
+
+                if ($currentRank !== null) {
+                    $currentRank++;
+                }
+            }
+
+            ActivityResult::insert($resultRows);
+
+            // ── 6. Talabalar balansini yangilash va yangilangan balanslarni olish ──
+            // Avval increment, so'ng yangilangan qiymatlarni bitta so'rovda yuklash
+            Student::whereIn('id', $newStudentIds)
+                ->increment('coins', $validated['earned_coins']);
+
+            $students = Student::whereIn('id', $newStudentIds)
+                ->with('user')
+                ->get(['id', 'user_id', 'coins'])
+                ->keyBy('id');
+
+            // ── 7. CoinTransaction — bulk insert ──
+            $transactionType = $this->resolveTransactionType($activity->type);
+            $transactionRows = [];
+
+            foreach ($newStudentIds as $studentId) {
+                $balanceAfter = $students[$studentId]->coins ?? 0;
+
+                $transactionRows[] = [
+                    'student_id'       => $studentId,
+                    'user_id'          => Auth::id(),
+                    'activity_id'      => $activity->id,
+                    'coins'            => $validated['earned_coins'],
+                    'type'             => $transactionType,
+                    'description'      => "'{$activity->name}' faoliyati uchun tanga berildi.",
+                    'balance_after'    => $balanceAfter,
+                    'transaction_date' => $now->toDateString(),
+                    'expiry_date'      => null,
+                    'created_at'       => $now,
+                    'updated_at'       => $now,
+                ];
+            }
+
+            CoinTransaction::insert($transactionRows);
+
+            DB::commit();
+
+            // ── 8. Notifications — DB commit dan KEYIN yuboriladi ──
+            // Queue ishlatilgani uchun transaction ichida yuborish shart emas.
+            // Bu yerda Student modellari allaqachon yuklangan, N+1 yo'q.
+            $activityDate = $activity->date?->format('d.m.Y') ?? $now->format('d.m.Y');
+            $groupName    = $activity->group?->name ?? '';
+
+            foreach ($students as $studentId => $student) {
+                if (! $student->user) {
+                    continue;
+                }
+                $student->user->notify(new ActivityResultNotification(
+                    activityName: $activity->name,
+                    activityType: $activity->type,
+                    earnedCoins: $validated['earned_coins'],
+                    maxCoins: $activity->max_coins,
+                    rank: $rankSnapshot[$studentId] ?? null,
+                    activityDate: $activityDate,
+                    groupName: $groupName,
+                    note: $validated['note'] ?? null,
+                ));
+            }
+
+            // ── 9. Muvaffaqiyat xabari ──
+            $createdCount = count($newStudentIds);
+            $skippedCount = count($skippedStudentIds);
+
+            $message = "{$createdCount} ta natija muvaffaqiyatli saqlandi va talabalar hisobiga tangalar qo'shildi!";
+
+            if ($skippedCount > 0) {
+                $message .= " ({$skippedCount} ta takroriy natija o'tkazib yuborildi)";
+            }
+
+            return redirect()->route('activityresults.index')->with('success', $message);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            report($e);
+
+            return redirect()->back()
+                ->with('error', "Xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.")
+                ->withInput();
+        }
+    }
+
+    /**
+     * Activity turini CoinTransaction enum turiga moslashtirish.
+     * coin_transactions.type: participation | homework | exam |
+     *   competition | active_involvement | penalty | bonus | purchase | refund | other
+     */
+    private function resolveTransactionType(string $activityType): string
+    {
+        return match ($activityType) {
+            'homework'           => 'homework',
+            'exam', 'test'       => 'exam',
+            'competition'        => 'competition',
+            'active_involvement',
+            'activity'           => 'active_involvement',
+            'participation'      => 'participation',
+            'bonus'              => 'bonus',
+            'penalty'            => 'penalty',
+            default              => 'other',
+        };
     }
 
     /**

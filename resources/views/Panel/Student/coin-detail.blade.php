@@ -3,7 +3,7 @@
 @section('title', 'Coin tafsiloti')
 
 @section('content')
-<div class="max-w-2xl mx-auto space-y-5">
+<div class="space-y-5">
 
     {{-- Breadcrumb --}}
     <nav class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
