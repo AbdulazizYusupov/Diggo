@@ -237,6 +237,22 @@
                     document.getElementById('cancellation_reason').required = false;
                 }
             });
+            document.addEventListener("DOMContentLoaded", function() {
+                new TomSelect("#group_id", {
+                    plugins: ['dropdown_input'],
+                    create: false,
+                    allowEmptyOption: true,
+                    placeholder: "Guruhni tanlang...",
+                   
+                });
+                new TomSelect("#teacher_id", {
+                    plugins: ['dropdown_input'],
+                    create: false,
+                    allowEmptyOption: true,
+                    placeholder: "Teacherni tanlang...",
+                   
+                });
+            });
         </script>
     @endpush
 @endsection

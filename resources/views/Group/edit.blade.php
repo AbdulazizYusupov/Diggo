@@ -70,12 +70,11 @@
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {{-- Group Name --}}
                             <div class="lg:col-span-2">
-                                <label for="name"
-                                    class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                <label for="name" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                                     Guruh nomi <span class="text-rose-500">*</span>
                                 </label>
-                                <input type="text" name="name" id="name"
-                                    value="{{ old('name', $group->name) }}" required
+                                <input type="text" name="name" id="name" value="{{ old('name', $group->name) }}"
+                                    required
                                     class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl 
                                            focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 
                                            text-gray-900 dark:text-white placeholder-gray-400 
@@ -88,8 +87,7 @@
 
                             {{-- Course --}}
                             <div class="lg:col-span-2">
-                                <label for="cours_id"
-                                    class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                <label for="cours_id" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                                     Kurs <span class="text-rose-500">*</span>
                                 </label>
                                 <select name="cours_id" id="cours_id" required
@@ -112,8 +110,7 @@
 
                             {{-- Capacity --}}
                             <div>
-                                <label for="capacity"
-                                    class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                <label for="capacity" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                                     Sig'im (talabalar soni) <span class="text-rose-500">*</span>
                                 </label>
                                 <input type="number" name="capacity" id="capacity"
@@ -140,8 +137,7 @@
                                         <div
                                             class="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 dark:peer-focus:ring-amber-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-amber-600">
                                         </div>
-                                        <span
-                                            class="ms-3 text-sm font-bold text-gray-900 dark:text-gray-300">Faol</span>
+                                        <span class="ms-3 text-sm font-bold text-gray-900 dark:text-gray-300">Faol</span>
                                     </label>
                                 </div>
                             </div>
@@ -294,4 +290,17 @@
             </div>
         </form>
     </div>
+    @push('scripts')
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                new TomSelect("#cours_id", {
+                    plugins: ['dropdown_input'],
+                    create: false,
+                    allowEmptyOption: true,
+                    placeholder: "Course tanlang...",
+                    
+                });
+            });
+        </script>
+    @endpush
 @endsection

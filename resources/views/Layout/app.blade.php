@@ -11,6 +11,9 @@
     <link rel="canonical" href="{{ url()->current() }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('Icon/graduation.png') }}">
+
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.5.2/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.5.2/dist/js/tom-select.complete.min.js"></script>
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
@@ -172,6 +175,202 @@
 
         .sidebar.collapsed .dropdown-content svg {
             margin-right: 0;
+        }
+
+
+
+
+
+        /* TomSelect base */
+        .ts-wrapper .ts-control {
+            background-color: rgb(30 41 59 / 1);
+            /* slate-800 */
+            border-color: rgb(55 65 81 / 1);
+            /* gray-700 */
+            border-radius: 0.75rem;
+            padding: 0.625rem 1rem;
+            font-size: 0.875rem;
+            color: rgb(255 255 255 / 1);
+            box-shadow: none;
+            min-height: unset;
+        }
+
+        /* Light mode override */
+        :root:not(.dark) .ts-wrapper .ts-control {
+            background-color: rgb(249 250 251 / 1);
+            /* gray-50 */
+            border-color: rgb(229 231 235 / 1);
+            /* gray-200 */
+            color: rgb(17 24 39 / 1);
+            /* gray-900 */
+        }
+
+        .ts-wrapper.focus .ts-control,
+        .ts-wrapper .ts-control:focus-within {
+            outline: none;
+            border-color: rgb(16 185 129 / 1);
+            /* emerald-500 */
+            box-shadow: 0 0 0 2px rgb(16 185 129 / 0.2);
+        }
+
+        /* Dropdown */
+        .ts-wrapper .ts-dropdown {
+            background-color: rgb(30 41 59 / 1);
+            border-color: rgb(55 65 81 / 1);
+            border-radius: 0.75rem;
+            margin-top: 0.5rem;
+            box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.4);
+            overflow: hidden;
+        }
+
+        :root:not(.dark) .ts-wrapper .ts-dropdown {
+            background-color: #ffffff;
+            border-color: rgb(229 231 235 / 1);
+            box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.1);
+        }
+
+        .ts-wrapper .ts-dropdown .ts-dropdown-content {
+            max-height: 15rem;
+            overflow-y: auto;
+        }
+
+        /* Options */
+        .ts-wrapper .ts-dropdown .option {
+            padding: 0.625rem 1rem;
+            font-size: 0.875rem;
+            color: rgb(209 213 219 / 1);
+            /* gray-300 */
+            border-bottom: 1px solid rgb(55 65 81 / 0.5);
+            cursor: pointer;
+            transition: background-color 0.15s;
+        }
+
+        :root:not(.dark) .ts-wrapper .ts-dropdown .option {
+            color: rgb(55 65 81 / 1);
+            /* gray-700 */
+            border-bottom-color: rgb(243 244 246 / 1);
+        }
+
+        .ts-wrapper .ts-dropdown .option:hover,
+        .ts-wrapper .ts-dropdown .option.active {
+            background-color: rgb(16 185 129 / 0.1);
+            /* emerald tint */
+            color: rgb(52 211 153 / 1);
+            /* emerald-400 */
+        }
+
+        :root:not(.dark) .ts-wrapper .ts-dropdown .option:hover,
+        :root:not(.dark) .ts-wrapper .ts-dropdown .option.active {
+            background-color: rgb(236 253 245 / 1);
+            /* emerald-50 */
+            color: rgb(5 150 105 / 1);
+            /* emerald-600 */
+        }
+
+        .ts-wrapper .ts-dropdown .option:last-child {
+            border-bottom: none;
+        }
+
+        /* Search input inside dropdown */
+        .ts-wrapper .ts-dropdown .ts-dropdown-content input,
+        .ts-wrapper .ts-dropdown input.dropdown-input {
+            background-color: rgb(15 23 42 / 1);
+            /* slate-900 */
+            border: none;
+            border-bottom: 1px solid rgb(55 65 81 / 1);
+            padding: 0.5rem 0.75rem;
+            width: 100%;
+            font-size: 0.875rem;
+            color: #fff;
+            outline: none;
+        }
+
+        :root:not(.dark) .ts-wrapper .ts-dropdown .ts-dropdown-content input,
+        :root:not(.dark) .ts-wrapper .ts-dropdown input.dropdown-input {
+            background-color: rgb(243 244 246 / 1);
+            border-bottom-color: rgb(229 231 235 / 1);
+            color: rgb(17 24 39 / 1);
+        }
+
+        /* Caret arrow icon */
+        .ts-wrapper .ts-control::after {
+            border-color: rgb(156 163 175 / 1) transparent transparent;
+        }
+
+        :root:not(.dark) .ts-wrapper .ts-control::after {
+            border-color: rgb(107 114 128 / 1) transparent transparent;
+        }
+
+        /* Selected value text */
+        .ts-wrapper .ts-control .item {
+            color: inherit;
+        }
+
+        /* 1. Fokus holatida asosiy control oq bo'lib ketishini oldini olish */
+        .dark .ts-wrapper.focus .ts-control {
+            background-color: rgb(30 41 59 / 1) !important;
+            /* slate-800 */
+            color: white !important;
+        }
+
+        /* 2. Dropdown ichidagi input atrofidagi oq blokni yo'qotish */
+        .dark .ts-dropdown .dropdown-input-wrap {
+            background-color: rgb(30 41 59 / 1) !important;
+            /* slate-800 */
+            padding: 8px;
+            border-bottom: 1px solid rgb(55 65 81 / 1);
+        }
+
+        /* 3. Dropdown ichidagi haqiqiy input maydoni */
+        .dark .ts-dropdown input.dropdown-input {
+            background-color: rgb(15 23 42 / 1) !important;
+            /* slate-900 */
+            color: white !important;
+            border: 1px solid rgb(55 65 81 / 1) !important;
+            border-radius: 0.5rem;
+        }
+
+        /* 4. Tanlangan element teksti (fokus vaqtida ham) */
+        .dark .ts-wrapper.single.input-active .ts-control .item {
+            color: white !important;
+        }
+
+        /* 5. Placeholder rangi dark mode uchun */
+        .dark .ts-wrapper .ts-control input::placeholder {
+            color: rgb(156 163 175 / 1) !important;
+            /* gray-400 */
+        }
+
+        /* TomSelect sakrash muammosini tuzatish */
+
+        /* 1. Asosiy blok balandligini qat'iy belgilaymiz */
+        .ts-wrapper .ts-control {
+            min-height: 45px !important;
+            /* py-3 ga mos keladigan balandlik */
+            display: flex !important;
+            align-items: center !important;
+            box-sizing: border-box !important;
+        }
+
+        /* 2. Ichidagi input va tanlangan itemlarni bir xil vertikal chiziqqa keltiramiz */
+        .ts-wrapper .ts-control .item,
+        .ts-wrapper .ts-control input {
+            display: flex !important;
+            align-items: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 1 !important;
+            height: 100% !important;
+        }
+
+        /* 3. Placeholder va yozilayotgan tekst sakramasligi uchun */
+        .ts-wrapper.single .ts-control input {
+            vertical-align: middle !important;
+        }
+
+        /* 4. Fokus bo'lganda border qalinlashib balandlikni buzmasligi uchun */
+        .ts-wrapper.focus .ts-control {
+            border-width: 1px !important;
         }
     </style>
 

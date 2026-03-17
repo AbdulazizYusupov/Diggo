@@ -327,55 +327,24 @@
                 {{-- Guruh tanlash --}}
                 <div class="space-y-4">
                     <div class="space-y-1.5">
-                        <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 ml-1">
+                        <label for="school_id" class="text-xs font-semibold text-gray-700 dark:text-gray-300 ml-1">
                             Schoolni tanlang
                         </label>
 
-                        <div class="relative" id="teacherSchoolCustomContainer">
-                            <div onclick="toggleTeacherSchoolDropdown()"
-                                class="w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border @error('school_id') border-red-500 @else border-gray-200 dark:border-gray-600 @enderror rounded-xl cursor-pointer group hover:border-indigo-500 transition-all shadow-sm">
+                        <select name="school_id" id="school_id" @class([
+                            'w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border rounded-xl cursor-pointer text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all shadow-sm',
+                            'border-red-500' => $errors->has('school_id'),
+                            'border-gray-200 dark:border-gray-600' => !$errors->has('school_id'),
+                        ])>
 
-                                <span id="selectedTeacherSchoolLabel" class="text-sm dark:text-white">
-                                    @php
-                                        $currentId = old('school_id', $teacher->school_id ?? '');
-                                        $selectedSchool = ($schools ?? collect())->firstWhere('id', $currentId);
-                                    @endphp
-                                    {{ $selectedSchool ? $selectedSchool->name : 'Schoolni tanlang...' }}
-                                </span>
+                            <option value="">-- Schoolni tanlang --</option>
 
-                                <input type="hidden" name="school_id" id="teacher_school_id_input"
-                                    value="{{ $currentId }}">
-
-                                <svg class="w-4 h-4 text-gray-400 group-hover:text-indigo-500 transition-transform"
-                                    id="teacherSchoolArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </div>
-
-                            <div id="teacherSchoolMenu"
-                                class="hidden absolute z-[170] w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden">
-                                <div class="p-2 border-b dark:border-gray-700 bg-gray-50/30 dark:bg-slate-900/30">
-                                    <input type="text" id="teacherSchoolSearchInput" oninput="filterTeacherSchools()"
-                                        placeholder="School qidirish..."
-                                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none">
-                                </div>
-
-                                <div class="max-h-60 overflow-y-auto custom-scrollbar">
-                                    @foreach ($schools ?? [] as $school)
-                                        <div onclick="selectTeacherSchool('{{ $school->id }}', '{{ $school->name }}')"
-                                            class="teacher-school-item px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 cursor-pointer border-b border-gray-50 dark:border-gray-700/50 last:border-none">
-                                            <span class="font-medium teacher-item-name">{{ $school->name }}</span>
-                                        </div>
-                                    @endforeach
-                                </div>
-
-                                <div id="noTeacherSchoolFound"
-                                    class="hidden p-4 text-center text-xs text-gray-500 italic">
-                                    School topilmadi...
-                                </div>
-                            </div>
-                        </div>
+                            @foreach ($schools ?? [] as $school)
+                                <option value="{{ $school->id }}" @selected(old('school_id', $teacher->school_id ?? '') == $school->id)>
+                                    {{ $school->name }}
+                                </option>
+                            @endforeach
+                        </select>
 
                         @error('school_id')
                             <p class="text-red-500 text-[10px] mt-1 ml-1 font-medium">{{ $message }}</p>
@@ -612,6 +581,15 @@
                 previewBox.classList.add('hidden');
                 uploadLabel.classList.remove('hidden');
             }
+            document.addEventListener("DOMContentLoaded", function() {
+                new TomSelect("#school_id", {
+                    plugins: ['dropdown_input'],
+                    create: false,
+                    allowEmptyOption: true,
+                    placeholder: "Schoolni tanlang...",
+                    
+                });
+            });
         </script>
     @endpush
 @endsection

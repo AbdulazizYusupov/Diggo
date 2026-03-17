@@ -23,7 +23,8 @@
             <input type="hidden" name="amount" id="amount_hidden" value="{{ old('amount') }}">
 
             <!-- Student Selection -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
+            <div
+                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -34,72 +35,37 @@
 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">O'quvchi</label>
+                        <label for="student_id"
+                            class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">O'quvchi</label>
 
-                        <div class="relative" id="studentSearchContainer">
-                            <div onclick="toggleStudentDropdown()"
-                                class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('student_id') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl cursor-pointer group hover:border-emerald-500 transition-all shadow-sm">
+                        <select name="student_id" id="student_id" required
+                            class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('student_id') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl cursor-pointer text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all shadow-sm">
 
-                                <span id="selectedStudentLabel" class="text-sm text-gray-900 dark:text-white">
-                                    -- O'quvchini tanlang --
-                                </span>
+                            <option value="">-- O'quvchini tanlang --</option>
 
-                                <input type="hidden" name="student_id" id="student_id_input"
-                                    value="{{ old('student_id', $selectedStudent->id ?? '') }}">
-
-                                <svg class="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-transform"
-                                    id="studentArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </div>
-
-                            <div id="studentMenu"
-                                class="hidden absolute z-[200] w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden">
-                                <div class="p-2 border-b dark:border-gray-700 bg-gray-50/30 dark:bg-slate-900/30">
-                                    <input type="text" id="studentSearchInput" oninput="filterStudents()"
-                                        placeholder="Ism, familiya, sharif yoki telefon orqali qidirish..."
-                                        class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
-                                </div>
-
-                                <div class="max-h-64 overflow-y-auto custom-scrollbar" id="studentListContainer">
-                                    {{-- FIX #2: e() escape applied to all data-* attributes to prevent XSS --}}
-                                    @foreach ($students as $student)
-                                        <div onclick="selectStudent({{ $student->id }})"
-                                            data-student-id="{{ $student->id }}"
-                                            data-student-surname="{{ e($student->user->surname ?? '') }}"
-                                            data-student-name="{{ e($student->user->name ?? '') }}"
-                                            data-student-middle="{{ e($student->user->middle_name ?? '') }}"
-                                            data-student-phone="{{ e($student->user->phone ?? '') }}"
-                                            data-student-balance="{{ (float) $student->balance }}"
-                                            data-student-commission="{{ (float) ($student->director->commission_percentage ?? 0) }}"
-                                            class="student-item px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 cursor-pointer border-b border-gray-50 dark:border-gray-700/50 last:border-none flex flex-col">
-                                            <span class="font-bold student-fullname">
-                                                {{ trim(($student->user->surname ?? '') . ' ' . ($student->user->name ?? '') . ' ' . ($student->user->middle_name ?? '')) }}
-                                            </span>
-                                            <span class="text-xs text-gray-500 student-phone">{{ $student->user->phone ?? '' }}</span>
-                                        </div>
-                                    @endforeach
-                                </div>
-
-                                <div id="noStudentFound" class="hidden p-5 text-center text-sm text-gray-500">
-                                    O'quvchi topilmadi...
-                                </div>
-                            </div>
-                        </div>
+                            @foreach ($students as $student)
+                                <option value="{{ $student->id }}" @selected(old('student_id', $selectedStudent->id ?? '') == $student->id)
+                                    data-balance="{{ (float) $student->balance }}"
+                                    data-commission="{{ (float) ($student->director->commission_percentage ?? 0) }}"
+                                    data-phone="{{ $student->user->phone ?? '' }}">
+                                    {{ trim(($student->user->surname ?? '') . ' ' . ($student->user->name ?? '') . ' ' . ($student->user->middle_name ?? '')) }}
+                                    ({{ $student->user->phone ?? '' }})
+                                </option>
+                            @endforeach
+                        </select>
 
                         @error('student_id')
                             <p class="mt-1 text-sm text-rose-500">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    <!-- Student Info -->
                     <div id="studentInfo"
                         class="hidden p-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-xl">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">Joriy balans</p>
-                                <p class="text-lg font-bold text-emerald-600 dark:text-emerald-400" id="currentBalance">0 so'm</p>
+                                <p class="text-lg font-bold text-emerald-600 dark:text-emerald-400" id="currentBalance">0
+                                    so'm</p>
                             </div>
                             <div>
                                 <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">Direktor komissiyasi</p>
@@ -109,9 +75,9 @@
                     </div>
                 </div>
             </div>
-
             <!-- Group Selection -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
+            <div
+                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -123,65 +89,34 @@
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Guruh</label>
 
-                    <div class="relative" id="groupSearchContainer">
-                        <div onclick="toggleGroupDropdown()"
-                            class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('group_id') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl cursor-pointer group hover:border-emerald-500 transition-all shadow-sm">
+                    <div class="relative" id="groupSearchContainer" onclick="toggleGroupDropdown()">
+                        <!-- Oddiy select -->
+                        <select name="group_id" id="group_id"
+                            class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('group_id') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl shadow-sm text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none"
+                            required>
+                            <option value="">-- Guruhni tanlang --</option>
+                            @foreach ($groups as $group)
+                                <option value="{{ $group->id }}" {{ old('group_id') == $group->id ? 'selected' : '' }}>
+                                    {{ $group->name }}
+                                    ({{ $group->subject->name ?? "Fan ko'rsatilmagan" }})
+                                    @if ($group->teacher)
+                                        •
+                                        {{ trim(($group->teacher->user->surname ?? '') . ' ' . ($group->teacher->user->name ?? '')) }}
+                                    @endif
+                                </option>
+                            @endforeach
+                        </select>
 
-                            <span id="selectedGroupLabel" class="text-sm text-gray-900 dark:text-white">
-                                -- Guruhni tanlang --
-                            </span>
-
-                            <input type="hidden" name="group_id" id="group_id_input" value="{{ old('group_id') }}">
-
-                            <svg class="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-transform"
-                                id="groupArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </div>
-
-                        <div id="groupMenu"
-                            class="hidden absolute z-[199] w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden">
-                            <div class="p-2 border-b dark:border-gray-700 bg-gray-50/30 dark:bg-slate-900/30">
-                                <input type="text" id="groupSearchInput" oninput="filterGroups()"
-                                    placeholder="Guruh nomi yoki fan orqali qidirish..."
-                                    class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
-                            </div>
-
-                            <div class="max-h-64 overflow-y-auto custom-scrollbar">
-                                {{-- FIX #2: e() escape applied to group data-* attributes as well --}}
-                                @foreach ($groups as $group)
-                                    <div onclick="selectGroup({{ $group->id }})"
-                                        data-group-id="{{ $group->id }}"
-                                        data-group-name="{{ e($group->name) }}"
-                                        data-group-subject="{{ e($group->subject->name ?? '') }}"
-                                        data-group-teacher="{{ e(trim(($group->teacher->user->surname ?? '') . ' ' . ($group->teacher->user->name ?? ''))) }}"
-                                        class="group-item px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 cursor-pointer border-b border-gray-50 dark:border-gray-700/50 last:border-none flex flex-col">
-                                        <span class="font-bold group-name-text">{{ $group->name }}</span>
-                                        <span class="text-xs text-gray-500 group-subject-text">
-                                            {{ $group->subject->name ?? "Fan ko'rsatilmagan" }}
-                                            @if ($group->teacher)
-                                                • {{ trim(($group->teacher->user->surname ?? '') . ' ' . ($group->teacher->user->name ?? '')) }}
-                                            @endif
-                                        </span>
-                                    </div>
-                                @endforeach
-                            </div>
-
-                            <div id="noGroupFound" class="hidden p-5 text-center text-sm text-gray-500">
-                                Guruh topilmadi...
-                            </div>
-                        </div>
+                        @error('group_id')
+                            <p class="mt-1 text-sm text-rose-500">{{ $message }}</p>
+                        @enderror
                     </div>
-
-                    @error('group_id')
-                        <p class="mt-1 text-sm text-rose-500">{{ $message }}</p>
-                    @enderror
                 </div>
             </div>
 
             <!-- Payment Details -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
+            <div
+                class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-emerald-500/20 p-6">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -209,8 +144,8 @@
                         <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                             Chegirma (%)
                         </label>
-                        <input type="number" name="discount" id="discount" step="0.01" min="0"
-                            max="100" value="{{ old('discount', 0) }}"
+                        <input type="number" name="discount" id="discount" step="0.01" min="0" max="100"
+                            value="{{ old('discount', 0) }}"
                             oninput="if(this.value > 100) this.value = 100; if(this.value < 0) this.value = 0;"
                             class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white outline-none transition-all"
                             placeholder="0">
@@ -226,10 +161,13 @@
                         <select name="payment_type" required
                             class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white outline-none transition-all">
                             <option value="">-- Tanlang --</option>
-                            <option value="cash"     {{ old('payment_type') == 'cash'     ? 'selected' : '' }}>Naqd</option>
-                            <option value="card"     {{ old('payment_type') == 'card'     ? 'selected' : '' }}>Karta</option>
-                            <option value="transfer" {{ old('payment_type') == 'transfer' ? 'selected' : '' }}>O'tkazma</option>
-                            <option value="other"    {{ old('payment_type') == 'other'    ? 'selected' : '' }}>Boshqa</option>
+                            <option value="cash" {{ old('payment_type') == 'cash' ? 'selected' : '' }}>Naqd</option>
+                            <option value="card" {{ old('payment_type') == 'card' ? 'selected' : '' }}>Karta
+                            </option>
+                            <option value="transfer" {{ old('payment_type') == 'transfer' ? 'selected' : '' }}>O'tkazma
+                            </option>
+                            <option value="other" {{ old('payment_type') == 'other' ? 'selected' : '' }}>Boshqa
+                            </option>
                         </select>
                         @error('payment_type')
                             <p class="mt-1 text-sm text-rose-500">{{ $message }}</p>
@@ -263,7 +201,8 @@
             </div>
 
             <!-- Payment Summary -->
-            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-2xl shadow-sm border border-emerald-200 dark:border-emerald-500/20 p-6">
+            <div
+                class="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-2xl shadow-sm border border-emerald-200 dark:border-emerald-500/20 p-6">
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">To'lov xulosasi</h2>
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
@@ -271,21 +210,27 @@
                         <span class="text-sm font-bold text-gray-900 dark:text-white" id="summaryAmount">0 so'm</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">Chegirma (<span id="discountPercent">0</span>%):</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Chegirma (<span
+                                id="discountPercent">0</span>%):</span>
                         <span class="text-sm font-bold text-rose-500" id="summaryDiscount">0 so'm</span>
                     </div>
-                    <div class="pt-3 border-t border-emerald-300 dark:border-emerald-700 flex justify-between items-center">
+                    <div
+                        class="pt-3 border-t border-emerald-300 dark:border-emerald-700 flex justify-between items-center">
                         <span class="text-base font-bold text-gray-900 dark:text-white">Jami (chegirmadan keyin):</span>
-                        <span class="text-xl font-black text-emerald-600 dark:text-emerald-400" id="summaryNet">0 so'm</span>
+                        <span class="text-xl font-black text-emerald-600 dark:text-emerald-400" id="summaryNet">0
+                            so'm</span>
                     </div>
                     <div class="pt-3 border-t border-emerald-300 dark:border-emerald-700">
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-sm text-gray-600 dark:text-gray-400">Student balansiga tushadi:</span>
-                            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" id="summaryStudentBalance">0 so'm</span>
+                            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" id="summaryStudentBalance">0
+                                so'm</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Direktor komissiyasi (<span id="commissionPercent">0</span>%):</span>
-                            <span class="text-sm font-bold text-purple-600 dark:text-purple-400" id="summaryCommission">0 so'm</span>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Direktor komissiyasi (<span
+                                    id="commissionPercent">0</span>%):</span>
+                            <span class="text-sm font-bold text-purple-600 dark:text-purple-400" id="summaryCommission">0
+                                so'm</span>
                         </div>
                     </div>
                 </div>
@@ -307,21 +252,20 @@
 
     @push('scripts')
         <script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js"></script>
+
         <script>
             // ─── Global State ─────────────────────────────────────────────────────────────
             let currentCommissionPercent = 0;
-            let studentsData = [];
-            let groupsData   = [];
             let amountCleave = null;
 
             // ─── DOM Elements ─────────────────────────────────────────────────────────────
-            const studentInfo   = document.getElementById('studentInfo');
+            const studentInfo = document.getElementById('studentInfo');
             const currentBalance = document.getElementById('currentBalance');
             const commissionRate = document.getElementById('commissionRate');
-            const discountInput  = document.getElementById('discount');
-            const amountHidden   = document.getElementById('amount_hidden');
+            const discountInput = document.getElementById('discount');
+            const amountHidden = document.getElementById('amount_hidden');
 
-            // ─── Helpers ─────────────────────────────────────────────────────────────────
+            // ─── Helpers ──────────────────────────────────────────────────────────────────
 
             function formatCurrency(number) {
                 return new Intl.NumberFormat('uz-UZ').format(Math.round(number)) + " so'm";
@@ -331,187 +275,64 @@
                 return new Intl.NumberFormat('uz-UZ').format(num);
             }
 
-            function normalizeQuery(query) {
-                return query.toLowerCase().trim().replace(/\s+/g, ' ');
-            }
-
-            // ─── Data Initialization ──────────────────────────────────────────────────────
-
-            function initializeStudentsData() {
-                studentsData = Array.from(document.querySelectorAll('.student-item')).map(item => {
-                    const surname     = item.dataset.studentSurname || '';
-                    const name        = item.dataset.studentName    || '';
-                    const middle_name = item.dataset.studentMiddle  || '';
-                    const phone       = item.dataset.studentPhone   || '';
-                    const fullName    = [surname, name, middle_name].filter(Boolean).join(' ');
-
-                    const student = {
-                        id:         item.dataset.studentId,
-                        fullName,
-                        phone,
-                        balance:    parseFloat(item.dataset.studentBalance)    || 0,
-                        commission: parseFloat(item.dataset.studentCommission) || 0,
-                    };
-
-                    student.searchText = [
-                        fullName,
-                        phone,
-                        surname + name,
-                        surname + name + middle_name,
-                        phone.replace(/[\s\-\+\(\)]/g, '')
-                    ].join(' ').toLowerCase();
-
-                    return student;
-                });
-            }
-
-            function initializeGroupsData() {
-                groupsData = Array.from(document.querySelectorAll('.group-item')).map(item => {
-                    const group = {
-                        id:      item.dataset.groupId,
-                        name:    item.dataset.groupName    || '',
-                        subject: item.dataset.groupSubject || '',
-                        teacher: item.dataset.groupTeacher || '',
-                    };
-                    group.searchText = [group.name, group.subject, group.teacher].join(' ').toLowerCase();
-                    return group;
-                });
-            }
-
-            // ─── Search ───────────────────────────────────────────────────────────────────
-
-            function matchesQuery(searchText, query) {
-                return normalizeQuery(query).split(' ').every(word => searchText.includes(word));
-            }
-
-            function filterStudents() {
-                const normalized = normalizeQuery(document.getElementById('studentSearchInput').value);
-                let hasVisible   = false;
-
-                document.querySelectorAll('.student-item').forEach(item => {
-                    const student   = studentsData.find(s => s.id === item.dataset.studentId);
-                    const isVisible = !normalized || (student && matchesQuery(student.searchText, normalized));
-                    item.style.display = isVisible ? '' : 'none';
-                    if (isVisible) hasVisible = true;
-                });
-
-                document.getElementById('noStudentFound').classList.toggle('hidden', hasVisible);
-            }
-
-            function filterGroups() {
-                const normalized = normalizeQuery(document.getElementById('groupSearchInput').value);
-                let found        = false;
-
-                document.querySelectorAll('.group-item').forEach(item => {
-                    const group     = groupsData.find(g => g.id === item.dataset.groupId);
-                    const isVisible = !normalized || (group && matchesQuery(group.searchText, normalized));
-                    item.style.display = isVisible ? '' : 'none';
-                    if (isVisible) found = true;
-                });
-
-                document.getElementById('noGroupFound').classList.toggle('hidden', found);
-            }
-
-            // ─── Dropdowns ────────────────────────────────────────────────────────────────
-
-            function closeDropdown(menuId, arrowId) {
-                document.getElementById(menuId).classList.add('hidden');
-                document.getElementById(arrowId).classList.remove('rotate-180');
-            }
-
-            function openDropdown(menuId, arrowId, focusId) {
-                document.getElementById(menuId).classList.remove('hidden');
-                document.getElementById(arrowId).classList.add('rotate-180');
-                document.getElementById(focusId).focus();
-            }
-
-            function toggleStudentDropdown() {
-                const isHidden = document.getElementById('studentMenu').classList.contains('hidden');
-                closeDropdown('groupMenu', 'groupArrow');
-                isHidden
-                    ? openDropdown('studentMenu', 'studentArrow', 'studentSearchInput')
-                    : closeDropdown('studentMenu', 'studentArrow');
-            }
-
-            function toggleGroupDropdown() {
-                const isHidden = document.getElementById('groupMenu').classList.contains('hidden');
-                closeDropdown('studentMenu', 'studentArrow');
-                isHidden
-                    ? openDropdown('groupMenu', 'groupArrow', 'groupSearchInput')
-                    : closeDropdown('groupMenu', 'groupArrow');
-            }
-
-            document.addEventListener('click', function (e) {
-                const studentContainer = document.getElementById('studentSearchContainer');
-                const groupContainer   = document.getElementById('groupSearchContainer');
-
-                if (studentContainer && !studentContainer.contains(e.target)) closeDropdown('studentMenu', 'studentArrow');
-                if (groupContainer   && !groupContainer.contains(e.target))   closeDropdown('groupMenu',   'groupArrow');
-            });
-
-            // ─── Selection ────────────────────────────────────────────────────────────────
-
-            function selectStudent(id) {
-                const student = studentsData.find(s => s.id == id);
-                if (!student) return;
-
-                document.getElementById('student_id_input').value    = id;
-                document.getElementById('selectedStudentLabel').innerText = `${student.fullName} - ${student.phone}`;
-
-                studentInfo.classList.remove('hidden');
-                currentBalance.innerText  = formatNumber(student.balance) + " so'm";
-                commissionRate.innerText  = student.commission + "%";
-                currentCommissionPercent  = student.commission;
-
-                closeDropdown('studentMenu', 'studentArrow');
-                updateSummary();
-            }
-
-            function selectGroup(id) {
-                const group = groupsData.find(g => g.id == id);
-                if (!group) return;
-
-                document.getElementById('group_id_input').value      = id;
-                document.getElementById('selectedGroupLabel').innerText = group.name + (group.subject ? ' - ' + group.subject : '');
-
-                closeDropdown('groupMenu', 'groupArrow');
-            }
-
             // ─── Summary Calculation ──────────────────────────────────────────────────────
 
             function updateSummary() {
-                // FIX #1: Always read from Cleave raw value and sync to hidden input
                 const rawValue = amountCleave ? amountCleave.getRawValue() : '';
-                const amount   = parseFloat(rawValue) || 0;
+                const amount = parseFloat(rawValue) || 0;
 
-                amountHidden.value = amount; // keep hidden input in sync
+                amountHidden.value = amount;
 
                 let discountPercent = parseFloat(discountInput?.value) || 0;
-                discountPercent     = Math.min(100, Math.max(0, discountPercent));
+                discountPercent = Math.min(100, Math.max(0, discountPercent));
                 discountInput.value = discountPercent;
 
-                const discountAmount   = (amount * discountPercent) / 100;
-                const netAmount        = amount - discountAmount;
+                const discountAmount = (amount * discountPercent) / 100;
+                const netAmount = amount - discountAmount;
                 const commissionAmount = (netAmount * currentCommissionPercent) / 100;
 
-                document.getElementById('summaryAmount').innerText        = formatCurrency(amount);
-                document.getElementById('summaryDiscount').innerText      = formatCurrency(discountAmount);
-                document.getElementById('summaryNet').innerText           = formatCurrency(netAmount);
-                document.getElementById('summaryCommission').innerText    = formatCurrency(commissionAmount);
+                document.getElementById('summaryAmount').innerText = formatCurrency(amount);
+                document.getElementById('summaryDiscount').innerText = formatCurrency(discountAmount);
+                document.getElementById('summaryNet').innerText = formatCurrency(netAmount);
+                document.getElementById('summaryCommission').innerText = formatCurrency(commissionAmount);
                 document.getElementById('summaryStudentBalance').innerText = formatCurrency(netAmount);
-                document.getElementById('discountPercent').innerText      = discountPercent;
-                document.getElementById('commissionPercent').innerText    = currentCommissionPercent;
+                document.getElementById('discountPercent').innerText = discountPercent;
+                document.getElementById('commissionPercent').innerText = currentCommissionPercent;
             }
 
-            // ─── FIX #3: Prevent double submit & sync hidden amount on submit ─────────────
+            // ─── Student Info Update ──────────────────────────────────────────────────────
 
-            document.getElementById('paymentForm').addEventListener('submit', function (e) {
+            function updateStudentInfo(value) {
+                if (!value) {
+                    studentInfo.classList.add('hidden');
+                    currentCommissionPercent = 0;
+                    updateSummary();
+                    return;
+                }
+
+                const opt = document.querySelector(`#student_id option[value="${value}"]`);
+                if (!opt) return;
+
+                const balance = parseFloat(opt.dataset.balance) || 0;
+                const commission = parseFloat(opt.dataset.commission) || 0;
+
+                studentInfo.classList.remove('hidden');
+                currentBalance.innerText = formatNumber(balance) + " so'm";
+                commissionRate.innerText = commission + "%";
+                currentCommissionPercent = commission;
+
+                updateSummary();
+            }
+
+            // ─── Form Submit ──────────────────────────────────────────────────────────────
+
+            document.getElementById('paymentForm').addEventListener('submit', function(e) {
                 // Sync raw amount to hidden field one final time
                 const rawValue = amountCleave ? amountCleave.getRawValue() : '';
                 amountHidden.value = parseFloat(rawValue) || 0;
 
-                // FIX #4: Basic client-side validation before submit
-                const studentId = document.getElementById('student_id_input').value;
+                // Client-side validation
+                const studentId = document.getElementById('student_id').value;
                 if (!studentId) {
                     e.preventDefault();
                     alert("Iltimos, o'quvchini tanlang.");
@@ -524,61 +345,60 @@
                     return;
                 }
 
-                // FIX #5: Prevent double submit
+                // Prevent double submit
                 const btn = this.querySelector('button[type="submit"]');
                 if (btn) {
-                    btn.disabled    = true;
-                    btn.innerText   = "Saqlanmoqda...";
+                    btn.disabled = true;
+                    btn.innerText = "Saqlanmoqda...";
                 }
             });
 
-            // ─── Restore State ────────────────────────────────────────────────────────────
-
-            function restoreSelectedStudent() {
-                const id = document.getElementById('student_id_input').value;
-                if (!id) return;
-
-                const student = studentsData.find(s => s.id == id);
-                if (!student) return;
-
-                document.getElementById('selectedStudentLabel').innerText = `${student.fullName} - ${student.phone}`;
-                studentInfo.classList.remove('hidden');
-                currentBalance.innerText = formatNumber(student.balance) + " so'm";
-                commissionRate.innerText = student.commission + "%";
-                currentCommissionPercent = student.commission;
-                updateSummary();
-            }
-
-            function restoreSelectedGroup() {
-                const id = document.getElementById('group_id_input').value;
-                if (!id) return;
-
-                const group = groupsData.find(g => g.id == id);
-                if (!group) return;
-
-                document.getElementById('selectedGroupLabel').innerText =
-                    group.name + (group.subject ? ' - ' + group.subject : '');
-            }
-
             // ─── Init ─────────────────────────────────────────────────────────────────────
 
-            document.addEventListener('DOMContentLoaded', function () {
-                // FIX #1: Cleave is attached to display-only input; hidden input carries raw value
+            document.addEventListener('DOMContentLoaded', function() {
+
+                // Cleave for amount formatting
                 amountCleave = new Cleave('#amount_display', {
-                    numeral:                    true,
+                    numeral: true,
                     numeralThousandsGroupStyle: 'thousand',
-                    delimiter:                  ' ',
-                    onValueChanged:             () => updateSummary()
+                    delimiter: ' ',
+                    onValueChanged: () => updateSummary()
                 });
 
                 if (discountInput) discountInput.addEventListener('input', updateSummary);
 
-                initializeStudentsData();
-                initializeGroupsData();
-                restoreSelectedStudent();
-                restoreSelectedGroup();
+                // ── TomSelect: Student ────────────────────────────────────────────────────
+                const studentSelect = new TomSelect("#student_id", {
+                    plugins: ['dropdown_input'],
+                    create: false,
+                    allowEmptyOption: true,
+                    placeholder: "O'quvchini tanlang...",
+                    onChange: function(value) {
+                        updateStudentInfo(value);
+                    }
+                });
+
+                // ── TomSelect: Group ──────────────────────────────────────────────────────
+                new TomSelect("#group_id", {
+                    plugins: ['dropdown_input'],
+                    create: false,
+                    allowEmptyOption: true,
+                    placeholder: "Guruhni tanlang...",
+                });
+
+                // ── Restore on validation error (old() values) ────────────────────────────
+                const oldStudentVal = document.getElementById('student_id').value;
+                if (oldStudentVal) {
+                    studentSelect.setValue(oldStudentVal, true); // silent = true, skips onChange
+                    updateStudentInfo(oldStudentVal); // manually trigger info panel
+                }
+
+                const oldAmountVal = amountHidden.value;
+                if (oldAmountVal && parseFloat(oldAmountVal) > 0) {
+                    amountCleave.setRawValue(oldAmountVal);
+                    updateSummary();
+                }
             });
-            
         </script>
     @endpush
 @endsection

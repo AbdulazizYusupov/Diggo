@@ -102,57 +102,22 @@
                         Guruh <span class="text-rose-500">*</span>
                     </label>
 
-                    <div class="relative" id="groupSearchContainer">
-                        <div onclick="toggleGroupDropdown()"
-                            class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('group_id') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl cursor-pointer group hover:border-emerald-500 transition-all shadow-sm">
-
-                            <span id="selectedGroupLabel" class="text-sm text-gray-900 dark:text-white">
-                                @php
-                                    $currentGroupId = old('group_id', $payment->group_id);
-                                    $foundGroup = $groups->firstWhere('id', $currentGroupId);
-                                @endphp
-                                {{ $foundGroup ? $foundGroup->name . ' - ' . ($foundGroup->subject->name ?? '') : '-- Guruhni tanlang --' }}
-                            </span>
-
-                            <input type="hidden" name="group_id" id="group_id_input" value="{{ $currentGroupId }}"
-                                required>
-
-                            <svg class="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-transform"
-                                id="groupArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </div>
-
-                        <div id="groupMenu"
-                            class="hidden absolute z-[199] w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden">
-                            <div class="p-2 border-b dark:border-gray-700 bg-gray-50/30 dark:bg-slate-900/30">
-                                <input type="text" id="groupSearchInput" oninput="filterGroups()"
-                                    placeholder="Guruh nomi yoki fan orqali qidirish..."
-                                    class="w-full px-3 py-2.5 bg-white dark:bg-slate-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
-                            </div>
-
-                            <div class="max-h-64 overflow-y-auto custom-scrollbar">
-                                @foreach ($groups as $group)
-                                    <div onclick="selectGroup('{{ $group->id }}', '{{ $group->name }}', '{{ $group->subject->name ?? '' }}')"
-                                        data-group-id="{{ $group->id }}" data-group-name="{{ $group->name }}"
-                                        data-group-subject="{{ $group->subject->name ?? '' }}"
-                                        class="group-item px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 cursor-pointer border-b border-gray-50 dark:border-gray-700/50 last:border-none flex flex-col">
-                                        <span class="font-bold group-name-text">{{ $group->name }}</span>
-                                        <span class="text-xs text-gray-500 group-subject-text">
-                                            {{ $group->subject->name ?? 'Fan ko\'rsatilmagan' }}
-                                            @if ($group->teacher)
-                                                • {{ $group->teacher->user->full_name }}
-                                            @endif
-                                        </span>
-                                    </div>
-                                @endforeach
-                            </div>
-
-                            <div id="noGroupFound" class="hidden p-5 text-center text-sm text-gray-500">
-                                Guruh topilmadi...
-                            </div>
-                        </div>
-                    </div>
+                    @php
+                        $currentGroupId = old('group_id', $payment->group_id);
+                    @endphp
+                    <select name="group_id" id="group_id" required
+                        class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('group_id') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all shadow-sm">
+                        <option value="">-- Guruhni tanlang --</option>
+                        @foreach ($groups as $group)
+                            <option value="{{ $group->id }}" {{ $currentGroupId == $group->id ? 'selected' : '' }}>
+                                {{ $group->name }}
+                                ({{ $group->subject->name ?? "Fan ko'rsatilmagan" }})
+                                @if ($group->teacher)
+                                    • {{ $group->teacher->user->full_name }}
+                                @endif
+                            </option>
+                        @endforeach
+                    </select>
 
                     @error('group_id')
                         <p class="mt-1 text-sm text-rose-500">{{ $message }}</p>
@@ -189,8 +154,8 @@
                         <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                             Chegirma (%)
                         </label>
-                        <input type="number" name="discount" id="discount" step="0.01" min="0"
-                            max="100" value="{{ old('discount', $payment->discount) }}"
+                        <input type="number" name="discount" id="discount" step="0.01" min="0" max="100"
+                            value="{{ old('discount', $payment->discount) }}"
                             class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white outline-none transition-all"
                             placeholder="0">
                         @error('discount')
@@ -297,99 +262,69 @@
 
     @push('scripts')
         <script>
+            // ─── State ────────────────────────────────────────────────────────────────────
             const amountInput = document.getElementById('amount');
             const discountInput = document.getElementById('discount');
             let currentCommissionPercent = parseFloat(document.getElementById('commissionRate').textContent) || 0;
 
-            // Toggle group dropdown
-            function toggleGroupDropdown() {
-                const menu = document.getElementById('groupMenu');
-                const arrow = document.getElementById('groupArrow');
-                const isHidden = menu.classList.contains('hidden');
-
-                menu.classList.toggle('hidden');
-                arrow.classList.toggle('rotate-180');
-
-                if (isHidden) {
-                    document.getElementById('groupSearchInput').focus();
-                }
+            // ─── Helpers ──────────────────────────────────────────────────────────────────
+            function formatNumber(num) {
+                return new Intl.NumberFormat('uz-UZ').format(Math.round(num));
             }
 
-            // Select group
-            function selectGroup(id, name, subject) {
-                // Update input and label
-                document.getElementById('group_id_input').value = id;
-                const label = name + (subject ? ' - ' + subject : '');
-                document.getElementById('selectedGroupLabel').innerText = label;
-
-                // Close dropdown
-                toggleGroupDropdown();
-            }
-
-            // Filter groups
-            function filterGroups() {
-                const input = document.getElementById('groupSearchInput');
-                const filter = input.value.toLowerCase();
-                const items = document.querySelectorAll('.group-item');
-                const noResult = document.getElementById('noGroupFound');
-                let found = false;
-
-                items.forEach(item => {
-                    const name = item.querySelector('.group-name-text').innerText.toLowerCase();
-                    const subject = item.querySelector('.group-subject-text').innerText.toLowerCase();
-
-                    if (name.includes(filter) || subject.includes(filter)) {
-                        item.style.display = "";
-                        found = true;
-                    } else {
-                        item.style.display = "none";
-                    }
-                });
-
-                noResult.classList.toggle('hidden', found);
-            }
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                const groupContainer = document.getElementById('groupSearchContainer');
-
-                if (groupContainer && !groupContainer.contains(e.target)) {
-                    document.getElementById('groupMenu').classList.add('hidden');
-                    document.getElementById('groupArrow').classList.remove('rotate-180');
-                }
-            });
-
-            // Amount and discount change
-            amountInput.addEventListener('input', updateSummary);
-            discountInput.addEventListener('input', updateSummary);
-
-            // Update summary calculations
+            // ─── Summary ──────────────────────────────────────────────────────────────────
             function updateSummary() {
                 const amount = parseFloat(amountInput.value) || 0;
                 const discountPercent = parseFloat(discountInput.value) || 0;
-
-                // hisoblash
                 const discountAmount = (amount * discountPercent) / 100;
                 const netAmount = amount - discountAmount;
                 const commissionAmount = (netAmount * currentCommissionPercent) / 100;
 
-                // display update
-                document.getElementById('summaryAmount').textContent = formatNumber(amount) + ' so\'m';
-                document.getElementById('discountPercent').textContent = discountPercent.toFixed(1);
-                document.getElementById('summaryDiscount').textContent = formatNumber(discountAmount) + ' so\'m';
-                document.getElementById('summaryNet').textContent = formatNumber(netAmount) + ' so\'m';
-                document.getElementById('summaryStudentBalance').textContent = formatNumber(netAmount) + ' so\'m';
-                document.getElementById('commissionPercent').textContent = currentCommissionPercent.toFixed(1);
-                document.getElementById('summaryCommission').textContent = formatNumber(commissionAmount) + ' so\'m';
+                document.getElementById('summaryAmount').textContent = formatNumber(amount) + " so'm";
+                document.getElementById('summaryDiscount').textContent = formatNumber(discountAmount) + " so'm";
+                document.getElementById('summaryNet').textContent = formatNumber(netAmount) + " so'm";
+                document.getElementById('summaryStudentBalance').textContent = formatNumber(netAmount) + " so'm";
+                document.getElementById('summaryCommission').textContent = formatNumber(commissionAmount) + " so'm";
+                document.getElementById('discountPercent').textContent = discountPercent;
+                document.getElementById('commissionPercent').textContent = currentCommissionPercent;
             }
 
-            // Format number helper
-            function formatNumber(num) {
-                return new Intl.NumberFormat('uz-UZ').format(num);
-            }
+            // ─── Form Submit ──────────────────────────────────────────────────────────────
+            document.getElementById('paymentForm').addEventListener('submit', function(e) {
+                const groupId = document.getElementById('group_id').value;
+                if (!groupId) {
+                    e.preventDefault();
+                    alert("Iltimos, guruhni tanlang.");
+                    return;
+                }
 
-            // Initialize on page load
-            updateSummary();
+                if (!amountInput.value || parseFloat(amountInput.value) <= 0) {
+                    e.preventDefault();
+                    alert("Iltimos, to'lov summasini kiriting.");
+                    return;
+                }
+
+                const btn = this.querySelector('button[type="submit"]');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerText = "Saqlanmoqda...";
+                }
+            });
+
+            // ─── Init ─────────────────────────────────────────────────────────────────────
+            document.addEventListener('DOMContentLoaded', function() {
+                new TomSelect('#group_id', {
+                    plugins: ['dropdown_input'],
+                    create: false,
+                    allowEmptyOption: true,
+                    placeholder: "Guruhni tanlang...",
+                });
+
+                amountInput.addEventListener('input', updateSummary);
+                discountInput.addEventListener('input', updateSummary);
+
+                updateSummary();
+            });
         </script>
     @endpush
 @endsection

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\ActivityResult;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\ActivityResult;
+use App\Models\Group;
 use App\Models\Student;
+use App\Notifications\ActivityResult\ActivityResultNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -74,7 +76,9 @@ class ActivityResultController extends Controller
             ->orderBy('users.name', 'asc')
             ->select('students.*') // Faqat student obyektlarini olish uchun
             ->get();
-
+        $groups = Group::whereHas('students')
+            ->orderBy('id')
+            ->get();
         return view('ActivityResult.index', compact(
             'results',
             'activities',
@@ -82,7 +86,8 @@ class ActivityResultController extends Controller
             'totalResults',
             'totalCoinsAwarded',
             'avgCoinsEarned',
-            'topPerformers'
+            'topPerformers',
+            'groups'
         ));
     }
 
@@ -159,7 +164,17 @@ class ActivityResultController extends Controller
                 Student::where('id', $studentId)->increment('coins', $validated['earned_coins']);
 
                 $createdCount++;
-
+                $student = Student::findOrFail($studentId);
+                $student->notify(new ActivityResultNotification(
+                    activityName: $activity->name,
+                    activityType: $activity->type,
+                    earnedCoins: $validated['earned_coins'],
+                    maxCoins: $activity->max_coins,
+                    rank: $currentRank,         // before incrementing
+                    activityDate: $activity->date->format('d.m.Y'),
+                    groupName: $activity->group->name,
+                    note: $validated['note'] ?? null,
+                ));
                 // Agar rank (o'rin) berilgan bo'lsa, uni oshirib borish
                 if ($currentRank !== null) {
                     $currentRank++;
@@ -175,7 +190,6 @@ class ActivityResultController extends Controller
 
             return redirect()->route('activityresults.index')
                 ->with('success', $message);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
@@ -284,7 +298,7 @@ class ActivityResultController extends Controller
                 ->withInput();
         }
     }
-    
+
     public function destroy(string $id)
     {
         $result = ActivityResult::findOrFail($id);

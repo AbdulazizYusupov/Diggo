@@ -166,8 +166,7 @@
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
-                        <input type="text" name="search" value="{{ request('search') }}"
-                            placeholder="Talaba ismi..."
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Talaba ismi..."
                             class="w-full pl-10 pr-10 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white placeholder-gray-400 transition-all outline-none text-sm">
 
                         @if (request('search'))
@@ -347,11 +346,7 @@
                                                 ? ($result->earned_coins / $result->activity->max_coins) * 100
                                                 : 0;
                                         $badgeColor =
-                                            $percentage >= 90
-                                                ? 'emerald'
-                                                : ($percentage >= 70
-                                                    ? 'amber'
-                                                    : 'rose');
+                                            $percentage >= 90 ? 'emerald' : ($percentage >= 70 ? 'amber' : 'rose');
                                     @endphp
                                     <span
                                         class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg bg-{{ $badgeColor }}-100 text-{{ $badgeColor }}-700 dark:bg-{{ $badgeColor }}-900/30 dark:text-{{ $badgeColor }}-400">
@@ -483,8 +478,7 @@
                                                             class="px-5 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-2xl transition-all active:scale-95">
                                                             Bekor qilish
                                                         </button>
-                                                        <form
-                                                            action="{{ route('activityresults.destroy', $result->id) }}"
+                                                        <form action="{{ route('activityresults.destroy', $result->id) }}"
                                                             method="POST" class="m-0">
                                                             @csrf
                                                             @method('DELETE')
@@ -540,10 +534,9 @@
                 <div class="flex items-center gap-3">
                     <div
                         class="p-3 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl">
-                        <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 4v16m8-8H4" />
+                        <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
                     </div>
                     <h2 class="text-2xl font-black text-slate-900 dark:text-white">Yangi natija qo'shish</h2>
@@ -551,8 +544,7 @@
                 <button type="button" onclick="closeCreateModal()"
                     class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">
                     <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -588,12 +580,38 @@
                             </div>
                             <div class="max-h-60 overflow-y-auto custom-scrollbar">
                                 @foreach ($activities as $activity)
+                                    {{-- selectActivity funksiyasi argumentlari o'zgarmadi --}}
                                     <div onclick="selectActivity('{{ $activity->id }}', '{{ $activity->name }}', '{{ $activity->max_coins }}')"
                                         class="activity-item px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 cursor-pointer border-b border-gray-50 dark:border-gray-700/50 last:border-none"
-                                        data-activity-name="{{ $activity->name }}" data-activity-type="{{ $activity->type }}">
-                                        <div class="font-bold text-emerald-600 dark:text-emerald-400">{{ $activity->name }}</div>
-                                        <div class="text-xs text-gray-400 mt-0.5">
-                                            {{ ucfirst($activity->type) }} • Max: {{ $activity->max_coins }} coin
+                                        data-activity-name="{{ $activity->name }}"
+                                        data-activity-type="{{ $activity->type }}">
+
+                                        <div class="flex justify-between items-start">
+                                            <div class="flex-1">
+                                                <div class="font-bold text-emerald-600 dark:text-emerald-400">
+                                                    {{ $activity->name }}
+                                                </div>
+                                                <div class="text-[11px] text-gray-400 mt-0.5 flex items-center gap-2">
+                                                    <span
+                                                        class="bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-[10px]">
+                                                        {{ ucfirst($activity->type) }}
+                                                    </span>
+                                                    <span>Max: {{ $activity->max_coins }} coin</span>
+                                                </div>
+                                            </div>
+
+                                            {{-- Faqat vizual qo'shimcha: Sana va Guruh --}}
+                                            <div class="text-right ml-2 shrink-0">
+                                                <div class="text-[10px] font-semibold text-gray-500 dark:text-gray-400">
+                                                    {{ $activity->date ? $activity->date->format('d.m.Y') : 'Sana yo\'q' }}
+                                                </div>
+                                                @if ($activity->group)
+                                                    <div
+                                                        class="text-[9px] text-emerald-500/80 mt-1 uppercase tracking-tighter">
+                                                        {{ $activity->group->name }}
+                                                    </div>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 @endforeach
@@ -613,17 +631,20 @@
                     <select id="groupFilter" onchange="filterStudentsByGroup()"
                         class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white outline-none transition-all cursor-pointer">
                         <option value="">Barcha guruhlar</option>
-                        
-                        @php
-                            // students ichidagi barcha guruhlarni bitta collectionga yig'ib olamiz
-                            // flatMap barcha talabalarning groups massivlarini bitta tekis massivga aylantiradi
-                            $uniqueGroups = $students->flatMap(function ($student) {
-                                return $student->groups; 
-                            })->unique('id')->sortBy('name');
-                        @endphp
 
-                        @foreach ($uniqueGroups as $group)
-                            <option value="{{ $group->id }}">{{ $group->name }}</option>
+                        @foreach ($groups as $group)
+                            <option value="{{ $group->id }}">
+                                {{ $group->name }}
+                                @if ($group->course)
+                                    — {{ $group->course->name }}
+                                @endif
+                                ({{ $group->active_students_count ?? $group->activeStudents()->count() }} talaba)
+                                [{{ $group->start_time }}]
+                                @if ($group->days_of_week)
+                                    —
+                                    {{ is_array($group->days_of_week) ? implode(',', $group->days_of_week) : $group->days_of_week }}
+                                @endif
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -634,12 +655,13 @@
                         Talabalar <span class="text-rose-500">*</span>
                         <span class="text-xs font-normal text-gray-500">(Ko'plab tanlash mumkin)</span>
                     </label>
-                    
+
                     <!-- Search Input -->
                     <div class="mb-3">
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
@@ -668,7 +690,8 @@
                     </div>
 
                     <!-- Students List -->
-                    <div class="border border-gray-200 dark:border-gray-700 rounded-xl max-h-64 overflow-y-auto custom-scrollbar">
+                    <div
+                        class="border border-gray-200 dark:border-gray-700 rounded-xl max-h-64 overflow-y-auto custom-scrollbar">
                         @foreach ($students as $student)
                             <label
                                 class="student-checkbox-item flex items-center gap-3 p-3 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 cursor-pointer border-b border-gray-100 dark:border-gray-700/50 last:border-none transition-all"
@@ -679,13 +702,15 @@
                                     class="w-5 h-5 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <div
+                                            class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                             <span class="text-white font-bold text-xs">
                                                 {{ substr($student->user->name ?? 'N', 0, 2) }}
                                             </span>
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-bold text-gray-900 dark:text-white truncate student-name-text">
+                                            <p
+                                                class="text-sm font-bold text-gray-900 dark:text-white truncate student-name-text">
                                                 {{ $student->user->name ?? 'N/A' }}
                                             </p>
                                             @if ($student->group)
@@ -743,10 +768,12 @@
                 </div>
 
                 <!-- Info Box -->
-                <div class="bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-500/10 dark:to-blue-500/5 border border-blue-200 dark:border-blue-500/20 rounded-xl p-4">
+                <div
+                    class="bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-500/10 dark:to-blue-500/5 border border-blue-200 dark:border-blue-500/20 rounded-xl p-4">
                     <div class="flex gap-3">
                         <div class="flex-shrink-0">
-                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor"
+                                viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                                     clip-rule="evenodd" />
@@ -755,7 +782,8 @@
                         <div class="flex-1">
                             <h4 class="text-sm font-bold text-blue-900 dark:text-blue-300 mb-1">Eslatma</h4>
                             <p class="text-sm text-blue-700 dark:text-blue-400 leading-relaxed">
-                                Bir nechta talaba uchun bir xilda natija kiritiladi. Agar rang kiritilsa, talabalar ketma-ketlikda rang oladi.
+                                Bir nechta talaba uchun bir xilda natija kiritiladi. Agar rang kiritilsa, talabalar
+                                ketma-ketlikda rang oladi.
                             </p>
                         </div>
                     </div>
@@ -795,12 +823,13 @@
                 document.getElementById('activity_id_input').value = id;
                 document.getElementById('selectedActivityLabel').innerText = name;
                 document.getElementById('selectedActivityLabel').classList.remove('text-gray-500');
-                document.getElementById('selectedActivityLabel').classList.add('text-gray-900', 'dark:text-white', 'font-medium');
-                
+                document.getElementById('selectedActivityLabel').classList.add('text-gray-900', 'dark:text-white',
+                    'font-medium');
+
                 maxCoins = max;
                 document.getElementById('maxCoinsValue').innerText = max;
                 document.getElementById('maxCoinsHint').classList.remove('hidden');
-                
+
                 toggleActivityDropdown();
             }
 
@@ -814,7 +843,7 @@
                 items.forEach(item => {
                     const name = item.dataset.activityName.toLowerCase();
                     const type = item.dataset.activityType.toLowerCase();
-                    
+
                     if (name.includes(filter) || type.includes(filter)) {
                         item.style.display = '';
                         hasMatch = true;
@@ -836,7 +865,7 @@
 
                 items.forEach(item => {
                     const name = item.dataset.studentName.toLowerCase();
-                    
+
                     if (name.includes(filter)) {
                         item.style.display = '';
                         hasMatch = true;
@@ -851,7 +880,7 @@
             function filterStudentsByGroup() {
                 const groupId = document.getElementById('groupFilter').value;
                 const items = document.querySelectorAll('.student-checkbox-item');
-                
+
                 items.forEach(item => {
                     if (!groupId || item.dataset.studentGroup === groupId) {
                         item.style.display = '';
@@ -859,12 +888,13 @@
                         item.style.display = 'none';
                     }
                 });
-                
+
                 updateSelectedCount();
             }
 
             function selectAllStudents() {
-                const checkboxes = document.querySelectorAll('.student-checkbox-item:not([style*="display: none"]) input[type="checkbox"]');
+                const checkboxes = document.querySelectorAll(
+                    '.student-checkbox-item:not([style*="display: none"]) input[type="checkbox"]');
                 checkboxes.forEach(cb => cb.checked = true);
                 updateSelectedCount();
             }
@@ -886,7 +916,8 @@
                 deselectAllStudents();
                 document.getElementById('selectedActivityLabel').innerText = 'Faoliyatni tanlang';
                 document.getElementById('selectedActivityLabel').classList.add('text-gray-500');
-                document.getElementById('selectedActivityLabel').classList.remove('text-gray-900', 'dark:text-white', 'font-medium');
+                document.getElementById('selectedActivityLabel').classList.remove('text-gray-900', 'dark:text-white',
+                    'font-medium');
                 document.getElementById('maxCoinsHint').classList.add('hidden');
                 document.getElementById('groupFilter').value = '';
                 document.getElementById('studentSearchInput').value = '';
@@ -918,6 +949,19 @@
                     alert(`Kiritilgan coinlar maksimal qiymatdan oshib ketdi! Maksimal: ${maxCoins}`);
                     return false;
                 }
+            });
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                new TomSelect("#groupFilter", {
+                    plugins: ['dropdown_input'],
+                    create: false,
+                    allowEmptyOption: true,
+                    placeholder: "Guruhni tanlang...",
+                    onChange: function(value) {
+                        filterStudentsByGroup();
+                    }
+                });
             });
         </script>
     @endpush

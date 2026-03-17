@@ -393,7 +393,7 @@
                     </div>
 
                     <div class="mb-6 space-y-2">
-                        <label
+                        <label for="school_id"
                             class="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide flex items-center gap-2">
                             <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -403,43 +403,18 @@
                             Maktabni tanlang
                         </label>
 
-                        <div class="relative" id="schoolCustomSelect">
-                            <div onclick="toggleSchoolDropdown()"
-                                class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer group hover:border-orange-400 transition-all">
-                                <span id="selectedSchoolLabel" class="text-sm text-gray-500 dark:text-gray-400">--
-                                    Maktabni qidiring va tanlang --</span>
-                                <input type="hidden" name="school_id" id="school_id_input">
-                                <svg class="w-5 h-5 text-gray-400 group-hover:text-orange-500 transition-transform"
-                                    id="schoolArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </div>
+                        <select name="school_id" id="school_id"
+                            class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all cursor-pointer appearance-none">
 
-                            <div id="schoolDropdown"
-                                class="hidden absolute z-[110] w-full mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl overflow-hidden">
-                                <div class="p-2 border-b dark:border-gray-700">
-                                    <input type="text" id="schoolSearchInput" oninput="filterSchools()"
-                                        placeholder="Maktab nomini yozing..."
-                                        class="w-full px-3 py-2 bg-gray-100 dark:bg-slate-900 dark:text-white border-none rounded-lg text-sm focus:ring-1 focus:ring-orange-500">
-                                </div>
-                                <div class="max-h-48 overflow-y-auto custom-scrollbar" id="schoolOptionsList">
-                                    <div onclick="selectSchool('', '-- Maktab tanlanmagan --')"
-                                        class="px-4 py-2 text-sm text-gray-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 cursor-pointer">
-                                        -- Tanlamaslik --</div>
-                                    @foreach ($schools as $school)
-                                        <div onclick="selectSchool('{{ $school->id }}', '{{ $school->name }}')"
-                                            class="school-option px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-orange-500/10 cursor-pointer flex flex-col">
-                                            <span class="font-bold school-name">{{ $school->name }}</span>
-                                            @if ($school->address)
-                                                <span
-                                                    class="text-[10px] text-gray-400">{{ Str::limit($school->address, 40) }}</span>
-                                            @endif
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
+                            <option value="">-- Maktabni tanlang --</option>
+
+                            @foreach ($schools as $school)
+                                <option value="{{ $school->id }}">
+                                    {{ $school->name }}
+                                    {{ $school->address ? '(' . Str::limit($school->address, 30) . ')' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <hr class="border-gray-100 dark:border-gray-800 mb-4">
@@ -766,39 +741,39 @@
                 previewBox.classList.add('hidden');
                 uploadLabel.classList.remove('hidden');
             }
-            // School Select Logic
-            function toggleSchoolDropdown() {
-                const dropdown = document.getElementById('schoolDropdown');
-                const arrow = document.getElementById('schoolArrow');
-                dropdown.classList.toggle('hidden');
-                arrow.classList.toggle('rotate-180');
-                if (!dropdown.classList.contains('hidden')) {
-                    document.getElementById('schoolSearchInput').focus();
-                }
-            }
+            // // School Select Logic
+            // function toggleSchoolDropdown() {
+            //     const dropdown = document.getElementById('schoolDropdown');
+            //     const arrow = document.getElementById('schoolArrow');
+            //     dropdown.classList.toggle('hidden');
+            //     arrow.classList.toggle('rotate-180');
+            //     if (!dropdown.classList.contains('hidden')) {
+            //         document.getElementById('schoolSearchInput').focus();
+            //     }
+            // }
 
-            function selectSchool(id, name) {
-                document.getElementById('school_id_input').value = id;
-                document.getElementById('selectedSchoolLabel').innerText = name;
-                document.getElementById('selectedSchoolLabel').classList.replace('text-gray-500', 'text-gray-900');
-                document.getElementById('selectedSchoolLabel').classList.add('dark:text-white');
-                toggleSchoolDropdown();
-            }
+            // function selectSchool(id, name) {
+            //     document.getElementById('school_id_input').value = id;
+            //     document.getElementById('selectedSchoolLabel').innerText = name;
+            //     document.getElementById('selectedSchoolLabel').classList.replace('text-gray-500', 'text-gray-900');
+            //     document.getElementById('selectedSchoolLabel').classList.add('dark:text-white');
+            //     toggleSchoolDropdown();
+            // }
 
-            function filterSchools() {
-                const input = document.getElementById('schoolSearchInput');
-                const filter = input.value.toLowerCase();
-                const options = document.querySelectorAll('.school-option');
+            // function filterSchools() {
+            //     const input = document.getElementById('schoolSearchInput');
+            //     const filter = input.value.toLowerCase();
+            //     const options = document.querySelectorAll('.school-option');
 
-                options.forEach(option => {
-                    const text = option.querySelector('.school-name').innerText.toLowerCase();
-                    if (text.includes(filter)) {
-                        option.style.display = "";
-                    } else {
-                        option.style.display = "none";
-                    }
-                });
-            }
+            //     options.forEach(option => {
+            //         const text = option.querySelector('.school-name').innerText.toLowerCase();
+            //         if (text.includes(filter)) {
+            //             option.style.display = "";
+            //         } else {
+            //             option.style.display = "none";
+            //         }
+            //     });
+            // }
 
             // Modal ochilganda dropdown yopilishi uchun
             function closeAddModal() {
@@ -806,15 +781,25 @@
                 document.getElementById('schoolDropdown').classList.add('hidden');
             }
 
-            // Dropdown tashqarisiga bosilganda yopish
-            document.addEventListener('click', function(event) {
-                const isClickInside = document.getElementById('schoolCustomSelect').contains(event.target);
-                if (!isClickInside) {
-                    document.getElementById('schoolDropdown').classList.add('hidden');
-                    document.getElementById('schoolArrow').classList.remove('rotate-180');
-                }
+            // // Dropdown tashqarisiga bosilganda yopish
+            // document.addEventListener('click', function(event) {
+            //     const isClickInside = document.getElementById('schoolCustomSelect').contains(event.target);
+            //     if (!isClickInside) {
+            //         document.getElementById('schoolDropdown').classList.add('hidden');
+            //         document.getElementById('schoolArrow').classList.remove('rotate-180');
+            //     }
+            // });
+             document.addEventListener("DOMContentLoaded", function() {
+                new TomSelect("#school_id", {
+                    plugins: ['dropdown_input'],
+                    create: false,
+                    // allowEmptyOption: true,
+                    placeholder: "School ni tanlang...",
+                    
+                });
             });
         </script>
+        
     @endpush
 
 @endsection
