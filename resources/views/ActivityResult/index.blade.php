@@ -39,14 +39,15 @@
             </div>
 
             {{-- Create Button --}}
-            <button onclick="document.getElementById('createModal').classList.remove('hidden')"
-                class="inline-flex items-center justify-center gap-2 px-6 py-3 
-               bg-emerald-500 hover:bg-emerald-600 text-white 
+            <button
+                type="button"
+                data-modal-target="createModal"
+                class="inline-flex items-center justify-center gap-2 px-6 py-3
+               bg-emerald-500 hover:bg-emerald-600 text-white
                dark:bg-emerald-600 dark:hover:bg-emerald-700
                border border-emerald-400/50 shadow-sm shadow-emerald-100 dark:shadow-none
-               font-semibold rounded-xl transition-all duration-200 
+               font-semibold rounded-xl transition-all duration-200
                transform hover:scale-[1.02] active:scale-[0.98] group">
-
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                     stroke="currentColor" class="w-5 h-5 text-white group-hover:rotate-12 transition-transform">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -133,11 +134,7 @@
                         <p class="text-xs uppercase tracking-wider font-bold text-purple-600 dark:text-purple-400">Top
                             talaba</p>
                         <p class="text-xl font-black text-purple-600 dark:text-purple-400 mt-2 truncate">
-                            @if ($topPerformers->isNotEmpty())
-                                {{ $topPerformers->first()->student->user->name ?? 'N/A' }}
-                            @else
-                                -
-                            @endif
+                            {{ $topPerformers->first()?->student?->user?->name ?? '-' }}
                         </p>
                     </div>
                     <div
@@ -158,7 +155,7 @@
             <form method="GET" action="{{ route('activityresults.index') }}" class="space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4">
 
-                    {{-- 1. Search (Yuqori qator, 1-ustun) --}}
+                    {{-- 1. Search --}}
                     <div class="relative lg:col-span-4 sm:col-span-2">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,7 +163,12 @@
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Talaba ismi..."
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ request('search') }}"
+                            placeholder="Talaba ismi..."
+                            maxlength="100"
                             class="w-full pl-10 pr-10 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white placeholder-gray-400 transition-all outline-none text-sm">
 
                         @if (request('search'))
@@ -181,55 +183,68 @@
                         @endif
                     </div>
 
-                    {{-- 2. Activity Filter (Yuqori qator, 2-ustun) --}}
+                    {{-- 2. Activity Filter --}}
                     <div class="lg:col-span-4">
                         <select name="activity_id"
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white text-sm outline-none transition-all cursor-pointer">
                             <option value="">Faoliyat (Barchasi)</option>
                             @foreach ($activities as $activity)
                                 <option value="{{ $activity->id }}"
-                                    {{ request('activity_id') == $activity->id ? 'selected' : '' }}>
+                                    @selected(request('activity_id') == $activity->id)>
                                     {{ $activity->name }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
 
-                    {{-- 3. Student Filter (Yuqori qator, 3-ustun) --}}
+                    {{-- 3. Student Filter --}}
                     <div class="lg:col-span-4">
                         <select name="student_id"
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white text-sm outline-none transition-all cursor-pointer">
                             <option value="">Talaba (Barchasi)</option>
                             @foreach ($students as $student)
                                 <option value="{{ $student->id }}"
-                                    {{ request('student_id') == $student->id ? 'selected' : '' }}>
-                                    {{ $student->user->name ?? 'N/A' }}
+                                    @selected(request('student_id') == $student->id)>
+                                    {{ $student->user?->name ?? 'N/A' }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
 
-                    {{-- 4. Rank Filter (Pastki qator, 1-ustun) --}}
+                    {{-- 4. Rank Filter --}}
                     <div class="lg:col-span-3">
-                        <input type="number" name="rank" value="{{ request('rank') }}" placeholder="Rang..."
+                        <input
+                            type="number"
+                            name="rank"
+                            value="{{ request('rank') }}"
+                            placeholder="Rang..."
+                            min="1"
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white text-sm outline-none transition-all">
                     </div>
 
-                    {{-- 5. Coins From (Pastki qator, 2-ustun) --}}
+                    {{-- 5. Coins From --}}
                     <div class="lg:col-span-3">
-                        <input type="number" name="coins_from" value="{{ request('coins_from') }}"
+                        <input
+                            type="number"
+                            name="coins_from"
+                            value="{{ request('coins_from') }}"
                             placeholder="Coindan..."
+                            min="0"
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white text-sm outline-none transition-all">
                     </div>
 
-                    {{-- 6. Coins To (Pastki qator, 3-ustun) --}}
+                    {{-- 6. Coins To --}}
                     <div class="lg:col-span-3">
-                        <input type="number" name="coins_to" value="{{ request('coins_to') }}"
+                        <input
+                            type="number"
+                            name="coins_to"
+                            value="{{ request('coins_to') }}"
                             placeholder="Coingacha..."
+                            min="0"
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white text-sm outline-none transition-all">
                     </div>
 
-                    {{-- 7. Action Buttons (Pastki qator, 4-ustun) --}}
+                    {{-- 7. Action Buttons --}}
                     <div class="flex gap-2 lg:col-span-3 sm:col-span-2">
                         <button type="submit"
                             class="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
@@ -288,29 +303,46 @@
 
                     <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         @forelse($results as $result)
+                            @php
+                                $maxCoins   = $result->activity->max_coins ?? 0;
+                                $earned     = $result->earned_coins ?? 0;
+                                $percentage = $maxCoins > 0 ? ($earned / $maxCoins) * 100 : 0;
+                                $badgeColor = match(true) {
+                                    $percentage >= 90 => 'emerald',
+                                    $percentage >= 70 => 'amber',
+                                    default           => 'rose',
+                                };
+                                $studentUser    = $result->student?->user;
+                                $studentName    = $studentUser?->full_name ?? "Noma'lum";
+                                $studentIsActive= (bool) ($studentUser?->is_active ?? false);
+                                $avatarInitials = strtoupper(
+                                    substr($studentUser?->name ?? 'N', 0, 1) .
+                                    substr($studentUser?->surname ?? 'N', 0, 1)
+                                );
+                            @endphp
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                                 {{-- Talaba --}}
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-12 w-12">
-                                            @if ($result->student->user->photo)
-                                                <img src="{{ asset('storage/' . $result->student->user->photo) }}"
-                                                    alt="{{ $result->student->user->full_name }}"
+                                            @if ($studentUser?->photo)
+                                                <img src="{{ asset('storage/' . $studentUser->photo) }}"
+                                                    alt="{{ e($studentName) }}"
                                                     class="h-12 w-12 rounded-xl object-cover ring-2 ring-gray-100 dark:ring-gray-700 shadow-sm">
                                             @else
                                                 <div
                                                     class="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 flex items-center justify-center text-white font-bold text-sm tracking-wider shadow-lg shadow-purple-100 dark:shadow-none border border-purple-400">
-                                                    {{ strtoupper(substr($result->student->user->name, 0, 1) . substr($result->student->user->surname, 0, 1)) }}
+                                                    {{ $avatarInitials }}
                                                 </div>
                                             @endif
                                         </div>
                                         <div class="ml-4 min-w-0">
                                             <div
                                                 class="text-sm font-semibold text-gray-900 dark:text-white truncate max-w-[200px]">
-                                                {{ $result->student->user->full_name ?? 'Noma\'lum' }}
+                                                {{ $studentName }}
                                             </div>
                                             <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                                                @if ($result->student->user->is_active)
+                                                @if ($studentIsActive)
                                                     <span
                                                         class="inline-flex items-center gap-1.5 text-green-600 dark:text-green-400">
                                                         <span
@@ -331,23 +363,15 @@
                                 {{-- Faoliyat --}}
                                 <td class="px-4 lg:px-6 py-4">
                                     <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                        {{ $result->activity->name }}
+                                        {{ $result->activity?->name }}
                                     </div>
                                     <div class="text-xs text-gray-500 dark:text-gray-400">
-                                        {{ ucfirst($result->activity->type) }}
+                                        {{ ucfirst($result->activity?->type ?? '') }}
                                     </div>
                                 </td>
 
-                                {{-- Coinlar --}}
+                                {{-- Olgan coinlar --}}
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                                    @php
-                                        $percentage =
-                                            $result->activity->max_coins > 0
-                                                ? ($result->earned_coins / $result->activity->max_coins) * 100
-                                                : 0;
-                                        $badgeColor =
-                                            $percentage >= 90 ? 'emerald' : ($percentage >= 70 ? 'amber' : 'rose');
-                                    @endphp
                                     <span
                                         class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg bg-{{ $badgeColor }}-100 text-{{ $badgeColor }}-700 dark:bg-{{ $badgeColor }}-900/30 dark:text-{{ $badgeColor }}-400">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -355,7 +379,7 @@
                                                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
                                                 clip-rule="evenodd" />
                                         </svg>
-                                        {{ $result->earned_coins }}/{{ $result->activity->max_coins }}
+                                        {{ $earned }}/{{ $maxCoins }}
                                     </span>
                                 </td>
 
@@ -368,7 +392,7 @@
                                                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
                                                 clip-rule="evenodd" />
                                         </svg>
-                                        {{ number_format($result->student->coins, 0, '.', ' ') }}
+                                        {{ number_format($result->student?->coins ?? 0, 0, '.', ' ') }}
                                     </span>
                                 </td>
 
@@ -377,10 +401,11 @@
                                     @if ($result->rank)
                                         <span
                                             class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-lg
-                                        @if ($result->rank == 1) bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400
-                                        @elseif($result->rank == 2) bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400
-                                        @elseif($result->rank == 3) bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400
-                                        @else bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 @endif">
+                                            @if ($result->rank == 1) bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400
+                                            @elseif ($result->rank == 2) bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400
+                                            @elseif ($result->rank == 3) bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400
+                                            @else bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400
+                                            @endif">
                                             @if ($result->rank <= 3)
                                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                     <path
@@ -435,9 +460,10 @@
                                             </svg>
                                         </a>
 
-                                        {{-- Delete --}}
-                                        <button type="button"
-                                            onclick="document.getElementById('delete-modal-{{ $result->id }}').classList.remove('hidden')"
+                                        {{-- Delete Trigger --}}
+                                        <button
+                                            type="button"
+                                            data-modal-target="delete-modal-{{ $result->id }}"
                                             class="p-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-all duration-200 group/btn"
                                             title="O'chirish">
                                             <svg class="w-5 h-5 transition-transform group-hover/btn:scale-110"
@@ -448,8 +474,9 @@
                                         </button>
 
                                         {{-- Delete Modal --}}
-                                        <div id="delete-modal-{{ $result->id }}"
-                                            class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all">
+                                        <div
+                                            id="delete-modal-{{ $result->id }}"
+                                            class="modal-overlay hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all">
                                             <div
                                                 class="relative w-full max-w-sm p-8 bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-white/5 transform transition-all">
                                                 <div class="text-center">
@@ -463,23 +490,30 @@
                                                         </svg>
                                                     </div>
 
-                                                    <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-2">
+                                                    <h3
+                                                        class="text-2xl font-black text-slate-900 dark:text-white mb-2">
                                                         O'chirishni tasdiqlang</h3>
                                                     <p
                                                         class="text-sm text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
-                                                        Rostdan ham <span
-                                                            class="font-bold text-slate-900 dark:text-white underline decoration-rose-500/30">{{ $result->student->user->name ?? 'N/A' }}</span>
+                                                        Rostdan ham
+                                                        <span
+                                                            class="font-bold text-slate-900 dark:text-white underline decoration-rose-500/30">
+                                                            {{ $studentUser?->name ?? 'N/A' }}
+                                                        </span>
                                                         natijasini o'chirmoqchimisiz?
                                                     </p>
 
                                                     <div class="grid grid-cols-2 gap-3">
-                                                        <button type="button"
-                                                            onclick="document.getElementById('delete-modal-{{ $result->id }}').classList.add('hidden')"
+                                                        <button
+                                                            type="button"
+                                                            data-modal-close="delete-modal-{{ $result->id }}"
                                                             class="px-5 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-2xl transition-all active:scale-95">
                                                             Bekor qilish
                                                         </button>
-                                                        <form action="{{ route('activityresults.destroy', $result->id) }}"
-                                                            method="POST" class="m-0">
+                                                        <form
+                                                            action="{{ route('activityresults.destroy', $result->id) }}"
+                                                            method="POST"
+                                                            class="m-0">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit"
@@ -526,8 +560,9 @@
     </div>
 
     <!-- Create Modal -->
-    <div id="createModal" onclick="if(event.target === this) this.classList.add('hidden')"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div
+        id="createModal"
+        class="modal-overlay hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
         <div
             class="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto p-8 bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-white/5">
             <div class="flex items-center justify-between mb-6">
@@ -536,15 +571,19 @@
                         class="p-3 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl">
                         <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4v16m8-8H4" />
                         </svg>
                     </div>
                     <h2 class="text-2xl font-black text-slate-900 dark:text-white">Yangi natija qo'shish</h2>
                 </div>
-                <button type="button" onclick="closeCreateModal()"
+                <button
+                    type="button"
+                    data-modal-close="createModal"
                     class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">
                     <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -552,21 +591,24 @@
             <form action="{{ route('activityresults.store') }}" method="POST" id="bulkResultForm" class="space-y-5">
                 @csrf
 
-                <!-- Activity Selection with Search -->
+                <!-- Activity Selection -->
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                    <label for="activity_id_input"
+                        class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                         Faoliyat <span class="text-rose-500">*</span>
                     </label>
                     <div class="relative">
-                        <select name="activity_id" id="activity_id_input" required
+                        <select
+                            name="activity_id"
+                            id="activity_id_input"
+                            required
                             class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-700 dark:text-gray-200 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all appearance-none">
                             <option value="" disabled selected>Faoliyatni tanlang</option>
                             @foreach ($activities as $activity)
                                 <option value="{{ $activity->id }}">
-                                    {{-- Barcha ma'lumotlar bitta qatorda --}}
                                     {{ $activity->name }} |
                                     Turi: {{ ucfirst($activity->type) }} |
-                                    Sana: {{ $activity->date ? $activity->date->format('d.m.Y') : 'Sana yo\'q' }} |
+                                    Sana: {{ $activity->date?->format('d.m.Y') ?? "Sana yo'q" }} |
                                     Max: {{ $activity->max_coins }}
                                     @if ($activity->group)
                                         | Guruh: {{ $activity->group->name }}
@@ -574,7 +616,6 @@
                                 </option>
                             @endforeach
                         </select>
-
                         <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -586,20 +627,19 @@
 
                 <!-- Group Filter -->
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                    <label for="groupFilter"
+                        class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                         Guruh bo'yicha filtrlash
                     </label>
-                    <select id="groupFilter" onchange="filterStudentsByGroup()"
+                    <select
+                        id="groupFilter"
                         class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white outline-none transition-all cursor-pointer">
                         <option value="">Barcha guruhlar</option>
-
                         @foreach ($groups as $group)
                             <option value="{{ $group->id }}">
                                 {{ $group->name }}
-                                @if ($group->course)
-                                    — {{ $group->course->name }}
-                                @endif
-                                ({{ $group->active_students_count ?? $group->activeStudents()->count() }} talaba)
+                                @if ($group->course)— {{ $group->course->name }}@endif
+                                ({{ $group->active_students_count ?? 0 }} talaba)
                                 [{{ $group->start_time }}]
                                 @if ($group->days_of_week)
                                     —
@@ -610,7 +650,7 @@
                     </select>
                 </div>
 
-                <!-- Students Selection with Search -->
+                <!-- Students Selection -->
                 <div>
                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                         Talabalar <span class="text-rose-500">*</span>
@@ -627,8 +667,11 @@
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </div>
-                            <input type="text" id="studentSearchInput" oninput="filterStudentsInModal()"
+                            <input
+                                type="text"
+                                id="studentSearchInput"
                                 placeholder="Talabalarni qidirish..."
+                                autocomplete="off"
                                 class="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white placeholder-gray-400 transition-all outline-none text-sm">
                         </div>
                     </div>
@@ -639,11 +682,11 @@
                             <span id="selectedStudentsCount">0</span> ta talaba tanlandi
                         </span>
                         <div class="flex gap-2">
-                            <button type="button" onclick="selectAllStudents()"
+                            <button type="button" id="selectAllBtn"
                                 class="px-3 py-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-lg transition-all">
                                 Barchasini tanlash
                             </button>
-                            <button type="button" onclick="deselectAllStudents()"
+                            <button type="button" id="deselectAllBtn"
                                 class="px-3 py-1.5 text-xs font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all">
                                 Tanlovni bekor qilish
                             </button>
@@ -656,30 +699,27 @@
                         @foreach ($students as $student)
                             <label
                                 class="student-checkbox-item flex items-center gap-3 p-3 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 cursor-pointer border-b border-gray-100 dark:border-gray-700/50 last:border-none transition-all"
-                                {{-- Qidiruv uchun to'liq ism va guruhlarni qo'shamiz --}}
-                                data-student-name="{{ strtolower(($student->user->surname ?? '') . ' ' . ($student->user->name ?? '') . ' ' . ($student->user->middle_name ?? '')) }}"
-                                {{-- Many-to-many bo'lgani uchun guruh ID larini massiv ko'rinishida saqlaymiz --}}
+                                data-student-name="{{ strtolower(($student->user?->surname ?? '') . ' ' . ($student->user?->name ?? '') . ' ' . ($student->user?->middle_name ?? '')) }}"
                                 data-student-groups="{{ json_encode($student->groups->pluck('id')) }}">
 
-                                <input type="checkbox" name="student_ids[]" value="{{ $student->id }}"
-                                    onchange="updateSelectedCount()"
-                                    class="w-5 h-5 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <input
+                                    type="checkbox"
+                                    name="student_ids[]"
+                                    value="{{ $student->id }}"
+                                    class="student-checkbox w-5 h-5 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
 
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-3">
-                                        {{-- Avatar --}}
                                         <div
                                             class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm text-white font-black text-xs uppercase">
-                                            {{ Str::limit($student->user->surname ?? 'S', 1, '') }}{{ Str::limit($student->user->name ?? 'N', 1, '') }}
+                                            {{ Str::limit($student->user?->surname ?? 'S', 1, '') }}{{ Str::limit($student->user?->name ?? 'N', 1, '') }}
                                         </div>
-
-                                        {{-- Ma'lumotlar --}}
                                         <div class="flex-1 min-w-0">
                                             <p class="text-sm font-bold text-gray-900 dark:text-white truncate">
-                                                {{ $student->user->surname ?? '' }} {{ $student->user->name ?? '' }}
-                                                {{ $student->user->middle_name ?? '' }}
+                                                {{ $student->user?->surname ?? '' }}
+                                                {{ $student->user?->name ?? '' }}
+                                                {{ $student->user?->middle_name ?? '' }}
                                             </p>
-
                                             <div class="flex flex-wrap items-center gap-1 mt-0.5">
                                                 @forelse ($student->groups as $group)
                                                     <span
@@ -696,18 +736,24 @@
                             </label>
                         @endforeach
                     </div>
-                    <div id="noStudentsFound" class="hidden p-4 text-center text-sm text-gray-500">
+                    <p id="noStudentsFound" class="hidden p-4 text-center text-sm text-gray-500">
                         Talabalar topilmadi...
-                    </div>
+                    </p>
                 </div>
 
-                <!-- Earned Coins (same for all) -->
+                <!-- Earned Coins & Rank -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                        <label for="earned_coins_input"
+                            class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                             Olgan coinlar (hammasi uchun bir xil) <span class="text-rose-500">*</span>
                         </label>
-                        <input type="number" name="earned_coins" id="earned_coins_input" required min="0"
+                        <input
+                            type="number"
+                            name="earned_coins"
+                            id="earned_coins_input"
+                            required
+                            min="0"
                             class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white placeholder-gray-400 transition-all outline-none"
                             placeholder="Masalan: 85">
                         <p id="maxCoinsHint" class="mt-1 text-xs text-gray-500 dark:text-gray-400 hidden">
@@ -716,22 +762,20 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                        <label for="start_rank"
+                            class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                             Natija darajasi (Rank)
                         </label>
                         <div class="relative">
-                            <select name="start_rank"
+                            <select
+                                name="start_rank"
+                                id="start_rank"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all appearance-none cursor-pointer">
-
-                                {{-- Default holat: O'rin berilmaydi --}}
-                                <option value="" selected>O'rin berilmasin (Oddiy ishtirokchi)</option>
-
-                                {{-- Faqat asosiy g'oliblar --}}
+                                <option value="">O'rin berilmasin (Oddiy ishtirokchi)</option>
                                 <option value="1">🥇 1-o'rin (G'olib)</option>
                                 <option value="2">🥈 2-o'rin (Sovrindor)</option>
                                 <option value="3">🥉 3-o'rin (Sovrindor)</option>
                             </select>
-
                             <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
@@ -740,18 +784,16 @@
                                 </svg>
                             </div>
                         </div>
-
                         <div
                             class="mt-2 flex items-start gap-2 p-2 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-100 dark:border-amber-800">
-                            <svg class="w-4 h-4 text-amber-600 mt-0.5" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <p class="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
-                                Agar yuqoridan o'rin tanlasangiz, tanlangan talabalarga <strong>ketma-ket</strong> o'rin
-                                beriladi.
-                                Tanlamasangiz, ular shunchaki ball (coin) olishadi.
+                                Agar yuqoridan o'rin tanlasangiz, tanlangan talabalarga <strong>ketma-ket</strong>
+                                o'rin beriladi. Tanlamasangiz, ular shunchaki ball (coin) olishadi.
                             </p>
                         </div>
                     </div>
@@ -759,10 +801,14 @@
 
                 <!-- Note -->
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                    <label for="note" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                         Izoh (hammasi uchun)
                     </label>
-                    <textarea name="note" rows="2"
+                    <textarea
+                        name="note"
+                        id="note"
+                        rows="2"
+                        maxlength="500"
                         class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white placeholder-gray-400 transition-all outline-none resize-none"
                         placeholder="Qo'shimcha izoh..."></textarea>
                 </div>
@@ -791,7 +837,9 @@
 
                 <!-- Actions -->
                 <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="closeCreateModal()"
+                    <button
+                        type="button"
+                        data-modal-close="createModal"
                         class="flex-1 px-6 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-2xl transition-all active:scale-95">
                         Bekor qilish
                     </button>
@@ -806,156 +854,187 @@
 
     @push('scripts')
         <script>
-            let maxCoins = 0;
+            (() => {
+                'use strict';
 
+                // ─── Modal helpers ────────────────────────────────────────────────────────────
+                function openModal(id) {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.remove('hidden');
+                }
 
+                function closeModal(id) {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.add('hidden');
+                }
 
-            // Student functions
-            function filterStudentsInModal() {
-                const input = document.getElementById('studentSearchInput');
-                const filter = input.value.toLowerCase();
-                const items = document.querySelectorAll('.student-checkbox-item');
-                const noResult = document.getElementById('noStudentsFound');
-                let hasMatch = false;
+                // Open modal via [data-modal-target]
+                document.addEventListener('click', (e) => {
+                    const openTrigger = e.target.closest('[data-modal-target]');
+                    if (openTrigger) {
+                        openModal(openTrigger.dataset.modalTarget);
+                        return;
+                    }
 
-                items.forEach(item => {
-                    const name = item.dataset.studentName.toLowerCase();
+                    const closeTrigger = e.target.closest('[data-modal-close]');
+                    if (closeTrigger) {
+                        const modalId = closeTrigger.dataset.modalClose;
+                        closeModal(modalId);
+                        if (modalId === 'createModal') resetCreateModal();
+                        return;
+                    }
 
-                    if (name.includes(filter)) {
-                        item.style.display = '';
-                        hasMatch = true;
-                    } else {
-                        item.style.display = 'none';
+                    // Close on backdrop click
+                    if (e.target.classList.contains('modal-overlay')) {
+                        const modalId = e.target.id;
+                        closeModal(modalId);
+                        if (modalId === 'createModal') resetCreateModal();
                     }
                 });
 
-                noResult.classList.toggle('hidden', hasMatch);
-            }
+                // Close modals on Escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key !== 'Escape') return;
+                    document.querySelectorAll('.modal-overlay:not(.hidden)').forEach((modal) => {
+                        closeModal(modal.id);
+                        if (modal.id === 'createModal') resetCreateModal();
+                    });
+                });
 
-            function filterStudentsByGroup() {
-                const groupId = document.getElementById('groupFilter').value;
-                const items = document.querySelectorAll('.student-checkbox-item');
-                const noResult = document.getElementById('noStudentsFound');
-                let hasVisible = false;
+                // ─── Create modal reset ───────────────────────────────────────────────────────
+                function resetCreateModal() {
+                    const form = document.getElementById('bulkResultForm');
+                    if (form) form.reset();
 
-                items.forEach(item => {
-                    // data-student-groups ichidagi JSON ni o'qiymiz (massiv holatida)
-                    let studentGroups = [];
-                    try {
-                        studentGroups = JSON.parse(item.dataset.studentGroups || '[]');
-                    } catch (e) {
-                        studentGroups = [];
+                    document.getElementById('maxCoinsHint')?.classList.add('hidden');
+                    document.getElementById('groupFilter').value = '';
+                    document.getElementById('studentSearchInput').value = '';
+
+                    filterStudentsByGroup();
+                    filterStudentsInModal();
+                    updateSelectedCount();
+                }
+
+                // ─── Student filtering ────────────────────────────────────────────────────────
+                function filterStudentsInModal() {
+                    const filter = document.getElementById('studentSearchInput').value.toLowerCase().trim();
+                    const items = document.querySelectorAll('.student-checkbox-item');
+                    let hasMatch = false;
+
+                    items.forEach((item) => {
+                        const name = item.dataset.studentName ?? '';
+                        const visible = name.includes(filter);
+                        item.style.display = visible ? '' : 'none';
+                        if (visible) hasMatch = true;
+                    });
+
+                    document.getElementById('noStudentsFound')?.classList.toggle('hidden', hasMatch);
+                }
+
+                function filterStudentsByGroup() {
+                    const groupId = document.getElementById('groupFilter').value;
+                    const items = document.querySelectorAll('.student-checkbox-item');
+                    let hasVisible = false;
+
+                    items.forEach((item) => {
+                        let studentGroups = [];
+                        try {
+                            studentGroups = JSON.parse(item.dataset.studentGroups || '[]');
+                        } catch {
+                            studentGroups = [];
+                        }
+
+                        const visible = !groupId || studentGroups.includes(parseInt(groupId, 10));
+                        item.style.display = visible ? '' : 'none';
+                        if (visible) hasVisible = true;
+                    });
+
+                    document.getElementById('noStudentsFound')?.classList.toggle('hidden', hasVisible);
+                    updateSelectedCount();
+                }
+
+                // ─── Select / deselect ────────────────────────────────────────────────────────
+                function selectAllStudents() {
+                    document.querySelectorAll(
+                        '.student-checkbox-item:not([style*="display: none"]) .student-checkbox'
+                    ).forEach((cb) => { cb.checked = true; });
+                    updateSelectedCount();
+                }
+
+                function deselectAllStudents() {
+                    document.querySelectorAll('.student-checkbox').forEach((cb) => { cb.checked = false; });
+                    updateSelectedCount();
+                }
+
+                function updateSelectedCount() {
+                    let count = 0;
+                    document.querySelectorAll('.student-checkbox-item').forEach((item) => {
+                        const cb = item.querySelector('.student-checkbox');
+                        const checked = cb?.checked ?? false;
+                        item.classList.toggle('bg-emerald-50', checked);
+                        item.classList.toggle('border-emerald-200', checked);
+                        item.classList.toggle('dark:bg-emerald-500/10', checked);
+                        if (checked) count++;
+                    });
+                    const counter = document.getElementById('selectedStudentsCount');
+                    if (counter) counter.textContent = count;
+                }
+
+                // ─── Event bindings ───────────────────────────────────────────────────────────
+                document.getElementById('studentSearchInput')
+                    ?.addEventListener('input', filterStudentsInModal);
+
+                document.getElementById('groupFilter')
+                    ?.addEventListener('change', filterStudentsByGroup);
+
+                document.getElementById('selectAllBtn')
+                    ?.addEventListener('click', selectAllStudents);
+
+                document.getElementById('deselectAllBtn')
+                    ?.addEventListener('click', deselectAllStudents);
+
+                document.querySelectorAll('.student-checkbox')
+                    .forEach((cb) => cb.addEventListener('change', updateSelectedCount));
+
+                // ─── Form validation ──────────────────────────────────────────────────────────
+                document.getElementById('bulkResultForm')?.addEventListener('submit', function (e) {
+                    const selected = document.querySelectorAll('.student-checkbox:checked');
+                    if (selected.length === 0) {
+                        e.preventDefault();
+                        alert('Iltimos, kamida bitta talaba tanlang!');
+                        return;
                     }
 
-                    // Agar guruh tanlanmagan bo'lsa hamma chiqadi
-                    // Agar tanlangan bo'lsa, u massiv ichida bor-yo'qligi tekshiriladi
-                    if (!groupId || studentGroups.includes(parseInt(groupId))) {
-                        item.style.display = '';
-                        hasVisible = true;
-                    } else {
-                        item.style.display = 'none';
-                        // Agar yashirilayotgan talaba belgilangan bo'lsa, uni tanlovdan olib tashlash
-                        // ixtiyoriy: item.querySelector('input').checked = false; 
+                    const maxCoins  = parseInt(document.getElementById('maxCoinsValue')?.textContent ?? '0', 10);
+                    const earned    = parseInt(document.getElementById('earned_coins_input')?.value ?? '0', 10);
+                    if (maxCoins > 0 && earned > maxCoins) {
+                        e.preventDefault();
+                        alert(`Kiritilgan coinlar maksimal qiymatdan oshib ketdi! Maksimal: ${maxCoins}`);
                     }
                 });
 
-                if (noResult) {
-                    noResult.classList.toggle('hidden', hasVisible);
-                }
-
-                updateSelectedCount();
-            }
-
-            function selectAllStudents() {
-                // Faqat display:none bo'lmagan checkboxlarni topamiz
-                const visibleCheckboxes = document.querySelectorAll(
-                    '.student-checkbox-item:not([style*="display: none"]) input[type="checkbox"]');
-                visibleCheckboxes.forEach(cb => cb.checked = true);
-                updateSelectedCount();
-            }
-
-            function deselectAllStudents() {
-                const checkboxes = document.querySelectorAll('input[name="student_ids[]"]');
-                checkboxes.forEach(cb => cb.checked = false);
-                updateSelectedCount();
-            }
-
-            // JavaScript qismiga qo'shish uchun:
-            function updateSelectedCount() {
-                const items = document.querySelectorAll('.student-checkbox-item');
-                let count = 0;
-
-                items.forEach(item => {
-                    const checkbox = item.querySelector('input[type="checkbox"]');
-                    if (checkbox.checked) {
-                        // Tanlangan bo'lsa stilni o'zgartiramiz
-                        item.classList.add('bg-emerald-50', 'border-emerald-200', 'dark:bg-emerald-500/10');
-                        count++;
-                    } else {
-                        item.classList.remove('bg-emerald-50', 'border-emerald-200', 'dark:bg-emerald-500/10');
-                    }
-                });
-
-                document.getElementById('selectedStudentsCount').innerText = count;
-            }
-
-            function closeCreateModal() {
-                document.getElementById('createModal').classList.add('hidden');
-                document.getElementById('bulkResultForm').reset();
-                deselectAllStudents();
-                document.getElementById('selectedActivityLabel').innerText = 'Faoliyatni tanlang';
-                document.getElementById('selectedActivityLabel').classList.add('text-gray-500');
-                document.getElementById('selectedActivityLabel').classList.remove('text-gray-900', 'dark:text-white',
-                    'font-medium');
-                document.getElementById('maxCoinsHint').classList.add('hidden');
-                document.getElementById('groupFilter').value = '';
-                document.getElementById('studentSearchInput').value = '';
-                filterStudentsByGroup();
-                filterStudentsInModal();
-            }
-
-
-            // Form validation
-            document.getElementById('bulkResultForm').addEventListener('submit', function(e) {
-                const selectedStudents = document.querySelectorAll('input[name="student_ids[]"]:checked');
-                if (selectedStudents.length === 0) {
-                    e.preventDefault();
-                    alert('Iltimos, kamida bitta talaba tanlang!');
-                    return false;
-                }
-
-                const earnedCoins = parseInt(document.getElementById('earned_coins_input').value);
-                if (maxCoins > 0 && earnedCoins > maxCoins) {
-                    e.preventDefault();
-                    alert(`Kiritilgan coinlar maksimal qiymatdan oshib ketdi! Maksimal: ${maxCoins}`);
-                    return false;
-                }
-            });
+            })();
         </script>
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                // Guruh filtri uchun
-                const groupSelect = new TomSelect("#groupFilter", {
-                    plugins: ['dropdown_input'],
-                    create: false,
-                    allowEmptyOption: true,
-                    placeholder: "Guruhni tanlang...",
-                    onChange: function(value) {
-                        filterStudentsByGroup(); // Guruh o'zgarganda qidirish
-                    }
-                });
 
-                // Faoliyat tanlash uchun
-                const activitySelect = new TomSelect("#activity_id_input", {
-                    plugins: ['dropdown_input'],
-                    create: false,
-                    allowEmptyOption: true,
-                    placeholder: "Faoliyatni tanlang...",
-                    onChange: function(value) {
-                        // Faoliyat o'zgarganda talabalarni emas, max_coins ni yangilash kerak bo'lishi mumkin
-                        // filterStudentsByGroup(); // Buni o'chirib tursangiz ham bo'ladi
-                    }
-                });
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                // TomSelect — Group filter
+                if (typeof TomSelect !== 'undefined') {
+                    new TomSelect('#groupFilter', {
+                        plugins: ['dropdown_input'],
+                        create: false,
+                        allowEmptyOption: true,
+                        placeholder: 'Guruhni tanlang...',
+                    });
+
+                    // TomSelect — Activity select
+                    new TomSelect('#activity_id_input', {
+                        plugins: ['dropdown_input'],
+                        create: false,
+                        allowEmptyOption: true,
+                        placeholder: 'Faoliyatni tanlang...',
+                    });
+                }
             });
         </script>
     @endpush

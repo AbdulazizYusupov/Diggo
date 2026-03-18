@@ -165,7 +165,7 @@
                                 
                                 <div class="flex items-center gap-4 mt-2">
                                     <p class="text-xs text-gray-500 dark:text-gray-400">
-                                        {{ \Carbon\Carbon::parse($transaction->transaction_date)->format('d.m.Y H:i') }}
+                                        {{ \Carbon\Carbon::parse($transaction->transaction_date)->format('d.m.Y') }}  {{ \Carbon\Carbon::parse($transaction->created_at)->format('H:i') }}
                                     </p>
                                     @if($transaction->user)
                                         <p class="text-xs text-gray-500 dark:text-gray-400">
