@@ -90,7 +90,7 @@
 
             <!-- Right: Action Buttons -->
             <div class="flex items-center gap-2 lg:gap-3">
-                <a href="{{ route('schools.index') }}"
+                <a href="{{ route('director.dashboard') }}"
                     class="inline-flex items-center gap-2 px-4 lg:px-5 py-2.5 lg:py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300 font-bold rounded-xl transition-all active:scale-95 shadow-sm">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -99,23 +99,7 @@
                     <span class="hidden sm:inline">Orqaga</span>
                 </a>
 
-                <a href="{{ route('schools.edit', $school->id) }}"
-                    class="inline-flex items-center gap-2 px-4 lg:px-5 py-2.5 lg:py-3 bg-amber-500 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700 text-white font-bold rounded-xl transition-all active:scale-95 shadow-sm shadow-amber-200 dark:shadow-none">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    <span class="hidden sm:inline">Tahrirlash</span>
-                </a>
 
-                <button type="button" onclick="document.getElementById('delete-modal').classList.remove('hidden')"
-                    class="inline-flex items-center gap-2 px-4 lg:px-5 py-2.5 lg:py-3 bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700 text-white font-bold rounded-xl transition-all active:scale-95 shadow-sm shadow-rose-200 dark:shadow-none">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    <span class="hidden sm:inline">O'chirish</span>
-                </button>
             </div>
         </div>
 
@@ -215,18 +199,18 @@
                         <h2 class="text-xl font-black text-gray-900 dark:text-white">Maktab direktori</h2>
                     </div>
 
-                    @if ($school->director)
+                    @if ($school->director && $school->director->user)
+                        @php $user = $school->director->user; @endphp
                         <div class="space-y-4">
                             <div class="flex-shrink-0">
-                                @if ($school->director->user->photo)
-                                    <img src="{{ asset('storage/' . $school->director->user->photo) }}"
-                                        alt="{{ $school->director->user->full_name }}"
+                                @if ($user->photo)
+                                    <img src="{{ asset('storage/' . $user->photo) }}" alt="{{ $user->full_name }}"
                                         class="w-full h-48 rounded-2xl object-cover ring-4 ring-indigo-100 dark:ring-indigo-500/20 shadow-lg">
                                 @else
                                     <div
                                         class="w-full h-48 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center ring-4 ring-indigo-100 dark:ring-indigo-500/20 shadow-lg">
                                         <span class="text-white font-black text-5xl">
-                                            {{ substr($school->director->user->name, 0, 1) }}{{ substr($school->director->user->surname, 0, 1) }}
+                                            {{ mb_substr($user->name ?? 'D', 0, 1) }}{{ mb_substr($user->surname ?? '', 0, 1) }}
                                         </span>
                                     </div>
                                 @endif
@@ -234,32 +218,33 @@
 
                             <div class="flex-1 min-w-0">
                                 <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3">
-                                    {{ $school->director->user->full_name }}
+                                    {{ $user->full_name ?? 'Ism ko\'rsatilmadi' }}
                                 </h3>
                                 <div class="space-y-2">
-                                    @if ($school->director->user->email)
+                                    @if ($user->email)
                                         <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                                             <svg class="w-4 h-4 text-indigo-500 flex-shrink-0" fill="none"
                                                 stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                             </svg>
-                                            <a href="mailto:{{ $school->director->user->email }}"
+                                            <a href="mailto:{{ $user->email }}"
                                                 class="font-medium hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate">
-                                                {{ $school->director->user->email }}
+                                                {{ $user->email }}
                                             </a>
                                         </div>
                                     @endif
-                                    @if ($school->director->user->phone)
+
+                                    @if ($user->phone)
                                         <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                                             <svg class="w-4 h-4 text-indigo-500 flex-shrink-0" fill="none"
                                                 stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                             </svg>
-                                            <a href="tel:{{ $school->director->user->phone }}"
+                                            <a href="tel:{{ $user->phone }}"
                                                 class="font-medium hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                                                {{ $school->director->user->phone }}
+                                                {{ $user->phone }}
                                             </a>
                                         </div>
                                     @endif
@@ -277,7 +262,7 @@
                                 </svg>
                             </div>
                             <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">Direktor tayinlanmagan</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Bu maktabga direktor tayinlanmagan</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Tizimda direktor ma'lumotlari topilmadi</p>
                         </div>
                     @endif
                 </div>
@@ -385,7 +370,7 @@
                                         class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-semibold transition-all active:scale-95">
                                         Qidirish
                                     </button>
-                                    <a href="{{ route('schools.show', $school->id) }}"
+                                    <a href="{{ route('director.school.show', $school->id) }}"
                                         class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-semibold transition-all active:scale-95">
                                         Tozalash
                                     </a>
