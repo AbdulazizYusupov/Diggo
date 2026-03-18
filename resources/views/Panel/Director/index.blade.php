@@ -43,7 +43,7 @@
         </div>
 
         {{-- Balance and Commission Cards --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {{-- Current Balance --}}
             <div
                 class="bg-gradient-to-br from-purple-100 to-purple-200/60 dark:from-purple-900/30 dark:to-purple-800/30 rounded-2xl p-6 border border-purple-200 dark:border-purple-700/50 shadow-md">
@@ -90,30 +90,7 @@
                 </div>
             </div>
 
-            {{-- Pending Commission --}}
-            <div
-                class="bg-gradient-to-br from-amber-100 to-amber-200/60 dark:from-amber-900/30 dark:to-amber-800/30 rounded-2xl p-6 border border-amber-200 dark:border-amber-700/50 shadow-md">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
-                            Kutilayotgan
-                        </p>
-                        <p class="text-3xl font-extrabold text-amber-900 dark:text-amber-50 mt-1">
-                            {{ number_format($stats['pending_commission'], 0, '.', ' ') }}
-                            <span class="text-lg">so'm</span>
-                        </p>
-                    </div>
-                    <div
-                        class="p-3 bg-amber-500 rounded-xl shadow-lg shadow-amber-300/50 dark:shadow-none transition-transform hover:scale-110">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Total Commission Earned --}}
+           
             <div
                 class="bg-gradient-to-br from-blue-100 to-blue-200/60 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl p-6 border border-blue-200 dark:border-blue-700/50 shadow-md">
                 <div class="flex items-center justify-between">
@@ -138,7 +115,7 @@
         </div>
 
         {{-- Students Statistics --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div
                 class="bg-gradient-to-br from-indigo-100 to-indigo-200/60 dark:from-indigo-900/30 dark:to-indigo-800/30 rounded-2xl p-6 border border-indigo-200 dark:border-indigo-700/50 shadow-md">
                 <div class="flex items-center justify-between">
@@ -160,27 +137,7 @@
                 </div>
             </div>
 
-            <div
-                class="bg-gradient-to-br from-green-100 to-green-200/60 dark:from-green-900/30 dark:to-green-800/30 rounded-2xl p-6 border border-green-200 dark:border-green-700/50 shadow-md">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-bold text-green-700 dark:text-green-400 uppercase tracking-wider">
-                            Faol o'quvchilar
-                        </p>
-                        <p class="text-3xl font-extrabold text-green-900 dark:text-green-50 mt-1">
-                            {{ $stats['active_students'] }}
-                        </p>
-                    </div>
-                    <div
-                        class="p-3 bg-green-600 rounded-xl shadow-lg shadow-green-300/50 dark:shadow-none transition-transform hover:scale-110">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
+          
             <div
                 class="bg-gradient-to-br from-rose-100 to-rose-200/60 dark:from-rose-900/30 dark:to-rose-800/30 rounded-2xl p-6 border border-rose-200 dark:border-rose-700/50 shadow-md">
                 <div class="flex items-center justify-between">
@@ -296,7 +253,7 @@
         </div>
 
         {{-- Recent Payments --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        {{-- <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                     <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor"
@@ -391,7 +348,7 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div> --}}
 
         {{-- Quick Actions --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

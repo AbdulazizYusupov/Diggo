@@ -64,14 +64,17 @@ class DirectorDashboardController extends Controller
     {
         $schoolId = $director->school_id;
 
-        // Jami o'quvchilar soni
-        $totalStudents = Student::where('school_id', $schoolId)
-            ->where('director_id', $director->id)
-            ->count();
+        // // Jami o'quvchilar soni
+        // $totalStudents = Student::where('school_id', $schoolId)
+        //     ->where('director_id', $director->id)
+        //     ->count();
 
         // Faol o'quvchilar
-        $activeStudents = Student::where('school_id', $schoolId)
+        $totalStudents = Student::where('school_id', $schoolId)
             ->where('director_id', $director->id)
+            ->whereHas('user', function ($query) {
+                $query->where('is_active', true);
+            })
             ->count();
 
         // Shu oylik komissiya (Transaction orqali)
@@ -126,8 +129,8 @@ class DirectorDashboardController extends Controller
 
         return [
             'total_students' => $totalStudents,
-            'active_students' => $activeStudents,
-            'inactive_students' => $totalStudents - $activeStudents,
+            // 'active_students' => $activeStudents,
+            // 'inactive_students' => $totalStudents - $activeStudents,
             'this_month_commission' => $thisMonthCommission,
             'pending_commission' => $pendingCommission,
             'current_balance' => $director->balance,
@@ -235,8 +238,13 @@ class DirectorDashboardController extends Controller
         return GroupStudent::where('status', 'active')
             ->whereHas('student', function ($query) use ($director) {
                 $query->where('school_id', $director->school_id)
-                    ->where('director_id', $director->id);
+                    ->where('director_id', $director->id)
+                    // MANA SHU YERDA USERNI TEKSHIRISHNI QO'SHIB KETING:
+                    ->whereHas('user', function ($u) {
+                        $u->where('is_active', true);
+                    });
             })
+            // Group va Course'ni birga yuklaymiz (N+1 muammosi bo'lmasligi uchun)
             ->with(['group.course'])
             ->select('group_id', DB::raw('COUNT(*) as student_count'))
             ->groupBy('group_id')
@@ -244,9 +252,14 @@ class DirectorDashboardController extends Controller
             ->limit(5)
             ->get()
             ->map(function ($item) {
-                $item->group->student_count = $item->student_count;
-                return $item->group;
-            });
+                // Agar guruh bazadan o'chirilgan bo'lsa, xato bermasligi uchun tekshiruv:
+                if ($item->group) {
+                    $item->group->student_count = $item->student_count;
+                    return $item->group;
+                }
+                return null;
+            })
+            ->filter(); // null bo'lib qolgan guruhlarni olib tashlaydi
     }
 
     private function getAttendanceStatistics($director)
