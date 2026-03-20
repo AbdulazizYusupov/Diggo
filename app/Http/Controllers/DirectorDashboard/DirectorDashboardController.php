@@ -119,12 +119,15 @@ class DirectorDashboardController extends Controller
             ->count();
 
         // O'rtacha davomat foizi (shu oyda)
-        $attendanceRate = Attendance::whereHas('student', function ($query) use ($schoolId, $director) {
+        $attendanceRate  = Attendance::whereHas('student', function ($query) use ($schoolId, $director) {
             $query->where('school_id', $schoolId)
                 ->where('director_id', $director->id);
         })
-            ->whereMonth('created_at', Carbon::now()->month)
-            ->whereYear('created_at', Carbon::now()->year)
+            ->whereHas('lesson', function ($query) {
+                $query->whereMonth('lesson_date', Carbon::now()->month)
+                    ->whereYear('lesson_date', Carbon::now()->year);
+            })
+            ->whereIn('status', ['present', 'late'])
             ->avg(DB::raw('CASE WHEN status = "present" THEN 100 ELSE 0 END'));
 
         return [
