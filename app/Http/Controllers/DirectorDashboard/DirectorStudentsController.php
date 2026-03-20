@@ -199,20 +199,6 @@ class DirectorStudentsController extends Controller
         ->whereNotNull('activity_score')
         ->avg('activity_score') ?? 0;
  
-    // ── Director earnings from this student (commission transactions only) ─
-    //
-    // Cycle recap (from PaymentService):
-    //   1. Student pays  → Payment created (payable = Student)
-    //   2. PaymentService::processDirectorCommission() creates a Transaction:
-    //        transactionable = Director
-    //        source          = Payment  ← links back to this student's payment
-    //        type            = 'director_commission'
-    //        amount          = net_amount * commission_percentage / 100
-    //
-    // So the director's true earning per student = SUM of those commission
-    // Transaction rows, NOT the student's raw payment amounts.
-    // We verify ownership through the source Payment's payable_id to be safe.
-    //
     $commissionBase = fn () => Transaction::query()
         ->where('transactionable_type', Director::class)
         ->where('transactionable_id', $director->id)
