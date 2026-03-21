@@ -248,10 +248,7 @@
                     {{--  --}}
                     <div class="space-y-2">
                         <a href="{{ route('role-permissions.edit', $role->id) }}"
-                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 
-          bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 
-          dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 dark:border-indigo-500/40 dark:hover:border-indigo-500/60 dark:text-indigo-300 
-          font-semibold rounded-xl transition-all shadow-sm active:scale-[0.95]">
+                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 dark:border-indigo-500/40 dark:hover:border-indigo-500/60 dark:text-indigo-300 font-semibold rounded-xl transition-all shadow-sm active:scale-[0.95]">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -260,10 +257,7 @@
                         </a>
                         <div class="flex gap-2">
                             <a href="{{ route('role-permissions.show', $role->id) }}"
-                                class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 
-          bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 
-          dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 dark:border-emerald-500/40 dark:hover:border-emerald-500/60 dark:text-emerald-300 
-          font-medium rounded-xl transition-all shadow-sm active:scale-[0.95]">
+                                class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 dark:border-emerald-500/40 dark:hover:border-emerald-500/60 dark:text-emerald-300 font-medium rounded-xl transition-all shadow-sm active:scale-[0.95]">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -275,9 +269,7 @@
 
                             @if ($role->permissions_count > 0)
                                 <button onclick='openRevokeModal(@json($role))'
-                                    class="px-4 py-2 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 
-           dark:bg-red-500/10 dark:hover:bg-red-500/20 dark:border-red-500/40 dark:hover:border-red-500/60 dark:text-red-400 
-           font-medium rounded-xl transition-all shadow-sm active:scale-[0.95]"
+                                    class="px-4 py-2 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 dark:bg-red-500/10 dark:hover:bg-red-500/20 dark:border-red-500/40 dark:hover:border-red-500/60 dark:text-red-400 font-medium rounded-xl transition-all shadow-sm active:scale-[0.95]"
                                     title="Barcha ruxsatlarni olib tashlash">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -363,15 +355,7 @@
                         Qaysi roldan ko'chirish? <span class="text-red-500">*</span>
                     </label>
                     <select name="from_role_id" required
-                        class="w-full px-4 py-2.5 
-               bg-white dark:bg-slate-900 
-               border border-gray-300 dark:border-indigo-500/30 
-               text-gray-900 dark:text-gray-100 
-               rounded-xl outline-none
-               transition-all duration-200
-               focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 
-               dark:focus:ring-indigo-500/20 dark:focus:border-indigo-400
-               cursor-pointer">
+                        class="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-indigo-500/30 text-gray-900 dark:text-gray-100 rounded-xl outline-none transition-all duration-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 dark:focus:ring-indigo-500/20 dark:focus:border-indigo-400 cursor-pointer">
                         <option value="" class="dark:bg-slate-900">Rol tanlang...</option>
                         @foreach ($roles as $role)
                             <option value="{{ $role->id }}" class="dark:bg-slate-900">
@@ -397,15 +381,8 @@
                         Qaysi rolga ko'chirish? <span class="text-red-500">*</span>
                     </label>
                     <select name="to_role_id" required
-                        class="w-full px-4 py-2.5 
-                        bg-white dark:bg-slate-900 
-                        border border-gray-300 dark:border-indigo-500/30 
-                        text-gray-900 dark:text-gray-100 
-                        rounded-xl outline-none
-                        transition-all duration-200
-                        focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 
-                        dark:focus:ring-indigo-500/20 dark:focus:border-indigo-400
-                        cursor-pointer">
+                        class="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-indigo-500/30 text-gray-900 dark:text-gray-100 rounded-xl outline-none transition-all duration-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 
+                        dark:focus:ring-indigo-500/20 dark:focus:border-indigo-400 cursor-pointer">
                         <option value="" class="dark:bg-slate-900">Rol tanlang...</option>
                         @foreach ($roles as $role)
                             <option value="{{ $role->id }}" class="dark:bg-slate-900">{{ $role->name }}</option>
@@ -432,11 +409,7 @@
 
                 <div class="flex items-center justify-end gap-3 pt-4">
                     <button type="button" onclick="closeCopyModal()"
-                        class="group flex items-center gap-2 px-6 py-2.5 
-               bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 
-               border border-slate-200 dark:border-slate-700
-               text-slate-700 dark:text-slate-300 
-               font-semibold rounded-xl transition-all duration-300 active:scale-95">
+                        class="group flex items-center gap-2 px-6 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-xl transition-all duration-300 active:scale-95">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                             stroke="currentColor" class="w-5 h-5 transition-transform duration-500 group-hover:rotate-90">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -445,11 +418,7 @@
                     </button>
 
                     <button type="submit"
-                        class="group flex items-center gap-2 px-6 py-2.5 
-               bg-indigo-600 hover:bg-indigo-700 text-white 
-               dark:bg-indigo-500 dark:hover:bg-indigo-600
-               font-semibold rounded-xl shadow-md shadow-indigo-200 dark:shadow-none 
-               active:scale-95 transition-all duration-300">
+                        class="group flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-500 dark:hover:bg-indigo-600 font-semibold rounded-xl shadow-md shadow-indigo-200 dark:shadow-none active:scale-95 transition-all duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                             stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round"

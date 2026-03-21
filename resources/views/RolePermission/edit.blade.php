@@ -12,12 +12,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div class="flex items-center gap-4">
                 <a href="{{ route('role-permissions.index') }}"
-                    class="p-2.5 inline-flex items-center justify-center
-                       bg-slate-100 border border-slate-200 text-slate-600
-                       hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300
-                       dark:bg-slate-800 dark:border-slate-700 dark:text-gray-400
-                       dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400 dark:hover:border-indigo-500/30
-                       rounded-xl transition-all active:scale-95 shadow-sm">
+                    class="p-2.5 inline-flex items-center justify-center bg-slate-100 border border-slate-200 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 dark:bg-slate-800 dark:border-slate-700 dark:text-gray-400 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400 dark:hover:border-indigo-500/30 rounded-xl transition-all active:scale-95 shadow-sm">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
@@ -49,10 +44,7 @@
 
             <div class="flex items-center gap-3">
                 <button type="button" onclick="selectAll()"
-                    class="inline-flex items-center gap-2 px-5 py-2.5
-                       bg-emerald-100/80 hover:bg-emerald-200/80 border border-emerald-200
-                       dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 dark:border-emerald-500/40
-                       text-emerald-800 dark:text-emerald-300 font-semibold rounded-xl transition-all active:scale-95 shadow-sm">
+                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-100/80 hover:bg-emerald-200/80 border border-emerald-200 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 dark:border-emerald-500/40 text-emerald-800 dark:text-emerald-300 font-semibold rounded-xl transition-all active:scale-95 shadow-sm">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -61,10 +53,7 @@
                 </button>
 
                 <button type="button" onclick="deselectAll()"
-                    class="inline-flex items-center gap-2 px-5 py-2.5
-                       bg-slate-200/60 hover:bg-slate-200 border border-slate-300
-                       dark:bg-slate-800 dark:hover:bg-slate-700 dark:border-slate-600
-                       text-slate-800 dark:text-slate-300 font-semibold rounded-xl transition-all active:scale-95 shadow-sm">
+                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-200/60 hover:bg-slate-200 border border-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 dark:border-slate-600 text-slate-800 dark:text-slate-300 font-semibold rounded-xl transition-all active:scale-95 shadow-sm">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -77,7 +66,6 @@
             class="space-y-6">
             @csrf
             @method('PUT')
-
             {{-- Statistics Bar --}}
             <div
                 class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-indigo-500/20 p-6">
@@ -132,16 +120,8 @@
                         </svg>
                     </div>
 
-                    <input type="text" id="searchInput"
-                        placeholder="Ruxsat nomi yoki tavsifi bo'yicha qidiring..."
-                        class="block w-full pl-11 pr-12 py-2.5
-                            bg-gray-50 dark:bg-slate-800/50
-                            border border-gray-300 dark:border-indigo-500/30
-                            rounded-xl text-gray-900 dark:text-white
-                            placeholder-gray-400 dark:placeholder-gray-500
-                            outline-none transition-all duration-200
-                            focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500
-                            dark:focus:ring-indigo-500/20 dark:focus:border-indigo-400">
+                    <input type="text" id="searchInput" placeholder="Ruxsat nomi yoki tavsifi bo'yicha qidiring..."
+                        class="block w-full pl-11 pr-12 py-2.5 bg-gray-50 dark:bg-slate-800/50 border border-gray-300 dark:border-indigo-500/30 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none transition-all duration-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 dark:focus:ring-indigo-500/20 dark:focus:border-indigo-400">
 
                     <button type="button" id="clearSearch"
                         class="hidden absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-red-500 transition-colors">
@@ -156,13 +136,9 @@
 
             {{-- Permissions Grid --}}
             <div class="space-y-4">
-                @foreach ($groupedPermissions as $module => $permissions)
-                    @php
-                        $moduleLabel = PermissionLabel::moduleLabel($module);
-                    @endphp
-
+                @foreach ($groupedPermissions as $group)
                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden permission-module"
-                        data-module="{{ $module }}">
+                        data-module="{{ $group['module'] }}">
 
                         {{-- Module Header --}}
                         <div
@@ -178,21 +154,18 @@
                                     </div>
 
                                     <div>
-                                        {{-- Human-readable Uzbek module name --}}
                                         <h3 class="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
-                                            {{ $moduleLabel }}
+                                            {{ $group['moduleLabel'] }}
                                         </h3>
-                                        {{-- Technical slug shown smaller for reference --}}
                                         <p class="text-xs text-gray-400 dark:text-gray-500 font-mono mt-0.5">
-                                            {{ $module }}
+                                            {{ $group['module'] }}
                                         </p>
                                         <p
                                             class="text-sm text-gray-600 dark:text-gray-400 mt-0.5 flex items-center gap-1.5">
                                             <span
                                                 class="px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-md font-bold text-xs border border-indigo-100 dark:border-indigo-500/20">
-                                                <span
-                                                    class="module-selected-count">{{ $permissions->whereIn('id', $assignedPermissions)->count() }}</span>
-                                                / {{ $permissions->count() }}
+                                                <span class="module-selected-count">{{ $group['selectedCount'] }}</span>
+                                                / {{ $group['totalCount'] }}
                                             </span>
                                             <span class="font-medium">tanlangan</span>
                                         </p>
@@ -200,7 +173,7 @@
                                 </div>
 
                                 <div class="flex items-center gap-2">
-                                    <button type="button" onclick="selectModule('{{ $module }}')"
+                                    <button type="button" onclick="selectModule('{{ $group['module'] }}')"
                                         class="p-2.5 bg-emerald-100/80 hover:bg-emerald-200/80 border border-emerald-200 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 dark:border-emerald-500/40 text-emerald-700 dark:text-emerald-400 font-medium rounded-xl transition-all active:scale-95 shadow-sm"
                                         title="Modulni hammasini tanlash">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -209,7 +182,7 @@
                                         </svg>
                                     </button>
 
-                                    <button type="button" onclick="deselectModule('{{ $module }}')"
+                                    <button type="button" onclick="deselectModule('{{ $group['module'] }}')"
                                         class="p-2.5 bg-slate-200/70 hover:bg-slate-300/70 border border-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 dark:border-slate-500 text-slate-700 dark:text-slate-300 font-medium rounded-xl transition-all active:scale-95 shadow-sm"
                                         title="Modulni bekor qilish">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -224,46 +197,29 @@
                         {{-- Permission Items --}}
                         <div class="p-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                                @foreach ($permissions as $permission)
-                                    @php
-                                        $label = PermissionLabel::get($permission->name);
-                                    @endphp
+                                @foreach ($group['items'] as $item)
                                     <label
-                                        class="permission-item relative flex items-start gap-3 p-4
-                                           bg-white dark:bg-slate-800/40
-                                           border-2 border-gray-100 dark:border-slate-700/50
-                                           rounded-xl cursor-pointer transition-all duration-200 group
-                                           hover:bg-indigo-50/50 dark:hover:bg-indigo-500/10
-                                           hover:border-indigo-200 dark:hover:border-indigo-500/30 shadow-sm"
-                                        {{-- Search targets BOTH label and technical name --}}
-                                        data-permission="{{ strtolower($permission->name) }}"
-                                        data-label="{{ strtolower($label) }}"
-                                        data-module="{{ $module }}">
+                                        class="permission-item relative flex items-start gap-3 p-4 bg-white dark:bg-slate-800/40 border-2 border-gray-100 dark:border-slate-700/50 rounded-xl cursor-pointer transition-all duration-200 group hover:bg-indigo-50/50 dark:hover:bg-indigo-500/10 hover:border-indigo-200 dark:hover:border-indigo-500/30 shadow-sm"
+                                        data-permission="{{ strtolower($item['name']) }}"
+                                        data-label="{{ strtolower($item['label']) }}"
+                                        data-module="{{ $group['module'] }}">
 
                                         <div class="flex items-center h-5 mt-0.5">
-                                            <input type="checkbox" name="permissions[]" value="{{ $permission->id }}"
-                                                {{ in_array($permission->id, $assignedPermissions) ? 'checked' : '' }}
-                                                class="permission-checkbox w-5 h-5
-                                                   text-indigo-600 bg-white dark:bg-slate-900
-                                                   border-gray-300 dark:border-slate-600
-                                                   rounded focus:ring-offset-0 focus:ring-4 focus:ring-indigo-500/10
-                                                   dark:focus:ring-indigo-500/20 transition-all cursor-pointer">
+                                            <input type="checkbox" name="permissions[]" value="{{ $item['id'] }}"
+                                                {{ $item['assigned'] ? 'checked' : '' }}
+                                                class="permission-checkbox w-5 h-5 text-indigo-600 bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 rounded focus:ring-offset-0 focus:ring-4 focus:ring-indigo-500/10 dark:focus:ring-indigo-500/20 transition-all cursor-pointer">
                                         </div>
 
                                         <div class="flex-1 min-w-0">
-                                            {{-- Uzbek label — primary display --}}
                                             <span
-                                                class="text-sm font-semibold text-gray-800 dark:text-gray-200
-                                                   group-hover:text-indigo-700 dark:group-hover:text-indigo-300
-                                                   transition-colors block"
-                                                title="{{ $label }}">
-                                                {{ $label }}
+                                                class="text-sm font-semibold text-gray-800 dark:text-gray-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors block"
+                                                title="{{ $item['label'] }}">
+                                                {{ $item['label'] }}
                                             </span>
-                                            {{-- Technical slug — secondary, small --}}
                                             <span
                                                 class="text-xs font-mono text-gray-400 dark:text-gray-500 block truncate mt-0.5"
-                                                title="{{ $permission->name }}">
-                                                {{ $permission->name }}
+                                                title="{{ $item['name'] }}">
+                                                {{ $item['name'] }}
                                             </span>
                                         </div>
 
@@ -310,10 +266,7 @@
 
                     <div class="flex items-center gap-3 w-full sm:w-auto">
                         <a href="{{ route('role-permissions.index') }}"
-                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3
-                               bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700
-                               border border-slate-200 dark:border-slate-700
-                               text-slate-700 dark:text-slate-300 font-bold rounded-xl transition-all active:scale-95">
+                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl transition-all active:scale-95">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M6 18L18 6M6 6l12 12" />
@@ -322,11 +275,7 @@
                         </a>
 
                         <button type="submit"
-                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-8 py-3
-                               bg-indigo-500 hover:bg-indigo-600 text-white
-                               dark:bg-indigo-600 dark:hover:bg-indigo-700
-                               font-semibold rounded-xl shadow-md shadow-indigo-100 dark:shadow-none
-                               active:scale-95 transition-all duration-200">
+                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-8 py-3 bg-indigo-500 hover:bg-indigo-600 text-white dark:bg-indigo-600 dark:hover:bg-indigo-700 font-semibold rounded-xl shadow-md shadow-indigo-100 dark:shadow-none active:scale-95 transition-all duration-200">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M5 13l4 4L19 7" />
@@ -344,13 +293,13 @@
             // ─── Count helpers ────────────────────────────────────────────
             function updateCounts() {
                 const checkboxes = document.querySelectorAll('.permission-checkbox');
-                const checked    = document.querySelectorAll('.permission-checkbox:checked');
-                const total      = checkboxes.length;
+                const checked = document.querySelectorAll('.permission-checkbox:checked');
+                const total = checkboxes.length;
                 const checkedLen = checked.length;
 
-                document.getElementById('selectedCount').textContent      = checkedLen;
+                document.getElementById('selectedCount').textContent = checkedLen;
                 document.getElementById('selectedCountBottom').textContent = checkedLen;
-                document.getElementById('unselectedCount').textContent     = total - checkedLen;
+                document.getElementById('unselectedCount').textContent = total - checkedLen;
 
                 // Per-module counts
                 document.querySelectorAll('.permission-module').forEach(module => {
@@ -360,13 +309,21 @@
             }
 
             // ─── Select / deselect helpers ────────────────────────────────
-            function selectAll()   { document.querySelectorAll('.permission-checkbox').forEach(cb => cb.checked = true);  updateCounts(); }
-            function deselectAll() { document.querySelectorAll('.permission-checkbox').forEach(cb => cb.checked = false); updateCounts(); }
+            function selectAll() {
+                document.querySelectorAll('.permission-checkbox').forEach(cb => cb.checked = true);
+                updateCounts();
+            }
+
+            function deselectAll() {
+                document.querySelectorAll('.permission-checkbox').forEach(cb => cb.checked = false);
+                updateCounts();
+            }
 
             function selectModule(module) {
                 document.querySelectorAll(`[data-module="${module}"] .permission-checkbox`).forEach(cb => cb.checked = true);
                 updateCounts();
             }
+
             function deselectModule(module) {
                 document.querySelectorAll(`[data-module="${module}"] .permission-checkbox`).forEach(cb => cb.checked = false);
                 updateCounts();
@@ -374,12 +331,12 @@
 
             // ─── Search (matches Uzbek label OR technical slug) ───────────
             const searchInput = document.getElementById('searchInput');
-            const clearBtn    = document.getElementById('clearSearch');
+            const clearBtn = document.getElementById('clearSearch');
 
             function performSearch(term) {
-                const q       = term.toLowerCase().trim();
+                const q = term.toLowerCase().trim();
                 const modules = document.querySelectorAll('.permission-module');
-                let visible   = 0;
+                let visible = 0;
 
                 modules.forEach(module => {
                     const items = module.querySelectorAll('.permission-item');
@@ -387,7 +344,7 @@
 
                     items.forEach(item => {
                         // Search both the Uzbek label AND the technical permission name
-                        const matchesSlug  = item.dataset.permission.includes(q);
+                        const matchesSlug = item.dataset.permission.includes(q);
                         const matchesLabel = item.dataset.label.includes(q);
 
                         if (matchesSlug || matchesLabel) {

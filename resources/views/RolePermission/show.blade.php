@@ -12,12 +12,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div class="flex items-center gap-4">
                 <a href="{{ route('role-permissions.index') }}"
-                    class="p-2.5 inline-flex items-center justify-center
-                       bg-slate-100 border border-slate-200 text-slate-600
-                       hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300
-                       dark:bg-slate-800 dark:border-slate-700 dark:text-gray-400
-                       dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400 dark:hover:border-indigo-500/30
-                       rounded-xl transition-all active:scale-95 shadow-sm">
+                    class="p-2.5 inline-flex items-center justify-center bg-slate-100 border border-slate-200 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 dark:bg-slate-800 dark:border-slate-700 dark:text-gray-400 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400 dark:hover:border-indigo-500/30 rounded-xl transition-all active:scale-95 shadow-sm">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
@@ -53,13 +48,7 @@
             </div>
 
             <a href="{{ route('role-permissions.edit', $role) }}"
-                class="inline-flex items-center gap-2 px-6 py-3
-                   bg-indigo-50 hover:bg-indigo-100 border border-indigo-200
-                   text-indigo-700 font-semibold
-                   dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20
-                   dark:border-indigo-500/30 dark:text-indigo-400
-                   rounded-xl shadow-sm transition-all duration-200
-                   active:scale-95 group">
+                class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-semibold dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 dark:border-indigo-500/30 dark:text-indigo-400 rounded-xl shadow-sm transition-all duration-200 active:scale-95 group">
                 <svg class="w-5 h-5 text-indigo-500 group-hover:scale-110 transition-transform" fill="none"
                     stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -134,11 +123,7 @@
         {{-- Permissions by Module --}}
         @if ($role->permissions->count() > 0)
             <div class="space-y-4">
-                @foreach ($groupedPermissions as $module => $permissions)
-                    @php
-                        $moduleLabel = PermissionLabel::moduleLabel($module);
-                    @endphp
-
+                @foreach ($groupedPermissions as $group)
                     <div
                         class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-800 overflow-hidden transition-all">
 
@@ -155,20 +140,18 @@
                                         </svg>
                                     </div>
                                     <div>
-                                        {{-- Uzbek module name --}}
                                         <h3 class="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
-                                            {{ $moduleLabel }}
+                                            {{ $group['moduleLabel'] }}
                                         </h3>
-                                        {{-- Technical slug for reference --}}
                                         <p class="text-xs font-mono text-gray-400 dark:text-gray-500 mt-0.5">
-                                            {{ $module }}
+                                            {{ $group['module'] }}
                                         </p>
                                     </div>
                                 </div>
 
                                 <span
                                     class="px-4 py-1.5 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 text-sm font-bold rounded-xl border border-indigo-200 dark:border-indigo-500/30">
-                                    {{ $permissions->count() }} ta
+                                    {{ $group['count'] }} ta
                                 </span>
                             </div>
                         </div>
@@ -176,10 +159,7 @@
                         {{-- Permission Items --}}
                         <div class="p-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                                @foreach ($permissions as $permission)
-                                    @php
-                                        $label = PermissionLabel::get($permission->name);
-                                    @endphp
+                                @foreach ($group['items'] as $item)
                                     <div
                                         class="flex items-start gap-3 p-4 bg-slate-50/50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700/50 group hover:border-indigo-300 dark:hover:border-indigo-500/30 transition-colors">
                                         <div class="flex-shrink-0 mt-0.5">
@@ -190,23 +170,21 @@
                                             </svg>
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            {{-- Uzbek label — main text --}}
-                                            <span
-                                                class="text-sm font-semibold text-gray-800 dark:text-gray-200 block"
-                                                title="{{ $label }}">
-                                                {{ $label }}
+                                            <span class="text-sm font-semibold text-gray-800 dark:text-gray-200 block"
+                                                title="{{ $item['label'] }}">
+                                                {{ $item['label'] }}
                                             </span>
-                                            {{-- Technical slug — secondary --}}
                                             <span
                                                 class="text-xs font-mono text-gray-400 dark:text-gray-500 block truncate mt-0.5"
-                                                title="{{ $permission->name }}">
-                                                {{ $permission->name }}
+                                                title="{{ $item['name'] }}">
+                                                {{ $item['name'] }}
                                             </span>
                                         </div>
                                     </div>
                                 @endforeach
                             </div>
                         </div>
+
                     </div>
                 @endforeach
             </div>
@@ -225,7 +203,6 @@
                 <p class="text-gray-500 dark:text-gray-400 mb-6">
                     Ushbu rolga ruxsatlar berishni boshlang
                 </p>
-
                 <a href="{{ route('role-permissions.edit', $role->id) }}"
                     class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white border border-indigo-400/50 shadow-sm shadow-indigo-100 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:border-indigo-500/30 dark:shadow-none font-semibold rounded-xl transition-all duration-200 transform hover:scale-[1.01] active:scale-[0.99] group">
                     <svg class="w-5 h-5 text-white/90 group-hover:rotate-90 transition-transform duration-300"

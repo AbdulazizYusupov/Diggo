@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\RolePermission;
 
+use App\Helpers\PermissionLabel;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
@@ -38,29 +39,43 @@ class RolePermissionController extends Controller
             $query->orderBy('name');
         }]);
 
-        // Group permissions by module
-        $groupedPermissions = $role->permissions->groupBy(function ($permission) {
-            $parts = explode('.', $permission->name);
-            return $parts[0] ?? 'other';
-        });
+        $groupedPermissions = $role->permissions
+            ->groupBy(fn($permission) => PermissionLabel::parse($permission->name)['module'])
+            ->map(fn($permissions, $module) => [
+                'module'      => $module,
+                'moduleLabel' => PermissionLabel::moduleLabel($module),
+                'count'       => $permissions->count(),
+                'items'       => $permissions->map(fn($permission) => [
+                    'name'  => $permission->name,
+                    'label' => PermissionLabel::get($permission->name),
+                ]),
+            ])
+            ->values();
 
         return view('RolePermission.show', compact('role', 'groupedPermissions'));
     }
     public function edit(Role $role)
     {
-        // Get all permissions grouped by prefix (module)
-        $allPermissions = Permission::orderBy('name')->get();
+        $assignedPermissionIds = $role->permissions->pluck('id')->toArray();
 
-        // Group permissions by module (first part before dot)
-        $groupedPermissions = $allPermissions->groupBy(function ($permission) {
-            $parts = explode('.', $permission->name);
-            return $parts[0] ?? 'other';
-        });
+        $groupedPermissions = Permission::orderBy('name')
+            ->get()
+            ->groupBy(fn($permission) => PermissionLabel::parse($permission->name)['module'])
+            ->map(fn($permissions, $module) => [
+                'module'         => $module,
+                'moduleLabel'    => PermissionLabel::moduleLabel($module),
+                'totalCount'     => $permissions->count(),
+                'selectedCount'  => $permissions->whereIn('id', $assignedPermissionIds)->count(),
+                'items'          => $permissions->map(fn($permission) => [
+                    'id'       => $permission->id,
+                    'name'     => $permission->name,
+                    'label'    => PermissionLabel::get($permission->name),
+                    'assigned' => in_array($permission->id, $assignedPermissionIds),
+                ]),
+            ])
+            ->values();
 
-        // Get assigned permission IDs for this role
-        $assignedPermissions = $role->permissions->pluck('id')->toArray();
-
-        return view('RolePermission.edit', compact('role', 'groupedPermissions', 'assignedPermissions'));
+        return view('RolePermission.edit', compact('role', 'groupedPermissions', 'assignedPermissionIds'));
     }
     public function update(Request $request, Role $role)
     {
