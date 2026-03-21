@@ -2,6 +2,10 @@
 
 @section('title', 'Rol ruxsatlari - ' . $role->name)
 
+@php
+    use App\Helpers\PermissionLabel;
+@endphp
+
 @section('content')
     <div class="space-y-6">
         {{-- Header Section --}}
@@ -9,15 +13,11 @@
             <div class="flex items-center gap-4">
                 <a href="{{ route('role-permissions.index') }}"
                     class="p-2.5 inline-flex items-center justify-center
-           /* Light mode: oq emas, och kulrang/slate fon */
-           bg-slate-100 border border-slate-200 text-slate-600
-           hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300
-           
-           /* Dark mode: o'z holicha qoldi, chunki u yerda ko'rinishi yaxshi edi */
-           dark:bg-slate-800 dark:border-slate-700 dark:text-gray-400
-           dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400 dark:hover:border-indigo-500/30
-           
-           rounded-xl transition-all active:scale-95 shadow-sm">
+                       bg-slate-100 border border-slate-200 text-slate-600
+                       hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300
+                       dark:bg-slate-800 dark:border-slate-700 dark:text-gray-400
+                       dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400 dark:hover:border-indigo-500/30
+                       rounded-xl transition-all active:scale-95 shadow-sm">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
@@ -53,17 +53,13 @@
             </div>
 
             <a href="{{ route('role-permissions.edit', $role) }}"
-                class="inline-flex items-center gap-2 px-6 py-3 
-           /* Light mode: Yumshoq fon va aniq border */
-           bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 
-           text-indigo-700 font-semibold
-           
-           /* Dark mode: Shaffofroq fon va border */
-           dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 
-           dark:border-indigo-500/30 dark:text-indigo-400
-           
-           rounded-xl shadow-sm transition-all duration-200 
-           active:scale-95 group">
+                class="inline-flex items-center gap-2 px-6 py-3
+                   bg-indigo-50 hover:bg-indigo-100 border border-indigo-200
+                   text-indigo-700 font-semibold
+                   dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20
+                   dark:border-indigo-500/30 dark:text-indigo-400
+                   rounded-xl shadow-sm transition-all duration-200
+                   active:scale-95 group">
                 <svg class="w-5 h-5 text-indigo-500 group-hover:scale-110 transition-transform" fill="none"
                     stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -139,8 +135,14 @@
         @if ($role->permissions->count() > 0)
             <div class="space-y-4">
                 @foreach ($groupedPermissions as $module => $permissions)
+                    @php
+                        $moduleLabel = PermissionLabel::moduleLabel($module);
+                    @endphp
+
                     <div
                         class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-800 overflow-hidden transition-all">
+
+                        {{-- Module Header --}}
                         <div
                             class="bg-slate-50/80 dark:bg-slate-800/50 border-b border-gray-200 dark:border-slate-700/50 p-6">
                             <div class="flex items-center justify-between">
@@ -153,12 +155,13 @@
                                         </svg>
                                     </div>
                                     <div>
-                                        <h3
-                                            class="text-lg font-bold text-gray-900 dark:text-white capitalize tracking-tight">
-                                            {{ str_replace('-', ' ', $module) }}
+                                        {{-- Uzbek module name --}}
+                                        <h3 class="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
+                                            {{ $moduleLabel }}
                                         </h3>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5 font-medium">
-                                            Modul ruxsatlari ro'yxati
+                                        {{-- Technical slug for reference --}}
+                                        <p class="text-xs font-mono text-gray-400 dark:text-gray-500 mt-0.5">
+                                            {{ $module }}
                                         </p>
                                     </div>
                                 </div>
@@ -170,22 +173,36 @@
                             </div>
                         </div>
 
+                        {{-- Permission Items --}}
                         <div class="p-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                                 @foreach ($permissions as $permission)
+                                    @php
+                                        $label = PermissionLabel::get($permission->name);
+                                    @endphp
                                     <div
-                                        class="flex items-center gap-3 p-4 bg-slate-50/50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700/50 group hover:border-indigo-300 dark:hover:border-indigo-500/30 transition-colors">
-                                        <div class="flex-shrink-0">
+                                        class="flex items-start gap-3 p-4 bg-slate-50/50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700/50 group hover:border-indigo-300 dark:hover:border-indigo-500/30 transition-colors">
+                                        <div class="flex-shrink-0 mt-0.5">
                                             <svg class="w-5 h-5 text-indigo-500 dark:text-indigo-400 group-hover:scale-110 transition-transform"
                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
                                         </div>
-                                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-200 truncate"
-                                            title="{{ $permission->name }}">
-                                            {{ $permission->name }}
-                                        </span>
+                                        <div class="flex-1 min-w-0">
+                                            {{-- Uzbek label — main text --}}
+                                            <span
+                                                class="text-sm font-semibold text-gray-800 dark:text-gray-200 block"
+                                                title="{{ $label }}">
+                                                {{ $label }}
+                                            </span>
+                                            {{-- Technical slug — secondary --}}
+                                            <span
+                                                class="text-xs font-mono text-gray-400 dark:text-gray-500 block truncate mt-0.5"
+                                                title="{{ $permission->name }}">
+                                                {{ $permission->name }}
+                                            </span>
+                                        </div>
                                     </div>
                                 @endforeach
                             </div>
@@ -211,12 +228,10 @@
 
                 <a href="{{ route('role-permissions.edit', $role->id) }}"
                     class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white border border-indigo-400/50 shadow-sm shadow-indigo-100 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:border-indigo-500/30 dark:shadow-none font-semibold rounded-xl transition-all duration-200 transform hover:scale-[1.01] active:scale-[0.99] group">
-
                     <svg class="w-5 h-5 text-white/90 group-hover:rotate-90 transition-transform duration-300"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
-
                     <span>Ruxsatlar qo'shish</span>
                 </a>
             </div>

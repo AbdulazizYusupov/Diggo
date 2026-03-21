@@ -62,7 +62,8 @@ class DatabaseSeeder extends Seeder
             GroupSeeder::class,
             ShopCategorySeeder::class,
             ShopProductSeeder::class,
-            ShopOrderSeeder::class
+            ShopOrderSeeder::class,
+            PermissionSeeder::class
         ]);
     }
 }

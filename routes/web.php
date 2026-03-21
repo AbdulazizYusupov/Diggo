@@ -87,8 +87,8 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('directors', DirectorController::class);
         Route::resource('teachers', TeacherController::class);
         Route::resource('students', StudentController::class);
-        Route::resource('roles', RoleController::class);
-        Route::resource('permissions', PermissionController::class);
+        Route::resource('roles', RoleController::class)->only(['index', 'store', 'update', 'destroy']);
+        Route::resource('permissions', PermissionController::class)->only(['index', 'update', 'destroy']);
         Route::post('sync-routes', [PermissionController::class, 'syncRoutes'])->name('permissions.sync-routes');
         Route::prefix('role-permissions')->name('role-permissions.')->group(function () {
             Route::get('/', [RolePermissionController::class, 'index'])->name('index');
@@ -128,7 +128,7 @@ Route::middleware(['auth'])->group(function () {
 
             Route::delete('teachers/{teacher}', [GroupTeacherController::class, 'destroy'])->name('groups.teachers.destroy');
         });
-        Route::resource('group-teachers', GroupTeacherController::class);
+        Route::resource('group-teachers', GroupTeacherController::class)->only(['index', 'store', 'destroy']);
         Route::resource('payments', PaymentController::class);
         Route::get('payments/student-info', [PaymentController::class, 'getStudentInfo'])->name('payments.student-info');
         Route::post('payments/{payment}/cancel', [PaymentController::class, 'cancel'])->name('payments.cancel');  // ← YANGI
@@ -251,9 +251,6 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('lessons', LessonController::class);
         Route::patch('lessons/{lesson}/complete', [LessonController::class, 'complete'])->name('lessons.complete');
         Route::post('lessons/{lesson}/cancel', [LessonController::class, 'cancel'])->name('lessons.cancel');
-        // Route::resource('attendances', AttendanceController::class);
-        // Route::resource('lesson-charges', LessonChargeController::class);
-        // Route::resource('coin-transactions', CoinTransactionController::class);
 
         Route::prefix('admin/shop')->name('admin.shop.')->group(function () {
             // ── Kategoriyalar ────────────────────────────────────

@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers\Permission;
 
+use App\Helpers\RoutePermissionFilter;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 
 class PermissionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // ──────────────────────────────────────────────────────────────────────────
+    //  INDEX
+    // ──────────────────────────────────────────────────────────────────────────
+
     public function index(Request $request)
     {
         $search = $request->input('search', '');
-        $filter = $request->input('filter', 'all'); // all, synced, unsynced
+        $filter = $request->input('filter', 'all'); // all | synced | unsynced
 
-        // Get all permissions from database
         $query = Permission::query();
 
         if ($search) {
@@ -27,96 +27,118 @@ class PermissionController extends Controller
 
         $permissions = $query->paginate(20)->withQueryString();
 
-        // Get all routes from application
-        $routes = $this->getApplicationRoutes();
-
-        // Calculate statistics
-        $stats = $this->calculateStats($routes);
+        // Only protected routes — blacklisted ones are already excluded
+        $routes = RoutePermissionFilter::protectedRoutes();
+        $stats  = $this->calculateStats($routes);
 
         return view('Permission.index', compact('permissions', 'search', 'filter', 'routes', 'stats'));
     }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    //  SYNC ROUTES  →  only adds permission-gated routes
+    // ──────────────────────────────────────────────────────────────────────────
+
     public function syncRoutes()
     {
         try {
-            $routes = $this->getApplicationRoutes();
+            // Only routes inside CheckPermission middleware, blacklist already applied
+            $routes = RoutePermissionFilter::protectedRoutes();
 
-            // 1. Bazadagi barcha mavjud permissionlarni bitta so'rovda olamiz
-            $existingPermissions = Permission::pluck('name')->toArray();
-            $existingPermissionsMap = array_flip($existingPermissions); // Qidirish tez bo'lishi uchun
-
-            $newPermissions = [];
-            $skipped = 0;
+            // Fetch existing permissions in one query
+            $existing    = Permission::pluck('name')->flip(); // ['roles.index' => 0, ...]
+            $toInsert    = [];
+            $skipped     = 0;
 
             foreach ($routes as $route) {
-                $routeName = $route['name'];
-
-                // 2. Bazada bor-yo'qligini massiv ichidan qidiramiz (juda tez ishlaydi)
-                if (!isset($existingPermissionsMap[$routeName])) {
-                    $newPermissions[] = [
-                        'name'       => $routeName,
-                        'guard_name' => 'web',
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ];
-                } else {
+                if (isset($existing[$route['name']])) {
                     $skipped++;
+                    continue;
                 }
+
+                $toInsert[] = [
+                    'name'       => $route['name'],
+                    'guard_name' => 'web',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
 
-            // 3. Yangi permissionlarni bittada bazaga yozamiz (Bulk Insert)
-            if (!empty($newPermissions)) {
-                Permission::insert($newPermissions);
-
-                // Spatie keshini tozalash
+            if (! empty($toInsert)) {
+                Permission::insert($toInsert);
                 app(PermissionRegistrar::class)->forgetCachedPermissions();
             }
 
-            $synced = count($newPermissions);
+            $synced = count($toInsert);
 
             return redirect()->route('permissions.index')
                 ->with('success', "Muvaffaqiyatli! {$synced} ta yangi ruxsat qo'shildi. {$skipped} ta allaqachon mavjud.");
+
         } catch (\Exception $e) {
             return redirect()->route('permissions.index')
                 ->with('error', 'Xatolik yuz berdi: ' . $e->getMessage());
         }
     }
-    private function getApplicationRoutes()
+
+    // ──────────────────────────────────────────────────────────────────────────
+    //  PRUNE ORPHANED  →  removes permissions that are now blacklisted or
+    //                     no longer exist as protected routes
+    // ──────────────────────────────────────────────────────────────────────────
+
+    public function pruneOrphaned()
     {
-        $routes = [];
-        $routeCollection = Route::getRoutes();
+        try {
+            $validRouteNames = collect(RoutePermissionFilter::protectedRoutes())
+                ->pluck('name')
+                ->flip(); // flip for O(1) lookup
 
-        foreach ($routeCollection as $route) {
-            $name = $route->getName();
+            // Find every DB permission whose name is NOT in the valid set,
+            // OR is explicitly blacklisted
+            $orphaned = Permission::all()->filter(function (Permission $p) use ($validRouteNames) {
+                return
+                    RoutePermissionFilter::isBlacklisted($p->name) ||
+                    ! isset($validRouteNames[$p->name]);
+            });
 
-            // Filtrlash shartlari
-            if (
-                !$name ||
-                str_starts_with($name, 'ignition.') ||
-                str_starts_with($name, 'sanctum.') ||
-                str_starts_with($name, '_ignition.') ||
-                str_contains($name, 'generated') || // <--- Mana shu qator qo'shildi
-                $name === 'storage.local'
-            ) {
-                continue;
+            $skipped  = [];
+            $deleted  = 0;
+
+            foreach ($orphaned as $permission) {
+                // Safety: do NOT delete permissions that are still assigned to roles
+                if ($permission->roles()->count() > 0) {
+                    $skipped[] = $permission->name;
+                    continue;
+                }
+
+                $permission->delete();
+                $deleted++;
             }
 
-            $routes[] = [
-                'name' => $name,
-                'method' => implode('|', $route->methods()),
-                'uri' => $route->uri(),
-                'action' => $route->getActionName(),
-            ];
-        }
-        // Sort routes alphabetically
-        usort($routes, fn($a, $b) => strcmp($a['name'], $b['name']));
+            app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        return $routes;
+            $message = "{$deleted} ta keraksiz ruxsat o'chirildi.";
+            if (! empty($skipped)) {
+                $message .= ' ' . count($skipped) . " ta ruxsat rollarga biriktirilganligi sababli o'chirilmadi: "
+                    . implode(', ', array_slice($skipped, 0, 5))
+                    . (count($skipped) > 5 ? '...' : '');
+            }
+
+            return redirect()->route('permissions.index')->with('success', $message);
+
+        } catch (\Exception $e) {
+            return redirect()->route('permissions.index')
+                ->with('error', 'Xatolik yuz berdi: ' . $e->getMessage());
+        }
     }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    //  BULK DELETE
+    // ──────────────────────────────────────────────────────────────────────────
+
     public function bulkDelete(Request $request)
     {
         $request->validate([
-            'permissions' => 'required|array',
-            'permissions.*' => 'exists:permissions,id'
+            'permissions'   => 'required|array',
+            'permissions.*' => 'exists:permissions,id',
         ]);
 
         try {
@@ -124,112 +146,80 @@ class PermissionController extends Controller
 
             foreach ($permissions as $permission) {
                 if ($permission->roles()->count() > 0) {
-                    return redirect()->route('permissions.index')->with('error', "'{$permission->name}' ruxsati rollarga biriktirilgan.");
+                    return redirect()->route('permissions.index')
+                        ->with('error', "'{$permission->name}' ruxsati rollarga biriktirilgan, o'chirib bo'lmaydi.");
                 }
             }
 
             Permission::whereIn('id', $request->permissions)->delete();
-
-            return redirect()->route('permissions.index')->with('success', count($request->permissions) . ' ta ruxsat o\'chirildi!');
-        } catch (\Exception $e) {
-            return redirect()->route('permissions.index')->with('error', 'Xatolik yuz berdi: ' . $e->getMessage());
-        }
-    }
-
-    private function calculateStats($routes)
-    {
-        $routeNames = collect($routes)->pluck('name')->toArray();
-        $permissionNames = Permission::pluck('name')->toArray();
-
-        $synced = count(array_intersect($routeNames, $permissionNames));
-        $unsynced = count(array_diff($routeNames, $permissionNames));
-        $orphaned = count(array_diff($permissionNames, $routeNames));
-        return [
-            'total_routes' => count($routes),
-            'total_permissions' => count($permissionNames),
-            'synced' => $synced,
-            'unsynced' => $unsynced,
-            'orphaned' => $orphaned,
-        ];
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-    /**
-     * Update the specified resource in storage.
-     */
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        // 1. Validatsiya
-        $request->validate([
-            'name' => 'required|string|max:255|unique:permissions,name,' . $id,
-        ], [
-            'name.unique' => 'Ushbu nomdagi ruxsatnoma allaqachon mavjud.',
-            'name.required' => 'Ruxsatnoma nomi bo\'sh bo\'lishi mumkin emas.'
-        ]);
-
-        try {
-            // 2. Permissionni topish
-            $permission = Permission::findOrFail($id);
-
-            // 3. Ma'lumotni yangilash
-            $permission->update([
-                'name' => $request->input('name'),
-                // guard_name odatda o'zgarmaydi, lekin xohlasangiz qo'shish mumkin
-            ]);
-
-            // 4. Spatie keshini tozalash (muhim!)
-            // Bu yangilangan ruxsatlar darhol kuchga kirishini ta'minlaydi
-            app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+            app(PermissionRegistrar::class)->forgetCachedPermissions();
 
             return redirect()->route('permissions.index')
-                ->with('success', 'Ruxsatnoma muvaffaqiyatli yangilandi!');
+                ->with('success', count($request->permissions) . " ta ruxsat o'chirildi!");
+
         } catch (\Exception $e) {
             return redirect()->route('permissions.index')
                 ->with('error', 'Xatolik yuz berdi: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    // ──────────────────────────────────────────────────────────────────────────
+    //  STATS  (used by index)
+    // ──────────────────────────────────────────────────────────────────────────
+
+    private function calculateStats(array $routes): array
+    {
+        $routeNames       = collect($routes)->pluck('name')->toArray();
+        $permissionNames  = Permission::pluck('name')->toArray();
+
+        return [
+            'total_routes'      => count($routeNames),
+            'total_permissions' => count($permissionNames),
+            'synced'            => count(array_intersect($routeNames, $permissionNames)),
+            'unsynced'          => count(array_diff($routeNames, $permissionNames)),
+            'orphaned'          => count(array_diff($permissionNames, $routeNames)),
+        ];
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    //  STANDARD CRUD  (update / destroy)
+    // ──────────────────────────────────────────────────────────────────────────
+
+    public function update(Request $request, string $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:permissions,name,' . $id,
+        ], [
+            'name.unique'    => 'Ushbu nomdagi ruxsatnoma allaqachon mavjud.',
+            'name.required'  => "Ruxsatnoma nomi bo'sh bo'lishi mumkin emas.",
+        ]);
+
+        try {
+            $permission = Permission::findOrFail($id);
+            $permission->update(['name' => $request->input('name')]);
+            app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+            return redirect()->route('permissions.index')
+                ->with('success', 'Ruxsatnoma muvaffaqiyatli yangilandi!');
+
+        } catch (\Exception $e) {
+            return redirect()->route('permissions.index')
+                ->with('error', 'Xatolik yuz berdi: ' . $e->getMessage());
+        }
+    }
+
     public function destroy(string $id)
     {
         $permission = Permission::findOrFail($id);
         $permission->delete();
-        return redirect()->back()->with('success', 'Permission muvaffaqiyatli o\'chirildi');
-        // dd($id);
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+        return redirect()->back()->with('success', "Permission muvaffaqiyatli o'chirildi");
     }
+
+    // Unused stubs kept for resource route compatibility
+    public function create() {}
+    public function store(Request $request) {}
+    public function show(string $id) {}
+    public function edit(string $id) {}
 }
