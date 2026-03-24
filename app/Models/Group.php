@@ -80,12 +80,18 @@ class Group extends Model
         // Agar o'qituvchi bevosita guruhga bog'langan bo'lsa
         return $this->belongsTo(Teacher::class);
     }
-    
+
     public function scopeSearch($query, $term)
     {
         return $query->where(function ($q) use ($term) {
             $q->where('name', 'like', "%{$term}%")
                 ->orWhereHas('course', fn($c) => $c->where('name', 'like', "%{$term}%"));
         });
+    }
+    // app/Models/Group.php ichiga
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 }

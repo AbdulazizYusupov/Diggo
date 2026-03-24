@@ -382,6 +382,15 @@
                                 </td>
                                 <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-right">
                                     <div class="flex items-center justify-end gap-1.5">
+                                        <a href="{{ route('groups.students.index', ['group' => $group->id]) }}"
+                                            class="p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-all duration-200 group/btn"
+                                            title="Talaba qo'shish">
+                                            <svg class="w-5 h-5 transition-transform group-hover/btn:scale-110"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                            </svg>
+                                        </a>
                                         <a href="{{ route('groups.show', $group->id) }}"
                                             class="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all duration-200 group/btn"
                                             title="Ko'rish">

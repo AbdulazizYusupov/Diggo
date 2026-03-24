@@ -2,10 +2,6 @@
 
 @section('title', 'Ruxsatlarni boshqarish - ' . $role->name)
 
-@php
-    use App\Helpers\PermissionLabel;
-@endphp
-
 @section('content')
     <div class="space-y-6">
         {{-- Header Section --}}
@@ -75,7 +71,7 @@
                         <p class="text-xs uppercase tracking-wider text-indigo-600 dark:text-indigo-400 font-bold mb-1">Jami
                             ruxsatlar</p>
                         <p class="text-3xl font-black text-indigo-900 dark:text-indigo-100" id="totalPermissions">
-                            {{ $groupedPermissions->flatten()->count() }}
+                            {{ $groupedPermissions->sum('totalCount') }}
                         </p>
                     </div>
 
@@ -84,7 +80,7 @@
                         <p class="text-xs uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-bold mb-1">
                             Tanlangan</p>
                         <p class="text-3xl font-black text-emerald-900 dark:text-emerald-100" id="selectedCount">
-                            {{ count($assignedPermissions) }}
+                          {{ count($assignedPermissionIds) }}
                         </p>
                     </div>
 
@@ -102,7 +98,7 @@
                         <p class="text-xs uppercase tracking-wider text-amber-600 dark:text-amber-400 font-bold mb-1">
                             Tanlanmagan</p>
                         <p class="text-3xl font-black text-amber-900 dark:text-amber-100" id="unselectedCount">
-                            {{ $groupedPermissions->flatten()->count() - count($assignedPermissions) }}
+                           {{ $groupedPermissions->sum('totalCount') - count($assignedPermissionIds) }}
                         </p>
                     </div>
                 </div>
@@ -259,7 +255,7 @@
                         <span
                             class="inline-flex items-center justify-center px-3 py-1 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 rounded-lg font-bold border border-indigo-200 dark:border-indigo-500/30"
                             id="selectedCountBottom">
-                            {{ count($assignedPermissions) }}
+                           {{ count($assignedPermissionIds) }}
                         </span>
                         <span>ta ruxsat tanlandi</span>
                     </div>

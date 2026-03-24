@@ -2,10 +2,6 @@
 
 @section('title', 'Rol ruxsatlari - ' . $role->name)
 
-@php
-    use App\Helpers\PermissionLabel;
-@endphp
-
 @section('content')
     <div class="space-y-6">
         {{-- Header Section --}}
