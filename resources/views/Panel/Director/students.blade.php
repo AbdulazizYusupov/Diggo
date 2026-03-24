@@ -1,6 +1,6 @@
 @extends('Layout.app')
 
-@section('title', 'O\'quvchilar')
+@section('title', __('director/students.title'))
 
 @section('content')
     <div class="space-y-6">
@@ -11,10 +11,10 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-                    Mening O'quvchilarim
+                    {{ __('director/students.my_students') }}
                 </h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Barcha o'quvchilar va ularning statistikasi
+                    {{ __('director/students.all_stats') }}
                 </p>
             </div>
         </div>
@@ -30,7 +30,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-bold text-indigo-700 dark:text-indigo-400 uppercase tracking-wide">
-                            Jami O'quvchilar
+                            {{ __('director/students.total_students') }}
                         </p>
                         <p class="text-3xl font-extrabold text-indigo-900 dark:text-indigo-50 mt-1">
                             {{ $stats['total_students'] }}
@@ -51,7 +51,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-bold text-green-700 dark:text-green-400 uppercase tracking-wide">
-                            O'qiyotganlar
+                            {{ __('director/students.active_students') }}
                         </p>
                         <p class="text-3xl font-extrabold text-green-900 dark:text-green-50 mt-1">
                             {{ $stats['active_students'] }}
@@ -72,7 +72,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
-                            Bu Oy Qo'shildi
+                            {{ __('director/students.new_this_month') }}
                         </p>
                         <p class="text-3xl font-extrabold text-amber-900 dark:text-amber-50 mt-1">
                             {{ $stats['new_this_month'] }}
@@ -104,7 +104,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-bold text-pink-700 dark:text-pink-400 uppercase tracking-wide">
-                            O'g'il / Qiz
+                            {{ __('director/students.gender_ratio') }}
                         </p>
                         <p class="text-3xl font-extrabold text-pink-900 dark:text-pink-50 mt-1">
                             {{ $stats['male_count'] }} / {{ $stats['female_count'] }}
@@ -115,7 +115,8 @@
                             </div>
                         </div>
                         <p class="text-xs text-pink-600 dark:text-pink-400 mt-1">
-                            O'g'il {{ $malePercent }}% &bull; Qiz {{ $femalePercent }}%
+                            {{ __('director/students.boy') }} {{ $malePercent }}% &bull;
+                            {{ __('director/students.girl') }} {{ $femalePercent }}%
                         </p>
                     </div>
                     <div class="p-3 bg-pink-500 rounded-xl flex-shrink-0 ml-3">
@@ -139,7 +140,7 @@
                 {{-- Qidiruv --}}
                 <div class="md:col-span-2">
                     <label for="searchInput" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        Qidiruv
+                        {{ __('director/students.search') }}
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -149,12 +150,12 @@
                             </svg>
                         </div>
                         <input type="text" id="searchInput" name="search" value="{{ $search }}"
-                            placeholder="Ism, familiya yoki telefon..." autocomplete="off"
+                            placeholder="{{ __('director/students.search_placeholder') }}" autocomplete="off"
                             class="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
                         @if ($search)
                             <a href="{{ route('director.students', array_filter(request()->except('search'))) }}"
                                 class="absolute inset-y-0 right-0 pr-3 flex items-center text-red-400 hover:text-red-600 transition-colors"
-                                title="Qidiruvni tozalash">
+                                title="{{ __('director/students.clear_search') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -168,11 +169,11 @@
                 {{-- Guruh --}}
                 <div class="md:col-span-1">
                     <label for="groupSelect" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        Guruh
+                        {{ __('director/students.group') }}
                     </label>
                     <select id="groupSelect" name="group_id"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
-                        <option value="">Barcha guruhlar</option>
+                        <option value="">{{ __('director/students.all_groups') }}</option>
                         @foreach ($groups as $group)
                             <option value="{{ $group->id }}" @selected($groupId == $group->id)>
                                 {{ $group->name }}
@@ -189,11 +190,11 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
                         </svg>
-                        Filtrlash
+                        {{ __('director/students.filter') }}
                     </button>
                     <a href="{{ route('director.students') }}"
                         class="group p-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-lg transition-all duration-300 flex items-center justify-center"
-                        title="Hammasini tozalash">
+                        title="{{ __('director/students.clear_all') }}">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor"
                             class="w-6 h-6 transition-transform duration-500 group-hover:rotate-180">
@@ -265,7 +266,8 @@
 
                             {{-- Ota-ona --}}
                             <div class="p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl">
-                                <p class="text-xs text-blue-700 dark:text-blue-400 font-semibold mb-0.5">Ota-ona</p>
+                                <p class="text-xs text-blue-700 dark:text-blue-400 font-semibold mb-0.5">
+                                    {{ __('director/students.parent') }}</p>
                                 <p class="text-sm font-bold text-blue-800 dark:text-blue-300 break-words leading-snug">
                                     {{ $student->parent_name ?? '—' }}
                                 </p>
@@ -273,7 +275,8 @@
 
                             {{-- Telefon — FULLY VISIBLE + COPY --}}
                             <div class="p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl">
-                                <p class="text-xs text-emerald-700 dark:text-emerald-400 font-semibold mb-0.5">Telefon</p>
+                                <p class="text-xs text-emerald-700 dark:text-emerald-400 font-semibold mb-0.5">
+                                    {{ __('director/students.phone') }}</p>
                                 <div class="flex items-center justify-between gap-1">
                                     <p
                                         class="text-sm font-bold text-emerald-700 dark:text-emerald-400 break-all leading-snug">
@@ -286,7 +289,8 @@
                                             class="copy-btn flex-shrink-0 p-1.5 rounded-lg text-emerald-600
                                                    hover:bg-emerald-200 dark:hover:bg-emerald-800/50
                                                    active:scale-95 transition-all duration-150"
-                                            title="Nusxalash" aria-label="Telefon raqamini nusxalash">
+                                            title="{{ __('director/students.copy') }}"
+                                            aria-label="Telefon raqamini nusxalash">
 
                                             {{-- Default: copy icon --}}
                                             <svg class="icon-copy w-4 h-4" xmlns="http://www.w3.org/2000/svg"
@@ -346,25 +350,28 @@
                         {{-- ── Footer: Groups / Enrollment / Status ── --}}
                         <div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                             <div class="text-center">
-                                <p class="text-xs text-gray-400 dark:text-gray-500">Guruhlar</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500">
+                                    {{ __('director/students.groups_count') }}</p>
                                 <p class="text-lg font-bold text-gray-900 dark:text-white leading-tight">
                                     {{ $student->active_groups }}
                                 </p>
                             </div>
                             <div class="text-center">
-                                <p class="text-xs text-gray-400 dark:text-gray-500">Qabul sanasi</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500">
+                                    {{ __('director/students.enroll_date') }}</p>
                                 <p class="text-sm font-bold text-indigo-600 dark:text-indigo-400 leading-tight">
                                     {{ $student->enrollment_date?->format('d.m.Y') ?? '—' }}
                                 </p>
                             </div>
                             <div class="text-center">
-                                <p class="text-xs text-gray-400 dark:text-gray-500">Holat</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500">{{ __('director/students.status') }}
+                                </p>
                                 <span @class([
                                     'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold mt-0.5',
                                     'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' => $isActive,
                                     'bg-red-100   text-red-700   dark:bg-red-900/30   dark:text-red-400' => !$isActive,
                                 ])>
-                                    {{ $isActive ? 'Faol' : 'Faol emas' }}
+                                    {{ $isActive ? __('director/students.active') : __('director/students.inactive') }}
                                 </span>
                             </div>
                         </div>
@@ -382,7 +389,7 @@
                             stroke-width="2.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                         </svg>
-                        Nusxalandi!
+                        {{ __('director/students.copied') }}
                     </div>
 
                 </a>
@@ -395,8 +402,9 @@
                                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
                     </div>
-                    <p class="text-gray-500 dark:text-gray-400 font-semibold text-lg">O'quvchilar topilmadi</p>
-                    <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Qidiruv yoki filtr shartlarini o'zgartiring
+                    <p class="text-gray-500 dark:text-gray-400 font-semibold text-lg">
+                        {{ __('director/students.not_found') }}</p>
+                    <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">{{ __('director/students.filter_help') }}
                     </p>
                 </div>
             @endforelse

@@ -42,4 +42,8 @@ return [
     'successfully_saved' => 'Successfully saved',
     'successfully_updated' => 'Successfully updated',
     'successfully_deleted' => 'Successfully deleted',
+
+    'this_month' => 'This month',
+    'no_data' => 'No data found',
+    'currency' => 'UZS',
 ];

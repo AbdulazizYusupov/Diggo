@@ -1,6 +1,6 @@
 @extends('Layout.app')
 
-@section('title', 'O\'quvchi Tafsilotlari')
+@section('title', __('director/student_detail.title'))
 
 @section('content')
     <div class="space-y-6">
@@ -10,16 +10,16 @@
         ═══════════════════════════════════════════════ --}}
         <div class="flex items-center gap-4">
             <a href="{{ route('director.students') }}"
-                class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" title="Ortga">
+                class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" title="{{ __('director/student_detail.back') }}">
                 <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
             </a>
             <div>
                 <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-                    O'quvchi Tafsilotlari
+                    {{ __('director/student_detail.title') }}
                 </h1>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">To'liq ma'lumot va statistika</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ __('director/student_detail.subtitle') }}</p>
             </div>
         </div>
 
@@ -47,7 +47,7 @@
                                 $student->user?->is_active,
                             'bg-red-100   text-red-700   dark:bg-red-900/30   dark:text-red-400' => !$student->user?->is_active,
                         ])>
-                            {{ $student->user?->is_active ? 'Faol' : 'Faol emas' }}
+                            {{ $student->user?->is_active ? __('director/student_detail.active') : __('director/student_detail.inactive') }}
                         </span>
                     </div>
                     <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
@@ -56,14 +56,14 @@
 
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-3 mt-4">
                         <div>
-                            <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Telefon</p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">{{ __('director/student_detail.phone') }}</p>
                             <p class="font-semibold text-gray-900 dark:text-white text-sm mt-0.5">
                                 {{ $student->user?->phone ?? '—' }}
                             </p>
                         </div>
                         @if ($student->user?->email)
                             <div>
-                                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Email</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">{{ __('director/student_detail.email') }}</p>
                                 <p class="font-semibold text-gray-900 dark:text-white text-sm mt-0.5 break-all">
                                     {{ $student->user?->email }}
                                 </p>
@@ -71,15 +71,15 @@
                         @endif
                         @if ($student->user?->gender)
                             <div>
-                                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Jinsi</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">{{ __('director/student_detail.gender') }}</p>
                                 <p class="font-semibold text-gray-900 dark:text-white text-sm mt-0.5">
-                                    {{ $student->user?->gender === 'male' ? "O'g'il" : 'Qiz' }}
+                                    {{ $student->user?->gender === 'male' ? __('director/student_detail.boy') : __('director/student_detail.girl') }}
                                 </p>
                             </div>
                         @endif
                         @if ($student->enrollment_date)
                             <div>
-                                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Qabul sanasi</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">{{ __('director/student_detail.enroll_date') }}</p>
                                 <p class="font-semibold text-gray-900 dark:text-white text-sm mt-0.5">
                                     {{ $student->enrollment_date ? $student->enrollment_date->format('d.m.Y') : '—' }}
                                 </p>
@@ -87,7 +87,7 @@
                         @endif
                         @if ($student->school)
                             <div>
-                                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Maktab</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">{{ __('director/student_detail.school') }}</p>
                                 <p class="font-semibold text-gray-900 dark:text-white text-sm mt-0.5">
                                     {{ $student?->school?->name }}
                                 </p>
@@ -95,7 +95,7 @@
                         @endif
                         @if ($student->user?->address)
                             <div class="md:col-span-2">
-                                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Manzil</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">{{ __('director/student_detail.address') }}</p>
                                 <p class="font-semibold text-gray-900 dark:text-white text-sm mt-0.5">
                                     {{ $student->user?->address }}{{ $student->user?->city ? ', ' . $student->user?->city : '' }}
                                     
@@ -118,13 +118,13 @@
                         rounded-2xl p-5 border border-indigo-200 dark:border-indigo-700/50">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-bold text-indigo-700 dark:text-indigo-400 uppercase tracking-wide">Davomat
+                        <p class="text-xs font-bold text-indigo-700 dark:text-indigo-400 uppercase tracking-wide">{{ __('director/student_detail.attendance') }}
                         </p>
                         <p class="text-3xl font-extrabold text-indigo-900 dark:text-indigo-50 mt-1">
                             {{ $stats['attendance_rate'] }}<span class="text-lg font-bold">%</span>
                         </p>
                         <p class="text-xs text-indigo-600 dark:text-indigo-400 mt-1">
-                            {{ $stats['present_count'] + $stats['late_count'] }} / {{ $stats['total_lessons'] }} dars
+                            {{ $stats['present_count'] + $stats['late_count'] }} / {{ $stats['total_lessons'] }} {{ __('director/student_detail.lessons') }}
                         </p>
                     </div>
                     <div class="p-3 bg-indigo-600 rounded-xl flex-shrink-0">
@@ -146,13 +146,13 @@
                         rounded-2xl p-5 border border-amber-200 dark:border-amber-700/50">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide">Kechikkan
+                        <p class="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide">{{ __('director/student_detail.late') }}
                         </p>
                         <p class="text-3xl font-extrabold text-amber-900 dark:text-amber-50 mt-1">
                             {{ $stats['late_count'] }}
                         </p>
                         <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">
-                            O'rtacha {{ $stats['avg_late_minutes'] }} daqiqa
+                           {{ __('director/student_detail.avg_late', ['min' => $stats['avg_late_minutes']]) }}
                         </p>
                     </div>
                     <div class="p-3 bg-amber-500 rounded-xl flex-shrink-0">
@@ -170,12 +170,12 @@
                         rounded-2xl p-5 border border-red-200 dark:border-red-700/50">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-bold text-red-700 dark:text-red-400 uppercase tracking-wide">Kelmagan</p>
+                        <p class="text-xs font-bold text-red-700 dark:text-red-400 uppercase tracking-wide">{{ __('director/student_detail.absent') }}</p>
                         <p class="text-3xl font-extrabold text-red-900 dark:text-red-50 mt-1">
                             {{ $stats['absent_count'] }}
                         </p>
                         <p class="text-xs text-red-600 dark:text-red-400 mt-1">
-                            {{ $stats['absent_rate'] }}% darslar
+                            {{ $stats['absent_rate'] }}%
                         </p>
                     </div>
                     <div class="p-3 bg-red-500 rounded-xl flex-shrink-0">
@@ -194,13 +194,13 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">
-                            O'rtacha Ball
+                            {{ __('director/student_detail.avg_score') }}
                         </p>
                         <p class="text-3xl font-extrabold text-emerald-900 dark:text-emerald-50 mt-1">
                             {{ $stats['avg_activity'] }}
                         </p>
                         <p class="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                            Uy ishi: {{ $stats['avg_homework'] }}
+                            {{ __('director/student_detail.homework') }}: {{ $stats['avg_homework'] }}
                         </p>
                     </div>
                     <div class="p-3 bg-emerald-600 rounded-xl flex-shrink-0">
@@ -227,21 +227,22 @@
                         d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <p class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
-                    Mening daromadim — ushbu o'quvchidan
+                   {{ __('director/student_detail.my_earnings') }}
                 </p>
             </div>
 
             <div class="px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-10">
                 <div>
                     <p class="text-xs text-amber-700/70 dark:text-slate-400 uppercase tracking-wide">
-                        Bu o'quvchidan daromad
+                        {{ __('director/student_detail.earnings_from_student') }}
                     </p>
                     <p class="text-2xl font-extrabold text-green-600 dark:text-green-400 mt-0.5">
                         {{ number_format($stats['director_total_earned'], 0, '.', ' ') }}
-                        <span class="text-sm font-semibold text-amber-700/60 dark:text-slate-400">so'm</span>
+                        <span class="text-sm font-semibold text-amber-700/60 dark:text-slate-400">{{__('common.currency')}}</span>
                     </p>
                     <p class="text-xs text-amber-700/60 dark:text-slate-500 mt-0.5">
-                        Komissiya: {{ $stats['director_commission_pct'] }}%
+                        {{ __('director/student_detail.commission') }}: {{ $stats['director_commission_pct'] }}%
+                        {{ __('director/student_detail.payments_count', ['count' => $stats['director_payment_count']]) }}
                     </p>
                 </div>
 
@@ -249,14 +250,14 @@
 
                 <div>
                     <p class="text-xs text-amber-700/70 dark:text-slate-400 uppercase tracking-wide">
-                        Komissiya hisoblangan to'lovlar
+                        {{ __('director/student_detail.commission_payments') }}
                     </p>
                     <p class="text-2xl font-extrabold text-gray-800 dark:text-slate-200 mt-0.5">
                         {{ $stats['director_payment_count'] }}
-                        <span class="text-sm font-semibold text-amber-700/60 dark:text-slate-400">ta to'lov</span>
+                        <span class="text-sm font-semibold text-amber-700/60 dark:text-slate-400">{{ __('director/student_detail.payments_count', ['count' => $stats['director_payment_count']]) }}</span>
                     </p>
                     <p class="text-xs text-amber-700/60 dark:text-slate-500 mt-0.5">
-                        O'rtacha: {{ $stats['director_avg_per_payment'] }} so'm / to'lov
+                        {{ __('director/student_detail.avg_per_payment', ['amount' => number_format($stats['director_avg_per_payment'], 0, '.', ' ')]) }}
                     </p>
                 </div>
             </div>
@@ -270,7 +271,7 @@
             {{-- Active Groups --}}
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="text-base font-bold text-gray-900 dark:text-white mb-5">
-                    Faol Guruhlar
+                   {{ __('director/student_detail.active_groups') }}
                     <span
                         class="ml-2 text-xs font-semibold bg-indigo-100 dark:bg-indigo-900/30
                                  text-indigo-700 dark:text-indigo-400 px-2 py-0.5 rounded-full">
@@ -295,7 +296,7 @@
                                 <span
                                     class="flex-shrink-0 px-2 py-0.5 bg-green-100 text-green-700
                                              dark:bg-green-900/30 dark:text-green-400 text-xs font-bold rounded-full">
-                                    Faol
+                                    {{ __('director/student_detail.active') }}
                                 </span>
                             </div>
                             <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
@@ -310,7 +311,7 @@
                         </div>
                     @empty
                         <div class="text-center py-10">
-                            <p class="text-gray-400 dark:text-gray-500 text-sm">Faol guruhlar yo'q</p>
+                            <p class="text-gray-400 dark:text-gray-500 text-sm">{{ __('director/student_detail.no_active_groups') }}</p>
                         </div>
                     @endforelse
                 </div>
@@ -318,7 +319,7 @@
 
             {{-- Recent Attendance --}}
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <h3 class="text-base font-bold text-gray-900 dark:text-white mb-5">So'nggi Davomatlar</h3>
+                <h3 class="text-base font-bold text-gray-900 dark:text-white mb-5">{{ __('director/student_detail.recent_attendance') }}</h3>
 
                 <div class="space-y-2">
                     @forelse($recentAttendance as $att)
@@ -330,7 +331,7 @@
                                 <p class="text-xs text-gray-500 dark:text-gray-400">
                                     {{ $att['marked_at'] }}
                                     @if ($att['late_minutes'])
-                                        · {{ $att['late_minutes'] }} daq kechikdi
+                                        · {{ __('director/student_detail.late_notice', ['min' => $att['late_minutes']]) }}
                                     @endif
                                 </p>
                             </div>
@@ -346,7 +347,7 @@
                         </div>
                     @empty
                         <div class="text-center py-10">
-                            <p class="text-gray-400 dark:text-gray-500 text-sm">Davomat ma'lumotlari yo'q</p>
+                            <p class="text-gray-400 dark:text-gray-500 text-sm">{{ __('director/student_detail.no_attendance') }}</p>
                         </div>
                     @endforelse
                 </div>
@@ -363,14 +364,14 @@
                 $student->emergency_contact_name ||
                 $student->emergency_contact_phone)
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <h3 class="text-base font-bold text-gray-900 dark:text-white mb-5">Ota-ona Ma'lumotlari</h3>
+                <h3 class="text-base font-bold text-gray-900 dark:text-white mb-5">{{ __('director/student_detail.parent_info') }}</h3>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     @if ($student->parent_name)
                         <div
                             class="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-800/30">
                             <p class="text-xs text-blue-600 dark:text-blue-400 font-semibold uppercase tracking-wide mb-1">
-                                Ota-ona ismi</p>
+                                {{ __('director/student_detail.parent_name') }}</p>
                             <p class="font-bold text-gray-900 dark:text-white">{{ $student->parent_name }}</p>
                         </div>
                     @endif
@@ -380,7 +381,7 @@
                             class="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-800/30">
                             <p
                                 class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold uppercase tracking-wide mb-1">
-                                Ota-ona telefoni</p>
+                                {{ __('director/student_detail.parent_phone') }}</p>
                             <div class="flex items-center justify-between gap-2">
                                 <p class="font-bold text-gray-900 dark:text-white break-all">{{ $student->parent_phone }}
                                 </p>
@@ -388,7 +389,7 @@
                                     onclick="handleCopyPhone(event, this)"
                                     class="copy-btn flex-shrink-0 p-1.5 rounded-lg text-emerald-600
                                            hover:bg-emerald-200 dark:hover:bg-emerald-800/50 active:scale-95 transition-all duration-150"
-                                    title="Nusxalash">
+                                    title="{{ __('director/student_detail.copy') }}">
                                     <svg class="icon-copy w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                         stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -408,7 +409,7 @@
                             class="p-4 bg-orange-50 dark:bg-orange-900/10 rounded-xl border border-orange-100 dark:border-orange-800/30">
                             <p
                                 class="text-xs text-orange-600 dark:text-orange-400 font-semibold uppercase tracking-wide mb-1">
-                                Favqulodda aloqa</p>
+                                {{ __('director/student_detail.emergency_contact') }}</p>
                             <p class="font-bold text-gray-900 dark:text-white">{{ $student->emergency_contact_name }}</p>
                         </div>
                     @endif
@@ -418,7 +419,7 @@
                             class="p-4 bg-orange-50 dark:bg-orange-900/10 rounded-xl border border-orange-100 dark:border-orange-800/30">
                             <p
                                 class="text-xs text-orange-600 dark:text-orange-400 font-semibold uppercase tracking-wide mb-1">
-                                Favqulodda telefon</p>
+                                {{ __('director/student_detail.emergency_phone') }}</p>
                             <div class="flex items-center justify-between gap-2">
                                 <p class="font-bold text-gray-900 dark:text-white break-all">
                                     {{ $student->emergency_contact_phone }}</p>
@@ -426,7 +427,7 @@
                                     onclick="handleCopyPhone(event, this)"
                                     class="copy-btn flex-shrink-0 p-1.5 rounded-lg text-orange-600
                                            hover:bg-orange-200 dark:hover:bg-orange-800/50 active:scale-95 transition-all duration-150"
-                                    title="Nusxalash">
+                                    title="{{ __('director/student_detail.copy') }}">
                                     <svg class="icon-copy w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                         stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -449,7 +450,7 @@
         ═══════════════════════════════════════════════ --}}
         @if ($student->notes)
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <h3 class="text-base font-bold text-gray-900 dark:text-white mb-3">Izohlar</h3>
+                <h3 class="text-base font-bold text-gray-900 dark:text-white mb-3">{{ __('director/student_detail.notes') }}</h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap">
                     {{ $student->notes }}
                 </p>

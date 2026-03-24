@@ -29,7 +29,7 @@
                                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 8 8">
                                     <circle cx="4" cy="4" r="3" />
                                 </svg>
-                                Faol
+                                {{ __('director/school.active') }}
                             </span>
                         @else
                             <span
@@ -37,7 +37,7 @@
                                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 8 8">
                                     <circle cx="4" cy="4" r="3" />
                                 </svg>
-                                Nofaol
+                                {{ __('director/school.inactive') }}
                             </span>
                         @endif
                     </div>
@@ -96,7 +96,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    <span class="hidden sm:inline">Orqaga</span>
+                    <span class="hidden sm:inline">{{ __('director/school.back') }}</span>
                 </a>
             </div>
         </div>
@@ -115,7 +115,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-xs uppercase tracking-wider font-bold text-blue-600 dark:text-blue-400 mb-1">Jami talabalar
+                <p class="text-xs uppercase tracking-wider font-bold text-blue-600 dark:text-blue-400 mb-1">{{ __('director/school.total_students') }}
                 </p>
                 <p class="text-3xl lg:text-4xl font-black text-blue-600 dark:text-blue-400">
                     {{ number_format($stats['total_students'], 0, '.', ' ') }}
@@ -134,8 +134,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-xs uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400 mb-1">Faol
-                    talabalar</p>
+                <p class="text-xs uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400 mb-1">{{ __('director/school.active_students') }}</p>
                 <p class="text-3xl lg:text-4xl font-black text-emerald-600 dark:text-emerald-400">
                     {{ number_format($stats['active_students'], 0, '.', ' ') }}
                 </p>
@@ -153,8 +152,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-xs uppercase tracking-wider font-bold text-indigo-600 dark:text-indigo-400 mb-1">O'g'il
-                    talabalar</p>
+                <p class="text-xs uppercase tracking-wider font-bold text-indigo-600 dark:text-indigo-400 mb-1">{{ __('director/school.male_students') }}</p>
                 <p class="text-3xl lg:text-4xl font-black text-indigo-600 dark:text-indigo-400">
                     {{ number_format($stats['male_students'], 0, '.', ' ') }}
                 </p>
@@ -172,7 +170,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-xs uppercase tracking-wider font-bold text-pink-600 dark:text-pink-400 mb-1">Qiz talabalar
+                <p class="text-xs uppercase tracking-wider font-bold text-pink-600 dark:text-pink-400 mb-1">{{ __('director/school.female_students') }}
                 </p>
                 <p class="text-3xl lg:text-4xl font-black text-pink-600 dark:text-pink-400">
                     {{ number_format($stats['female_students'], 0, '.', ' ') }}
@@ -194,7 +192,7 @@
                                     d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <h2 class="text-xl font-black text-gray-900 dark:text-white">Maktab direktori</h2>
+                        <h2 class="text-xl font-black text-gray-900 dark:text-white">{{ __('director/school.director') }}</h2>
                     </div>
 
                     @if ($school->director && $school->director->user)
@@ -259,8 +257,8 @@
                                         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                 </svg>
                             </div>
-                            <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">Direktor tayinlanmagan</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Tizimda direktor ma'lumotlari topilmadi</p>
+                            <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">{{ __('director/school.director_not_assigned') }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('director/school.director_not_found') }}</p>
                         </div>
                     @endif
                 </div>
@@ -278,7 +276,7 @@
                                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <h2 class="text-xl font-black text-gray-900 dark:text-white">Maktab haqida</h2>
+                            <h2 class="text-xl font-black text-gray-900 dark:text-white">{{ __('director/school.about_school') }}</h2>
                         </div>
                         <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
                             {{ $school->description }}
@@ -303,9 +301,9 @@
                                 </svg>
                             </div>
                             <div>
-                                <h2 class="text-2xl font-black text-gray-900 dark:text-white">Talabalar</h2>
+                                <h2 class="text-2xl font-black text-gray-900 dark:text-white">{{ __('director/school.students') }}</h2>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">
-                                    {{ $students->total() }} ta talaba topildi
+                                    {{ $students->total() }} {{ __('director/school.students_found') }}
                                 </p>
                             </div>
                         </div>
@@ -320,7 +318,7 @@
 
                                 <div class="relative md:col-span-2">
                                     <input type="text" name="search" value="{{ request('search') }}"
-                                        placeholder="Ism, familiya yoki telefon..."
+                                        placeholder="{{ __('director/school.search_placeholder') }}"
                                         class="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 text-sm text-gray-900 dark:text-gray-100 outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500">
                                     <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="none"
                                         stroke="currentColor" viewBox="0 0 24 24">
@@ -332,20 +330,20 @@
                                 <!-- Status -->
                                 <select name="status"
                                     class="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500">
-                                    <option value="">Barcha status</option>
-                                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Faol
+                                    <option value="">{{ __('director/school.all_status') }}</option>
+                                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>{{ __('director/school.active') }}
                                     </option>
                                     <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>
-                                        Nofaol</option>
+                                        {{ __('director/school.inactive') }}</option>
                                 </select>
 
                                 <!-- Gender -->
                                 <select name="gender"
                                     class="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500">
-                                    <option value="">Barcha jins</option>
-                                    <option value="male" {{ request('gender') === 'male' ? 'selected' : '' }}>Erkak
+                                    <option value="">{{ __('director/school.all_gender') }}</option>
+                                    <option value="male" {{ request('gender') === 'male' ? 'selected' : '' }}>{{ __('director/school.male') }}
                                     </option>
-                                    <option value="female" {{ request('gender') === 'female' ? 'selected' : '' }}>Ayol
+                                    <option value="female" {{ request('gender') === 'female' ? 'selected' : '' }}>{{ __('director/school.female') }}
                                     </option>
                                 </select>
                             </div>
@@ -355,22 +353,22 @@
                                 <select name="sort_by"
                                     class="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500">
                                     <option value="latest" {{ request('sort_by') === 'latest' ? 'selected' : '' }}>
-                                        Yangilari</option>
+                                        {{ __('director/school.latest') }}</option>
                                     <option value="oldest" {{ request('sort_by') === 'oldest' ? 'selected' : '' }}>
-                                        Eskilari</option>
+                                        {{ __('director/school.oldest') }}</option>
                                     <option value="name" {{ request('sort_by') === 'name' ? 'selected' : '' }}>Ism
-                                        bo'yicha</option>
+                                        {{ __('director/school.sort_by_name') }}</option>
                                 </select>
 
                                 <!-- Buttons -->
                                 <div class="flex gap-2">
                                     <button type="submit"
                                         class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-semibold transition-all active:scale-95">
-                                        Qidirish
+                                        {{ __('director/school.search') }}
                                     </button>
                                     <a href="{{ route('director.school.show', $school->id) }}"
                                         class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-semibold transition-all active:scale-95">
-                                        Tozalash
+                                        {{ __('director/school.clear') }}
                                     </a>
                                 </div>
                             </div>
@@ -412,7 +410,7 @@
                                                     <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8">
                                                         <circle cx="4" cy="4" r="3" />
                                                     </svg>
-                                                    Faol
+                                                    {{ __('director/school.active') }}
                                                 </span>
                                             @else
                                                 <span
@@ -420,7 +418,7 @@
                                                     <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 8 8">
                                                         <circle cx="4" cy="4" r="3" />
                                                     </svg>
-                                                    Nofaol
+                                                    {{ __('director/school.inactive') }}
                                                 </span>
                                             @endif
                                         </div>
@@ -452,9 +450,8 @@
                                         d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                 </svg>
                             </div>
-                            <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">Talabalar topilmadi</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Filtrlarni o'zgartiring yoki yangi talaba
-                                qo'shing</p>
+                            <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">{{ __('director/school.no_students') }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('director/school.change_filters') }}</p>
                         </div>
                     @endif
                 </div>

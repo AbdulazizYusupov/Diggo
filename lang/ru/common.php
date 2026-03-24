@@ -42,4 +42,8 @@ return [
     'successfully_saved' => 'Успешно сохранено',
     'successfully_updated' => 'Успешно обновлено',
     'successfully_deleted' => 'Успешно удалено',
+
+    'this_month' => 'В этом месяце',
+    'no_data' => 'Данные не найдены',
+    'currency' => 'сум',
 ];

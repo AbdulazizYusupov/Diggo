@@ -1,6 +1,6 @@
 @extends('Layout.app')
 
-@section('title', 'Director Kabineti')
+@section('title', __('director/index.title'))
 
 @section('content')
     <div class="space-y-6">
@@ -17,7 +17,7 @@
 
                 <div class="space-y-1">
                     <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-                        Director Kabineti
+                        {{ __('director/index.title') }}
                     </h1>
                     <p class="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
                         <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,7 +33,7 @@
                 <div
                     class="px-4 py-2 bg-gradient-to-r from-emerald-100 to-emerald-200 dark:from-emerald-900/30 dark:to-emerald-800/30 rounded-xl border border-emerald-300 dark:border-emerald-700/50">
                     <div class="flex items-center gap-2">
-                        <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Komissiya:</span>
+                        <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400">{{ __('director/index.commission') }}:</span>
                         <span class="text-lg font-extrabold text-emerald-900 dark:text-emerald-50">
                             {{ $stats['commission_percentage'] }}%
                         </span>
@@ -50,11 +50,11 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider">
-                            Joriy balans
+                            {{ __('director/index.current_balance') }}
                         </p>
                         <p class="text-3xl font-extrabold text-purple-900 dark:text-purple-50 mt-1">
                             {{ number_format($stats['current_balance'], 0, '.', ' ') }}
-                            <span class="text-lg">so'm</span>
+                            <span class="text-lg">{{ __('common.currency') }}</span>
                         </p>
                     </div>
                     <div
@@ -73,11 +73,11 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
-                            Shu oy komissiyasi
+                            {{ __('director/index.this_month_commission') }}
                         </p>
                         <p class="text-3xl font-extrabold text-emerald-900 dark:text-emerald-50 mt-1">
                             {{ number_format($stats['this_month_commission'], 0, '.', ' ') }}
-                            <span class="text-lg">so'm</span>
+                            <span class="text-lg">{{ __('common.currency') }}</span>
                         </p>
                     </div>
                     <div
@@ -96,11 +96,11 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider">
-                            Jami ishlab topilgan
+                            {{ __('director/index.total_earned') }}
                         </p>
                         <p class="text-3xl font-extrabold text-blue-900 dark:text-blue-50 mt-1">
                             {{ number_format($stats['total_commission_earned'], 0, '.', ' ') }}
-                            <span class="text-lg">so'm</span>
+                            <span class="text-lg">{{ __('common.currency') }}</span>
                         </p>
                     </div>
                     <div
@@ -121,7 +121,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-bold text-indigo-700 dark:text-indigo-400 uppercase tracking-wider">
-                            Jami o'quvchilar
+                            {{ __('director/index.total_students') }}
                         </p>
                         <p class="text-3xl font-extrabold text-indigo-900 dark:text-indigo-50 mt-1">
                             {{ $stats['total_students'] }}
@@ -143,12 +143,12 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-bold text-rose-700 dark:text-rose-400 uppercase tracking-wider">
-                            Yangi o'quvchilar
+                           {{ __('director/index.new_students') }}
                         </p>
                         <p class="text-3xl font-extrabold text-rose-900 dark:text-rose-50 mt-1">
                             {{ $stats['new_students_this_month'] }}
                         </p>
-                        <p class="text-xs text-rose-600 dark:text-rose-400 mt-1">Shu oyda</p>
+                        <p class="text-xs text-rose-600 dark:text-rose-400 mt-1">{{ __('common.this_month') }}</p>
                     </div>
                     <div
                         class="p-3 bg-rose-600 rounded-xl shadow-lg shadow-rose-300/50 dark:shadow-none transition-transform hover:scale-110">
@@ -165,12 +165,12 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider">
-                            Davomat
+                            {{ __('director/index.attendance') }}
                         </p>
                         <p class="text-3xl font-extrabold text-cyan-900 dark:text-cyan-50 mt-1">
                             {{ $stats['attendance_rate'] }}%
                         </p>
-                        <p class="text-xs text-cyan-600 dark:text-cyan-400 mt-1">Shu oyda</p>
+                        <p class="text-xs text-cyan-600 dark:text-cyan-400 mt-1">{{ __('common.this_month') }}</p>
                     </div>
                     <div
                         class="p-3 bg-cyan-600 rounded-xl shadow-lg shadow-cyan-300/50 dark:shadow-none transition-transform hover:scale-110">
@@ -193,23 +193,23 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    Oylik komissiya tarixi
+                   {{ __('director/index.monthly_history') }}
                 </h3>
                 <div class="space-y-3">
                     @forelse($monthlyCommissions as $month)
                         <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                             <div>
                                 <p class="font-semibold text-gray-900 dark:text-white">{{ $month->month_name }}</p>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ $month->count }} ta to'lov</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ $month->count }} {{ __('director/index.payments') }}</p>
                             </div>
                             <div class="text-right">
                                 <p class="font-bold text-emerald-600 dark:text-emerald-400">
-                                    {{ number_format($month->total, 0, '.', ' ') }} so'm
+                                    {{ number_format($month->total, 0, '.', ' ') }} {{ __('common.currency') }}
                                 </p>
                             </div>
                         </div>
                     @empty
-                        <p class="text-center text-gray-500 dark:text-gray-400 py-8">Ma'lumot topilmadi</p>
+                        <p class="text-center text-gray-500 dark:text-gray-400 py-8">{{ __('common.no_data') }}</p>
                     @endforelse
                 </div>
             </div>
@@ -222,7 +222,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
-                    Eng ko'p o'quvchili guruhlar
+                    {{ __('director/index.top_groups') }}
                 </h3>
                 <div class="space-y-3">
                     @forelse($topGroups as $group)
@@ -246,111 +246,12 @@
                             </div>
                         </div>
                     @empty
-                        <p class="text-center text-gray-500 dark:text-gray-400 py-8">Guruhlar topilmadi</p>
+                        <p class="text-center text-gray-500 dark:text-gray-400 py-8">{{ __('director/index.no_groups') }}</p>
                     @endforelse
                 </div>
             </div>
         </div>
 
-        {{-- Recent Payments --}}
-        {{-- <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    So'nggi to'lovlar
-                </h3>
-                <a href="{{ route('director.commissions') }}"
-                    class="text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 font-semibold text-sm flex items-center gap-1">
-                    Barchasini ko'rish
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead>
-                        <tr class="border-b border-gray-200 dark:border-gray-700">
-                            <th class="text-left py-3 px-4 text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">
-                                O'quvchi</th>
-                            <th class="text-left py-3 px-4 text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">
-                                Kurs</th>
-                            <th class="text-left py-3 px-4 text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">
-                                To'lov summasi</th>
-                            <th class="text-left py-3 px-4 text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">
-                                Komissiya</th>
-                            <th class="text-left py-3 px-4 text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">
-                                Sana</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                        @forelse($recentPayments as $payment)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                <td class="py-3 px-4">
-                                    <div class="flex items-center gap-3">
-                                        <div
-                                            class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">
-                                            {{ substr($payment->student->user->name, 0, 1) }}{{ substr($payment->student->user->surname ?? '', 0, 1) }}
-                                        </div>
-                                        <div>
-                                            <p class="font-semibold text-gray-900 dark:text-white">
-                                                {{ $payment->student->user->name }} {{ $payment->student->user->surname }}
-                                            </p>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $payment->student->user->phone }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-sm font-semibold rounded-lg">
-                                        {{ $payment->group?->course?->name }}
-                                    </span>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <p class="font-bold text-gray-900 dark:text-white">
-                                        {{ number_format($payment->amount, 0, '.', ' ') }} so'm
-                                    </p>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <p class="font-bold text-emerald-600 dark:text-emerald-400">
-                                        {{ number_format($payment->commission_amount, 0, '.', ' ') }} so'm
-                                    </p>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">
-                                        {{ $payment->paid_at->format('d.m.Y') }}
-                                    </p>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="py-12 text-center">
-                                    <div class="inline-flex flex-col items-center">
-                                        <div class="p-3 bg-gray-100 dark:bg-gray-800 rounded-full mb-3">
-                                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                                            </svg>
-                                        </div>
-                                        <p class="text-gray-500 dark:text-gray-400 font-medium">To'lovlar topilmadi</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div> --}}
-
-        {{-- Quick Actions --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <a href="{{ route('director.students') }}"
                 class="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg hover:border-indigo-400 dark:hover:border-indigo-500 transition-all">
@@ -364,8 +265,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h4 class="font-bold text-gray-900 dark:text-white">O'quvchilar</h4>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Barcha o'quvchilarni ko'rish</p>
+                        <h4 class="font-bold text-gray-900 dark:text-white">{{ __('director/index.students') }}</h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('director/index.view_students') }}</p>
                     </div>
                 </div>
             </a>
@@ -382,8 +283,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h4 class="font-bold text-gray-900 dark:text-white">Komissiyalar</h4>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">To'lovlar va komissiyalar</p>
+                        <h4 class="font-bold text-gray-900 dark:text-white">{{ __('director/index.commissions') }}</h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('director/index.payments_commissions') }}</p>
                     </div>
                 </div>
             </a>
@@ -400,8 +301,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h4 class="font-bold text-gray-900 dark:text-white">Maktab ma'lumotlari</h4>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">To'liq ma'lumot</p>
+                        <h4 class="font-bold text-gray-900 dark:text-white">{{ __('director/index.school_info') }}</h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('director/index.full_info') }}</p>
                     </div>
                 </div>
             </a>

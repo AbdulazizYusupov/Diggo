@@ -46,4 +46,8 @@ return [
     'successfully_saved' => 'Muvaffaqiyatli saqlandi',
     'successfully_updated' => 'Muvaffaqiyatli yangilandi',
     'successfully_deleted' => 'Muvaffaqiyatli o\'chirildi',
+
+    'this_month' => 'Shu oyda',
+    'no_data' => "Ma'lumot topilmadi",
+    'currency' => "so'm",
 ];

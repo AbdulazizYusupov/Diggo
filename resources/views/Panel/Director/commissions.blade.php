@@ -1,18 +1,18 @@
 @extends('Layout.app')
 
-@section('title', 'Komissiyalar')
+@section('title', __('director/commissions.title'))
 
 @section('content')
     <div class="space-y-6">
 
-      
+
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-                    Komissiyalar
+                    {{ __('director/commissions.title') }}
                 </h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Tranzaksiyalar va komissiya hisob-kitobi
+                    {{ __('director/commissions.subtitle') }}
                 </p>
             </div>
             <a href="{{ route('director.commissions.history') }}"
@@ -23,11 +23,11 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
-                Tarix
+                {{ __('director/commissions.history') }}
             </a>
         </div>
 
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
             {{-- Joriy Balans --}}
@@ -38,14 +38,14 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-xs font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wide">
-                            Joriy Balans
+                            {{ __('director/commissions.current_balance') }}
                         </p>
                         <p class="text-3xl font-extrabold text-purple-900 dark:text-purple-50 mt-1 leading-none">
                             {{ number_format($stats['current_balance'], 0, '.', ' ') }}
-                            <span class="text-base font-semibold">so'm</span>
+                            <span class="text-base font-semibold">{{ __('common.currency') }}</span>
                         </p>
                         <p class="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                            Hisobdagi mablag'
+                            {{ __('director/commissions.balance_desc') }}
                         </p>
                     </div>
                     <div class="p-3 bg-purple-600 rounded-xl flex-shrink-0">
@@ -65,11 +65,11 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">
-                            Shu Oy
+                            {{ __('director/commissions.this_month') }}
                         </p>
                         <p class="text-3xl font-extrabold text-emerald-900 dark:text-emerald-50 mt-1 leading-none">
                             {{ number_format($stats['this_month_commission'], 0, '.', ' ') }}
-                            <span class="text-base font-semibold">so'm</span>
+                            <span class="text-base font-semibold">{{ __('common.currency') }}</span>
                         </p>
                         <p class="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
                             {{ now()->translatedFormat('F Y') }}
@@ -92,14 +92,14 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wide">
-                            {{ $year }} Yil Jami
+                            {{ __('director/commissions.year_total', ['year' => $year]) }}
                         </p>
                         <p class="text-3xl font-extrabold text-blue-900 dark:text-blue-50 mt-1 leading-none">
                             {{ number_format($stats['year_total'], 0, '.', ' ') }}
-                            <span class="text-base font-semibold">so'm</span>
+                            <span class="text-base font-semibold">{{__('common.currency')}}</span>
                         </p>
                         <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                            {{ $stats['year_count'] }} ta tranzaksiya
+                            {{ __('director/commissions.transactions_count', ['count' =>$stats['year_count']]) }}
                         </p>
                     </div>
                     <div class="p-3 bg-blue-600 rounded-xl flex-shrink-0">
@@ -119,13 +119,13 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-xs font-bold text-indigo-700 dark:text-indigo-400 uppercase tracking-wide">
-                            Komissiya %
+                           {{ __('director/commissions.commission_rate') }}
                         </p>
                         <p class="text-3xl font-extrabold text-indigo-900 dark:text-indigo-50 mt-1 leading-none">
                             {{ $stats['commission_percentage'] }}<span class="text-base font-semibold">%</span>
                         </p>
                         <p class="text-xs text-indigo-600 dark:text-indigo-400 mt-1">
-                            Joriy stavka
+                            {{ __('director/commissions.current_rate') }}
                         </p>
                     </div>
                     <div class="p-3 bg-indigo-600 rounded-xl flex-shrink-0">
@@ -145,19 +145,20 @@
         <div
             class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm
                 border border-gray-200 dark:border-gray-700 p-6">
-            <form method="GET" action="{{ route('director.commissions') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <form method="GET" action="{{ route('director.commissions') }}"
+                class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
                 {{-- Oy --}}
                 <div>
                     <label for="monthSelect" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        Oy
+                        {{ __('director/commissions.filter_month') }}
                     </label>
                     <select id="monthSelect" name="month"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600
                            rounded-xl bg-white dark:bg-gray-700
                            text-gray-900 dark:text-white
                            focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
-                        <option value="">Barcha oylar</option>
+                        <option value="">{{ __('director/commissions.all_months') }}</option>
                         @foreach ($months as $key => $monthName)
                             <option value="{{ $key }}" @selected($month == $key)>
                                 {{ $monthName }}
@@ -169,7 +170,7 @@
                 {{-- Yil --}}
                 <div>
                     <label for="yearSelect" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        Yil
+                        {{ __('director/commissions.filter_year') }}
                     </label>
                     <select id="yearSelect" name="year"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600
@@ -192,7 +193,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
                         </svg>
-                        Filtrlash
+                        {{ __('director/commissions.filter_btn') }}
                     </button>
                     <a href="{{ route('director.commissions') }}"
                         class="group p-2 bg-gray-100 dark:bg-gray-700
@@ -221,7 +222,7 @@
                 class="px-6 py-4 border-b border-gray-200 dark:border-gray-700
                     flex items-center justify-between gap-4">
                 <h3 class="text-base font-bold text-gray-900 dark:text-white">
-                    Komissiya Tranzaksiyalari
+                    {{ __('director/commissions.table_title') }}
                 </h3>
                 @if ($transactions->total() > 0)
                     <span
@@ -229,7 +230,7 @@
                              bg-indigo-100 dark:bg-indigo-900/30
                              text-indigo-700 dark:text-indigo-400
                              px-2.5 py-0.5 rounded-full">
-                        {{ $transactions->total() }} ta
+                        {{ __('director/commissions.total_items', ['count' => $transactions->total()]) }}
                     </span>
                 @endif
             </div>
@@ -241,37 +242,37 @@
                             <th
                                 class="px-6 py-3 text-left text-xs font-bold
                                    text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                O'quvchi
+                               {{ __('director/commissions.col_student') }}
                             </th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-bold
                                    text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Guruh / Kurs
+                                {{ __('director/commissions.col_group') }}
                             </th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-bold
                                    text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Balans (keyin)
+                                {{ __('director/commissions.col_balance_after') }}
                             </th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-bold
                                    text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Mening komissiyam
+                                {{ __('director/commissions.col_my_commission') }}
                             </th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-bold
                                    text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Stavka
+                                {{ __('director/commissions.col_rate') }}
                             </th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-bold
                                    text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Sana
+                                {{ __('director/commissions.col_date') }}
                             </th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-bold
                                    text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Kassir
+                                {{ __('director/commissions.col_cashier') }}
                             </th>
                         </tr>
                     </thead>
@@ -307,10 +308,10 @@
                                 <td class="px-6 py-4">
                                     <p class="font-semibold text-gray-900 dark:text-white">
                                         {{ number_format((float) $tx->balance_after, 0, '.', ' ') }}
-                                        <span class="text-xs font-normal text-gray-400 dark:text-gray-500">so'm</span>
+                                        <span class="text-xs font-normal text-gray-400 dark:text-gray-500">{{__('common.currency')}}</span>
                                     </p>
                                     <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                                        Oldin: {{ number_format((float) $tx->balance_before, 0, '.', ' ') }} so'm
+                                        Oldin: {{ number_format((float) $tx->balance_before, 0, '.', ' ') }} {{__('common.currency')}}
                                     </p>
                                 </td>
 
@@ -318,7 +319,7 @@
                                 <td class="px-6 py-4">
                                     <span class="font-extrabold text-emerald-600 dark:text-emerald-400">
                                         {{ number_format((float) $tx->amount, 0, '.', ' ') }}
-                                        <span class="text-xs font-medium">so'm</span>
+                                        <span class="text-xs font-medium">{{__('common.currency')}}</span>
                                     </span>
                                 </td>
 
@@ -363,10 +364,10 @@
                                             </svg>
                                         </div>
                                         <p class="text-gray-500 dark:text-gray-400 font-semibold">
-                                            Tranzaksiyalar topilmadi
+                                           {{ __('director/commissions.no_data') }}
                                         </p>
                                         <p class="text-xs text-gray-400 dark:text-gray-500">
-                                            Tanlangan davr uchun komissiya tranzaksiyalari yo'q
+                                            {{ __('director/commissions.no_data_desc') }}
                                         </p>
                                     </div>
                                 </td>
@@ -396,13 +397,13 @@
                     border border-gray-200 dark:border-gray-700 p-6">
 
                 <h3 class="text-base font-bold text-gray-900 dark:text-white mb-6">
-                    {{ $year }} — Oylik Statistika
+                    {{ __('director/commissions.monthly_stat', ['year' => $year]) }}
                     <span
                         class="ml-2 text-xs font-semibold
                              bg-gray-100 dark:bg-gray-700
                              text-gray-500 dark:text-gray-400
                              px-2 py-0.5 rounded-full">
-                        Mening komissiyam
+                        {{ __('director/commissions.col_my_commission') }}
                     </span>
                 </h3>
 
@@ -433,7 +434,7 @@
                                           ? 'text-emerald-800 dark:text-emerald-100'
                                           : 'text-gray-900 dark:text-white' }}">
                                     {{ number_format($data['total'], 0, '.', ' ') }}
-                                    <span class="text-xs font-normal text-gray-400 dark:text-gray-500">so'm</span>
+                                    <span class="text-xs font-normal text-gray-400 dark:text-gray-500">{{__('common.currency')}}</span>
                                 </p>
 
                                 {{-- Mini progress bar --}}
@@ -447,7 +448,7 @@
                                 </div>
 
                                 <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5">
-                                    {{ $data['count'] }} ta tranzaksiya
+                                    {{ __('director/commissions.transactions_count', ['count' => $data['count']]) }}
                                 </p>
                             </div>
                         @endif
