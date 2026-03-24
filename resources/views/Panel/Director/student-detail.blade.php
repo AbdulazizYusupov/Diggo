@@ -3,19 +3,6 @@
 @section('title', 'O\'quvchi Tafsilotlari')
 
 @section('content')
-    @php
-        $fullName = trim(
-            implode(
-                ' ',
-                array_filter([$student->user->surname, $student->user->name, $student->user->middle_name ?? null]),
-            ),
-        );
-
-        $initials = mb_strtoupper(
-            mb_substr($student->user->name ?? '', 0, 1) . mb_substr($student->user->surname ?? '', 0, 1),
-        );
-    @endphp
-
     <div class="space-y-6">
 
         {{-- ═══════════════════════════════════════════════
@@ -57,10 +44,10 @@
                         <span @class([
                             'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold',
                             'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' =>
-                                $student->user->is_active,
-                            'bg-red-100   text-red-700   dark:bg-red-900/30   dark:text-red-400' => !$student->user->is_active,
+                                $student->user?->is_active,
+                            'bg-red-100   text-red-700   dark:bg-red-900/30   dark:text-red-400' => !$student->user?->is_active,
                         ])>
-                            {{ $student->user->is_active ? 'Faol' : 'Faol emas' }}
+                            {{ $student->user?->is_active ? 'Faol' : 'Faol emas' }}
                         </span>
                     </div>
                     <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
@@ -71,22 +58,22 @@
                         <div>
                             <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Telefon</p>
                             <p class="font-semibold text-gray-900 dark:text-white text-sm mt-0.5">
-                                {{ $student->user->phone ?? '—' }}
+                                {{ $student->user?->phone ?? '—' }}
                             </p>
                         </div>
-                        @if ($student->user->email)
+                        @if ($student->user?->email)
                             <div>
                                 <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Email</p>
                                 <p class="font-semibold text-gray-900 dark:text-white text-sm mt-0.5 break-all">
-                                    {{ $student->user->email }}
+                                    {{ $student->user?->email }}
                                 </p>
                             </div>
                         @endif
-                        @if ($student->user->gender)
+                        @if ($student->user?->gender)
                             <div>
                                 <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Jinsi</p>
                                 <p class="font-semibold text-gray-900 dark:text-white text-sm mt-0.5">
-                                    {{ $student->user->gender === 'male' ? "O'g'il" : 'Qiz' }}
+                                    {{ $student->user?->gender === 'male' ? "O'g'il" : 'Qiz' }}
                                 </p>
                             </div>
                         @endif
@@ -94,7 +81,7 @@
                             <div>
                                 <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Qabul sanasi</p>
                                 <p class="font-semibold text-gray-900 dark:text-white text-sm mt-0.5">
-                                    {{ $student->enrollment_date->format('d.m.Y') }}
+                                    {{ $student->enrollment_date ? $student->enrollment_date->format('d.m.Y') : '—' }}
                                 </p>
                             </div>
                         @endif
@@ -102,15 +89,16 @@
                             <div>
                                 <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Maktab</p>
                                 <p class="font-semibold text-gray-900 dark:text-white text-sm mt-0.5">
-                                    {{ $student->school->name }}
+                                    {{ $student?->school?->name }}
                                 </p>
                             </div>
                         @endif
-                        @if ($student->user->address)
+                        @if ($student->user?->address)
                             <div class="md:col-span-2">
                                 <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Manzil</p>
                                 <p class="font-semibold text-gray-900 dark:text-white text-sm mt-0.5">
-                                    {{ $student->user->address }}{{ $student->user->city ? ', ' . $student->user->city : '' }}
+                                    {{ $student->user?->address }}{{ $student->user?->city ? ', ' . $student->user?->city : '' }}
+                                    
                                 </p>
                             </div>
                         @endif
@@ -187,8 +175,7 @@
                             {{ $stats['absent_count'] }}
                         </p>
                         <p class="text-xs text-red-600 dark:text-red-400 mt-1">
-                            {{ $stats['total_lessons'] > 0 ? round(($stats['absent_count'] / $stats['total_lessons']) * 100) : 0 }}%
-                            darslar
+                            {{ $stats['absent_rate'] }}% darslar
                         </p>
                     </div>
                     <div class="p-3 bg-red-500 rounded-xl flex-shrink-0">
@@ -229,9 +216,6 @@
 
         {{-- ═══════════════════════════════════════════════
              DIRECTOR-ONLY EARNINGS BANNER
-             What the director has personally earned from
-             this student via commission transactions.
-             Never visible to the student.
         ═══════════════════════════════════════════════ --}}
         <div
             class="bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-slate-800 dark:to-slate-900
@@ -248,8 +232,6 @@
             </div>
 
             <div class="px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-10">
-
-                {{-- Total earned --}}
                 <div>
                     <p class="text-xs text-amber-700/70 dark:text-slate-400 uppercase tracking-wide">
                         Bu o'quvchidan daromad
@@ -265,7 +247,6 @@
 
                 <div class="hidden sm:block w-px h-10 bg-amber-200 dark:bg-slate-700"></div>
 
-                {{-- Payment count --}}
                 <div>
                     <p class="text-xs text-amber-700/70 dark:text-slate-400 uppercase tracking-wide">
                         Komissiya hisoblangan to'lovlar
@@ -275,14 +256,9 @@
                         <span class="text-sm font-semibold text-amber-700/60 dark:text-slate-400">ta to'lov</span>
                     </p>
                     <p class="text-xs text-amber-700/60 dark:text-slate-500 mt-0.5">
-                        O'rtacha:
-                        {{ $stats['director_payment_count'] > 0
-                            ? number_format($stats['director_total_earned'] / $stats['director_payment_count'], 0, '.', ' ')
-                            : 0 }}
-                        so'm / to'lov
+                        O'rtacha: {{ $stats['director_avg_per_payment'] }} so'm / to'lov
                     </p>
                 </div>
-
             </div>
         </div>
 
@@ -304,17 +280,16 @@
 
                 <div class="space-y-3">
                     @forelse($activeGroups as $groupStudent)
-                        @php $group = $groupStudent->group; @endphp
                         <div
                             class="p-4 bg-indigo-50 dark:bg-indigo-900/10 rounded-xl
                                     border border-indigo-100 dark:border-indigo-800/30">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="min-w-0">
                                     <h4 class="font-bold text-gray-900 dark:text-white text-sm leading-snug">
-                                        {{ $group->name }}
+                                        {{ $groupStudent->group->name }}
                                     </h4>
                                     <p class="text-xs text-indigo-600 dark:text-indigo-400 mt-0.5">
-                                        {{ $group->cours->title ?? '—' }}
+                                        {{ $groupStudent->group?->cours?->title ?? '—' }}
                                     </p>
                                 </div>
                                 <span
@@ -324,9 +299,9 @@
                                 </span>
                             </div>
                             <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
-                                @if ($group->start_time)
+                                @if ($groupStudent->group->start_time)
                                     <span>🕐
-                                        {{ $group->start_time }}{{ $group->end_time ? ' – ' . $group->end_time : '' }}</span>
+                                        {{ $groupStudent->group->start_time }}{{ $groupStudent->group->end_time ? ' – ' . $groupStudent->group->end_time : '' }}</span>
                                 @endif
                                 @if ($groupStudent->joined_at)
                                     <span>📅 {{ \Carbon\Carbon::parse($groupStudent->joined_at)->format('d.m.Y') }}</span>
@@ -347,49 +322,25 @@
 
                 <div class="space-y-2">
                     @forelse($recentAttendance as $att)
-                        @php
-                            $statusConfig = match ($att->status) {
-                                'present' => [
-                                    'label' => 'Keldi',
-                                    'bg' => 'bg-green-50 dark:bg-green-900/10',
-                                    'badge' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-                                ],
-                                'late' => [
-                                    'label' => 'Kechikdi',
-                                    'bg' => 'bg-amber-50 dark:bg-amber-900/10',
-                                    'badge' => 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-                                ],
-                                'absent' => [
-                                    'label' => 'Kelmadi',
-                                    'bg' => 'bg-red-50   dark:bg-red-900/10',
-                                    'badge' => 'bg-red-100   text-red-700   dark:bg-red-900/30   dark:text-red-400',
-                                ],
-                                default => [
-                                    'label' => $att->status,
-                                    'bg' => 'bg-gray-50  dark:bg-gray-700/30',
-                                    'badge' => 'bg-gray-100  text-gray-600  dark:bg-gray-700    dark:text-gray-400',
-                                ],
-                            };
-                        @endphp
-                        <div class="flex items-center justify-between px-4 py-2.5 rounded-xl {{ $statusConfig['bg'] }}">
+                        <div class="flex items-center justify-between px-4 py-2.5 rounded-xl {{ $att['status_bg'] }}">
                             <div class="min-w-0">
                                 <p class="text-sm font-semibold text-gray-900 dark:text-white leading-tight">
-                                    {{ $att->lesson->group->name ?? '—' }}
+                                    {{ $att['group_name'] }}
                                 </p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">
-                                    {{ $att->marked_at?->format('d.m.Y') ?? '—' }}
-                                    @if ($att->status === 'late' && $att->late_minutes)
-                                        · {{ $att->late_minutes }} daq kechikdi
+                                    {{ $att['marked_at'] }}
+                                    @if ($att['late_minutes'])
+                                        · {{ $att['late_minutes'] }} daq kechikdi
                                     @endif
                                 </p>
                             </div>
                             <div class="flex items-center gap-2 flex-shrink-0">
-                                @if ($att->activity_score !== null)
+                                @if ($att['activity_score'] !== null)
                                     <span class="text-xs text-gray-400 dark:text-gray-500">⭐
-                                        {{ $att->activity_score }}</span>
+                                        {{ $att['activity_score'] }}</span>
                                 @endif
-                                <span class="px-2 py-0.5 rounded-full text-xs font-semibold {{ $statusConfig['badge'] }}">
-                                    {{ $statusConfig['label'] }}
+                                <span class="px-2 py-0.5 rounded-full text-xs font-semibold {{ $att['status_badge'] }}">
+                                    {{ $att['status_label'] }}
                                 </span>
                             </div>
                         </div>
@@ -535,20 +486,9 @@
             iconCopy?.classList.add('hidden');
             iconCheck?.classList.remove('hidden');
 
-            const card = btn.closest('a');
-            const toast = card?.querySelector('.copy-toast');
-            if (toast) {
-                toast.classList.remove('opacity-0', 'scale-90');
-                toast.classList.add('opacity-100', 'scale-100');
-            }
-
             setTimeout(() => {
                 iconCopy?.classList.remove('hidden');
                 iconCheck?.classList.add('hidden');
-                if (toast) {
-                    toast.classList.remove('opacity-100', 'scale-100');
-                    toast.classList.add('opacity-0', 'scale-90');
-                }
             }, 2000);
         }
     </script>

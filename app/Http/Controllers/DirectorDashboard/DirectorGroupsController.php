@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\DirectorDashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\Director;
 use App\Models\Group;
 use App\Models\GroupStudent;
 use App\Models\Payment;
 use App\Models\Student;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -43,7 +45,7 @@ class DirectorGroupsController extends Controller
             // 4. Direktor studentlaridan tushgan umumiy summa
             ->withSum(['payments as director_revenue' => function ($q) use ($director) {
                 $q->where('status', 'paid')
-                    ->where('payable_type',Student::class)
+                    ->where('payable_type', Student::class)
                     ->whereHas('payable', function ($sq) use ($director) {
                         $sq->where('director_id', $director->id);
                     });
@@ -78,11 +80,7 @@ class DirectorGroupsController extends Controller
     public function show($id)
     {
         $user = Auth::user();
-        $director = $user->director;
-
-        if (!$director) {
-            abort(403, 'Director profili topilmadi');
-        }
+        $director = Director::where('user_id', $user->id)->firstOrFail();
 
         $group = Group::with(['course', 'teachers.user'])
             ->whereHas('students', function ($q) use ($director) {
@@ -90,41 +88,45 @@ class DirectorGroupsController extends Controller
             })
             ->findOrFail($id);
 
-        // All students in group
+        // All active students in group
         $allStudents = GroupStudent::with(['student.user'])
             ->where('group_id', $group->id)
             ->where('status', 'active')
             ->get();
 
-        // Director's students
-        $directorStudents = $allStudents->filter(function ($gs) use ($director) {
-            return $gs->student->director_id === $director->id;
-        });
+        // Director's students only
+        $directorStudents = $allStudents->filter(
+            fn($gs) => $gs->student->director_id === $director->id
+        );
 
-        // Statistics
+        $directorStudentIds = $directorStudents->pluck('student.id');
+
         $stats = [
-            'total_students' => $allStudents->count(),
-            'director_students' => $directorStudents->count(),
+            'total_students'      => $allStudents->count(),
+            'director_students'   => $directorStudents->count(),
             'capacity_percentage' => $group->capacity > 0
                 ? round(($allStudents->count() / $group->capacity) * 100, 1)
                 : 0,
         ];
 
-        // Revenue from director's students
-        $payments = Payment::with(['user'])
-            ->where('group_id', $group->id)
+        // Commission transactions for director's students in this group
+        $transactions = Transaction::with(['source.payable.user', 'creator'])
+            ->where('transactionable_type', Director::class)
+            ->where('transactionable_id', $director->id)
+            ->where('type', 'director_commission')
             ->where('status', 'paid')
-            ->whereIn('payable_id', $directorStudents->pluck('student.id'))
-            ->where('payable_type', 'App\Models\Student')
-            ->latest('paid_at')
+            ->whereHasMorph('source', [Payment::class], function ($q) use ($directorStudentIds, $group) {
+                $q->where('payable_type', Student::class)
+                    ->whereIn('payable_id', $directorStudentIds)
+                    ->where('group_id', $group->id);
+            })
+            ->latest('transaction_date')
             ->get();
 
-        $revenueStats = [
-            'total_revenue' => $payments->sum('net_amount'),
-            'commission' => $payments->sum(function ($payment) use ($director) {
-                return ($payment->net_amount * $director->commission_percentage) / 100;
-            }),
-            'payment_count' => $payments->count(),
+        $commissionStats = [
+            'total_commission' => $transactions->sum('amount'),
+            'transaction_count' => $transactions->count(),
+            'commission_percentage' => (float) $director->commission_percentage,
         ];
 
         return view('Panel.Director.group-detail', compact(
@@ -132,8 +134,8 @@ class DirectorGroupsController extends Controller
             'group',
             'stats',
             'directorStudents',
-            'revenueStats',
-            'payments'
+            'commissionStats',
+            'transactions'
         ));
     }
 }
