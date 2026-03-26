@@ -1,6 +1,6 @@
 @extends('Layout.app')
 
-@section('title', 'Guruhlar')
+@section('title', __('director/groups.title'))
 
 @section('content')
     <div class="space-y-6">
@@ -8,10 +8,10 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-                    Guruhlar
+                    {{ __('director/groups.title') }}
                 </h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    O'quvchilarim qatnashayotgan guruhlar
+                    {{ __('director/groups.subtitle') }}
                 </p>
             </div>
         </div>
@@ -22,7 +22,7 @@
                 class="bg-gradient-to-br from-indigo-100 to-indigo-200/60 dark:from-indigo-900/30 dark:to-indigo-800/30 rounded-2xl p-6 border border-indigo-200 dark:border-indigo-700/50">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-bold text-indigo-700 dark:text-indigo-400 uppercase">Jami Guruhlar</p>
+                        <p class="text-sm font-bold text-indigo-700 dark:text-indigo-400 uppercase">{{ __('director/groups.total_groups') }}</p>
                         <p class="text-3xl font-extrabold text-indigo-900 dark:text-indigo-50 mt-1">
                             {{ $stats['total_groups'] }}
                         </p>
@@ -40,7 +40,7 @@
                 class="bg-gradient-to-br from-green-100 to-green-200/60 dark:from-green-900/30 dark:to-green-800/30 rounded-2xl p-6 border border-green-200 dark:border-green-700/50">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-bold text-green-700 dark:text-green-400 uppercase">Faol Guruhlar</p>
+                        <p class="text-sm font-bold text-green-700 dark:text-green-400 uppercase">{{ __('director/groups.active_groups') }}</p>
                         <p class="text-3xl font-extrabold text-green-900 dark:text-green-50 mt-1">
                             {{ $stats['active_groups'] }}
                         </p>
@@ -58,7 +58,7 @@
                 class="bg-gradient-to-br from-purple-100 to-purple-200/60 dark:from-purple-900/30 dark:to-purple-800/30 rounded-2xl p-6 border border-purple-200 dark:border-purple-700/50">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-bold text-purple-700 dark:text-purple-400 uppercase">O'quvchilar</p>
+                        <p class="text-sm font-bold text-purple-700 dark:text-purple-400 uppercase">{{ __('director/groups.students') }}</p>
                         <p class="text-3xl font-extrabold text-purple-900 dark:text-purple-50 mt-1">
                             {{ $stats['total_students_in_groups'] }}
                         </p>
@@ -80,7 +80,7 @@
         {{-- Qidiruv --}}
         <div class="md:col-span-2">
             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Qidiruv
+                {{ __('director/groups.search') }}
             </label>
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -90,7 +90,7 @@
                     </svg>
                 </div>
                 <input type="text" name="search" value="{{ $search }}" 
-                    placeholder="Guruh nomi..." autocomplete="off"
+                    placeholder="{{ __('director/groups.search_placeholder') }}" autocomplete="off"
                     class="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
                 
                 @if ($search)
@@ -110,13 +110,13 @@
         {{-- Status --}}
         <div class="md:col-span-1">
             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Status
+                {{ __('director/groups.status') }}
             </label>
             <select name="status"
                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
-                <option value="all" {{ $status === 'all' ? 'selected' : '' }}>Barchasi</option>
-                <option value="active" {{ $status === 'active' ? 'selected' : '' }}>Faol</option>
-                <option value="inactive" {{ $status === 'inactive' ? 'selected' : '' }}>Faol emas</option>
+                <option value="all" {{ $status === 'all' ? 'selected' : '' }}>{{ __('director/groups.all') }}</option>
+                <option value="active" {{ $status === 'active' ? 'selected' : '' }}>{{ __('director/groups.active') }}</option>
+                <option value="inactive" {{ $status === 'inactive' ? 'selected' : '' }}>{{ __('director/groups.inactive') }}</option>
             </select>
         </div>
 
@@ -128,12 +128,12 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
                 </svg>
-                Filtrlash
+                {{ __('director/groups.filter') }}
             </button>
 
             <a href="{{ route('director.groups') }}"
                 class="group p-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-lg transition-all duration-300 flex items-center justify-center border border-gray-300 dark:border-gray-600"
-                style="height: 42px; width: 42px;" title="Hammasini tozalash">
+                style="height: 42px; width: 42px;" title="{{ __('director/groups.clear') }}">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="w-6 h-6 transition-transform duration-500 group-hover:rotate-180">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -199,13 +199,13 @@
 
                     <div class="grid grid-cols-2 gap-3 mb-4">
                         <div class="p-3 bg-indigo-50 dark:bg-indigo-900/10 rounded-lg">
-                            <p class="text-xs text-indigo-700 dark:text-indigo-400 font-semibold">Jami</p>
+                            <p class="text-xs text-indigo-700 dark:text-indigo-400 font-semibold">{{ __('director/groups.total') }}</p>
                             <p class="text-lg font-bold text-indigo-600 dark:text-indigo-400">
                                 {{ $group->total_students }}
                             </p>
                         </div>
                         <div class="p-3 bg-purple-50 dark:bg-purple-900/10 rounded-lg">
-                            <p class="text-xs text-purple-700 dark:text-purple-400 font-semibold">Sizniki</p>
+                            <p class="text-xs text-purple-700 dark:text-purple-400 font-semibold">{{ __('director/groups.yours') }}</p>
                             <p class="text-lg font-bold text-purple-600 dark:text-purple-400">
                                 {{ $group->director_students }}
                             </p>
@@ -214,9 +214,9 @@
 
                     <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs text-gray-500 dark:text-gray-400">Daromad</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('director/groups.revenue') }}</span>
                             <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                                {{ number_format($group->director_revenue, 0, '.', ' ') }} so'm
+                                {{ number_format($group->director_revenue, 0, '.', ' ') }} {{ __('director/groups.currency') }}
                             </span>
                         </div>
                     </div>
@@ -230,7 +230,7 @@
                                 d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                     </div>
-                    <p class="text-gray-500 dark:text-gray-400 font-medium">Guruhlar topilmadi</p>
+                    <p class="text-gray-500 dark:text-gray-400 font-medium">{{ __('director/groups.not_found') }}</p>
                 </div>
             @endforelse
         </div>

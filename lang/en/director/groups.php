@@ -1,0 +1,22 @@
+<?php
+return [
+    'title' => 'Groups',
+    'subtitle' => 'Groups my students are attending',
+    'total_groups' => 'Total Groups',
+    'active_groups' => 'Active Groups',
+    'students' => 'Students',
+    'search' => 'Search',
+    'search_placeholder' => 'Group name...',
+    'status' => 'Status',
+    'all' => 'All',
+    'active' => 'Active',
+    'inactive' => 'Inactive',
+    'filter' => 'Filter',
+    'clear' => 'Clear all',
+    'total' => 'Total',
+    'yours' => 'Yours',
+    'revenue' => 'Revenue',
+    'currency' => 'UZS',
+    'not_found' => 'Groups not found',
+    'na' => 'N/A',
+];

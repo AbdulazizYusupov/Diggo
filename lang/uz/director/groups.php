@@ -1,0 +1,22 @@
+<?php
+return [
+    'title' => 'Guruhlar',
+    'subtitle' => 'O\'quvchilarim qatnashayotgan guruhlar',
+    'total_groups' => 'Jami Guruhlar',
+    'active_groups' => 'Faol Guruhlar',
+    'students' => 'O\'quvchilar',
+    'search' => 'Qidiruv',
+    'search_placeholder' => 'Guruh nomi...',
+    'status' => 'Status',
+    'all' => 'Barchasi',
+    'active' => 'Faol',
+    'inactive' => 'Faol emas',
+    'filter' => 'Filtrlash',
+    'clear' => 'Tozalash',
+    'total' => 'Jami',
+    'yours' => 'Sizniki',
+    'revenue' => 'Daromad',
+    'currency' => 'so\'m',
+    'not_found' => 'Guruhlar topilmadi',
+    'na' => 'Mavjud emas',
+];
