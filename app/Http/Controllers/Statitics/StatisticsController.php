@@ -3,55 +3,95 @@
 namespace App\Http\Controllers\Statitics;
 
 use App\Http\Controllers\Controller;
-use App\Models\Group;
-use App\Models\Lesson;
-use App\Models\Payment;
-use App\Models\Student;
-use App\Models\Teacher;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class StatisticsController extends Controller
 {
-    private const MONTHS_BACK = 6;
+    private const MONTHS_BACK  = 6;
+    private const CACHE_TTL    = 15 * 60;   // 15 daqiqa (soniyada)
+    private const CACHE_KEY    = 'statistics.dashboard.v1';
+    private const GROUP_LIMIT  = 12;
+    private const TEACHER_LIMIT= 10;
+    private const COURSE_LIMIT = 10;
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ENTRY POINT
+    // ═══════════════════════════════════════════════════════════════════════════
 
     public function index()
     {
-        return view('Statistics.index', [
+        // dd(123);
+        $data = Cache::remember(self::CACHE_KEY, self::CACHE_TTL, function () {
+            return $this->buildDashboardData();
+        });
 
-            // ── Header KPIs ──────────────────────────────────────────────────
-            'kpis' => $this->kpis(),
+        return view('Statistics.index', $data);
+    }
 
-            // ── Chart datasets (JSON-ready, passed to JS) ─────────────────────
-            'revenueChart'      => $this->revenueByMonth(),
-            'studentGrowthChart'=> $this->studentGrowthByMonth(),
-            'occupancyChart'    => $this->groupOccupancy(),
-            'attendanceChart'   => $this->attendanceBreakdown(),
-            'paymentStatusChart'=> $this->paymentStatusDistribution(),
-            'paymentTypeChart'  => $this->paymentTypeDistribution(),
-            'teacherActivityChart' => $this->teacherActivity(),
-            'coursePopularityChart' => $this->coursePopularity(),
-        ]);
+    /**
+     * Cache'ni qo'lda tozalash uchun (masalan: to'lov qabul qilinganda trigger qilish)
+     * Route::post('/statistics/refresh', ...) kabi qo'shib ishlatsa bo'ladi.
+     */
+    public function refresh()
+    {
+        // dd(123);
+        Cache::forget(self::CACHE_KEY);
+        return redirect()->route('statistics.index')
+            ->with('success', 'Statistika yangilandi.');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // HEADER KPIs  — single aggregate numbers shown as stat cards
+    // DATA BUILDER — barcha metodlarni bitta joyda yig'adi
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    private function buildDashboardData(): array
+    {
+        return [
+            'kpis'                  => $this->kpis(),
+            'revenueChart'          => $this->revenueByMonth(),
+            'studentGrowthChart'    => $this->studentGrowthByMonth(),
+            'occupancyChart'        => $this->groupOccupancy(),
+            'attendanceChart'       => $this->attendanceBreakdown(),
+            'paymentStatusChart'    => $this->paymentStatusDistribution(),
+            'paymentTypeChart'      => $this->paymentTypeDistribution(),
+            'teacherActivityChart'  => $this->teacherActivity(),
+            'coursePopularityChart' => $this->coursePopularity(),
+        ];
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // HEADER KPIs
+    // Optimizatsiya: 7 ta query → 4 ta query
     // ═══════════════════════════════════════════════════════════════════════════
 
     private function kpis(): array
     {
         $periodStart = now()->subMonths(self::MONTHS_BACK)->startOfMonth();
 
-        $totalRevenue = Payment::paid()
+        // 1-query: Revenue
+        $totalRevenue = (float) DB::table('payments')
+            ->whereNull('deleted_at')
+            ->where('status', 'paid')
+            ->whereNotNull('paid_at')
             ->where('paid_at', '>=', $periodStart)
             ->sum('net_amount');
 
-        $totalLessons = Lesson::where('lesson_date', '>=', $periodStart)->count();
+        // 2-query: Lessons (total + completed bir queryda)
+        $lessonRow = DB::table('lessons')
+            ->whereNull('deleted_at')
+            ->where('lesson_date', '>=', $periodStart)
+            ->selectRaw('
+                COUNT(*) as total,
+                SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed
+            ')
+            ->first();
 
-        $completedLessons = Lesson::where('lesson_date', '>=', $periodStart)
-            ->where('status', 'completed')
-            ->count();
+        $totalLessons     = (int) ($lessonRow->total     ?? 0);
+        $completedLessons = (int) ($lessonRow->completed ?? 0);
 
+        // 3-query: Attendance
         $attendanceRow = DB::table('attendances')
             ->join('lessons', 'attendances.lesson_id', '=', 'lessons.id')
             ->whereNull('attendances.deleted_at')
@@ -63,25 +103,35 @@ class StatisticsController extends Controller
             ', ['present', 'late'])
             ->first();
 
+        // 4-query: Student / Group / Teacher counts — bitta subquery
+        $counts = DB::selectOne('
+            SELECT
+                (SELECT COUNT(*) FROM students  WHERE deleted_at IS NULL) as students,
+                (SELECT COUNT(*) FROM `groups`  WHERE deleted_at IS NULL AND is_active = 1) as grps,
+                (SELECT COUNT(*) FROM teachers  WHERE deleted_at IS NULL) as teachers
+        ');
+
+        $attendedTotal = (int) ($attendanceRow->total    ?? 0);
+        $attended      = (int) ($attendanceRow->attended ?? 0);
+
         return [
-            'period_label'     => now()->subMonths(self::MONTHS_BACK)->format('M Y') . ' – ' . now()->format('M Y'),
-            'total_revenue'    => (float) $totalRevenue,
-            'total_students'   => Student::count(),
-            'active_groups'    => Group::where('is_active', true)->count(),
-            'total_teachers'   => Teacher::count(),
-            'completion_rate'  => $totalLessons > 0
+            'period_label'    => now()->subMonths(self::MONTHS_BACK)->format('M Y')
+                                 . ' – ' . now()->format('M Y'),
+            'total_revenue'   => $totalRevenue,
+            'total_students'  => (int) ($counts->students ?? 0),
+            'active_groups'   => (int) ($counts->grps     ?? 0),
+            'total_teachers'  => (int) ($counts->teachers ?? 0),
+            'completion_rate' => $totalLessons > 0
                 ? round(($completedLessons / $totalLessons) * 100, 1)
                 : 0.0,
-            'attendance_rate'  => ($attendanceRow->total ?? 0) > 0
-                ? round(($attendanceRow->attended / $attendanceRow->total) * 100, 1)
+            'attendance_rate' => $attendedTotal > 0
+                ? round(($attended / $attendedTotal) * 100, 1)
                 : 0.0,
         ];
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // 1. REVENUE BY MONTH  (bar / line)
-    //    Source: payments.net_amount  WHERE status = 'paid'
-    //    Grouped by: YEAR(paid_at), MONTH(paid_at)
+    // 1. REVENUE BY MONTH
     // ═══════════════════════════════════════════════════════════════════════════
 
     private function revenueByMonth(): array
@@ -106,9 +156,7 @@ class StatisticsController extends Controller
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // 2. STUDENT GROWTH BY MONTH  (line)
-    //    Source: students.enrollment_date
-    //    Cumulative new enrollments per month
+    // 2. STUDENT GROWTH BY MONTH
     // ═══════════════════════════════════════════════════════════════════════════
 
     private function studentGrowthByMonth(): array
@@ -132,8 +180,9 @@ class StatisticsController extends Controller
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // 3. GROUP OCCUPANCY  (bar / doughnut)
-    //    Active groups: actual student count vs capacity
+    // 3. GROUP OCCUPANCY
+    // Limit(12) MAJBURIY — chart buzilmasligi uchun
+    // Label'lar strip_tags bilan tozalanadi
     // ═══════════════════════════════════════════════════════════════════════════
 
     private function groupOccupancy(): array
@@ -154,30 +203,31 @@ class StatisticsController extends Controller
             ')
             ->groupBy('groups.id', 'groups.name', 'groups.capacity', 'cours.title')
             ->orderByRaw('enrolled DESC')
-            ->limit(12)
+            ->limit(self::GROUP_LIMIT)   // ← qat'iy limit, chart buzilmaydi
             ->get();
 
         return [
-            'labels'   => $groups->map(fn($g) => $g->name)->values()->toArray(),
-            'enrolled' => $groups->map(fn($g) => (int) $g->enrolled)->values()->toArray(),
-            'capacity' => $groups->map(fn($g) => (int) $g->capacity)->values()->toArray(),
-            'courses'  => $groups->map(fn($g) => $g->course_title ?? '—')->values()->toArray(),
+            'labels'   => $groups->map(fn($g) => $this->safeLabel($g->name))->values()->toArray(),
+            'enrolled' => $groups->map(fn($g) => max(0, (int) $g->enrolled))->values()->toArray(),
+            'capacity' => $groups->map(fn($g) => max(0, (int) $g->capacity))->values()->toArray(),
+            'courses'  => $groups->map(fn($g) => $this->safeLabel($g->course_title ?? '—'))->values()->toArray(),
         ];
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // 4. ATTENDANCE BREAKDOWN  (doughnut / bar — monthly trend)
-    //    present / late / absent / excused per month
+    // 4. ATTENDANCE BREAKDOWN
     // ═══════════════════════════════════════════════════════════════════════════
 
     private function attendanceBreakdown(): array
     {
-        // Donut totals for the whole period
+        $periodStart = now()->subMonths(self::MONTHS_BACK)->startOfMonth();
+
+        // Donut totals
         $totals = DB::table('attendances')
             ->join('lessons', 'attendances.lesson_id', '=', 'lessons.id')
             ->whereNull('attendances.deleted_at')
             ->whereNull('lessons.deleted_at')
-            ->where('lessons.lesson_date', '>=', now()->subMonths(self::MONTHS_BACK)->startOfMonth())
+            ->where('lessons.lesson_date', '>=', $periodStart)
             ->selectRaw('
                 SUM(CASE WHEN attendances.status = ? THEN 1 ELSE 0 END) as present,
                 SUM(CASE WHEN attendances.status = ? THEN 1 ELSE 0 END) as late,
@@ -186,12 +236,12 @@ class StatisticsController extends Controller
             ', ['present', 'late', 'absent', 'excused'])
             ->first();
 
-        // Monthly trend: present+late vs absent per month (line chart)
+        // Monthly trend
         $monthly = DB::table('attendances')
             ->join('lessons', 'attendances.lesson_id', '=', 'lessons.id')
             ->whereNull('attendances.deleted_at')
             ->whereNull('lessons.deleted_at')
-            ->where('lessons.lesson_date', '>=', now()->subMonths(self::MONTHS_BACK)->startOfMonth())
+            ->where('lessons.lesson_date', '>=', $periodStart)
             ->selectRaw('
                 YEAR(lessons.lesson_date) as yr,
                 MONTH(lessons.lesson_date) as mo,
@@ -205,22 +255,20 @@ class StatisticsController extends Controller
 
         [$labels, $attended, $absent] = $this->fillMonthSeries3(
             self::MONTHS_BACK,
-            fn($yr, $mo) => (int) ($monthly["{$yr}-{$mo}"]->attended ?? 0),
-            fn($yr, $mo) => (int) ($monthly["{$yr}-{$mo}"]->absent ?? 0),
+            fn($yr, $mo) => max(0, (int) ($monthly["{$yr}-{$mo}"]->attended ?? 0)),
+            fn($yr, $mo) => max(0, (int) ($monthly["{$yr}-{$mo}"]->absent   ?? 0)),
         );
 
         return [
-            // For doughnut
             'donut' => [
                 'labels' => ['Keldi', 'Kech keldi', 'Kelmadi', 'Sababli'],
                 'data'   => [
-                    (int) ($totals->present ?? 0),
-                    (int) ($totals->late ?? 0),
-                    (int) ($totals->absent ?? 0),
-                    (int) ($totals->excused ?? 0),
+                    max(0, (int) ($totals->present ?? 0)),
+                    max(0, (int) ($totals->late    ?? 0)),
+                    max(0, (int) ($totals->absent  ?? 0)),
+                    max(0, (int) ($totals->excused ?? 0)),
                 ],
             ],
-            // For trend line
             'trend' => [
                 'labels'   => $labels,
                 'attended' => $attended,
@@ -230,8 +278,7 @@ class StatisticsController extends Controller
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // 5. PAYMENT STATUS DISTRIBUTION  (doughnut / pie)
-    //    Source: payments.status  (pending, paid, failed, cancelled)
+    // 5. PAYMENT STATUS DISTRIBUTION
     // ═══════════════════════════════════════════════════════════════════════════
 
     private function paymentStatusDistribution(): array
@@ -244,18 +291,21 @@ class StatisticsController extends Controller
             ->keyBy('status');
 
         $statuses = ['paid', 'pending', 'failed', 'cancelled'];
-        $labels   = ['To\'landi', 'Kutilmoqda', 'Muvaffaqiyatsiz', 'Bekor qilindi'];
+        $labels   = ["To'landi", 'Kutilmoqda', 'Muvaffaqiyatsiz', 'Bekor qilindi'];
 
         return [
             'labels' => $labels,
-            'counts' => collect($statuses)->map(fn($s) => (int) ($rows[$s]->cnt ?? 0))->values()->toArray(),
-            'amounts'=> collect($statuses)->map(fn($s) => (float) ($rows[$s]->total ?? 0))->values()->toArray(),
+            'counts' => collect($statuses)
+                ->map(fn($s) => max(0, (int) ($rows[$s]->cnt ?? 0)))
+                ->values()->toArray(),
+            'amounts' => collect($statuses)
+                ->map(fn($s) => max(0.0, (float) ($rows[$s]->total ?? 0)))
+                ->values()->toArray(),
         ];
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // 6. PAYMENT TYPE DISTRIBUTION  (bar / doughnut)
-    //    Source: payments.payment_type  (cash, card, transfer, other)
+    // 6. PAYMENT TYPE DISTRIBUTION
     // ═══════════════════════════════════════════════════════════════════════════
 
     private function paymentTypeDistribution(): array
@@ -273,15 +323,18 @@ class StatisticsController extends Controller
 
         return [
             'labels' => $labels,
-            'counts' => collect($types)->map(fn($t) => (int)   ($rows[$t]->cnt   ?? 0))->values()->toArray(),
-            'amounts'=> collect($types)->map(fn($t) => (float) ($rows[$t]->total ?? 0))->values()->toArray(),
+            'counts' => collect($types)
+                ->map(fn($t) => max(0, (int) ($rows[$t]->cnt ?? 0)))
+                ->values()->toArray(),
+            'amounts' => collect($types)
+                ->map(fn($t) => max(0.0, (float) ($rows[$t]->total ?? 0)))
+                ->values()->toArray(),
         ];
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // 7. TEACHER ACTIVITY  (horizontal bar)
-    //    Number of completed lessons per teacher (last N months)
-    //    Joins: lessons → teacher_id → teachers → user_id → users
+    // 7. TEACHER ACTIVITY
+    // Limit(10) MAJBURIY — horizontal bar chart uchun
     // ═══════════════════════════════════════════════════════════════════════════
 
     private function teacherActivity(): array
@@ -300,18 +353,18 @@ class StatisticsController extends Controller
             ')
             ->groupBy('teachers.id', 'users.surname', 'users.name')
             ->orderByRaw('lesson_count DESC')
-            ->limit(10)
+            ->limit(self::TEACHER_LIMIT)  // ← qat'iy limit
             ->get();
 
         return [
-            'labels' => $rows->pluck('teacher_name')->values()->toArray(),
-            'data'   => $rows->pluck('lesson_count')->map(fn($v) => (int) $v)->values()->toArray(),
+            'labels' => $rows->map(fn($r) => $this->safeLabel($r->teacher_name))->values()->toArray(),
+            'data'   => $rows->map(fn($r) => max(0, (int) $r->lesson_count))->values()->toArray(),
         ];
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // 8. COURSE POPULARITY  (bar / doughnut)
-    //    Number of active students per course (via groups → group_students)
+    // 8. COURSE POPULARITY
+    // Limit(10) MAJBURIY — doughnut/bar chart uchun
     // ═══════════════════════════════════════════════════════════════════════════
 
     private function coursePopularity(): array
@@ -328,12 +381,12 @@ class StatisticsController extends Controller
             ->selectRaw('cours.title, COUNT(DISTINCT group_students.student_id) as student_count')
             ->groupBy('cours.id', 'cours.title')
             ->orderByRaw('student_count DESC')
-            ->limit(10)
+            ->limit(self::COURSE_LIMIT)  // ← qat'iy limit
             ->get();
 
         return [
-            'labels' => $rows->pluck('title')->values()->toArray(),
-            'data'   => $rows->pluck('student_count')->map(fn($v) => (int) $v)->values()->toArray(),
+            'labels' => $rows->map(fn($r) => $this->safeLabel($r->title))->values()->toArray(),
+            'data'   => $rows->map(fn($r) => max(0, (int) $r->student_count))->values()->toArray(),
         ];
     }
 
@@ -342,11 +395,22 @@ class StatisticsController extends Controller
     // ═══════════════════════════════════════════════════════════════════════════
 
     /**
-     * Build a complete month-label array + one data series for the last N months.
-     * Fills missing months with zero.
+     * Chart label'larini xavfsiz qilish:
+     * - HTML teglarni olib tashlaydi (XSS)
+     * - 40 belgidan uzun bo'lsa qisqartiradi (chart label'lari sig'ib tursin)
+     */
+    private function safeLabel(string $value, int $maxLength = 40): string
+    {
+        $clean = strip_tags(trim($value));
+        return mb_strlen($clean) > $maxLength
+            ? mb_substr($clean, 0, $maxLength - 1) . '…'
+            : $clean;
+    }
+
+    /**
+     * So'nggi N oy uchun label + bitta data seriyasini to'ldiradi.
+     * Bo'sh oylar 0 bilan to'ldiriladi.
      *
-     * @param  int      $months   how many months back (including current)
-     * @param  callable $resolver fn(int $year, int $month): mixed
      * @return array{0: string[], 1: array}
      */
     private function fillMonthSeries(int $months, callable $resolver): array
@@ -355,10 +419,9 @@ class StatisticsController extends Controller
         $data   = [];
 
         for ($i = $months - 1; $i >= 0; $i--) {
-            $date = now()->subMonths($i);
-            $yr   = (int) $date->format('Y');
-            $mo   = (int) $date->format('n');
-
+            $date     = now()->subMonths($i);
+            $yr       = (int) $date->format('Y');
+            $mo       = (int) $date->format('n');
             $labels[] = $date->format('M Y');
             $data[]   = $resolver($yr, $mo);
         }
@@ -367,7 +430,7 @@ class StatisticsController extends Controller
     }
 
     /**
-     * Same as fillMonthSeries but returns TWO parallel data series.
+     * So'nggi N oy uchun label + IKKI parallel data seriyasini to'ldiradi.
      *
      * @return array{0: string[], 1: array, 2: array}
      */
@@ -378,10 +441,9 @@ class StatisticsController extends Controller
         $data2  = [];
 
         for ($i = $months - 1; $i >= 0; $i--) {
-            $date = now()->subMonths($i);
-            $yr   = (int) $date->format('Y');
-            $mo   = (int) $date->format('n');
-
+            $date     = now()->subMonths($i);
+            $yr       = (int) $date->format('Y');
+            $mo       = (int) $date->format('n');
             $labels[] = $date->format('M Y');
             $data1[]  = $resolver1($yr, $mo);
             $data2[]  = $resolver2($yr, $mo);

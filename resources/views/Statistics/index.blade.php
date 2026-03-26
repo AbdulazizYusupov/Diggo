@@ -89,6 +89,22 @@
             </svg>
             So'nggi 6 oy
         </div>
+        <form method="POST" action="{{ route('statistics.refresh') }}" 
+      onsubmit="const btn = this.querySelector('button[type=submit]'); btn.disabled=true; btn.innerHTML='⏳ Yangilanmoqda...';">
+    @csrf
+
+    <button type="submit" 
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm transition-all duration-150">
+        
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        
+        <span>Yangilash</span>
+    </button>
+</form>
+
     </div>
 
     {{-- ════════════════════════════════════════════════════════════════════════
@@ -1010,13 +1026,12 @@
                         datasets: [{
                             label: 'Soni',
                             data: DATA.payStatus.counts,
-                            backgroundColor: isPolar(type) ?
-                                [PALETTE.emerald.solid, PALETTE.amber.solid, PALETTE.rose.solid, PALETTE
-                                    .violet.solid
-                                ] :
-                                [PALETTE.emerald.ghost, PALETTE.amber.ghost, PALETTE.rose.ghost, PALETTE
-                                    .violet.ghost
-                                ],
+                            backgroundColor: isPolar(type) ? [PALETTE.emerald.solid, PALETTE.amber.solid,
+                                PALETTE.rose.solid, PALETTE
+                                .violet.solid
+                            ] : [PALETTE.emerald.ghost, PALETTE.amber.ghost, PALETTE.rose.ghost, PALETTE
+                                .violet.ghost
+                            ],
                             borderColor: [PALETTE.emerald.solid, PALETTE.amber.solid, PALETTE.rose.solid,
                                 PALETTE.violet.solid
                             ],
@@ -1025,12 +1040,10 @@
                             hoverOffset: 8,
                         }],
                     }),
-                    buildOpts: (type) => isPolar(type) ?
-                        {
-                            ...polarOpts(),
-                            cutout: type === 'doughnut' ? '68%' : 0
-                        } :
-                        cartesianOpts(),
+                    buildOpts: (type) => isPolar(type) ? {
+                        ...polarOpts(),
+                        cutout: type === 'doughnut' ? '68%' : 0
+                    } : cartesianOpts(),
                 },
                 payType: {
                     canvasId: 'payTypeChart',
@@ -1040,13 +1053,12 @@
                         datasets: [{
                             label: 'Summa (so\'m)',
                             data: DATA.payType.amounts,
-                            backgroundColor: isPolar(type) ?
-                                [PALETTE.blue.solid, PALETTE.violet.solid, PALETTE.teal.solid, PALETTE
-                                    .orange.solid
-                                ] :
-                                [PALETTE.blue.ghost, PALETTE.violet.ghost, PALETTE.teal.ghost, PALETTE
-                                    .orange.ghost
-                                ],
+                            backgroundColor: isPolar(type) ? [PALETTE.blue.solid, PALETTE.violet.solid,
+                                PALETTE.teal.solid, PALETTE
+                                .orange.solid
+                            ] : [PALETTE.blue.ghost, PALETTE.violet.ghost, PALETTE.teal.ghost, PALETTE
+                                .orange.ghost
+                            ],
                             borderColor: [PALETTE.blue.solid, PALETTE.violet.solid, PALETTE.teal.solid,
                                 PALETTE.orange.solid
                             ],
@@ -1055,12 +1067,10 @@
                             hoverOffset: 8,
                         }],
                     }),
-                    buildOpts: (type) => isPolar(type) ?
-                        {
-                            ...polarOpts(),
-                            cutout: type === 'doughnut' ? '68%' : 0
-                        } :
-                        cartesianOpts(moneyTooltip),
+                    buildOpts: (type) => isPolar(type) ? {
+                        ...polarOpts(),
+                        cutout: type === 'doughnut' ? '68%' : 0
+                    } : cartesianOpts(moneyTooltip),
                 },
                 teacher: {
                     canvasId: 'teacherChart',
@@ -1071,8 +1081,8 @@
                             label: 'Darslar',
                             data: DATA.teacher.data,
                             backgroundColor: isPolar(type) ?
-                                MULTI.slice(0, DATA.teacher.labels.length) :
-                                DATA.teacher.data.map((_, i) => Object.values(PALETTE)[i % 10].ghost),
+                                MULTI.slice(0, DATA.teacher.labels.length) : DATA.teacher.data.map((_, i) =>
+                                    Object.values(PALETTE)[i % 10].ghost),
                             borderColor: DATA.teacher.data.map((_, i) => Object.values(PALETTE)[i % 10]
                                 .solid),
                             borderWidth: 2,
@@ -1099,20 +1109,18 @@
                             label: 'O\'quvchilar',
                             data: DATA.course.data,
                             backgroundColor: isPolar(type) ?
-                                MULTI.slice(0, DATA.course.labels.length) :
-                                MULTI_GHOST.slice(0, DATA.course.labels.length),
+                                MULTI.slice(0, DATA.course.labels.length) : MULTI_GHOST.slice(0, DATA.course
+                                    .labels.length),
                             borderColor: MULTI.slice(0, DATA.course.labels.length),
                             borderWidth: 2,
                             borderRadius: isBar(type) ? 6 : 0,
                             hoverOffset: 8,
                         }],
                     }),
-                    buildOpts: (type) => isPolar(type) ?
-                        {
-                            ...polarOpts(),
-                            cutout: type === 'doughnut' ? '62%' : 0
-                        } :
-                        cartesianOpts(),
+                    buildOpts: (type) => isPolar(type) ? {
+                        ...polarOpts(),
+                        cutout: type === 'doughnut' ? '62%' : 0
+                    } : cartesianOpts(),
                 },
             };
 

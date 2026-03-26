@@ -64,6 +64,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
+    Route::post('/statistics/refresh',[StatisticsController::class, 'refresh'])->name('statistics.refresh');
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
