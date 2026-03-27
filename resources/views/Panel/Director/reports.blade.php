@@ -1,6 +1,6 @@
 @extends('Layout.app')
 
-@section('title', 'Hisobotlar')
+@section('title', __('director/reports.title'))
 
 @section('content')
     <div class="space-y-6">
@@ -9,10 +9,10 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-                    Hisobotlar va Analitika
+                    {{ __('director/reports.header_title') }}
                 </h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Komissiya tranzaksiyalari va statistika
+                   {{ __('director/reports.header_subtitle') }}
                 </p>
             </div>
 
@@ -24,7 +24,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    Excel yuklab olish
+                   {{ __('director/reports.export_excel') }}
                 </button>
             </div>
         </div>
@@ -35,7 +35,7 @@
 
                 {{-- Oy --}}
                 <div class="md:col-span-1">
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Oy</label>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ __('director/reports.filter_month') }}</label>
                     <select name="month"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
                         @foreach($months as $key => $monthName)
@@ -46,7 +46,7 @@
 
                 {{-- Yil --}}
                 <div class="md:col-span-1">
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Yil</label>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ __('director/reports.filter_year') }}</label>
                     <select name="year"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
                         @foreach($years as $y)
@@ -63,12 +63,12 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
                         </svg>
-                        Ko'rsatish
+                        {{ __('director/reports.filter_show') }}
                     </button>
 
                     <a href="{{ route('director.reports') }}"
                         class="group p-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-lg transition-all duration-300 flex items-center justify-center border border-gray-300 dark:border-gray-600"
-                        style="height: 42px; width: 42px;" title="Asl holatga qaytarish">
+                        style="height: 42px; width: 42px;" title="{{ __('director/reports.filter_reset') }}">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-6 h-6 transition-transform duration-500 group-hover:rotate-180">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -86,12 +86,12 @@
             <div class="bg-gradient-to-br from-emerald-100 to-emerald-200/60 dark:from-emerald-900/30 dark:to-emerald-800/30 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-700/50">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-bold text-emerald-700 dark:text-emerald-400 uppercase">Oylik Komissiya</p>
+                        <p class="text-sm font-bold text-emerald-700 dark:text-emerald-400 uppercase">{{ __('director/reports.card_monthly_comm') }}</p>
                         <p class="text-3xl font-extrabold text-emerald-900 dark:text-emerald-50 mt-1">
                             {{ number_format($monthlyReport['total_revenue'], 0, '.', ' ') }}
                         </p>
                         <p class="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                            {{ $monthlyReport['tx_count'] }} ta tranzaksiya
+                            {{ $monthlyReport['tx_count'] }} {{ __('director/reports.tx_count_text') }} 
                         </p>
                     </div>
                     <div class="p-3 bg-emerald-600 rounded-xl">
@@ -107,12 +107,12 @@
             <div class="bg-gradient-to-br from-purple-100 to-purple-200/60 dark:from-purple-900/30 dark:to-purple-800/30 rounded-2xl p-6 border border-purple-200 dark:border-purple-700/50">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-bold text-purple-700 dark:text-purple-400 uppercase">O'rtacha Tranzaksiya</p>
+                        <p class="text-sm font-bold text-purple-700 dark:text-purple-400 uppercase">{{ __('director/reports.card_avg_tx') }}</p>
                         <p class="text-3xl font-extrabold text-purple-900 dark:text-purple-50 mt-1">
                             {{ number_format($monthlyReport['avg_commission'], 0, '.', ' ') }}
                         </p>
                         <p class="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                            Har bir tranzaksiya bo'yicha
+                            {{ __('director/reports.per_tx') }}
                         </p>
                     </div>
                     <div class="p-3 bg-purple-600 rounded-xl">
@@ -128,11 +128,11 @@
             <div class="bg-gradient-to-br from-blue-100 to-blue-200/60 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl p-6 border border-blue-200 dark:border-blue-700/50">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-bold text-blue-700 dark:text-blue-400 uppercase">Yangi O'quvchilar</p>
+                        <p class="text-sm font-bold text-blue-700 dark:text-blue-400 uppercase">{{ __('director/reports.card_new_students') }}</p>
                         <p class="text-3xl font-extrabold text-blue-900 dark:text-blue-50 mt-1">
                             {{ $monthlyReport['new_students'] }}
                         </p>
-                        <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">Shu oyda</p>
+                        <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">{{ __('director/reports.this_month') }}</p>
                     </div>
                     <div class="p-3 bg-blue-600 rounded-xl">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,12 +147,12 @@
             <div class="bg-gradient-to-br from-amber-100 to-amber-200/60 dark:from-amber-900/30 dark:to-amber-800/30 rounded-2xl p-6 border border-amber-200 dark:border-amber-700/50">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-bold text-amber-700 dark:text-amber-400 uppercase">Yillik Jami</p>
+                        <p class="text-sm font-bold text-amber-700 dark:text-amber-400 uppercase">{{ __('director/reports.card_yearly_total') }}</p>
                         <p class="text-3xl font-extrabold text-amber-900 dark:text-amber-50 mt-1">
                             {{ number_format($yearlyReport['total_revenue'], 0, '.', ' ') }}
                         </p>
                         <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">
-                            {{ $yearlyReport['tx_count'] }} ta tranzaksiya
+                            {{ $yearlyReport['tx_count'] }} {{ __('director/reports.tx_count_text') }}
                         </p>
                     </div>
                     <div class="p-3 bg-amber-500 rounded-xl">
@@ -167,7 +167,7 @@
 
         {{-- Student Growth --}}
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6">O'quvchilar O'sishi</h3>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6">{{ __('director/reports.growth_title') }}</h3>
 
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 @foreach($studentGrowth as $monthNum => $data)
@@ -177,11 +177,11 @@
                         </p>
                         <div class="mt-2 space-y-1">
                             <div class="flex items-center justify-between">
-                                <span class="text-xs text-gray-600 dark:text-gray-400">Yangi:</span>
+                                <span class="text-xs text-gray-600 dark:text-gray-400">{{ __('director/reports.growth_new') }}:</span>
                                 <span class="text-sm font-bold text-green-600 dark:text-green-400">+{{ $data['new'] }}</span>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-xs text-gray-600 dark:text-gray-400">Jami:</span>
+                                <span class="text-xs text-gray-600 dark:text-gray-400">{{ __('director/reports.growth_total') }}:</span>
                                 <span class="text-sm font-bold text-indigo-900 dark:text-indigo-50">{{ $data['total'] }}</span>
                             </div>
                         </div>
@@ -195,7 +195,7 @@
 
             {{-- By Course --}}
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6">Kurslar Bo'yicha Komissiya</h3>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6">{{ __('director/reports.course_comm_title') }}</h3>
 
                 @if($revenueBreakdown['by_course']->isEmpty())
                     <div class="flex flex-col items-center justify-center py-10 text-gray-400 dark:text-gray-500">
@@ -203,7 +203,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                 d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <p class="text-sm">Tranzaksiyalar topilmadi</p>
+                        <p class="text-sm">{{ __('director/reports.no_transactions') }}</p>
                     </div>
                 @else
                     <div class="space-y-3">
@@ -211,7 +211,7 @@
                             <div class="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/10 dark:to-indigo-900/10 rounded-xl">
                                 <div>
                                     <p class="font-semibold text-gray-900 dark:text-white">{{ $course->title }}</p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $course->cnt }} ta tranzaksiya</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $course->cnt }} {{ __('director/reports.tx_count_text') }}</p>
                                 </div>
                                 <p class="text-xl font-bold text-purple-600 dark:text-purple-400">
                                     {{ number_format($course->total, 0, '.', ' ') }}
@@ -225,7 +225,7 @@
             {{-- Monthly Breakdown --}}
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6">
-                    Oylar Bo'yicha Komissiya ({{ $year }})
+                    {{ __('director/reports.monthly_yearly_title') }} ({{ $year }})
                 </h3>
 
                 <div class="space-y-3">
@@ -233,7 +233,7 @@
                         <div class="flex items-center justify-between p-3 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/10 dark:to-teal-900/10 rounded-xl">
                             <div>
                                 <p class="font-semibold text-gray-900 dark:text-white text-sm">{{ $item['name'] }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $item['count'] }} ta tranzaksiya</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $item['count'] }} {{ __('director/reports.tx_count_text') }}</p>
                             </div>
                             <p class="text-base font-bold {{ $item['total'] > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400 dark:text-gray-500' }}">
                                 {{ $item['total'] > 0 ? number_format($item['total'], 0, '.', ' ') : '—' }}
@@ -247,7 +247,7 @@
         {{-- Recent Transactions --}}
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6">
-                So'nggi Tranzaksiyalar —
+                {{ __('director/reports.recent_tx_title') }} —
                 <span class="font-normal text-gray-500 dark:text-gray-400 text-base">
                     {{ $months[$month] }} {{ $year }}
                 </span>
@@ -259,17 +259,17 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                             d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
-                    <p class="text-sm">Ushbu oy uchun tranzaksiyalar mavjud emas</p>
+                    <p class="text-sm">{{ __('director/reports.no_transactions_for_month') }}</p>
                 </div>
             @else
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
                             <tr class="border-b border-gray-200 dark:border-gray-700">
-                                <th class="text-left pb-3 font-semibold text-gray-500 dark:text-gray-400 pr-4">Sana</th>
-                                <th class="text-left pb-3 font-semibold text-gray-500 dark:text-gray-400 pr-4">Kurs</th>
-                                <th class="text-left pb-3 font-semibold text-gray-500 dark:text-gray-400 pr-4">Guruh</th>
-                                <th class="text-right pb-3 font-semibold text-gray-500 dark:text-gray-400">Komissiya</th>
+                                <th class="text-left pb-3 font-semibold text-gray-500 dark:text-gray-400 pr-4">{{ __('director/reports.table_date') }}</th>
+                                <th class="text-left pb-3 font-semibold text-gray-500 dark:text-gray-400 pr-4">{{ __('director/reports.table_course') }}</th>
+                                <th class="text-left pb-3 font-semibold text-gray-500 dark:text-gray-400 pr-4">{{ __('director/reports.table_group') }}</th>
+                                <th class="text-right pb-3 font-semibold text-gray-500 dark:text-gray-400">{{ __('director/reports.table_comm') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-700/50">
@@ -320,7 +320,7 @@
                         </svg>
                     </div>
                     <h2 id="exportModalTitle" class="text-lg font-bold text-gray-900 dark:text-white">
-                        Excel yuklab olish
+                       {{ __('director/reports.modal_title') }}
                     </h2>
                 </div>
                 <button type="button" onclick="closeExportModal()"
@@ -338,15 +338,15 @@
 
                     {{-- Date Filters --}}
                     <div>
-                        <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Sana filtri</p>
+                        <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{{ __('director/reports.modal_date_filter') }}</p>
                         <div class="grid grid-cols-2 gap-3">
 
                             {{-- Year --}}
                             <div>
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Yil</label>
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">{{ __('director/reports.modal_year') }}</label>
                                 <select name="export_year"
                                     class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all">
-                                    <option value="">Barcha yillar</option>
+                                    <option value="">{{ __('director/reports.modal_all_years') }}</option>
                                     @foreach($years as $y)
                                         <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
                                     @endforeach
@@ -355,10 +355,10 @@
 
                             {{-- Month --}}
                             <div>
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Oy</label>
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">{{ __('director/reports.modal_month') }}</label>
                                 <select name="export_month"
                                     class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all">
-                                    <option value="">Barcha oylar</option>
+                                    <option value="">{{ __('director/reports.modal_all_months') }}</option>
                                     @foreach($months as $key => $monthName)
                                         <option value="{{ $key }}" {{ $month == $key ? 'selected' : '' }}>{{ $monthName }}</option>
                                     @endforeach
@@ -367,14 +367,14 @@
 
                             {{-- Date From --}}
                             <div>
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Boshlanish sanasi</label>
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">{{ __('director/reports.modal_date_start') }}</label>
                                 <input type="date" name="date_from"
                                     class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all" />
                             </div>
 
                             {{-- Date To --}}
                             <div>
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Tugash sanasi</label>
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">{{ __('director/reports.modal_date_end') }}</label>
                                 <input type="date" name="date_to"
                                     class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all" />
                             </div>
@@ -384,16 +384,16 @@
                     {{-- Column Selector --}}
                     <div>
                         <div class="flex items-center justify-between mb-3">
-                            <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">Ustunlar</p>
+                            <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ __('director/reports.modal_columns') }}</p>
                             <div class="flex items-center gap-3">
                                 <button type="button" onclick="toggleAllColumns(true)"
                                     class="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-medium">
-                                    Barchasini tanlash
+                                    {{ __('director/reports.modal_select_all') }}
                                 </button>
                                 <span class="text-gray-300 dark:text-gray-600">|</span>
                                 <button type="button" onclick="toggleAllColumns(false)"
                                     class="text-xs text-gray-500 dark:text-gray-400 hover:underline font-medium">
-                                    Bekor qilish
+                                    {{ __('director/reports.modal_deselect_all') }}
                                 </button>
                             </div>
                         </div>
@@ -416,7 +416,7 @@
                 <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
                     <button type="button" onclick="closeExportModal()"
                         class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                        Bekor qilish
+                       {{ __('director/reports.modal_cancel') }}
                     </button>
                     <button type="submit" id="exportSubmitBtn"
                         class="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 rounded-lg transition-colors shadow-sm">
@@ -424,7 +424,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <span id="exportBtnText">Yuklab olish</span>
+                        <span id="exportBtnText">{{ __('director/reports.modal_download') }}</span>
                     </button>
                 </div>
             </form>
@@ -494,7 +494,7 @@
             const btn  = document.getElementById('exportSubmitBtn');
             const text = document.getElementById('exportBtnText');
             btn.disabled = false;
-            text.textContent = 'Yuklab olish';
+            text.textContent = "{{ __('director/reports.modal_download') }}";
             btn.classList.remove('opacity-75', 'cursor-not-allowed');
         }
     </script>
