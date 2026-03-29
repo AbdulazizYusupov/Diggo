@@ -341,12 +341,7 @@
         <a href="{{ route('login-attempts.index') }}"
             class="nav-item relative flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all group {{ request()->routeIs('login-attempts.*') ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 
-            {{-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor"
-                class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('login-attempts.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
-            </svg> --}}
+
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor"
                 class="h-5 w-5 flex-shrink-0 transition-colors {{ request()->routeIs('login-attempts.*') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-purple-500' }}">
@@ -362,11 +357,11 @@
     @role('admin|staff')
         <div class="space-y-1">
             <button id="users-dropdown-btn"
-                class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->is('staffs*', 'directors*', 'teachers*', 'students*','trashed-users*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->is('staffs*', 'directors*', 'teachers*', 'students*', 'trashed-users*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor"
-                    class="h-5 w-5 flex-shrink-0 {{ request()->is('staffs*', 'directors*', 'teachers*', 'students*','trashed-users*') ? 'text-indigo-600' : 'text-gray-400' }}">
+                    class="h-5 w-5 flex-shrink-0 {{ request()->is('staffs*', 'directors*', 'teachers*', 'students*', 'trashed-users*') ? 'text-indigo-600' : 'text-gray-400' }}">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                 </svg>
@@ -375,14 +370,14 @@
 
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                     stroke="currentColor"
-                    class="arrow-icon ml-auto h-4 w-4 text-gray-400 sidebar-text transition-transform duration-300 {{ request()->is('staffs*', 'directors*', 'teachers*', 'students*','trashed-users*') ? 'rotate-180' : '' }}">
+                    class="arrow-icon ml-auto h-4 w-4 text-gray-400 sidebar-text transition-transform duration-300 {{ request()->is('staffs*', 'directors*', 'teachers*', 'students*', 'trashed-users*') ? 'rotate-180' : '' }}">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                 </svg>
                 <span class="nav-tooltip">{{ __('navigation.users_group') }}</span>
             </button>
 
             <div id="users-dropdown"
-                class="dropdown-content {{ request()->is('staffs*', 'directors*', 'teachers*', 'students*','trashed-users*') ? 'open' : '' }}">
+                class="dropdown-content {{ request()->is('staffs*', 'directors*', 'teachers*', 'students*', 'trashed-users*') ? 'open' : '' }}">
 
                 <div class="ml-8 space-y-1 py-2">
                     <a href="{{ route('staffs.index') }}"
@@ -430,11 +425,7 @@
                     </a>
                     <a href="{{ route('trashed-users.index') }}"
                         class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('trashed-users*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
-                        {{-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="w-4 h-4 mr-2 flex-shrink-0">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-                        </svg> --}}
+
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-4 h-4 mr-2 flex-shrink-0">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -559,9 +550,9 @@
         <div class="space-y-1">
             <button id="finance-dropdown-btn"
                 onclick="const dropdown = this.nextElementSibling; dropdown.classList.toggle('open'); this.querySelector('.arrow-icon').classList.toggle('rotate-180');"
-                class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->is('payments*', 'transactions*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                class="nav-item relative w-full flex items-center px-3 py-3 text-sm font-medium rounded-xl group transition-all {{ request()->is('payments*', 'transactions*', 'admin.monthly-charge*') ? 'bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
 
-                <svg class="h-5 w-5 flex-shrink-0 {{ request()->is('payments*', 'transactions*') ? 'text-indigo-600' : 'text-gray-400' }}"
+                <svg class="h-5 w-5 flex-shrink-0 {{ request()->is('payments*', 'transactions*', 'admin.monthly-charge*') ? 'text-indigo-600' : 'text-gray-400' }}"
                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -578,7 +569,7 @@
             </button>
 
             <div id="finance-dropdown"
-                class="dropdown-content {{ request()->is('payments*', 'transactions*') ? 'open' : '' }}">
+                class="dropdown-content {{ request()->routeIs('payments*', 'transactions*', 'admin.monthly-charge*') ? 'open' : '' }}">
 
                 <div class="ml-8 space-y-1 py-2">
                     <a href="{{ route('payments.index') }}"
@@ -599,6 +590,17 @@
                                 d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                         </svg>
                         <span class="sidebar-text">{{ __('navigation.transactions') }}</span>
+                    </a>
+                    <a href="{{ route('admin.monthly-charge.index') }}"
+                        class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('admin.monthly-charge*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
+                       
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-4 h-4 mr-2 flex-shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="m9 14.25 6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185ZM9.75 9h.008v.008H9.75V9Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.125 4.5h.008v.008h-.008V13.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                        </svg>
+
+                        <span class="sidebar-text">Student charge</span>
                     </a>
                 </div>
             </div>
