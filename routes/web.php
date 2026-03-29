@@ -25,6 +25,7 @@ use App\Http\Controllers\Lesson\LessonController;
 use App\Http\Controllers\Locale\LocaleController;
 use App\Http\Controllers\LoginAttempt\LoginAttemptController;
 use App\Http\Controllers\Notification\NotificationController;
+use App\Http\Controllers\Payment\MonthlyChargeController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Profile\ProfileController;
@@ -64,7 +65,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
-    Route::post('/statistics/refresh',[StatisticsController::class, 'refresh'])->name('statistics.refresh');
+    Route::post('/statistics/refresh', [StatisticsController::class, 'refresh'])->name('statistics.refresh');
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -289,13 +290,7 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/{id}', [UserActivityLogController::class, 'destroy'])->name('destroy');
             Route::delete('/clear/old', [UserActivityLogController::class, 'destroyAll'])->name('clear');
         });
-        // Route::prefix('admin/login-attempts')->name('login-attempts.')->group(function () {
-        //     Route::get('/',                    [LoginAttemptController::class, 'index'])->name('index');
-        //     Route::get('/ip/{ip}',             [LoginAttemptController::class, 'showIp'])->name('show-ip');
-        //     Route::get('/phone/{phone}',       [LoginAttemptController::class, 'showPhone'])->name('show-phone');
-        //     Route::delete('/{id}',             [LoginAttemptController::class, 'destroy'])->name('destroy');
-        //     Route::delete('/bulk/old',         [LoginAttemptController::class, 'destroyOld'])->name('destroy-old');
-        // });
+        
         Route::prefix('admin/login-attempts')->name('login-attempts.')->group(function () {
 
             Route::get('/',                          [LoginAttemptController::class, 'index'])->name('index');
@@ -315,6 +310,10 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/{id}/restore',             [TrashedUserController::class, 'restore'])->name('restore');
             Route::delete('/{id}/force-delete',      [TrashedUserController::class, 'forceDelete'])->name('force-delete');
             Route::post('/restore-all',              [TrashedUserController::class, 'restoreAll'])->name('restore-all');
+        });
+        Route::prefix('admin')->name('admin.')->group(function () {
+            Route::get('monthly-charge',       [MonthlyChargeController::class, 'index'])->name('monthly-charge.index');
+            Route::post('monthly-charge/run',  [MonthlyChargeController::class, 'run'])->name('monthly-charge.run');
         });
     });
 });
