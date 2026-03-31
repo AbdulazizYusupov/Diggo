@@ -67,9 +67,9 @@ class AuthController extends Controller
                 ->map(fn($file) => asset('asset/Login/' . basename($file)))
                 ->values()
                 ->toArray();
-
             return empty($files) ? [$default] : $files;
         });
+         
 
         return view('Auth.Login.login', [
             'randomImage' => $randomImage[array_rand($randomImage)],
