@@ -27,6 +27,7 @@ use App\Http\Controllers\LoginAttempt\LoginAttemptController;
 use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\Payment\MonthlyChargeController;
 use App\Http\Controllers\Payment\PaymentController;
+use App\Http\Controllers\Payment\PaymentMatrixController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Role\RoleController;
@@ -290,7 +291,7 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/{id}', [UserActivityLogController::class, 'destroy'])->name('destroy');
             Route::delete('/clear/old', [UserActivityLogController::class, 'destroyAll'])->name('clear');
         });
-        
+
         Route::prefix('admin/login-attempts')->name('login-attempts.')->group(function () {
 
             Route::get('/',                          [LoginAttemptController::class, 'index'])->name('index');
@@ -315,5 +316,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('monthly-charge',       [MonthlyChargeController::class, 'index'])->name('monthly-charge.index');
             Route::post('monthly-charge/run',  [MonthlyChargeController::class, 'run'])->name('monthly-charge.run');
         });
+        Route::get('payments-matrix', [PaymentMatrixController::class, 'matrix'])->name('payments.matrix');
+        Route::get('payments-matrix/student/{student}', [PaymentMatrixController::class, 'studentCard'])->name('payments.student-card');
     });
 });
