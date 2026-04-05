@@ -60,7 +60,7 @@ class ImpersonateController extends Controller
             'staff'    => User::whereHas('roles', fn($q) => $q->where('name', 'staff'))->count(),
         ];
 
-        return view('Admin.impersonate.index', compact('users', 'search', 'role', 'status', 'stats'));
+        return view('Admin.Impersonate.index', compact('users', 'search', 'role', 'status', 'stats'));
     }
 
     /**
