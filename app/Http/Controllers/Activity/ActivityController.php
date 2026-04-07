@@ -151,7 +151,7 @@ class ActivityController extends Controller
                 $request->filled('search'),
                 fn($q) => $q->where(function ($inner) use ($request) {
                     $inner->where('name', 'like', '%' . $request->search . '%')
-                          ->orWhere('description', 'like', '%' . $request->search . '%');
+                        ->orWhere('description', 'like', '%' . $request->search . '%');
                 })
             )
             ->when($request->filled('type'),        fn($q) => $q->where('type', $request->type))

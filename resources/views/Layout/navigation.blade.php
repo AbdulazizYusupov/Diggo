@@ -573,7 +573,7 @@
 
                 <div class="ml-8 space-y-1 py-2">
                     <a href="{{ route('payments.index') }}"
-                        class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('payments.index*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
+                        class="flex items-center px-3 py-2 text-sm rounded-lg transition-all {{ request()->routeIs('payments*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 hover:text-indigo-600' }}">
                         <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

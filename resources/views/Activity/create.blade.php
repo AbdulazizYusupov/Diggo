@@ -245,8 +245,8 @@
                     </div>
 
                     <!-- ══════════════════════════════════════════════════
-                                 FAYLLAR — Image + Document with live preview
-                            ═══════════════════════════════════════════════════════ -->
+                                     FAYLLAR — Image + Document with live preview
+                                ═══════════════════════════════════════════════════════ -->
                     <div
                         class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 lg:p-8 space-y-6">
                         <h2 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Fayllar

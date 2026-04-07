@@ -106,6 +106,8 @@ class PaymentController extends Controller
     {
         $payment = Payment::with([
             'payable.user',
+            'payable.director.user',
+            'group',
             'user',
             'transactions' => fn($q) => $q->whereIn('type', ['payment', 'director_commission'])->with('transactionable'),
         ])->findOrFail($id);
