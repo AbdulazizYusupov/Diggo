@@ -1,6 +1,191 @@
 @extends('Layout.app')
 @section('title', 'To\'lovlar')
 @section('content')
+    @push('styles')
+        <style>
+            .receipt-wrapper {
+                width: 72mm;
+                margin: 0 auto;
+                padding: 4mm 3mm;
+                font-family: 'Courier New', Courier, monospace;
+                font-size: 11px;
+                line-height: 1.5;
+                color: #000;
+                background: #fff;
+            }
+
+            .receipt-header {
+                text-align: center;
+                margin-bottom: 6px;
+            }
+
+            .receipt-logo-mark {
+                font-size: 22px;
+                display: block;
+                margin-bottom: 2px;
+            }
+
+            .receipt-org {
+                font-size: 15px;
+                font-weight: 900;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                margin: 0;
+            }
+
+            .receipt-tagline {
+                font-size: 9px;
+                color: #555;
+                margin: 2px 0 4px;
+            }
+
+            .receipt-title-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 4px 0;
+            }
+
+            .receipt-doc-type {
+                font-weight: 900;
+                letter-spacing: 1.5px;
+                font-size: 11px;
+            }
+
+            .receipt-doc-num {
+                color: #555;
+                font-size: 10px;
+            }
+
+            .receipt-divider {
+                border: none;
+                margin: 5px 0;
+            }
+
+            .receipt-divider.dashed {
+                border-top: 1px dashed #aaa;
+            }
+
+            .receipt-divider.solid {
+                border-top: 1px solid #000;
+            }
+
+            .receipt-section {
+                padding: 3px 0;
+            }
+
+            .receipt-row {
+                display: flex;
+                justify-content: space-between;
+                gap: 8px;
+                padding: 1.5px 0;
+            }
+
+            .receipt-label {
+                color: #555;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+
+            .receipt-value {
+                text-align: right;
+                word-break: break-word;
+            }
+
+            .receipt-value.bold {
+                font-weight: 900;
+            }
+
+            .receipt-amount-block {
+                text-align: center;
+                padding: 8px 0;
+            }
+
+            .receipt-amount-label {
+                font-size: 9px;
+                letter-spacing: 2px;
+                color: #555;
+                text-transform: uppercase;
+            }
+
+            .receipt-amount-value {
+                font-size: 20px;
+                font-weight: 900;
+                letter-spacing: -0.5px;
+                margin-top: 2px;
+            }
+
+            .receipt-amount-note {
+                font-size: 9px;
+                color: #777;
+                margin-top: 3px;
+            }
+
+            .receipt-footer {
+                text-align: center;
+                font-size: 9px;
+                color: #555;
+                padding-top: 4px;
+            }
+
+            .receipt-footer p {
+                margin: 2px 0;
+            }
+
+            .receipt-barcode {
+                font-family: monospace;
+                letter-spacing: 2px;
+                font-size: 14px;
+                color: #000;
+                margin: 8px 0 4px;
+            }
+
+            .receipt-thanks {
+                font-weight: 900;
+                font-size: 10px;
+                color: #000;
+                margin-top: 6px !important;
+            }
+
+            .receipt-note {
+                font-size: 8px;
+                color: #999;
+            }
+
+            @media print {
+                body>* {
+                    display: none !important;
+                }
+
+                #active-receipt,
+                #active-receipt * {
+                    display: block !important;
+                    visibility: visible !important;
+                }
+
+                #active-receipt {
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    width: 80mm !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    background: #fff !important;
+                    z-index: 99999 !important;
+                }
+
+                @page {
+                    size: 80mm auto;
+                    margin: 4mm 0;
+                }
+
+                .receipt-wrapper {
+                    page-break-inside: avoid;
+                    break-inside: avoid;
+                }
+            }
+        </style>
+    @endpush
     <div class="space-y-6">
         <!-- Header Section -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -318,7 +503,7 @@
                                     </div>
                                 </td>
                                 <td class="px-4 lg:px-6 py-4">
-                                    
+
                                     <span
                                         class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg {{ statusColors[$payment->status] ?? 'bg-gray-100 text-gray-700' }}">
                                         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 8 8">
@@ -358,7 +543,11 @@
 
                                         <!-- Pending to'lovlar uchun EDIT va DELETE -->
                                         @if (
-                                            (Auth::user()->hasRole('admin') && $payment->status !== 'cancelled') || (Auth::user()->hasRole('staff') && $payment->status !== 'cancelled' && $payment->paid_at && $payment->paid_at->diffInHours(now()) <= 6))
+                                            (Auth::user()->hasRole('admin') && $payment->status !== 'cancelled') ||
+                                                (Auth::user()->hasRole('staff') &&
+                                                    $payment->status !== 'cancelled' &&
+                                                    $payment->paid_at &&
+                                                    $payment->paid_at->diffInHours(now()) <= 6))
                                             <a href="{{ route('payments.edit', $payment->id) }}"
                                                 class="p-2 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-xl transition-all duration-200 group/btn"
                                                 title="Tahrirlash">
@@ -369,6 +558,16 @@
                                                 </svg>
                                             </a>
                                         @endif
+                                        {{-- Print Receipt button --}}
+                                        <button type="button" onclick="printReceipt('receipt-{{ $payment->id }}')"
+                                            class="p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-xl transition-all duration-200 group/btn"
+                                            title="Chek chiqarish">
+                                            <svg class="w-5 h-5 transition-transform group-hover/btn:scale-110"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                            </svg>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -418,6 +617,106 @@
                                     </div>
                                 </div>
                             @endif
+                            {{-- Hidden receipt for printing --}}
+                            <tr style="display:none">
+                                <td colspan="7">
+                                    <div id="receipt-{{ $payment->id }}">
+                                        <div class="receipt-wrapper">
+                                            <div class="receipt-header">
+                                                <div class="receipt-logo-mark">◈</div>
+                                                <h1 class="receipt-org">Diggo IT Center</h1>
+                                                <p class="receipt-tagline">O'quv markazi | Ta'lim xizmatlari</p>
+                                                <div class="receipt-divider dashed"></div>
+                                            </div>
+
+                                            <div class="receipt-title-row">
+                                                <span class="receipt-doc-type">TO'LOV CHEKI</span>
+                                                <span
+                                                    class="receipt-doc-num">#{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}</span>
+                                            </div>
+
+                                            <div class="receipt-divider dashed"></div>
+
+                                            <div class="receipt-section">
+                                                <div class="receipt-row">
+                                                    <span class="receipt-label">O'quvchi:</span>
+                                                    <span
+                                                        class="receipt-value bold">{{ $payment->payable?->user?->full_name ?? '—' }}</span>
+                                                </div>
+                                                <div class="receipt-row">
+                                                    <span class="receipt-label">Telefon:</span>
+                                                    <span
+                                                        class="receipt-value">{{ $payment->payable?->user?->phone ?? '—' }}</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="receipt-divider dashed"></div>
+
+                                            <div class="receipt-section">
+                                                <div class="receipt-row">
+                                                    <span class="receipt-label">To'lov turi:</span>
+                                                    <span class="receipt-value">
+                                                        @php
+                                                            $typeNames = [
+                                                                'cash' => 'Naqd pul',
+                                                                'card' => 'Karta',
+                                                                'transfer' => "O'tkazma",
+                                                                'other' => 'Boshqa',
+                                                            ];
+                                                        @endphp
+                                                        {{ $typeNames[$payment->payment_type] ?? $payment->payment_type }}
+                                                    </span>
+                                                </div>
+                                                <div class="receipt-row">
+                                                    <span class="receipt-label">Sana:</span>
+                                                    <span
+                                                        class="receipt-value">{{ $payment->paid_at?->format('d.m.Y H:i') ?? '—' }}</span>
+                                                </div>
+                                                <div class="receipt-row">
+                                                    <span class="receipt-label">Holat:</span>
+                                                    <span class="receipt-value">
+                                                        @php
+                                                            $statusNames = [
+                                                                'paid' => "To'langan ✓",
+                                                                'pending' => 'Kutilmoqda',
+                                                                'cancelled' => 'Bekor qilingan ✗',
+                                                            ];
+                                                        @endphp
+                                                        {{ $statusNames[$payment->status] ?? $payment->status }}
+                                                    </span>
+                                                </div>
+                                                @if ($payment->discount > 0)
+                                                    <div class="receipt-row">
+                                                        <span class="receipt-label">Chegirma:</span>
+                                                        <span class="receipt-value">{{ $payment->discount }}%</span>
+                                                    </div>
+                                                @endif
+                                            </div>
+
+                                            <div class="receipt-divider solid"></div>
+
+                                            <div class="receipt-amount-block">
+                                                <div class="receipt-amount-label">JAMI TO'LOV:</div>
+                                                <div class="receipt-amount-value">
+                                                    {{ number_format($payment->amount, 0, '.', ' ') }} so'm</div>
+                                                @if ($payment->discount > 0)
+                                                    <div class="receipt-amount-note">Chegirmasiz:
+                                                        {{ number_format($payment->net_amount, 0, '.', ' ') }} so'm</div>
+                                                @endif
+                                            </div>
+
+                                            <div class="receipt-divider solid"></div>
+
+                                            <div class="receipt-footer">
+                                                <p>Chek raqami: #{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}</p>
+                                                <div class="receipt-barcode">||| |||| ||| || |||| ||| ||</div>
+                                                <p class="receipt-thanks">Rahmat! Kelishingizni kutamiz.</p>
+                                                <p class="receipt-note">Ushbu chek to'lov tasdiqidir.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
                         @empty
                             <tr>
                                 <td colspan="7" class="px-6 py-12 text-center">
@@ -446,4 +745,24 @@
             </div>
         @endif
     </div>
+    @push('scripts')
+        <script>
+            function printReceipt(receiptId) {
+                // Clone the target receipt into a fixed print container
+                const source = document.getElementById(receiptId);
+                const existing = document.getElementById('active-receipt');
+                if (existing) existing.remove();
+
+                const container = document.createElement('div');
+                container.id = 'active-receipt';
+                container.innerHTML = source.innerHTML;
+                document.body.appendChild(container);
+
+                setTimeout(() => {
+                    window.print();
+                    container.remove();
+                }, 150);
+            }
+        </script>
+    @endpush
 @endsection
