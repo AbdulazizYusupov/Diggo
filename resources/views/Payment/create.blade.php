@@ -98,7 +98,7 @@
                             @foreach ($groups as $group)
                                 <option value="{{ $group->id }}" {{ old('group_id') == $group->id ? 'selected' : '' }}>
                                     {{ $group->name }}
-                                    ({{ $group->subject->name ?? "Fan ko'rsatilmagan" }})
+                                    ({{ $group->course->title ?? "Fan ko'rsatilmagan" }})
                                     @if ($group->teacher)
                                         •
                                         {{ trim(($group->teacher->user->surname ?? '') . ' ' . ($group->teacher->user->name ?? '')) }}
