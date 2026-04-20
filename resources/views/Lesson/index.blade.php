@@ -179,7 +179,7 @@
                         <option value="">Barcha guruhlar</option>
                         @foreach ($groups as $group)
                             <option value="{{ $group->id }}" {{ request('group_id') == $group->id ? 'selected' : '' }}>
-                                {{ $group->name }} ({{ $group->course->name ?? 'N/A' }})
+                                {{ $group->name }} ({{ $group->course->title ?? 'N/A' }})
                             </option>
                         @endforeach
                     </select>

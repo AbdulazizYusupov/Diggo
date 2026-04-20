@@ -38,7 +38,7 @@
                     </span>
                 </div>
                 <p class="text-indigo-600 dark:text-indigo-400 font-semibold text-base">
-                    {{ $group->cours->title ?? 'N/A' }}
+                    {{ $group->course->title ?? 'N/A' }}
                 </p>
             </div>
 
@@ -208,7 +208,7 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <p class="text-gray-800 dark:text-gray-200 font-medium line-clamp-1">
-                                        {{ $lesson->title ?? ('Dars #' . $loop->iteration) }}
+                                        {{ $lesson->description ?? ('Dars #' . $loop->iteration) }}
                                     </p>
                                     @if($lesson->attendance_notes)
                                         <p class="text-xs text-gray-400 dark:text-gray-500 line-clamp-1 mt-0.5">{{ $lesson->attendance_notes }}</p>
