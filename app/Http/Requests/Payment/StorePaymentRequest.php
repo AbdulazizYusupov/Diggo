@@ -37,9 +37,6 @@ class StorePaymentRequest extends FormRequest
             'discount'           => 'required|numeric|min:0|max:100',
             'payment_type'       => 'required|in:cash,card,transfer,other',
             'payment_month'      => 'required|date',
-            'is_installment'     => 'boolean',
-            'installment_number' => 'nullable|integer|min:1',
-            'total_installments' => 'nullable|integer|min:1',
             'notes'              => 'nullable|string|max:1000',
         ];
     }
@@ -53,9 +50,6 @@ class StorePaymentRequest extends FormRequest
             'discount'           => __('validation.attributes.discount'),
             'payment_type'       => __('validation.attributes.payment_type'),
             'payment_month'      => __('validation.attributes.payment_month'),
-            'is_installment'     => __('validation.attributes.is_installment'),
-            'installment_number' => __('validation.attributes.installment_number'),
-            'total_installments' => __('validation.attributes.total_installments'),
             'notes'              => __('validation.attributes.notes'),
         ];
     }
@@ -77,11 +71,6 @@ class StorePaymentRequest extends FormRequest
             'payment_type.in'             => __('validation.custom.payment_type.in'),
             'payment_month.required'      => __('validation.custom.payment_month.required'),
             'payment_month.date'          => __('validation.custom.payment_month.date'),
-            'is_installment.boolean'      => __('validation.custom.is_installment.boolean'),
-            'installment_number.integer'  => __('validation.custom.installment_number.integer'),
-            'installment_number.min'      => __('validation.custom.installment_number.min'),
-            'total_installments.integer'  => __('validation.custom.total_installments.integer'),
-            'total_installments.min'      => __('validation.custom.total_installments.min'),
             'notes.string'                => __('validation.custom.notes.string'),
             'notes.max'                   => __('validation.custom.notes.max'),
         ];

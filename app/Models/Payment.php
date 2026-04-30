@@ -17,16 +17,16 @@ class Payment extends Model
         'payable_type',
         'group_id',
         'payable_id',
-        'user_id',
+        'user_id', // Set in service, safe since not in request validation
         'amount',
         'discount',
         'net_amount',
         'payment_type',
         'status',
         'payment_month',
-        'is_installment',
-        'installment_number',
-        'total_installments',
+        // 'is_installment', // Unused
+        // 'installment_number', // Unused
+        // 'total_installments', // Unused
         'remaining_debt',
         'notes',
         'paid_at'
@@ -36,7 +36,7 @@ class Payment extends Model
         'amount' => 'decimal:2',
         'discount' => 'decimal:2',
         'net_amount' => 'decimal:2',
-        'director_commission' => 'decimal:2',
+        // 'director_commission' => 'decimal:2', // Not stored in payments table
         'is_installment' => 'boolean',
         'payment_month' => 'date',
         'paid_at' => 'datetime',

@@ -4,9 +4,11 @@ namespace App\Services\Payment;
 
 use App\Models\Group;
 use App\Models\Payment;
+use App\Models\PaymentAudit;
 use App\Models\Student;
 use App\Models\Transaction;
 use App\Notifications\PaymentApprove\PaymentApprovedNotification;
+use App\Notifications\PaymentApprove\DirectorCommissionNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -82,6 +84,9 @@ class PaymentService
             $student->user->notify(new PaymentApprovedNotification($payment));
         }
 
+        // Create audit log
+        $this->createAuditLog($payment, 'created', null, $payment->getAttributes());
+
         return [
             'amounts'            => $amounts,
             'directorCommission' => $directorCommission,
@@ -142,6 +147,7 @@ class PaymentService
                 || (float) $payment->discount !== $newAmounts['discount_percent'];
 
             if (!$financialChanged) {
+                $oldValues = $payment->getOriginal();
                 $payment->update([
                     'group_id'      => $validated['group_id'],
                     'payment_type'  => $validated['payment_type'],
@@ -150,6 +156,8 @@ class PaymentService
                 ]);
 
                 DB::commit();
+
+                $this->createAuditLog($payment, 'updated', $oldValues, $payment->getAttributes());
 
                 return [
                     'financialChanged'   => false,
@@ -164,6 +172,8 @@ class PaymentService
                 'gross_amount'     => (float) $payment->amount,
                 'discount_percent' => (float) $payment->discount,
             ];
+
+            $oldValues = $payment->getOriginal();
 
             $payment->update([
                 'group_id'      => $validated['group_id'],
@@ -180,6 +190,8 @@ class PaymentService
             $directorCommission = $this->processDirectorCommission($student, $payment, $newAmounts['net_amount']);
 
             DB::commit();
+
+            $this->createAuditLog($payment, 'updated', $oldValues, $payment->getAttributes());
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Payment update failed', [
@@ -241,6 +253,8 @@ class PaymentService
             ]);
 
             DB::commit();
+
+            $this->createAuditLog($payment, 'cancelled', $payment->getOriginal(), $payment->getAttributes());
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Payment cancellation failed', [
@@ -408,6 +422,11 @@ class PaymentService
             'paid_at'              => Carbon::now(),
         ]);
 
+        // Notify director about commission
+        if ($director->user) {
+            $director->user->notify(new DirectorCommissionNotification($payment, $commissionAmount));
+        }
+
         return [
             'director_id'   => $director->id,
             'director_name' => $director->user->full_name,
@@ -477,5 +496,16 @@ class PaymentService
             . " — " . Auth::user()->name
             . " | Eski summa: " . $this->formatMoney($oldAmount) . " so'm]";
         return $note;
+    }
+
+    private function createAuditLog(Payment $payment, string $action, ?array $oldValues = null, ?array $newValues = null): void
+    {
+        PaymentAudit::create([
+            'payment_id' => $payment->id,
+            'action' => $action,
+            'old_values' => $oldValues,
+            'new_values' => $newValues ?? $payment->getAttributes(),
+            'user_id' => Auth::id(),
+        ]);
     }
 }

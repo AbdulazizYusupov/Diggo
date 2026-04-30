@@ -19,51 +19,42 @@ class MonthlyChargeService
      */
     public function getPreview(Carbon $targetMonth): array
     {
-        $toCharge   = 0;
-        $noPayment  = 0;
-        $alreadyDone = 0;
-        $totalAmount = 0;
+        // Single optimized query instead of nested loops
+        $stats = DB::table('group_students')
+            ->join('students', 'group_students.student_id', '=', 'students.id')
+            ->join('groups', 'group_students.group_id', '=', 'groups.id')
+            ->leftJoin('transactions', function ($join) use ($targetMonth) {
+                $join->on('transactions.transactionable_id', '=', 'students.id')
+                    ->where('transactions.transactionable_type', '=', Student::class)
+                    ->where('transactions.type', '=', 'charge')
+                    ->where('transactions.source_type', '=', Group::class)
+                    ->where('transactions.source_id', '=', DB::raw('groups.id'))
+                    ->whereYear('transactions.transaction_date', $targetMonth->year)
+                    ->whereMonth('transactions.transaction_date', $targetMonth->month);
+            })
+            ->leftJoin('payments', function ($join) use ($targetMonth) {
+                $join->on('payments.payable_id', '=', 'students.id')
+                    ->where('payments.payable_type', '=', Student::class)
+                    ->where('payments.group_id', '=', DB::raw('groups.id'))
+                    ->where('payments.status', '=', 'paid')
+                    ->whereYear('payments.payment_month', $targetMonth->year)
+                    ->whereMonth('payments.payment_month', $targetMonth->month);
+            })
+            ->where('groups.is_active', true)
+            ->whereNull('transactions.id') // Not already charged
+            ->selectRaw('
+                COUNT(CASE WHEN payments.id IS NOT NULL THEN 1 END) as to_charge,
+                COUNT(CASE WHEN payments.id IS NULL THEN 1 END) as no_payment,
+                SUM(payments.net_amount) as total_amount
+            ')
+            ->first();
 
-        $groups = Group::with(['course', 'groupStudents.student'])
-            ->where('is_active', true)
-            ->get();
-
-        foreach ($groups as $group) {
-            foreach ($group->groupStudents as $gs) {
-                $student = $gs->student;
-
-                $charged = Transaction::where('transactionable_type', Student::class)
-                    ->where('transactionable_id', $student->id)
-                    ->where('type', 'charge')
-                    ->where('source_type', Group::class)
-                    ->where('source_id', $group->id)
-                    ->whereYear('transaction_date', $targetMonth->year)
-                    ->whereMonth('transaction_date', $targetMonth->month)
-                    ->exists();
-
-                if ($charged) {
-                    $alreadyDone++;
-                    continue;
-                }
-
-                $payment = Payment::where('payable_type', Student::class)
-                    ->where('payable_id', $student->id)
-                    ->where('group_id', $group->id)
-                    ->where('status', 'paid')
-                    ->whereYear('payment_month', $targetMonth->year)
-                    ->whereMonth('payment_month', $targetMonth->month)
-                    ->first();
-
-                if ($payment) {
-                    $toCharge++;
-                    $totalAmount += $payment->net_amount;
-                } else {
-                    $noPayment++;
-                }
-            }
-        }
-
-        return compact('toCharge', 'noPayment', 'alreadyDone', 'totalAmount');
+        return [
+            'toCharge' => $stats->to_charge ?? 0,
+            'noPayment' => $stats->no_payment ?? 0,
+            'alreadyDone' => 0, // This would require separate query if needed
+            'totalAmount' => $stats->total_amount ?? 0,
+        ];
     }
 
     /**

@@ -11,18 +11,35 @@ use App\Models\Student;
 use App\Models\Transaction;
 use App\Services\Payment\PaymentService;
 use Carbon\Carbon;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
+    use AuthorizesRequests;
+
     public function __construct(private readonly PaymentService $paymentService) {}
+
+    private function baseQuery()
+    {
+        $user = Auth::user();
+        $query = Payment::with(['payable.user', 'user']);
+
+        // If user has director role, filter to their school
+        if ($user->hasRole('director') && $user->director) {
+            $query->whereHas('payable', fn($q) => $q->where('school_id', $user->director->school_id));
+        }
+
+        return $query;
+    }
 
     // ==================== PUBLIC RESOURCE METHODS ====================
 
     public function index(Request $request)
     {
-        $query = Payment::with(['payable.user', 'user']);
+        $query = $this->baseQuery();
+
         if ($request->filled('search')) {
             $search = trim($request->search);
             $query->where('payable_type', Student::class)
@@ -112,12 +129,16 @@ class PaymentController extends Controller
             'transactions' => fn($q) => $q->whereIn('type', ['payment', 'director_commission'])->with('transactionable'),
         ])->findOrFail($id);
 
+        $this->authorize('view', $payment);
+
         return view('Payment.show', compact('payment'));
     }
 
     public function edit(string $id)
     {
         $payment = Payment::with('payable.user')->findOrFail($id);
+
+        $this->authorize('update', $payment);
 
         try {
             $this->paymentService->assertEditable($payment);
@@ -137,6 +158,8 @@ class PaymentController extends Controller
     public function update(UpdatePaymentRequest $request, string $id)
     {
         $payment = Payment::with(['payable', 'transactions'])->findOrFail($id);
+
+        $this->authorize('update', $payment);
 
         try {
             $result = $this->paymentService->update($payment, $request->validated());
@@ -164,6 +187,8 @@ class PaymentController extends Controller
     {
         $payment = Payment::findOrFail($id);
 
+        $this->authorize('delete', $payment);
+
         if ($payment->status === 'paid') {
             return back()->with('error', "To'langan to'lovni o'chirib bo'lmaydi! Bekor qilish tugmasidan foydalaning.");
         }
@@ -179,6 +204,8 @@ class PaymentController extends Controller
     public function cancel(string $id)
     {
         $payment = Payment::with(['payable', 'transactions'])->findOrFail($id);
+
+        $this->authorize('delete', $payment);
 
         try {
             $this->paymentService->cancel($payment);

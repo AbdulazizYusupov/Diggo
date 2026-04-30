@@ -4,6 +4,7 @@ namespace App\Http\Controllers\StudentDashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +28,7 @@ class StudentPaymentsController extends Controller
 
         // Query
         $query = Payment::with(['group.course', 'user'])
-            ->where('payable_type', 'App\Models\Student')
+            ->where('payable_type', Student::class)
             ->where('payable_id', $student->id);
 
         // Status filter
@@ -75,7 +76,7 @@ class StudentPaymentsController extends Controller
 
     private function getPaymentStats($student, $year)
     {
-        $allPayments = Payment::where('payable_type', 'App\Models\Student')
+        $allPayments = Payment::where('payable_type', Student::class)
             ->where('payable_id', $student->id)
             ->whereYear('payment_month', $year)
             ->get();
@@ -130,7 +131,7 @@ class StudentPaymentsController extends Controller
         }
 
         $payment = Payment::with(['group.course', 'user'])
-            ->where('payable_type', 'App\Models\Student')
+            ->where('payable_type', Student::class)
             ->where('payable_id', $student->id)
             ->findOrFail($id);
         // dd($payment);
