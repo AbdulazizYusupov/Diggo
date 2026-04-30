@@ -3,6 +3,7 @@
 @section('title', 'Davomat - ' . $group->name)
 
 @section('content')
+    
     <div class="space-y-4 pb-24 md:pb-32">
 
         {{-- ================================================================

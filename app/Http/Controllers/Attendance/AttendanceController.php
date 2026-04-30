@@ -23,6 +23,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class AttendanceController extends Controller
 {
+    use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
     protected $attendanceService;
 
     public function __construct(AttendanceService $attendanceService)
@@ -81,7 +82,10 @@ class AttendanceController extends Controller
 
     public function show(Request $request, int $groupId)
     {
+        // dd(123);
         $group = Group::with(['course', 'activeStudents.user'])->findOrFail($groupId);
+
+        $this->authorize('view', $group);
 
         $month = (int) $request->get('month', Carbon::now()->month);
         $year = (int) $request->get('year', Carbon::now()->year);
@@ -149,6 +153,9 @@ class AttendanceController extends Controller
 
     public function store(StoreAttendanceRequest $request)
     {
+        $group = Group::findOrFail($request->validated()['group_id']);
+        $this->authorize('update', $group);
+
         try {
             $this->attendanceService->processAttendance(
                 (int) $request->validated()['group_id'],
@@ -159,8 +166,15 @@ class AttendanceController extends Controller
                 ->route('attendance.show', $request->validated()['group_id'])
                 ->with('success', 'Davomat muvaffaqiyatli saqlandi!');
         } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Attendance processing failed', [
+                'user_id' => auth()->id(),
+                'group_id' => $request->validated()['group_id'] ?? null,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return back()
-                ->with('error', 'Xatolik yuz berdi: '.$e->getMessage())
+                ->with('error', 'Davomat saqlashda xatolik yuz berdi. Iltimos qayta urinib ko\'ring yoki administrator bilan bog\'laning.')
                 ->withInput();
         }
     }
@@ -168,6 +182,8 @@ class AttendanceController extends Controller
     public function statistics(int $groupId, Request $request)
     {
         $group = Group::with(['course', 'activeStudents.user'])->findOrFail($groupId);
+
+        $this->authorize('viewStatistics', $group);
 
         $month = $request->get('month') ? (int) $request->get('month') : null;
         $year = (int) $request->get('year', Carbon::now()->year);
@@ -244,7 +260,9 @@ class AttendanceController extends Controller
 
     public function export(Request $request, int $groupId)
     {
-        $group    = Group::with(['course', 'activeStudents.user'])->findOrFail($groupId);
+        $group = Group::findOrFail($groupId);
+        $this->authorize('export', $group);
+
         $students = $group->activeStudents;
         $year     = (int) $request->get('year', Carbon::now()->year);
  

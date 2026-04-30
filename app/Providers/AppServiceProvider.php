@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // URL::forceScheme('https');
         Paginator::useTailwind();
-        // Gate::policy(Group::class, AttendancePolicy::class);
+        Gate::policy(Group::class, AttendancePolicy::class);
         View::composer('Layout.header', function ($view) {
             $view->with('current_lang', app()->getLocale());
             $view->with('locales', config('locales.supported'));

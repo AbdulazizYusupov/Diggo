@@ -97,6 +97,15 @@ class AttendanceService
                 }
             }
 
+            // Lock student records to prevent race conditions
+            if (!empty($studentCoinDeltas)) {
+                $lockedStudents = DB::table('students')
+                    ->whereIn('id', array_keys($studentCoinDeltas))
+                    ->lockForUpdate()
+                    ->pluck('coins', 'id')
+                    ->toArray();
+            }
+
             $this->performDatabaseOperations($toDeleteIds, $toUpsert, $coinTransactions, $studentCoinDeltas);
             $this->sendNotifications($toUpsert, $lessonsMap);
             $this->completeLessons(array_unique(array_column($toUpsert, 'lesson_id')));
@@ -299,13 +308,13 @@ class AttendanceService
 
             if ($user) {
                 $user->notify(new AttendanceMarkedNotification(
-                    status: $data['status'],
-                    dailyCoins: $coins,
-                    homeworkScore: $data['homework_score'],
-                    activityScore: $data['activity_score'],
-                    lessonDate: $lesson->lesson_date->format('d.m.Y'),
-                    lessonTime: $this->formatTime($lesson->start_time),
-                    groupName: $groupName,
+                    $data['status'],
+                    $coins,
+                    $data['homework_score'],
+                    $data['activity_score'],
+                    $lesson->lesson_date->format('d.m.Y'),
+                    $lesson->start_time,
+                    $groupName
                 ));
             }
         }
@@ -313,53 +322,49 @@ class AttendanceService
 
     private function completeLessons(array $lessonIds): void
     {
-        if (!empty($lessonIds)) {
-            Lesson::whereIn('id', $lessonIds)
-                ->where('status', 'scheduled')
-                ->whereDate('lesson_date', '<=', Carbon::today())
-                ->update(['status' => 'completed']);
+        if (empty($lessonIds)) return;
+
+        // Mark lessons as completed if all students have attendance marked
+        foreach ($lessonIds as $lessonId) {
+            $lesson = Lesson::with('group.activeStudents')->find($lessonId);
+            if (!$lesson) continue;
+
+            $totalStudents = $lesson->group->activeStudents->count();
+            $markedAttendances = Attendance::where('lesson_id', $lessonId)->count();
+
+            if ($totalStudents > 0 && $markedAttendances >= $totalStudents) {
+                $lesson->update(['status' => 'completed']);
+            }
         }
-    }
-
-    private function buildCoinDescription(array $data, ?Attendance $old, Lesson $lesson): string
-    {
-        $parts   = [];
-        $dateStr = $lesson->lesson_date->format('d.m.Y');
-        $timeStr = $this->formatTime($lesson->start_time);
-
-        $oldAttCoins = $old ? $this->calcAttendanceCoins($old->status, $old->late_minutes ?? 0) : 0;
-        $newAttCoins = $this->calcAttendanceCoins($data['status'], $data['late_minutes'] ?? 0);
-
-        if ($newAttCoins !== $oldAttCoins || $old === null) {
-            $parts[] = match ($data['status']) {
-                'present' => 'Keldi',
-                'late'    => "Kechikdi ({$data['late_minutes']} min)",
-                'absent'  => 'Kelmadi',
-                'excused' => 'Sababli',
-                default   => $data['status'],
-            };
-        }
-
-        if (($data['homework_score'] ?? 0) > 0) {
-            $parts[] = "Uy vazifasi: {$data['homework_score']}";
-        }
-        if (($data['activity_score'] ?? 0) > 0) {
-            $parts[] = "Faollik: {$data['activity_score']}";
-        }
-
-        $desc = implode(', ', $parts) ?: 'Davomat yangilandi';
-        return $timeStr ? "{$desc} — {$dateStr} {$timeStr}" : "{$desc} — {$dateStr}";
     }
 
     private function buildDeleteDescription(Lesson $lesson): string
     {
-        $dateStr = $lesson->lesson_date->format('d.m.Y');
-        $timeStr = $this->formatTime($lesson->start_time);
-        return $timeStr ? "Davomat o'chirildi — {$dateStr} {$timeStr}" : "Davomat o'chirildi — {$dateStr}";
+        return "Davomat bekor qilindi: {$lesson->lesson_date->format('d.m.Y')} {$lesson->start_time}";
     }
 
-    private function formatTime(?string $startTime): string
+    private function buildCoinDescription(array $data, ?Attendance $oldAttendance, Lesson $lesson): string
     {
-        return empty($startTime) ? '' : Carbon::parse($startTime)->format('H:i');
+        $statusText = match ($data['status']) {
+            'present' => 'Keldi',
+            'late'    => 'Kechikdi',
+            'absent'  => 'Kelmadi',
+            default   => $data['status'],
+        };
+
+        $description = "Davomat: {$statusText} - {$lesson->lesson_date->format('d.m.Y')}";
+
+        if ($data['homework_score'] > 0 || $data['activity_score'] > 0) {
+            $scores = [];
+            if ($data['homework_score'] > 0) $scores[] = "UY:{$data['homework_score']}";
+            if ($data['activity_score'] > 0) $scores[] = "FA:{$data['activity_score']}";
+            $description .= ' (' . implode(', ', $scores) . ')';
+        }
+
+        if ($oldAttendance) {
+            $description .= ' [o\'zgartirildi]';
+        }
+
+        return $description;
     }
 }

@@ -98,48 +98,71 @@ class StoreAttendanceRequest extends FormRequest
             'attendances.*.*.notes'          => __('validation.attributes.notes'),
         ];
     }
-    public function messages(): array
+    public function withValidator($validator)
     {
-        return [
-            // group_id
-            'group_id.required'                       => __('validation.custom.group_id.required'),
-            'group_id.integer'                        => __('validation.custom.group_id.integer'),
-            'group_id.exists'                         => __('validation.custom.group_id.exists'),
+        $validator->after(function ($validator) {
+            $groupId = $this->input('group_id');
+            $attendances = $this->input('attendances', []);
 
-            // attendances
-            'attendances.required'                    => __('validation.custom.attendances.required'),
-            'attendances.array'                       => __('validation.custom.attendances.array'),
-            'attendances.min'                         => __('validation.custom.attendances.min'),
+            // Check if user has permission for this group
+            $user = Auth::user();
+            $group = \App\Models\Group::find($groupId);
 
-            // student_id
-            'attendances.*.*.student_id.integer'      => __('validation.custom.student_id.integer'),
-            'attendances.*.*.student_id.exists'       => __('validation.custom.student_id.exists'),
+            if ($group && !$user->hasRole('admin')) {
+                $isTeacher = $group->teachers()->where('user_id', $user->id)->exists();
+                if (!$isTeacher) {
+                    $validator->errors()->add('group_id', 'Siz bu guruh uchun davomat belgilay olmaysiz.');
+                }
+            }
 
-            // lesson_id
-            'attendances.*.*.lesson_id.integer'       => __('validation.custom.lesson_id.integer'),
-            'attendances.*.*.lesson_id.exists'        => __('validation.custom.lesson_id.exists'),
+            // Business rule validations
+            foreach ($attendances as $studentIndex => $studentRows) {
+                foreach ($studentRows as $lessonIndex => $entry) {
+                    $status = $entry['status'] ?? null;
+                    $lateMinutes = $entry['late_minutes'] ?? 0;
+                    $homeworkScore = $entry['homework_score'] ?? 0;
+                    $activityScore = $entry['activity_score'] ?? 0;
 
-            // status
-            'attendances.*.*.status.in'               => __('validation.custom.status.in'),
+                    // Late minutes faqat late status uchun
+                    if ($status !== 'late' && $lateMinutes > 0) {
+                        $validator->errors()->add(
+                            "attendances.{$studentIndex}.{$lessonIndex}.late_minutes",
+                            'Kechikish vaqti faqat "Kechikdi" status uchun kiritilishi mumkin.'
+                        );
+                    }
 
-            // late_minutes
-            'attendances.*.*.late_minutes.integer'    => __('validation.custom.late_minutes.integer'),
-            'attendances.*.*.late_minutes.min'        => __('validation.custom.late_minutes.min'),
-            'attendances.*.*.late_minutes.max'        => __('validation.custom.late_minutes.max'),
+                    // Homework va activity score faqat present yoki late uchun
+                    if (!in_array($status, ['present', 'late'])) {
+                        if ($homeworkScore > 0) {
+                            $validator->errors()->add(
+                                "attendances.{$studentIndex}.{$lessonIndex}.homework_score",
+                                'Uy vazifa bali faqat "Keldi" yoki "Kechikdi" status uchun berilishi mumkin.'
+                            );
+                        }
+                        if ($activityScore > 0) {
+                            $validator->errors()->add(
+                                "attendances.{$studentIndex}.{$lessonIndex}.activity_score",
+                                'Faollik bali faqat "Keldi" yoki "Kechikdi" status uchun berilishi mumkin.'
+                            );
+                        }
+                    }
 
-            // homework_score
-            'attendances.*.*.homework_score.integer'  => __('validation.custom.homework_score.integer'),
-            'attendances.*.*.homework_score.min'      => __('validation.custom.homework_score.min'),
-            'attendances.*.*.homework_score.max'      => __('validation.custom.homework_score.max'),
-
-            // activity_score
-            'attendances.*.*.activity_score.integer'  => __('validation.custom.activity_score.integer'),
-            'attendances.*.*.activity_score.min'      => __('validation.custom.activity_score.min'),
-            'attendances.*.*.activity_score.max'      => __('validation.custom.activity_score.max'),
-
-            // notes
-            'attendances.*.*.notes.string'            => __('validation.custom.notes.string'),
-            'attendances.*.*.notes.max'               => __('validation.custom.notes.max'),
-        ];
+                    // Late minutes validation
+                    if ($status === 'late') {
+                        if ($lateMinutes <= 0) {
+                            $validator->errors()->add(
+                                "attendances.{$studentIndex}.{$lessonIndex}.late_minutes",
+                                'Kechikish vaqti kiritilishi shart.'
+                            );
+                        } elseif ($lateMinutes >= 30) {
+                            $validator->errors()->add(
+                                "attendances.{$studentIndex}.{$lessonIndex}.late_minutes",
+                                '30 daqiqadan ko\'p kechikish "Kelmadi" hisoblanadi.'
+                            );
+                        }
+                    }
+                }
+            }
+        });
     }
 }

@@ -72,4 +72,53 @@ class Attendance extends Model
     {
         return $query->where('status', 'late');
     }
+
+    // --- Audit Logging ---
+
+    protected static function booted()
+    {
+        static::created(function ($attendance) {
+            \Illuminate\Support\Facades\Log::info('Attendance created', [
+                'attendance_id' => $attendance->id,
+                'lesson_id' => $attendance->lesson_id,
+                'student_id' => $attendance->student_id,
+                'status' => $attendance->status,
+                'marked_by' => $attendance->marked_by,
+                'marked_at' => $attendance->marked_at,
+                'user_id' => auth()->id(),
+                'ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+        });
+
+        static::updated(function ($attendance) {
+            $changes = $attendance->getChanges();
+            if (!empty($changes)) {
+                \Illuminate\Support\Facades\Log::info('Attendance updated', [
+                    'attendance_id' => $attendance->id,
+                    'lesson_id' => $attendance->lesson_id,
+                    'student_id' => $attendance->student_id,
+                    'changes' => $changes,
+                    'old_values' => $attendance->getOriginal(),
+                    'marked_by' => $attendance->marked_by,
+                    'user_id' => auth()->id(),
+                    'ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ]);
+            }
+        });
+
+        static::deleted(function ($attendance) {
+            \Illuminate\Support\Facades\Log::info('Attendance deleted', [
+                'attendance_id' => $attendance->id,
+                'lesson_id' => $attendance->lesson_id,
+                'student_id' => $attendance->student_id,
+                'status' => $attendance->status,
+                'marked_by' => $attendance->marked_by,
+                'user_id' => auth()->id(),
+                'ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+        });
+    }
 }
