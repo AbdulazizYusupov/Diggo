@@ -257,7 +257,7 @@
                         <span class="text-sm font-semibold text-amber-700/60 dark:text-slate-400">{{ __('director/student_detail.payments_count', ['count' => $stats['director_payment_count']]) }}</span>
                     </p>
                     <p class="text-xs text-amber-700/60 dark:text-slate-500 mt-0.5">
-                        {{ __('director/student_detail.avg_per_payment', ['amount' => number_format($stats['director_avg_per_payment'], 0, '.', ' ')]) }}
+                        {{ __('director/student_detail.avg_per_payment', ['amount' => number_format((float)$stats['director_avg_per_payment'], 0, '.', ' ')]) }}
                     </p>
                 </div>
             </div>

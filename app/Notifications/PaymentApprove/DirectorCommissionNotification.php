@@ -44,7 +44,7 @@ class DirectorCommissionNotification extends Notification
             'student_name' => $studentName,
             'commission_amount' => $this->commissionAmount,
             'paid_at' => $this->payment->created_at->toDateTimeString(),
-            'action_url' => route('payments.show', $this->payment->id),
+            'action_url' => route('director.commissions'),
         ];
     }
 }

@@ -9,6 +9,7 @@ use App\Models\Student;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class PaymentMatrixController extends Controller
 {
@@ -111,6 +112,78 @@ class PaymentMatrixController extends Controller
             'availableYears' => $availableYears,
             'perPage'        => $perPage,
         ]);
+    }
+
+    /**
+     * Export Matrix to Excel
+     */
+    public function export(Request $request)
+    {
+        $year    = (int) $request->get('year', Carbon::now()->year);
+        $groupId = $request->get('group_id');
+        $now     = CarbonImmutable::now();
+        $currentMonth = $now->month;
+        $currentYear  = $now->year;
+
+        $studentQuery = Student::query()
+            ->select([
+                'students.id',
+                'students.user_id',
+                'students.balance',
+            ])
+            ->with([
+                'user:id,name,surname,middle_name',
+                'payments' => function ($q) use ($year) {
+                    $q->select(['id', 'payable_id', 'payable_type', 'net_amount', 'status', 'payment_month'])
+                        ->whereYear('payment_month', $year)
+                        ->where('status', '!=', 'cancelled');
+                },
+            ])
+            ->whereHas('user', fn($q) => $q->where('is_active', true));
+
+        if ($groupId) {
+            $studentQuery->join('group_students', 'group_students.student_id', '=', 'students.id')
+                         ->where('group_students.group_id', $groupId)
+                         ->distinct();
+        }
+
+        $students = $studentQuery->orderBy('students.id')->get();
+
+        $exportData = $students->map(function ($student) use ($year, $currentMonth, $currentYear) {
+            $student = $this->attachMonthlyBreakdown($student, $year, $currentMonth, $currentYear);
+            
+            $row = [
+                'F.I.SH' => $student->user->full_name,
+                'Balans' => $student->balance,
+            ];
+
+            foreach (self::MONTHS as $m => $monthName) {
+                $breakdown = $student->month_breakdown[$m];
+                $status = $breakdown['status'];
+                
+                $label = match($status) {
+                    'paid'    => "To'langan (" . number_format($breakdown['amount'], 0, '.', ' ') . ")",
+                    'partial' => "Qisman (" . number_format($breakdown['amount'], 0, '.', ' ') . ")",
+                    'unpaid'  => "To'lanmagan",
+                    'future'  => "-",
+                    default   => "-",
+                };
+
+                $row[$monthName] = $label;
+            }
+
+            $row['Jami to\'langan'] = number_format($student->total_paid_year, 0, '.', ' ');
+            $row['Qarzdor oylar'] = $student->total_debt_count;
+
+            return $row;
+        });
+
+        $filePath = public_path('export/' . time() . '_payment_matrix.xlsx');
+        if (!file_exists(public_path('export'))) {
+            mkdir(public_path('export'), 0777, true);
+        }
+
+        return (new FastExcel($exportData))->download('payment_matrix_' . $year . '.xlsx');
     }
  
     // =========================================================

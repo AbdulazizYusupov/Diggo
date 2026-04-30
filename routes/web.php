@@ -58,7 +58,6 @@ use App\Http\Controllers\UserActivityLog\UserActivityLogController;
 use App\Http\Middleware\CheckPermission;
 use Illuminate\Support\Facades\Route;
 
-
 Route::get('/login', [AuthController::class, 'index'])->name('login.index');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
@@ -144,6 +143,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/store', [AttendanceController::class, 'store'])->name('store');
             Route::post('/bulk-store', [AttendanceController::class, 'bulkStore'])->name('bulk-store');
             Route::get('/group/{group}/statistics', [AttendanceController::class, 'statistics'])->name('statistics');
+            Route::get('attendance/{groupId}/export', [AttendanceController::class, 'export'])->name('export');
         });
 
         Route::prefix('director')->name('director.')->group(function () {
@@ -224,7 +224,7 @@ Route::middleware(['auth'])->group(function () {
 
             // Groups
             Route::prefix('groups')->name('groups.')->group(function () {
-                Route::get('/',        [TeacherGroupsController::class, 'index'])->name('index');
+                Route::get('/', [TeacherGroupsController::class, 'index'])->name('index');
                 Route::get('/{group}', [TeacherGroupsController::class, 'show'])->name('show');
             });
             // Lessons inside a group
@@ -237,12 +237,10 @@ Route::middleware(['auth'])->group(function () {
                 Route::delete('/{lesson}', [TeacherLessonsController::class, 'destroy'])->name('destroy');
             });
             Route::prefix('groups/{group}/lessons/{lesson}/attendance')->name('attendance.')->group(function () {
-                Route::get('/',  [TeacherAttendanceController::class, 'show'])->name('show');
+                Route::get('/', [TeacherAttendanceController::class, 'show'])->name('show');
                 Route::post('/', [TeacherAttendanceController::class, 'store'])->name('store');
             });
         });
-
-
 
         Route::get('transactions/export', [TransactionController::class, 'export'])->name('transactions.export');
         Route::resource('transactions', TransactionController::class)->only(['index', 'show']);
@@ -262,16 +260,16 @@ Route::middleware(['auth'])->group(function () {
 
             // ── Mahsulotlar ──────────────────────────────────────
             Route::resource('products', ShopProductController::class);
-            Route::patch('products/{product}/toggle-status',   [ShopProductController::class, 'toggleStatus'])->name('products.toggle-status');
+            Route::patch('products/{product}/toggle-status', [ShopProductController::class, 'toggleStatus'])->name('products.toggle-status');
             Route::patch('products/{product}/toggle-featured', [ShopProductController::class, 'toggleFeatured'])
                 ->name('products.toggle-featured');
 
             // // ── Buyurtmalar ──────────────────────────────────────
-            Route::get('orders',              [ShopOrderController::class, 'index'])->name('orders.index');
-            Route::get('orders/{order}',      [ShopOrderController::class, 'show'])->name('orders.show');
+            Route::get('orders', [ShopOrderController::class, 'index'])->name('orders.index');
+            Route::get('orders/{order}', [ShopOrderController::class, 'show'])->name('orders.show');
             Route::patch('orders/{order}/approve', [ShopOrderController::class, 'approve'])->name('orders.approve');
             Route::patch('orders/{order}/deliver', [ShopOrderController::class, 'deliver'])->name('orders.deliver');
-            Route::patch('orders/{order}/reject',  [ShopOrderController::class, 'reject'])->name('orders.reject');
+            Route::patch('orders/{order}/reject', [ShopOrderController::class, 'reject'])->name('orders.reject');
         });
         Route::prefix('help')->name('help.')->group(function () {
             // Help & Support bosh sahifasi
@@ -294,29 +292,30 @@ Route::middleware(['auth'])->group(function () {
 
         Route::prefix('admin/login-attempts')->name('login-attempts.')->group(function () {
 
-            Route::get('/',                          [LoginAttemptController::class, 'index'])->name('index');
-            Route::get('/ip/{ip}',                   [LoginAttemptController::class, 'showIp'])->name('show-ip');
-            Route::get('/phone/{phone}',             [LoginAttemptController::class, 'showPhone'])->name('show-phone');
+            Route::get('/', [LoginAttemptController::class, 'index'])->name('index');
+            Route::get('/ip/{ip}', [LoginAttemptController::class, 'showIp'])->name('show-ip');
+            Route::get('/phone/{phone}', [LoginAttemptController::class, 'showPhone'])->name('show-phone');
 
             // Unblock — DB + RateLimiter cache ni birga tozalaydi
-            Route::post('/unblock/ip/{ip}',          [LoginAttemptController::class, 'unblockIp'])->name('unblock-ip');
-            Route::post('/unblock/phone/{phone}',    [LoginAttemptController::class, 'unblockPhone'])->name('unblock-phone');
+            Route::post('/unblock/ip/{ip}', [LoginAttemptController::class, 'unblockIp'])->name('unblock-ip');
+            Route::post('/unblock/phone/{phone}', [LoginAttemptController::class, 'unblockPhone'])->name('unblock-phone');
 
-            Route::delete('/{id}',                   [LoginAttemptController::class, 'destroy'])->name('destroy');
-            Route::delete('/bulk/old',               [LoginAttemptController::class, 'destroyOld'])->name('destroy-old');
+            Route::delete('/{id}', [LoginAttemptController::class, 'destroy'])->name('destroy');
+            Route::delete('/bulk/old', [LoginAttemptController::class, 'destroyOld'])->name('destroy-old');
         });
 
         Route::prefix('trashed-users')->name('trashed-users.')->group(function () {
-            Route::get('/',                          [TrashedUserController::class, 'index'])->name('index');
-            Route::post('/{id}/restore',             [TrashedUserController::class, 'restore'])->name('restore');
-            Route::delete('/{id}/force-delete',      [TrashedUserController::class, 'forceDelete'])->name('force-delete');
-            Route::post('/restore-all',              [TrashedUserController::class, 'restoreAll'])->name('restore-all');
+            Route::get('/', [TrashedUserController::class, 'index'])->name('index');
+            Route::post('/{id}/restore', [TrashedUserController::class, 'restore'])->name('restore');
+            Route::delete('/{id}/force-delete', [TrashedUserController::class, 'forceDelete'])->name('force-delete');
+            Route::post('/restore-all', [TrashedUserController::class, 'restoreAll'])->name('restore-all');
         });
         Route::prefix('admin')->name('admin.')->group(function () {
-            Route::get('monthly-charge',       [MonthlyChargeController::class, 'index'])->name('monthly-charge.index');
-            Route::post('monthly-charge/run',  [MonthlyChargeController::class, 'run'])->name('monthly-charge.run');
+            Route::get('monthly-charge', [MonthlyChargeController::class, 'index'])->name('monthly-charge.index');
+            Route::post('monthly-charge/run', [MonthlyChargeController::class, 'run'])->name('monthly-charge.run');
         });
         Route::get('payments-matrix', [PaymentMatrixController::class, 'matrix'])->name('payments.matrix');
+        Route::get('payments-matrix/export', [PaymentMatrixController::class, 'export'])->name('payments.matrix.export');
         Route::get('payments-matrix/student/{student}', [PaymentMatrixController::class, 'studentCard'])->name('payments.student-card');
     });
 });
