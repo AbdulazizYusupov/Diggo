@@ -81,7 +81,16 @@ class SettingsController extends Controller
             'role_name' => 'required|exists:roles,name',
         ]);
 
+        if ($request->role_name === 'admin' && Auth::id() != 1) {
+            return redirect()->back()->with('error', 'Admin rolini berish faqat Superadmin uchun mumkin.');
+        }
+
         $user = User::findOrFail($request->user_id);
+
+        if ($user->hasRole('admin') && Auth::id() != 1) {
+            return redirect()->back()->with('error', 'Siz boshqa adminning rollarini o\'zgartira olmaysiz!');
+        }
+
         $user->assignRole($request->role_name);
 
         return redirect()->route('settings.index')
@@ -119,7 +128,6 @@ class SettingsController extends Controller
             return redirect()->back()->with('error', 'Siz boshqa adminlarning ruxsatlarini o\'zgartira olmaysiz!');
         }
 
-
         $request->validate([
             'roles' => 'nullable|array',
             'roles.*' => 'exists:roles,name',
@@ -127,11 +135,11 @@ class SettingsController extends Controller
 
         $roles = $request->input('roles', []);
 
-        $user->syncRoles($roles);
-
-        if (in_array('admin', $roles) && Auth::id() != 1) {
+        if (in_array('admin', $roles, true) && Auth::id() != 1) {
             return redirect()->back()->with('error', 'Admin roli berish huquqi faqat Superadmindagina bor!');
         }
+
+        $user->syncRoles($roles);
 
         $message = empty($roles)
             ? "{$user->full_name} dan barcha rollar olib tashlandi!"
