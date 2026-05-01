@@ -11,8 +11,9 @@ class ImpersonateController extends Controller
 {
     public function index(Request $request)
     {
-        // Faqat haqiqiy admin (impersonation holatida emas)
-        $this->ensureRealAdmin();
+        // Faqat haqiqiy admin
+        // Impersonation holatida ham original admin foydalanuvchi roli asosida ko'rishi mumkin.
+        $this->ensureRealAdmin(allowWhileImpersonating: true);
 
         $search = $request->input('search');
         $role   = $request->input('role', 'all');
@@ -134,11 +135,22 @@ class ImpersonateController extends Controller
     /**
      * Faqat haqiqiy admin (impersonation holatida emas) kira olishi kerak
      */
-    private function ensureRealAdmin(): void
+    private function ensureRealAdmin(bool $allowWhileImpersonating = false): void
     {
-        // Impersonation holatida bo'lsa — ruxsat yo'q
+        // Impersonation holatida bo'lsa, original adminni aniqlaymiz.
         if (session('impersonate.active')) {
-            abort(403, 'Impersonation holatida boshqa userni impersonate qilib bo\'lmaydi!');
+            if (! $allowWhileImpersonating) {
+                abort(403, 'Impersonation holatida boshqa userni impersonate qilib bo\'lmaydi!');
+            }
+
+            $originalId = session('impersonate.original_id');
+            $originalUser = $originalId ? User::find($originalId) : null;
+
+            if (! $originalUser || ! $originalUser->hasRole('admin')) {
+                abort(403, 'Impersonation holatida bu sahifaga ruxsat yo\'q!');
+            }
+
+            return;
         }
 
         // Admin role tekshiruvi

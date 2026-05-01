@@ -17,7 +17,7 @@
                     {{ $group->name }}
                 </h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    {{ $group->cours->title ?? 'N/A' }}
+                    {{ $group->course->title ?? 'N/A' }}
                 </p>
             </div>
             <span

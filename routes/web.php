@@ -146,17 +146,17 @@ Route::middleware(['auth'])->group(function () {
             Route::get('attendance/{groupId}/export', [AttendanceController::class, 'export'])->name('export');
         });
 
-        Route::prefix('director')->name('director.')->group(function () {
+        Route::middleware(['permission', 'director'])->prefix('director')->name('director.')->group(function () {
             Route::get('/', [DirectorDashboardController::class, 'index'])->name('dashboard');
             Route::get('/school/{id}', [DirectorDashboardController::class, 'show'])->name('school.show');
 
             Route::get('/students', [DirectorStudentsController::class, 'index'])->name('students');
             Route::get('/students/{id}', [DirectorStudentsController::class, 'show'])->name('students.show');
-            // // Commissions
+            // Commissions
             Route::get('/commissions', [DirectorCommissionsController::class, 'index'])->name('commissions');
             Route::get('/commissions/history', [DirectorCommissionsController::class, 'history'])->name('commissions.history');
 
-            // // Groups
+            // Groups
             Route::get('/groups', [DirectorGroupsController::class, 'index'])->name('groups');
             Route::get('/groups/{id}', [DirectorGroupsController::class, 'show'])->name('groups.show');
 

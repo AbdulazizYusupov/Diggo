@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\DirectorDashboard;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\DirectorDashboard\DirectorBaseController;
 use App\Models\Attendance;
 use App\Models\CoinTransaction;
-use App\Models\Director;
 use App\Models\GroupStudent;
 use App\Models\Lesson;
 use App\Models\Payment;
@@ -14,19 +13,14 @@ use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
-class DirectorStudentsController extends Controller
+class DirectorStudentsController extends DirectorBaseController
 {
     public function index(Request $request): View
     {
-        /** @var \App\Models\User $user */
-        $user     = Auth::user();
-        $director = $user->director;
-
-        abort_unless($director, 403, 'Director profili topilmadi');
+        $director = $this->director();
 
         $validated = $request->validate([
             'search'   => ['nullable', 'string', 'max:100'],
@@ -70,6 +64,9 @@ class DirectorStudentsController extends Controller
             })
             ->when($groupId, function (Builder $q) use ($groupId): void {
                 $q->whereHas('groups', fn(Builder $g) => $g->where('groups.id', $groupId));
+            })
+            ->when($status !== 'all', function (Builder $q) use ($status): void {
+                $q->whereHas('user', fn(Builder $u) => $u->where('is_active', $status === 'active'));
             })
             ->latest('enrollment_date')
             ->paginate(18)
@@ -138,11 +135,7 @@ class DirectorStudentsController extends Controller
 
     public function show(int $id): View
     {
-        /** @var \App\Models\User $user */
-        $user     = Auth::user();
-        $director = $user->director;
-
-        abort_unless($director, 403, 'Director profili topilmadi');
+        $director = $this->director();
 
         $student = Student::query()
             ->with(['user', 'school'])

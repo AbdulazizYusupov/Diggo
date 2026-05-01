@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers\DirectorDashboard;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\DirectorDashboard\DirectorBaseController;
 use App\Models\Director;
 use App\Models\Payment;
 use App\Models\Student;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Rap2hpoutre\FastExcel\FastExcel;
 
-class DirectorReportsController extends Controller
+class DirectorReportsController extends DirectorBaseController
 {
     private const MONTHS = [
         1  => 'Yanvar',
@@ -56,9 +55,7 @@ class DirectorReportsController extends Controller
 
     public function index(Request $request): View
     {
-        /** @var \App\Models\User $user */
-        $user     = Auth::user();
-        $director = Director::where('user_id', $user->id)->firstOrFail();
+        $director = $this->director();
 
         $validated = $request->validate([
             'month' => ['nullable', 'integer', 'between:1,12'],
@@ -109,9 +106,7 @@ class DirectorReportsController extends Controller
      */
     public function export(Request $request)
     {
-        /** @var \App\Models\User $user */
-        $user     = Auth::user();
-        $director = Director::where('user_id', $user->id)->firstOrFail();
+        $director = $this->director();
 
         $validated = $request->validate([
             'export_year'  => ['nullable', 'integer', 'min:2020', 'max:' . (date('Y') + 1)],
@@ -194,7 +189,6 @@ class DirectorReportsController extends Controller
             'balance_before'   => $transaction->balance_before,
             'balance_after'    => $transaction->balance_after,
             'percentage'       => $transaction->percentage,
-            'base_amount'      => $transaction->base_amount,
             'course_title'     => $transaction->source?->group?->course?->title ?? '—',
             'group_name'       => $transaction->source?->group?->name           ?? '—',
             'approved_at'      => $transaction->approved_at?->format('Y-m-d H:i:s'),

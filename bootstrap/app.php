@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'permission' => CheckPermission::class,
+            'director'   => \App\Http\Middleware\EnsureDirector::class,
         ]);
         $middleware->appendToGroup('web', [
             HandleImpersonation::class,

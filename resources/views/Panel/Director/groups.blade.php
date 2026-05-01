@@ -157,7 +157,7 @@
                                 {{ $group->name }}
                             </h3>
                             <p class="text-sm text-indigo-600 dark:text-indigo-400 font-semibold">
-                                {{ $group->cours->title ?? 'N/A' }}
+                                {{ $group->course->title ?? 'N/A' }}
                             </p>
                         </div>
                         <span

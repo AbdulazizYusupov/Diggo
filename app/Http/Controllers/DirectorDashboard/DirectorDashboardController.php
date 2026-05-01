@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\DirectorDashboard;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\DirectorDashboard\DirectorBaseController;
 use App\Models\Attendance;
-use App\Models\Director;
 use App\Models\GroupStudent;
 use App\Models\Payment;
 use App\Models\School;
@@ -12,24 +11,13 @@ use App\Models\Student;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class DirectorDashboardController extends Controller
+class DirectorDashboardController extends DirectorBaseController
 {
     public function index()
     {
-        $user = Auth::user();
-
-        // Foydalanuvchi director role'iga ega ekanligini tekshirish
-        if (!$user->hasRole('director')) {
-            abort(403, 'Sizda bu sahifaga kirish huquqi yo\'q');
-        }
-
-        // Director ma'lumotlarini olish
-        $director = Director::with(['school', 'user'])
-            ->where('user_id', $user->id)
-            ->firstOrFail();
+        $director = $this->director()->load(['school', 'user']);
 
         // Asosiy statistika
         $stats = $this->getStatistics($director);
@@ -283,6 +271,7 @@ class DirectorDashboardController extends Controller
             ->pluck('count', 'status');
 
         $total = $stats->sum();
+        $presentOrLate = $stats->get('present', 0) + $stats->get('late', 0);
 
         return [
             'present' => $stats->get('present', 0),
@@ -290,15 +279,22 @@ class DirectorDashboardController extends Controller
             'late' => $stats->get('late', 0),
             'excused' => $stats->get('excused', 0),
             'total' => $total,
-            'present_percentage' => $total > 0 ? round(($stats->get('present', 0) / $total) * 100, 1) : 0,
+            'present_percentage' => $total > 0 ? round(($presentOrLate / $total) * 100, 1) : 0,
         ];
     }
 
     public function show(string $id)
     {
+        $director = $this->director();
+
+        if ((int)$director->school_id !== (int)$id) {
+            abort(403, 'Sizda bu maktabni ko\'rish huquqi yo\'q!');
+        }
+
         $school = School::with(['director.user'])
             ->withCount('students')
-            ->findOrFail($id);
+            ->where('id', $id)
+            ->firstOrFail();
 
         // Statistika ma'lumotlari
         $stats = [

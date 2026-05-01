@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +21,7 @@ class CheckPermission
             return redirect()->route('login.index')->with('error', 'Iltimos, tizimga kiring!');
         }
 
-        $user = Auth::user();
+        $user = $this->permissionUser();
         $routeName = $request->route()->getName();
 
         // Admin yoki Super Admin rolini tekshirish (kichik harfda)
@@ -57,6 +58,25 @@ class CheckPermission
         if (!$user->can($routeName)) {
             abort(403, 'Sizda bu sahifaga kirish huquqi yo\'q!');
         }
+
         return $next($request);
+    }
+
+    /**
+     * Use original admin permissions during impersonation.
+     */
+    private function permissionUser(): User
+    {
+        if (session('impersonate.active') && session('impersonate.original_id')) {
+            $originalUser = User::find(session('impersonate.original_id'));
+
+            if ($originalUser && $originalUser->roles->contains(function ($role) {
+                return in_array(strtolower($role->name), ['admin', 'super admin', 'superadmin']);
+            })) {
+                return $originalUser;
+            }
+        }
+
+        return Auth::user();
     }
 }

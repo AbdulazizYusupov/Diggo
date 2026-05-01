@@ -2,25 +2,19 @@
 
 namespace App\Http\Controllers\DirectorDashboard;
 
-use App\Http\Controllers\Controller;
-use App\Models\Director;
+use App\Http\Controllers\DirectorDashboard\DirectorBaseController;
 use App\Models\Group;
 use App\Models\GroupStudent;
 use App\Models\Payment;
 use App\Models\Student;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
-class DirectorGroupsController extends Controller
+class DirectorGroupsController extends DirectorBaseController
 {
     public function index(Request $request)
     {
-        $director = Auth::user()->director;
-
-        if (!$director) {
-            abort(403, 'Director profili topilmadi');
-        }
+        $director = $this->director();
 
         $search = $request->get('search');
         $status = $request->get('status', 'active');
@@ -79,8 +73,7 @@ class DirectorGroupsController extends Controller
 
     public function show($id)
     {
-        $user = Auth::user();
-        $director = Director::where('user_id', $user->id)->firstOrFail();
+        $director = $this->director();
 
         $group = Group::with(['course', 'teachers.user'])
             ->whereHas('students', function ($q) use ($director) {
