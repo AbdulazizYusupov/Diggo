@@ -19,7 +19,7 @@
         {{-- Filters --}}
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <form method="GET" action="{{ route('student.leaderboard') }}" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
                     {{-- Type --}}
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -61,6 +61,21 @@
                             @foreach($myGroups as $group)
                                 <option value="{{ $group['id'] }}" {{ $groupId == $group['id'] ? 'selected' : '' }}>
                                     {{ $group['name'] }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Course --}}
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            Kurs
+                        </label>
+                        <select name="course_id" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500">
+                            <option value="">Barcha Kurslar</option>
+                            @foreach($myCourses as $course)
+                                <option value="{{ $course['id'] }}" {{ $courseId == $course['id'] ? 'selected' : '' }}>
+                                    {{ $course['title'] }}
                                 </option>
                             @endforeach
                         </select>

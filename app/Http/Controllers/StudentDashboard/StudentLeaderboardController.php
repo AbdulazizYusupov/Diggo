@@ -24,33 +24,55 @@ class StudentLeaderboardController extends Controller
         }
 
 
-        $groupId = $request->get('group_id');
-        $type    = $request->get('type', 'coins');
-        $perPage = in_array((int) $request->get('per_page', 20), [20, 50, 100])
-            ? (int) $request->get('per_page', 20)
-            : 20;
+        $validated = $request->validate([
+            'group_id'   => 'nullable|integer|exists:groups,id',
+            'course_id'  => 'nullable|integer|exists:cours,id',
+            'type'       => 'nullable|in:coins,attendance,homework,activity',
+            'per_page'   => 'nullable|integer|in:20,50,100',
+            'from_date'  => 'nullable|date',
+            'to_date'    => 'nullable|date',
+        ]);
 
-        $fromDate = $request->get('from_date', Carbon::now()->startOfMonth()->format('Y-m-d'));
-        $toDate   = $request->get('to_date', Carbon::now()->format('Y-m-d'));
+        $groupId = $validated['group_id'] ?? null;
+        $courseId = $validated['course_id'] ?? null;
+        $type     = $validated['type'] ?? 'coins';
+        $perPage  = $validated['per_page'] ?? 20;
 
-        $startDate = Carbon::parse($fromDate)->startOfDay()->utc();;
-        $endDate   = Carbon::parse($toDate)->endOfDay()->utc();;
+        $fromDate = $validated['from_date'] ?? Carbon::now()->startOfMonth()->format('Y-m-d');
+        $toDate   = $validated['to_date'] ?? Carbon::now()->format('Y-m-d');
+
+        $startDate = Carbon::parse($fromDate)->startOfDay()->utc();
+        $endDate   = Carbon::parse($toDate)->endOfDay()->utc();
 //    
-        $myGroups = GroupStudent::with('group.course')
+        $groups = GroupStudent::with('group.course')
             ->where('student_id', $student->id)
             ->where('status', 'active')
-            ->get()
+            ->get();
+
+        $myGroups = $groups
             ->pluck('group')
+            ->filter()
             ->map(fn($group) => [
                 'id'   => $group->id,
-                'name' => $group->name . ' - ' . ($group->course->title ?? 'N/A'),  // typo tuzatildi: cours → course
+                'name' => $group->name . ' - ' . ($group->course->title ?? 'N/A'),
+                'course_id' => $group->cours_id,
             ]);
 
-        $allRankings = $this->getRankings($student, $type, $startDate, $endDate, $groupId);
+        $myCourses = $groups
+            ->pluck('group.course')
+            ->filter()
+            ->unique('id')
+            ->map(fn($course) => [
+                'id' => $course->id,
+                'title' => $course->title,
+            ])
+            ->values();
+
+        $allRankings = $this->getRankings($student, $type, $startDate, $endDate, $groupId, $courseId);
 
         $myPosition = $this->getMyPosition($student, $allRankings);
         $topThree   = $allRankings->take(3);
-        $myStats    = $this->getMyStats($student, $startDate, $endDate, $groupId);
+        $myStats    = $this->getMyStats($student, $startDate, $endDate, $groupId, $courseId);
 
         // Pagination (o'zgarishsiz)
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
@@ -69,7 +91,9 @@ class StudentLeaderboardController extends Controller
             'myStats',
             'topThree',
             'myGroups',
+            'myCourses',
             'groupId',
+            'courseId',
             'type',
             'fromDate',
             'toDate',
@@ -81,19 +105,23 @@ class StudentLeaderboardController extends Controller
     // N+1 FIX: barcha score hisoblash BITTA query ichida (withSum/withAvg/withCount)
     // Oldin: 100 student → 100 qo'shimcha query. Endi: 100 student → +1 query.
     // ─────────────────────────────────────────────────────────────────────────
-    private function getRankings($currentStudent, $type, $startDate, $endDate, $groupId = null)
+    private function getRankings($currentStudent, $type, $startDate, $endDate, $groupId = null, $courseId = null)
     {
         $myGroupIds = GroupStudent::where('student_id', $currentStudent->id)
             ->where('status', 'active')
             ->pluck('group_id');
 
         $query = Student::with('user')
-            ->whereHas('groups', function ($q) use ($myGroupIds, $groupId) {
+            ->whereHas('groups', function ($q) use ($myGroupIds, $groupId, $courseId) {
                 $q->whereIn('group_id', $myGroupIds)
                     ->where('status', 'active');
 
                 if ($groupId) {
                     $q->where('group_id', $groupId);
+                }
+
+                if ($courseId) {
+                    $q->whereHas('course', fn($course) => $course->where('id', $courseId));
                 }
             });
 
@@ -178,7 +206,7 @@ class StudentLeaderboardController extends Controller
         return $position ? $position->rank : null;
     }
 
-    private function getMyStats($student, $startDate, $endDate, $groupId = null)
+    private function getMyStats($student, $startDate, $endDate, $groupId = null, $courseId = null)
     {
         $coinsQuery = CoinTransaction::where('student_id', $student->id)
             ->where('coins', '>', 0)
@@ -188,9 +216,14 @@ class StudentLeaderboardController extends Controller
         $coinTransactions = $coinsQuery->count();
 
         $attendanceQuery = Attendance::where('student_id', $student->id)
-            ->whereHas('lesson', function ($q) use ($startDate, $endDate, $groupId) {
+            ->whereHas('lesson', function ($q) use ($startDate, $endDate, $groupId, $courseId) {
                 $q->whereBetween('lesson_date', [$startDate, $endDate]);
-                if ($groupId) $q->where('group_id', $groupId);
+                if ($groupId) {
+                    $q->where('group_id', $groupId);
+                }
+                if ($courseId) {
+                    $q->whereHas('group', fn($group) => $group->where('cours_id', $courseId));
+                }
             });
 
         $totalLessons   = $attendanceQuery->count();
@@ -201,9 +234,14 @@ class StudentLeaderboardController extends Controller
 
         $homeworkQuery = Attendance::where('student_id', $student->id)
             ->whereNotNull('homework_score')
-            ->whereHas('lesson', function ($q) use ($startDate, $endDate, $groupId) {
+            ->whereHas('lesson', function ($q) use ($startDate, $endDate, $groupId, $courseId) {
                 $q->whereBetween('lesson_date', [$startDate, $endDate]);
-                if ($groupId) $q->where('group_id', $groupId);
+                if ($groupId) {
+                    $q->where('group_id', $groupId);
+                }
+                if ($courseId) {
+                    $q->whereHas('group', fn($group) => $group->where('cours_id', $courseId));
+                }
             });
 
         $avgHomework   = round($homeworkQuery->avg('homework_score') ?? 0, 1);
@@ -211,9 +249,14 @@ class StudentLeaderboardController extends Controller
 
         $activityQuery = Attendance::where('student_id', $student->id)
             ->whereNotNull('activity_score')
-            ->whereHas('lesson', function ($q) use ($startDate, $endDate, $groupId) {
+            ->whereHas('lesson', function ($q) use ($startDate, $endDate, $groupId, $courseId) {
                 $q->whereBetween('lesson_date', [$startDate, $endDate]);
-                if ($groupId) $q->where('group_id', $groupId);
+                if ($groupId) {
+                    $q->where('group_id', $groupId);
+                }
+                if ($courseId) {
+                    $q->whereHas('group', fn($group) => $group->where('cours_id', $courseId));
+                }
             });
 
         $avgActivity   = round($activityQuery->avg('activity_score') ?? 0, 1);

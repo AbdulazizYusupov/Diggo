@@ -86,6 +86,11 @@ class Student extends Model
         return $this->hasMany(GroupStudent::class);
     }
 
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
 
     // Student.php ichida
     public function payments()

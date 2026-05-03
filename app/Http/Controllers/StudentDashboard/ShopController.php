@@ -6,12 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Models\ShopCategory;
 use App\Models\ShopOrder;
 use App\Models\ShopProduct;
+use App\Services\Shop\ShopOrderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class ShopController extends Controller
 {
+    private ShopOrderService $shopOrderService;
+
+    public function __construct(ShopOrderService $shopOrderService)
+    {
+        $this->shopOrderService = $shopOrderService;
+    }
     public function index(Request $request)
     {
         $student = Auth::user()->student;
@@ -90,51 +96,16 @@ class ShopController extends Controller
 
         $student = Auth::user()->student;
 
-        // Validatsiya
-        if (!$product->is_active || !$product->is_in_stock) {
-            return back()->with('error', 'Mahsulot mavjud emas.');
+        try {
+            $this->shopOrderService->placeOrder(
+                product: $product,
+                student: $student,
+                quantity: $request->input('quantity'),
+                studentNote: $request->input('student_note'),
+            );
+        } catch (\RuntimeException $exception) {
+            return back()->with('error', $exception->getMessage());
         }
-
-        if (!$product->canStudentBuy($student->id)) {
-            return back()->with('error', 'Siz bu mahsulotdan maksimal miqdorda xarid qilgansiz.');
-        }
-
-        $quantity   = $request->quantity;
-        $totalCoins = $product->coin_price * $quantity;
-
-        // Coin tekshirish
-        if ($student->coins < $totalCoins) {
-            return back()->with('error', 'Coiningiz yetarli emas.');
-        }
-
-        // Zaxira tekshirish
-        if (!$product->is_unlimited && $product->stock_quantity < $quantity) {
-            return back()->with('error', 'Zaxirada faqat ' . $product->stock_quantity . ' ta qolgan.');
-        }
-
-        DB::transaction(function () use ($product, $student, $request, $quantity, $totalCoins) {
-            // Coin yechish
-            $student->decrement('coins', $totalCoins);
-
-            // Zaxirani kamaytirish
-            if (!$product->is_unlimited) {
-                $product->decrement('stock_quantity', $quantity);
-            }
-
-            // Buyurtma yaratish
-            ShopOrder::create([
-                'student_id'     => $student->id,
-                'shop_product_id'=> $product->id,
-                'quantity'       => $quantity,
-                'coin_price'     => $product->coin_price,
-                'total_coins'    => $totalCoins,
-                'student_note'   => $request->student_note,
-                'status'         => 'pending',
-            ]);
-
-            // total_sold oshirish
-            $product->increment('total_sold', $quantity);
-        });
 
         return redirect()->route('student.shop.orders')
             ->with('success', '🎉 Buyurtmangiz qabul qilindi! Tez orada tasdiqlanadi.');
@@ -167,26 +138,11 @@ class ShopController extends Controller
     {
         $student = Auth::user()->student;
 
-        if ($order->student_id !== $student->id) {
-            abort(403);
+        try {
+            $this->shopOrderService->cancelOrder($order, $student);
+        } catch (\RuntimeException $exception) {
+            return back()->with('error', $exception->getMessage());
         }
-
-        if ($order->status !== 'pending') {
-            return back()->with('error', 'Faqat kutilmoqda holatidagi buyurtmani bekor qilish mumkin.');
-        }
-
-        DB::transaction(function () use ($order, $student) {
-            // Coinni qaytarish
-            $student->increment('coins', $order->total_coins);
-
-            // Zaxirani qaytarish
-            if ($order->product && !$order->product->is_unlimited) {
-                $order->product->increment('stock_quantity', $order->quantity);
-                $order->product->decrement('total_sold', $order->quantity);
-            }
-
-            $order->update(['status' => 'cancelled']);
-        });
 
         return back()->with('success', 'Buyurtma bekor qilindi va coinlaringiz qaytarildi.');
     }

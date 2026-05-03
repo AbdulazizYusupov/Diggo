@@ -10,6 +10,23 @@ class ShopOrder extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public const STATUS_PENDING   = 'pending';
+    public const STATUS_APPROVED  = 'approved';
+    public const STATUS_DELIVERED = 'delivered';
+    public const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_REJECTED  = 'rejected';
+
+    public static function statuses(): array
+    {
+        return [
+            self::STATUS_PENDING,
+            self::STATUS_APPROVED,
+            self::STATUS_DELIVERED,
+            self::STATUS_CANCELLED,
+            self::STATUS_REJECTED,
+        ];
+    }
+
     protected $fillable = [
         'order_number',
         'student_id',
@@ -40,9 +57,10 @@ class ShopOrder extends Model
     {
         parent::boot();
 
-        static::creating(function ($model) {
+        static::created(function ($model) {
             if (empty($model->order_number)) {
-                $model->order_number = static::generateOrderNumber();
+                $model->order_number = 'ORD-' . now()->format('Y') . '-' . str_pad($model->id, 5, '0', STR_PAD_LEFT);
+                $model->saveQuietly();
             }
         });
     }
@@ -73,10 +91,17 @@ class ShopOrder extends Model
 
     // ─── Scopes ──────────────────────────────────────────────────────────────
 
-    public function scopePending($query)   { return $query->where('status', 'pending'); }
-    public function scopeApproved($query)  { return $query->where('status', 'approved'); }
-    public function scopeDelivered($query) { return $query->where('status', 'delivered'); }
-    public function scopeCancelled($query) { return $query->where('status', 'cancelled'); }
+    public function scopePending($query)   { return $query->where('status', self::STATUS_PENDING); }
+    public function scopeApproved($query)  { return $query->where('status', self::STATUS_APPROVED); }
+    public function scopeDelivered($query) { return $query->where('status', self::STATUS_DELIVERED); }
+    public function scopeCancelled($query) { return $query->where('status', self::STATUS_CANCELLED); }
+    public function scopeRejected($query)  { return $query->where('status', self::STATUS_REJECTED); }
+
+    public function isPending(): bool   { return $this->status === self::STATUS_PENDING; }
+    public function isApproved(): bool  { return $this->status === self::STATUS_APPROVED; }
+    public function isDelivered(): bool { return $this->status === self::STATUS_DELIVERED; }
+    public function isCancelled(): bool { return $this->status === self::STATUS_CANCELLED; }
+    public function isRejected(): bool  { return $this->status === self::STATUS_REJECTED; }
 
     // ─── Accessors ───────────────────────────────────────────────────────────
 
