@@ -15,10 +15,7 @@ use Illuminate\View\View;
 
 class ActivityController extends Controller
 {
-    // ═══════════════════════════════════════════════════════════════
-    //  SHARED DISPLAY CONFIG — defined once, reused everywhere
-    // ═══════════════════════════════════════════════════════════════
-
+   
     private array $typeLabels = [
         'homework'    => 'Uyga vazifa',
         'exam'        => 'Imtihon',
