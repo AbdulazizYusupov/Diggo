@@ -85,8 +85,6 @@
                         class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 lg:p-8 space-y-5">
                         <h2 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Turkumlash
                         </h2>
-                        @php $typeLabels = ['homework'=>'Uyga vazifa','exam'=>'Imtihon','competition'=>'Musobaqa','project'=>'Loyiha','other'=>'Boshqa']; @endphp
-                        @php $statusLabels = ['draft'=>'Qoralama','active'=>'Faol','completed'=>'Tugallangan','cancelled'=>'Bekor']; @endphp
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div>
                                 <label for="type"

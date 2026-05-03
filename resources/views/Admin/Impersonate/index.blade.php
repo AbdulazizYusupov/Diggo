@@ -155,11 +155,12 @@
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                             @foreach ($users as $i => $user)
                                 @php
-                                    $userRole = $user->roles->first()?->name ?? 'user';
-                                    $isAdmin = $user->hasRole('admin');
-                                    $isDeleted = $user->trashed();
-                                    $canImpersonate = !$isAdmin && !$isDeleted && $user->is_active;
-                                    $roleBadge = roleInfo($userRole);
+                                    $viewData = $user->viewData;
+                                    $userRole = $viewData['userRole'];
+                                    $isAdmin = $viewData['isAdmin'];
+                                    $isDeleted = $viewData['isDeleted'];
+                                    $canImpersonate = $viewData['canImpersonate'];
+                                    $roleBadge = $viewData['roleBadge'];
                                 @endphp
                                 <tr
                                     class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors {{ $isDeleted ? 'opacity-50' : '' }}">
@@ -312,11 +313,12 @@
                 <div class="md:hidden divide-y divide-gray-100 dark:divide-gray-700">
                     @foreach ($users as $user)
                         @php
-                            $userRole = $user->roles->first()?->name ?? 'user';
-                            $isAdmin = $user->hasRole('admin');
-                            $isDeleted = $user->trashed();
-                            $canImpersonate = !$isAdmin && !$isDeleted && $user->is_active;
-                            $roleBadge = roleInfo($userRole);
+                            $viewData = $user->viewData;
+                            $userRole = $viewData['userRole'];
+                            $isAdmin = $viewData['isAdmin'];
+                            $isDeleted = $viewData['isDeleted'];
+                            $canImpersonate = $viewData['canImpersonate'];
+                            $roleBadge = $viewData['roleBadge'];
                         @endphp
                         <div class="p-4 {{ $isDeleted ? 'opacity-50' : '' }}">
                             <div class="flex items-start justify-between gap-3">
@@ -371,20 +373,78 @@
         </div>
 
     </div>
+
+    {{-- Impersonation Confirmation Modal --}}
+    <div id="impersonateModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full">
+                <div class="p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center">
+                            <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Impersonation</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Foydalanuvchi nomidan kirish</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 mb-6" id="modalMessage">
+                        Siz <strong id="userName"></strong> nomidan kirishni tasdiqlaysizmi?
+                    </p>
+                    <div class="flex gap-3">
+                        <button id="confirmImpersonate" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-colors">
+                            Tasdiqlash
+                        </button>
+                        <button id="cancelImpersonate" class="flex-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-semibold py-2.5 px-4 rounded-xl transition-colors">
+                            Bekor qilish
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')
     <script>
-        // Impersonation confirmation
+        // Impersonation confirmation modal
+        let currentForm = null;
+
         document.querySelectorAll('form[action*="start"]').forEach(form => {
             form.addEventListener('submit', function(e) {
-                const btn = this.querySelector('button[type="submit"]');
+                e.preventDefault();
+                currentForm = this;
+
                 const name = this.closest('tr, .flex')?.querySelector('p.font-bold')?.textContent?.trim() ??
                     'bu foydalanuvchi';
-                if (!confirm(`${name} nomidan kirishni tasdiqlaysizmi?`)) {
-                    e.preventDefault();
-                }
+
+                document.getElementById('userName').textContent = name;
+                document.getElementById('impersonateModal').classList.remove('hidden');
             });
+        });
+
+        document.getElementById('confirmImpersonate').addEventListener('click', function() {
+            if (currentForm) {
+                currentForm.submit();
+            }
+            document.getElementById('impersonateModal').classList.add('hidden');
+        });
+
+        document.getElementById('cancelImpersonate').addEventListener('click', function() {
+            document.getElementById('impersonateModal').classList.add('hidden');
+            currentForm = null;
+        });
+
+        // Close modal on background click
+        document.getElementById('impersonateModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+                currentForm = null;
+            }
         });
     </script>
 @endpush

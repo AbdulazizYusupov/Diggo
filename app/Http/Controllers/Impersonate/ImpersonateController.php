@@ -52,6 +52,23 @@ class ImpersonateController extends Controller
 
         $users = $query->orderBy('surname')->orderBy('name')->paginate(20)->withQueryString();
 
+        // Prepare user data for view
+        $users->getCollection()->transform(function ($user) {
+            $userRole = $user->roles->first()?->name ?? 'user';
+            $isAdmin = $user->hasRole('admin');
+            $isDeleted = $user->trashed();
+            $canImpersonate = !$isAdmin && !$isDeleted && $user->is_active;
+            $roleBadge = roleInfo($userRole);
+
+            return $user->setAttribute('viewData', [
+                'userRole' => $userRole,
+                'isAdmin' => $isAdmin,
+                'isDeleted' => $isDeleted,
+                'canImpersonate' => $canImpersonate,
+                'roleBadge' => $roleBadge,
+            ]);
+        });
+
         // Statistika (barcha userlar uchun)
         $stats = [
             'total'    => User::count(),

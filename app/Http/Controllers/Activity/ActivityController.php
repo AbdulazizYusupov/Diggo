@@ -194,9 +194,11 @@ class ActivityController extends Controller
     public function create(): View
     {
         return view('Activity.create', [
-            'groups'   => $this->getGroups(),
-            'types'    => $this->types,
-            'statuses' => $this->statuses,
+            'groups'       => $this->getGroups(),
+            'types'        => $this->types,
+            'statuses'     => $this->statuses,
+            'typeLabels'   => $this->typeLabels,
+            'statusLabels' => $this->statusLabels,
         ]);
     }
 
@@ -276,10 +278,12 @@ class ActivityController extends Controller
         $activity = Activity::findOrFail($id);
 
         return view('Activity.edit', [
-            'activity' => $activity,
-            'groups'   => $this->getGroups(),
-            'types'    => $this->types,
-            'statuses' => $this->statuses,
+            'activity'     => $activity,
+            'groups'       => $this->getGroups(),
+            'types'        => $this->types,
+            'statuses'     => $this->statuses,
+            'typeLabels'   => $this->typeLabels,
+            'statusLabels' => $this->statusLabels,
         ]);
     }
 

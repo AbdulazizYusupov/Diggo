@@ -101,7 +101,6 @@
                                 <label for="type" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                                     Turi <span class="text-rose-500">*</span>
                                 </label>
-                                @php $typeLabels = ['homework'=>'Uyga vazifa','exam'=>'Imtihon','competition'=>'Musobaqa','project'=>'Loyiha','other'=>'Boshqa']; @endphp
                                 <select name="type" id="type" required
                                     class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('type') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all cursor-pointer outline-none">
                                     @foreach ($types as $type)
@@ -121,7 +120,6 @@
                                 <label for="status" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                                     Holat <span class="text-rose-500">*</span>
                                 </label>
-                                @php $statusLabels = ['draft'=>'Qoralama','active'=>'Faol','completed'=>'Tugallangan','cancelled'=>'Bekor']; @endphp
                                 <select name="status" id="status" required
                                     class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('status') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all cursor-pointer outline-none">
                                     @foreach ($statuses as $status)
