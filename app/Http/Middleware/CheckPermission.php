@@ -63,20 +63,14 @@ class CheckPermission
     }
 
     /**
-     * Use original admin permissions during impersonation.
+     * Get the user for permission checks.
+     * During impersonation, always use the impersonated user's permissions.
+     * The admin must have exactly the same permissions and restrictions as the impersonated user.
      */
     private function permissionUser(): User
     {
-        if (session('impersonate.active') && session('impersonate.original_id')) {
-            $originalUser = User::find(session('impersonate.original_id'));
-
-            if ($originalUser && $originalUser->roles->contains(function ($role) {
-                return in_array(strtolower($role->name), ['admin', 'super admin', 'superadmin']);
-            })) {
-                return $originalUser;
-            }
-        }
-
+        // Always return the currently authenticated user
+        // This ensures that during impersonation, the impersonated user's permissions are enforced
         return Auth::user();
     }
 }

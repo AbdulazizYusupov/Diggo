@@ -10,6 +10,7 @@ class AttendancePolicy
 {
     /**
      * Determine whether the user can view attendance for a group.
+     * During impersonation, the user must have exactly the same permissions as the impersonated user.
      */
     public function view(User $user, Group $group): bool
     {
@@ -18,34 +19,19 @@ class AttendancePolicy
             return true;
         }
 
-        // If impersonating, check original user permissions
-        if (session('impersonate.active')) {
-            $originalUser = User::find(session('impersonate.original_id'));
-            if ($originalUser && $originalUser->hasRole('admin')) {
-                return true;
-            }
-        }
-
         // Teachers can view their own groups
         return $user->hasRole('teacher') && $group->teachers()->where('user_id', $user->id)->exists();
     }
 
     /**
      * Determine whether the user can update attendance for a group.
+     * During impersonation, the user must have exactly the same permissions as the impersonated user.
      */
     public function update(User $user, Group $group): bool
     {
         // Admin has full access to all groups without any checks
         if ($user->hasRole('admin')) {
             return true;
-        }
-
-        // If impersonating, check original user permissions
-        if (session('impersonate.active')) {
-            $originalUser = User::find(session('impersonate.original_id'));
-            if ($originalUser && $originalUser->hasRole('admin')) {
-                return true;
-            }
         }
 
         // Teachers can update their own groups
@@ -62,20 +48,13 @@ class AttendancePolicy
 
     /**
      * Determine whether the user can export attendance data.
+     * During impersonation, the user must have exactly the same permissions as the impersonated user.
      */
     public function export(User $user, Group $group): bool
     {
         // Admin has full access to all groups without any checks
         if ($user->hasRole('admin')) {
             return true;
-        }
-
-        // If impersonating, check original user permissions
-        if (session('impersonate.active')) {
-            $originalUser = User::find(session('impersonate.original_id'));
-            if ($originalUser && $originalUser->hasRole('admin')) {
-                return true;
-            }
         }
 
         // Teachers can export their own groups

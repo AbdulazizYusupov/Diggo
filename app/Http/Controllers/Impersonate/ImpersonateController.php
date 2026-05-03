@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Impersonate;
 
 use App\Http\Controllers\Controller;
+use App\Models\ImpersonationLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request as RequestFacade;
 
 class ImpersonateController extends Controller
 {
@@ -98,6 +100,14 @@ class ImpersonateController extends Controller
             return back()->with('error', 'Faol bo\'lmagan yoki o\'chirilgan foydalanuvchini impersonate qilib bo\'lmaydi!');
         }
 
+        // Impersonation logini yaratish
+        $log = ImpersonationLog::create([
+            'admin_user_id'       => Auth::id(),
+            'impersonated_user_id' => $user->id,
+            'ip_address'          => RequestFacade::ip(),
+            'user_agent'          => RequestFacade::userAgent(),
+        ]);
+
         // Joriy admin ID ni saqlab qolish
         session([
             'impersonate.original_id'   => Auth::id(),
@@ -105,6 +115,7 @@ class ImpersonateController extends Controller
             'impersonate.active'        => true,
             'impersonate.target_name'   => $user->full_name ?? $user->name,
             'impersonate.target_role'   => $user->roles->first()?->name ?? 'user',
+            'impersonate.log_id'        => $log->id,
         ]);
 
         // User sifatida login qilish
@@ -128,6 +139,14 @@ class ImpersonateController extends Controller
 
         $originalId   = session('impersonate.original_id');
         $originalName = session('impersonate.original_name');
+        $logId        = session('impersonate.log_id');
+
+        // Impersonation logini yakunlash
+        if ($logId) {
+            ImpersonationLog::findOrFail($logId)->update([
+                'ended_at' => now(),
+            ]);
+        }
 
         // Session tozalash
         session()->forget([
@@ -136,6 +155,7 @@ class ImpersonateController extends Controller
             'impersonate.active',
             'impersonate.target_name',
             'impersonate.target_role',
+            'impersonate.log_id',
         ]);
 
         // Adminga qaytish
