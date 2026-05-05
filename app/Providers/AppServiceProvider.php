@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Activity;
 use App\Models\Group;
+use App\Policies\ActivityPolicy;
 use App\Policies\AttendancePolicy;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
@@ -27,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // URL::forceScheme('https');
+        Gate::policy(Activity::class, ActivityPolicy::class);
         Paginator::useTailwind();
         Gate::policy(Group::class, AttendancePolicy::class);
         View::composer('Layout.header', function ($view) {

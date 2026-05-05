@@ -18,7 +18,8 @@
             @else
                 {{-- Decorative gradient fallback --}}
                 <div
-                    class="w-full h-full bg-gradient-to-br {{ $tg[0] }} {{ $tg[1] }} relative overflow-hidden">
+                    class="w-full h-full bg-gradient-to-br {{ $type->gradients()[0] }} {{ $type->gradients()[1] }} relative overflow-hidden">
+                    >
                     {{-- Noise texture overlay --}}
                     <div class="absolute inset-0 opacity-20"
                         style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><filter id=%22n%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/><feColorMatrix type=%22saturate%22 values=%220%22/></filter><rect width=%22200%22 height=%22200%22 filter=%22url(%23n)%22 opacity=%221%22/></svg>');">
@@ -30,7 +31,7 @@
                         <svg class="w-32 h-32 lg:w-48 lg:h-48 text-white/20" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-                                d="{{ $typeIcons[$activity->type] ?? $typeIcons['other'] }}" />
+                                d="{{ $activity->type->icon() }}" />
                         </svg>
                     </div>
                     {{-- Dark overlay for text --}}
@@ -77,15 +78,15 @@
                         class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl bg-white/15 backdrop-blur-sm text-white border border-white/20 shadow-sm">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="{{ $typeIcons[$activity->type] ?? $typeIcons['other'] }}" />
+                                d="{{ $activity->type->icon() }}" />
                         </svg>
-                        {{ $typeLabels[$activity->type] ?? ucfirst($activity->type) }}
+                        {{ $activity->type->label() }}
                     </span>
                     {{-- Status badge --}}
                     <span
                         class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl bg-white/15 backdrop-blur-sm text-white border border-white/20 shadow-sm">
-                        <span class="w-1.5 h-1.5 rounded-full {{ $sc['dot'] }} inline-block"></span>
-                        {{ $sc['label'] }}
+                        <span class="w-1.5 h-1.5 rounded-full {{ $activity->status->dotClass() }} inline-block"></span>
+                        {{ $activity->status->label() }}
                     </span>
                     @if ($activity->is_required)
                         <span
@@ -472,17 +473,17 @@
                             class="flex items-center justify-between py-2.5 border-b border-gray-50 dark:border-slate-800">
                             <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">Turi</span>
                             <span
-                                class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-lg {{ $tg[3] }} {{ $tg[4] }} border {{ $tg[5] }}">
-                                {{ $typeLabels[$activity->type] ?? ucfirst($activity->type) }}
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-lg {{ $activity->type->gradients()[3] }} {{ $activity->type->gradients()[4] }} border {{ $activity->type->gradients()[5] }}">
+                                {{ $activity->type->label() }}
                             </span>
                         </div>
                         <div
                             class="flex items-center justify-between py-2.5 border-b border-gray-50 dark:border-slate-800">
                             <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">Holat</span>
                             <span
-                                class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-lg border {{ $sc['class'] }}">
-                                <span class="w-1.5 h-1.5 rounded-full {{ $sc['dot'] }}"></span>
-                                {{ $sc['label'] }}
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-lg border {{ $activity->status->badgeClass() }}">
+                                <span class="w-1.5 h-1.5 rounded-full {{ $activity->status->dotClass() }}"></span>
+                                {{ $activity->status->label() }}
                             </span>
                         </div>
                         <div

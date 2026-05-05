@@ -4,22 +4,22 @@ namespace App\Http\Controllers\Course;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cours;
-use App\Models\School;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
     private array $levelLabels = [
-        'beginner'     => "Boshlang'ich",
+        'beginner' => "Boshlang'ich",
         'intermediate' => "O'rta",
-        'advanced'     => 'Yuqori',
+        'advanced' => 'Yuqori',
     ];
 
     private array $levelColors = [
-        'beginner'     => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+        'beginner' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
         'intermediate' => 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-        'advanced'     => 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+        'advanced' => 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
     ];
+
     /**
      * Display a listing of the resource.
      */
@@ -85,8 +85,9 @@ class CourseController extends Controller
         $activeCourses = Cours::where('is_active', true)->count();
         $totalRevenue = Cours::where('is_active', true)->sum('price');
         $avgPrice = Cours::where('is_active', true)->avg('price');
-        $levelLabels   = $this->levelLabels;
-        $levelColors   = $this->levelColors;
+        $levelLabels = $this->levelLabels;
+        $levelColors = $this->levelColors;
+
         return view('Course.index', compact(
             'courses',
             'totalCourses',
@@ -163,6 +164,7 @@ class CourseController extends Controller
     public function edit(string $id)
     {
         $course = Cours::findOrFail($id);
+
         return view('Course.edit', compact('course'));
     }
 

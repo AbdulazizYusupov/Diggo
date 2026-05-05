@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\ActivityResult;
 
+use App\Enums\ActivityType;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\ActivityResult;
@@ -249,7 +250,7 @@ class ActivityResultController extends Controller
                 }
                 $student->user->notify(new ActivityResultNotification(
                     activityName: $activity->name,
-                    activityType: $activity->type,
+                    activityType: $activity->type->value,
                     earnedCoins: $validated['earned_coins'],
                     maxCoins: $activity->max_coins,
                     rank: $rankSnapshot[$studentId] ?? null,
@@ -285,18 +286,15 @@ class ActivityResultController extends Controller
      * coin_transactions.type: participation | homework | exam |
      *   competition | active_involvement | penalty | bonus | purchase | refund | other
      */
-    private function resolveTransactionType(string $activityType): string
+    private function resolveTransactionType(ActivityType $activityType): string
     {
         return match ($activityType) {
-            'homework'           => 'homework',
-            'exam', 'test'       => 'exam',
-            'competition'        => 'competition',
-            'active_involvement',
-            'activity'           => 'active_involvement',
-            'participation'      => 'participation',
-            'bonus'              => 'bonus',
-            'penalty'            => 'penalty',
-            default              => 'other',
+            ActivityType::Homework    => 'homework',
+            ActivityType::Exam        => 'exam',
+            ActivityType::Competition => 'competition',
+            ActivityType::Project     => 'other',
+            ActivityType::Other       => 'other',
+            default                   => 'other',
         };
     }
 
@@ -344,6 +342,7 @@ class ActivityResultController extends Controller
 
     public function update(Request $request, string $id)
     {
+
         $result = ActivityResult::findOrFail($id);
 
         $validated = $request->validate([
@@ -407,6 +406,8 @@ class ActivityResultController extends Controller
 
         DB::beginTransaction();
         try {
+            $student = Student::findOrFail($result->student_id);
+            $student->decrement('coins', $result->earned_coins);
             $result->delete();
 
             DB::commit();

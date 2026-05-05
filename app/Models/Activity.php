@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ActivityStatus;
+use App\Enums\ActivityType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -36,6 +38,8 @@ class Activity extends Model
      * Atributlarni tegishli turlarga o'girish.
      */
     protected $casts = [
+        'type'   => ActivityType::class,
+        'status' => ActivityStatus::class,
         'date' => 'date',
         'due_time' => 'datetime:H:i', // Vaqt formati uchun
         'max_coins' => 'integer',

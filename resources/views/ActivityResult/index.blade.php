@@ -39,9 +39,7 @@
             </div>
 
             {{-- Create Button --}}
-            <button
-                type="button"
-                data-modal-target="createModal"
+            <button type="button" data-modal-target="createModal"
                 class="inline-flex items-center justify-center gap-2 px-6 py-3
                bg-emerald-500 hover:bg-emerald-600 text-white
                dark:bg-emerald-600 dark:hover:bg-emerald-700
@@ -163,12 +161,8 @@
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
-                        <input
-                            type="text"
-                            name="search"
-                            value="{{ request('search') }}"
-                            placeholder="Talaba ismi..."
-                            maxlength="100"
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="Talaba ismi..." maxlength="100"
                             class="w-full pl-10 pr-10 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white placeholder-gray-400 transition-all outline-none text-sm">
 
                         @if (request('search'))
@@ -189,8 +183,7 @@
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white text-sm outline-none transition-all cursor-pointer">
                             <option value="">Faoliyat (Barchasi)</option>
                             @foreach ($activities as $activity)
-                                <option value="{{ $activity->id }}"
-                                    @selected(request('activity_id') == $activity->id)>
+                                <option value="{{ $activity->id }}" @selected(request('activity_id') == $activity->id)>
                                     {{ $activity->name }}
                                 </option>
                             @endforeach
@@ -203,8 +196,7 @@
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white text-sm outline-none transition-all cursor-pointer">
                             <option value="">Talaba (Barchasi)</option>
                             @foreach ($students as $student)
-                                <option value="{{ $student->id }}"
-                                    @selected(request('student_id') == $student->id)>
+                                <option value="{{ $student->id }}" @selected(request('student_id') == $student->id)>
                                     {{ $student->user?->name ?? 'N/A' }}
                                 </option>
                             @endforeach
@@ -213,34 +205,22 @@
 
                     {{-- 4. Rank Filter --}}
                     <div class="lg:col-span-3">
-                        <input
-                            type="number"
-                            name="rank"
-                            value="{{ request('rank') }}"
-                            placeholder="Rang..."
+                        <input type="number" name="rank" value="{{ request('rank') }}" placeholder="Rang..."
                             min="1"
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white text-sm outline-none transition-all">
                     </div>
 
                     {{-- 5. Coins From --}}
                     <div class="lg:col-span-3">
-                        <input
-                            type="number"
-                            name="coins_from"
-                            value="{{ request('coins_from') }}"
-                            placeholder="Coindan..."
-                            min="0"
+                        <input type="number" name="coins_from" value="{{ request('coins_from') }}"
+                            placeholder="Coindan..." min="0"
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white text-sm outline-none transition-all">
                     </div>
 
                     {{-- 6. Coins To --}}
                     <div class="lg:col-span-3">
-                        <input
-                            type="number"
-                            name="coins_to"
-                            value="{{ request('coins_to') }}"
-                            placeholder="Coingacha..."
-                            min="0"
+                        <input type="number" name="coins_to" value="{{ request('coins_to') }}"
+                            placeholder="Coingacha..." min="0"
                             class="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white text-sm outline-none transition-all">
                     </div>
 
@@ -304,20 +284,20 @@
                     <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         @forelse($results as $result)
                             @php
-                                $maxCoins   = $result->activity->max_coins ?? 0;
-                                $earned     = $result->earned_coins ?? 0;
+                                $maxCoins = $result->activity->max_coins ?? 0;
+                                $earned = $result->earned_coins ?? 0;
                                 $percentage = $maxCoins > 0 ? ($earned / $maxCoins) * 100 : 0;
-                                $badgeColor = match(true) {
+                                $badgeColor = match (true) {
                                     $percentage >= 90 => 'emerald',
                                     $percentage >= 70 => 'amber',
-                                    default           => 'rose',
+                                    default => 'rose',
                                 };
-                                $studentUser    = $result->student?->user;
-                                $studentName    = $studentUser?->full_name ?? "Noma'lum";
-                                $studentIsActive= (bool) ($studentUser?->is_active ?? false);
+                                $studentUser = $result->student?->user;
+                                $studentName = $studentUser?->full_name ?? "Noma'lum";
+                                $studentIsActive = (bool) ($studentUser?->is_active ?? false);
                                 $avatarInitials = strtoupper(
                                     substr($studentUser?->name ?? 'N', 0, 1) .
-                                    substr($studentUser?->surname ?? 'N', 0, 1)
+                                        substr($studentUser?->surname ?? 'N', 0, 1),
                                 );
                             @endphp
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
@@ -366,7 +346,7 @@
                                         {{ $result->activity?->name }}
                                     </div>
                                     <div class="text-xs text-gray-500 dark:text-gray-400">
-                                        {{ ucfirst($result->activity?->type ?? '') }}
+                                        {{ $result->activity?->type?->label() ?? '' }}
                                     </div>
                                 </td>
 
@@ -404,8 +384,7 @@
                                             @if ($result->rank == 1) bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400
                                             @elseif ($result->rank == 2) bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400
                                             @elseif ($result->rank == 3) bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400
-                                            @else bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400
-                                            @endif">
+                                            @else bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 @endif">
                                             @if ($result->rank <= 3)
                                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                     <path
@@ -461,9 +440,7 @@
                                         </a>
 
                                         {{-- Delete Trigger --}}
-                                        <button
-                                            type="button"
-                                            data-modal-target="delete-modal-{{ $result->id }}"
+                                        <button type="button" data-modal-target="delete-modal-{{ $result->id }}"
                                             class="p-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-all duration-200 group/btn"
                                             title="O'chirish">
                                             <svg class="w-5 h-5 transition-transform group-hover/btn:scale-110"
@@ -474,8 +451,7 @@
                                         </button>
 
                                         {{-- Delete Modal --}}
-                                        <div
-                                            id="delete-modal-{{ $result->id }}"
+                                        <div id="delete-modal-{{ $result->id }}"
                                             class="modal-overlay hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all">
                                             <div
                                                 class="relative w-full max-w-sm p-8 bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-white/5 transform transition-all">
@@ -490,8 +466,7 @@
                                                         </svg>
                                                     </div>
 
-                                                    <h3
-                                                        class="text-2xl font-black text-slate-900 dark:text-white mb-2">
+                                                    <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-2">
                                                         O'chirishni tasdiqlang</h3>
                                                     <p
                                                         class="text-sm text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
@@ -504,16 +479,13 @@
                                                     </p>
 
                                                     <div class="grid grid-cols-2 gap-3">
-                                                        <button
-                                                            type="button"
+                                                        <button type="button"
                                                             data-modal-close="delete-modal-{{ $result->id }}"
                                                             class="px-5 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-2xl transition-all active:scale-95">
                                                             Bekor qilish
                                                         </button>
-                                                        <form
-                                                            action="{{ route('activityresults.destroy', $result->id) }}"
-                                                            method="POST"
-                                                            class="m-0">
+                                                        <form action="{{ route('activityresults.destroy', $result->id) }}"
+                                                            method="POST" class="m-0">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit"
@@ -560,8 +532,7 @@
     </div>
 
     <!-- Create Modal -->
-    <div
-        id="createModal"
+    <div id="createModal"
         class="modal-overlay hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
         <div
             class="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto p-8 bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-white/5">
@@ -571,19 +542,15 @@
                         class="p-3 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl">
                         <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 4v16m8-8H4" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
                     </div>
                     <h2 class="text-2xl font-black text-slate-900 dark:text-white">Yangi natija qo'shish</h2>
                 </div>
-                <button
-                    type="button"
-                    data-modal-close="createModal"
+                <button type="button" data-modal-close="createModal"
                     class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">
                     <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -593,21 +560,17 @@
 
                 <!-- Activity Selection -->
                 <div>
-                    <label for="activity_id_input"
-                        class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                    <label for="activity_id_input" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                         Faoliyat <span class="text-rose-500">*</span>
                     </label>
                     <div class="relative">
-                        <select
-                            name="activity_id"
-                            id="activity_id_input"
-                            required
+                        <select name="activity_id" id="activity_id_input" required
                             class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-700 dark:text-gray-200 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all appearance-none">
                             <option value="" disabled selected>Faoliyatni tanlang</option>
                             @foreach ($activities as $activity)
                                 <option value="{{ $activity->id }}">
                                     {{ $activity->name }} |
-                                    Turi: {{ ucfirst($activity->type) }} |
+                                    Turi: {{ $activity->type->label() }} |
                                     Sana: {{ $activity->date?->format('d.m.Y') ?? "Sana yo'q" }} |
                                     Max: {{ $activity->max_coins }}
                                     @if ($activity->group)
@@ -627,18 +590,18 @@
 
                 <!-- Group Filter -->
                 <div>
-                    <label for="groupFilter"
-                        class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                    <label for="groupFilter" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                         Guruh bo'yicha filtrlash
                     </label>
-                    <select
-                        id="groupFilter"
+                    <select id="groupFilter"
                         class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white outline-none transition-all cursor-pointer">
                         <option value="">Barcha guruhlar</option>
                         @foreach ($groups as $group)
                             <option value="{{ $group->id }}">
                                 {{ $group->name }}
-                                @if ($group->course)— {{ $group->course->name }}@endif
+                                @if ($group->course)
+                                    — {{ $group->course->name }}
+                                @endif
                                 ({{ $group->active_students_count ?? 0 }} talaba)
                                 [{{ $group->start_time }}]
                                 @if ($group->days_of_week)
@@ -667,10 +630,7 @@
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </div>
-                            <input
-                                type="text"
-                                id="studentSearchInput"
-                                placeholder="Talabalarni qidirish..."
+                            <input type="text" id="studentSearchInput" placeholder="Talabalarni qidirish..."
                                 autocomplete="off"
                                 class="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white placeholder-gray-400 transition-all outline-none text-sm">
                         </div>
@@ -702,10 +662,7 @@
                                 data-student-name="{{ strtolower(($student->user?->surname ?? '') . ' ' . ($student->user?->name ?? '') . ' ' . ($student->user?->middle_name ?? '')) }}"
                                 data-student-groups="{{ json_encode($student->groups->pluck('id')) }}">
 
-                                <input
-                                    type="checkbox"
-                                    name="student_ids[]"
-                                    value="{{ $student->id }}"
+                                <input type="checkbox" name="student_ids[]" value="{{ $student->id }}"
                                     class="student-checkbox w-5 h-5 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
 
                                 <div class="flex-1 min-w-0">
@@ -748,12 +705,7 @@
                             class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                             Olgan coinlar (hammasi uchun bir xil) <span class="text-rose-500">*</span>
                         </label>
-                        <input
-                            type="number"
-                            name="earned_coins"
-                            id="earned_coins_input"
-                            required
-                            min="0"
+                        <input type="number" name="earned_coins" id="earned_coins_input" required min="0"
                             class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white placeholder-gray-400 transition-all outline-none"
                             placeholder="Masalan: 85">
                         <p id="maxCoinsHint" class="mt-1 text-xs text-gray-500 dark:text-gray-400 hidden">
@@ -762,14 +714,11 @@
                     </div>
 
                     <div>
-                        <label for="start_rank"
-                            class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                        <label for="start_rank" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                             Natija darajasi (Rank)
                         </label>
                         <div class="relative">
-                            <select
-                                name="start_rank"
-                                id="start_rank"
+                            <select name="start_rank" id="start_rank"
                                 class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all appearance-none cursor-pointer">
                                 <option value="">O'rin berilmasin (Oddiy ishtirokchi)</option>
                                 <option value="1">🥇 1-o'rin (G'olib)</option>
@@ -786,8 +735,8 @@
                         </div>
                         <div
                             class="mt-2 flex items-start gap-2 p-2 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-100 dark:border-amber-800">
-                            <svg class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -804,11 +753,7 @@
                     <label for="note" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                         Izoh (hammasi uchun)
                     </label>
-                    <textarea
-                        name="note"
-                        id="note"
-                        rows="2"
-                        maxlength="500"
+                    <textarea name="note" id="note" rows="2" maxlength="500"
                         class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-gray-900 dark:text-white placeholder-gray-400 transition-all outline-none resize-none"
                         placeholder="Qo'shimcha izoh..."></textarea>
                 </div>
@@ -837,9 +782,7 @@
 
                 <!-- Actions -->
                 <div class="flex gap-3 pt-4">
-                    <button
-                        type="button"
-                        data-modal-close="createModal"
+                    <button type="button" data-modal-close="createModal"
                         class="flex-1 px-6 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-2xl transition-all active:scale-95">
                         Bekor qilish
                     </button>
@@ -957,12 +900,16 @@
                 function selectAllStudents() {
                     document.querySelectorAll(
                         '.student-checkbox-item:not([style*="display: none"]) .student-checkbox'
-                    ).forEach((cb) => { cb.checked = true; });
+                    ).forEach((cb) => {
+                        cb.checked = true;
+                    });
                     updateSelectedCount();
                 }
 
                 function deselectAllStudents() {
-                    document.querySelectorAll('.student-checkbox').forEach((cb) => { cb.checked = false; });
+                    document.querySelectorAll('.student-checkbox').forEach((cb) => {
+                        cb.checked = false;
+                    });
                     updateSelectedCount();
                 }
 
@@ -997,7 +944,7 @@
                     .forEach((cb) => cb.addEventListener('change', updateSelectedCount));
 
                 // ─── Form validation ──────────────────────────────────────────────────────────
-                document.getElementById('bulkResultForm')?.addEventListener('submit', function (e) {
+                document.getElementById('bulkResultForm')?.addEventListener('submit', function(e) {
                     const selected = document.querySelectorAll('.student-checkbox:checked');
                     if (selected.length === 0) {
                         e.preventDefault();
@@ -1005,8 +952,8 @@
                         return;
                     }
 
-                    const maxCoins  = parseInt(document.getElementById('maxCoinsValue')?.textContent ?? '0', 10);
-                    const earned    = parseInt(document.getElementById('earned_coins_input')?.value ?? '0', 10);
+                    const maxCoins = parseInt(document.getElementById('maxCoinsValue')?.textContent ?? '0', 10);
+                    const earned = parseInt(document.getElementById('earned_coins_input')?.value ?? '0', 10);
                     if (maxCoins > 0 && earned > maxCoins) {
                         e.preventDefault();
                         alert(`Kiritilgan coinlar maksimal qiymatdan oshib ketdi! Maksimal: ${maxCoins}`);

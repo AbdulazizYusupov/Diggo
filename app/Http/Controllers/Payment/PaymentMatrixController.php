@@ -15,10 +15,6 @@ class PaymentMatrixController extends Controller
 {
     private const PER_PAGE = 50;
  
-    /**
-     * Oy nomlari — class darajasida bir marta aniqlanadi,
-     * matrix() va studentCard() ikkalasi ham ishlatadi.
-     */
     private const MONTHS = [
         1  => 'Yanvar',  2  => 'Fevral',  3  => 'Mart',
         4  => 'Aprel',   5  => 'May',      6  => 'Iyun',
@@ -26,20 +22,15 @@ class PaymentMatrixController extends Controller
         10 => 'Oktabr',  11 => 'Noyabr',  12 => 'Dekabr',
     ];
  
-    // =========================================================
-    //  MATRIX — Barcha o'quvchilar bo'yicha oylik to'lov setkasi
-    // =========================================================
  
     public function matrix(Request $request)
     {
         $year    = (int) $request->get('year', Carbon::now()->year);
         $groupId = $request->get('group_id');
-        $perPage = (int) $request->get('per_page', (int) env('MATRIX_PER_PAGE', self::PER_PAGE));
+        $perPage = (int) $request->get('per_page',self::PER_PAGE);
         $now     = CarbonImmutable::now();
  
-        // ── 1. STUDENT QUERY ─────────────────────────────────
-        // Faqat kerakli ustunlarni tanlaymiz — "SELECT *" ni oldini olamiz.
-        // payments eager-load ham minimal ustunlar bilan.
+      
         $studentQuery = Student::query()
             ->select([
                 'students.id',
@@ -48,10 +39,8 @@ class PaymentMatrixController extends Controller
                 'students.parent_phone',
             ])
             ->with([
-                // user: faqat identifikatsiya uchun kerakli ustunlar
                 'user:id,name,surname,middle_name,phone,is_active',
  
-                // payments: faqat shu yil, cancelled emas, minimal ustunlar
                 'payments' => function ($q) use ($year) {
                     $q->select([
                             'id',

@@ -94,9 +94,10 @@
                                     class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('type') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all cursor-pointer outline-none">
                                     <option value="">Tanlang</option>
                                     @foreach ($types as $type)
-                                        <option value="{{ $type }}" {{ old('type') == $type ? 'selected' : '' }}>
-                                            {{ $typeLabels[$type] ?? ucfirst($type) }}</option>
-                                    @endforeach
+    <option value="{{ $type->value }}" {{ old('type') == $type->value ? 'selected' : '' }}>
+        {{ $type->label() }}
+    </option>
+@endforeach
                                 </select>
                                 @error('type')
                                     <p class="mt-1.5 text-sm text-rose-500">{{ $message }}</p>
@@ -108,11 +109,11 @@
                                         class="text-rose-500">*</span></label>
                                 <select name="status" id="status" required
                                     class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('status') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all cursor-pointer outline-none">
-                                    @foreach ($statuses as $status)
-                                        <option value="{{ $status }}"
-                                            {{ old('status', 'active') == $status ? 'selected' : '' }}>
-                                            {{ $statusLabels[$status] ?? ucfirst($status) }}</option>
-                                    @endforeach
+                                   @foreach ($statuses as $status)
+    <option value="{{ $status->value }}" {{ old('status', 'active') == $status->value ? 'selected' : '' }}>
+        {{ $status->label() }}
+    </option>
+@endforeach
                                 </select>
                                 @error('status')
                                     <p class="mt-1.5 text-sm text-rose-500">{{ $message }}</p>

@@ -104,11 +104,12 @@
                                 <select name="type" id="type" required
                                     class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('type') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all cursor-pointer outline-none">
                                     @foreach ($types as $type)
-                                        <option value="{{ $type }}"
-                                            {{ old('type', $activity->type) == $type ? 'selected' : '' }}>
-                                            {{ $typeLabels[$type] ?? ucfirst($type) }}
+                                        <option value="{{ $type->value }}"
+                                            {{ old('type', $activity->type->value) == $type->value ? 'selected' : '' }}>
+                                            {{ $type->label() }}
                                         </option>
                                     @endforeach
+
                                 </select>
                                 @error('type')
                                     <p class="mt-1.5 text-sm text-rose-500">{{ $message }}</p>
@@ -123,9 +124,9 @@
                                 <select name="status" id="status" required
                                     class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border @error('status') border-rose-500 @else border-gray-200 dark:border-gray-700 @enderror rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all cursor-pointer outline-none">
                                     @foreach ($statuses as $status)
-                                        <option value="{{ $status }}"
-                                            {{ old('status', $activity->status) == $status ? 'selected' : '' }}>
-                                            {{ $statusLabels[$status] ?? ucfirst($status) }}
+                                        <option value="{{ $status->value }}"
+                                            {{ old('status', $activity->status->value) == $status->value ? 'selected' : '' }}>
+                                            {{ $status->label() }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -171,7 +172,9 @@
                                             Tanlovni bekor qilish
                                         </div>
                                         @foreach ($groups as $group)
-                                            <div onclick="selectActionGroup('{{ $group->id }}', '{{ $group->name }}{{ $group->course ? ' - ' . $group->course->title : '' }}')"
+                                            <div data-group-id="{{ $group->id }}"
+                                                data-group-label="{{ $group->name }}{{ $group->course ? ' - ' . $group->course->title : '' }}"
+                                                onclick="selectActionGroup(this.dataset.groupId, this.dataset.groupLabel)"
                                                 class="action-group-item px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-amber-50 dark:hover:bg-amber-500/10 cursor-pointer flex flex-col border-b border-gray-50 dark:border-gray-700/50 last:border-none">
                                                 <span class="font-bold action-item-name">{{ $group->name }}</span>
                                                 @if ($group->course)
@@ -263,8 +266,8 @@
                     </div>
 
                     <!-- ══════════════════════════════════════════════════
-                                 FAYLLAR — Image + Document with live preview
-                            ═══════════════════════════════════════════════════════ -->
+                                         FAYLLAR — Image + Document with live preview
+                                    ═══════════════════════════════════════════════════════ -->
                     <div
                         class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 lg:p-8 space-y-6">
                         <h2 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Fayllar
