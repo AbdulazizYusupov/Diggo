@@ -19,7 +19,6 @@
                 {{-- Decorative gradient fallback --}}
                 <div
                     class="w-full h-full bg-gradient-to-br {{ $type->gradients()[0] }} {{ $type->gradients()[1] }} relative overflow-hidden">
-                    >
                     {{-- Noise texture overlay --}}
                     <div class="absolute inset-0 opacity-20"
                         style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><filter id=%22n%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/><feColorMatrix type=%22saturate%22 values=%220%22/></filter><rect width=%22200%22 height=%22200%22 filter=%22url(%23n)%22 opacity=%221%22/></svg>');">
